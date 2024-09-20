@@ -5,16 +5,35 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml">
 
 
-    <ContentView>
 
-        <Label
-            Margin="30"
-            FontAttributes="Bold"
-            FontSize="30"
-            HorizontalTextAlignment="Center"
-            Text="Mercader"
-            TextColor="#cccccc" />
+    <StackLayout Padding="10">
+        <Label Text="Encargo" />
+        <Entry x:Name="EncargoEntry" Placeholder="Nombre del encargo" />
+        <Entry
+            x:Name="PrecioEntry"
+            Keyboard="Numeric"
+            Placeholder="Precio" />
+        <Button Clicked="OnAgregarEncargoClicked" Text="Agregar Encargo" />
 
-    </ContentView>
+        <Label Text="Ventas" />
+        <Entry
+            x:Name="CantidadEntry"
+            Keyboard="Numeric"
+            Placeholder="Cantidad" />
+        <Button Clicked="OnAgregarVentaClicked" Text="Agregar Venta" />
+
+        <Label Text="Gastos" />
+        <Entry x:Name="DescripcionGastoEntry" Placeholder="Descripción del gasto" />
+        <Entry
+            x:Name="MontoGastoEntry"
+            Keyboard="Numeric"
+            Placeholder="Monto" />
+        <Button Clicked="OnAgregarGastoClicked" Text="Agregar Gasto" />
+
+        <Button Clicked="OnCalcularGananciasClicked" Text="Calcular Ganancias" />
+        <Label x:Name="GananciasLabel" />
+    </StackLayout>
+
+
 
 </ContentPage>
