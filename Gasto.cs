@@ -6,9 +6,9 @@ using System.Threading.Tasks;
 
 namespace Mercader
 {
-    internal class Gasto
+    public class Gasto
     {
-        public string Descripcion { get; set; }
+        public required string Descripcion { get; set; }
         public decimal Monto { get; set; }
         public DateTime Fecha { get; set; }
     }

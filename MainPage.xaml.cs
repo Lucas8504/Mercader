@@ -4,11 +4,13 @@ namespace Mercader
 {
     public partial class MainPage : ContentPage
     {
-        
+        private Balance balance; // Definir la variable balance
 
         public MainPage()
         {
             InitializeComponent();
+            balance = new Balance(); // Inicializar la variable balance
+
         }
 
 
@@ -49,6 +51,8 @@ namespace Mercader
             var ganancias = balance.CalcularGanancias();
             GananciasLabel.Text = $"Ganancias: {ganancias:C}";
         }
+
+        
         private void OnExportarAExcelClicked(object sender, EventArgs e)
         {
             string rutaArchivo = Path.Combine(FileSystem.AppDataDirectory, "balance.xlsx");

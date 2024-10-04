@@ -20,7 +20,7 @@
             x:Name="CantidadEntry"
             Keyboard="Numeric"
             Placeholder="Cantidad" />
-        <Button Clicked="OnAgregarVentasClicked" Text="Agregar Venta" />
+        <Button Clicked="OnAgregarVentaClicked" Text="Agregar Venta" />
 
         <Label Text="Gastos" />
         <Entry x:Name="DescripcionGastoEntry" Placeholder="Descripción del gasto" />

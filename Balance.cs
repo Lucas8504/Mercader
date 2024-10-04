@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Mercader
 {
-    internal class Balance
+    public class Balance
     {
         public List<Ventas> Ventas { get; set; } = new List<Ventas>();
         public List<Gasto> Gastos { get; set; } = new List<Gasto>();

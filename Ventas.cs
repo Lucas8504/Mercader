@@ -6,9 +6,9 @@ using System.Threading.Tasks;
 
 namespace Mercader
 {
-    internal class Ventas
+    public class Ventas
     {
-        public Encargo Encargo { get; set; }
+        public required Encargo Encargo { get; set; }
         public int Cantidad { get; set; }
         public DateTime Fecha { get; set; }
     }
