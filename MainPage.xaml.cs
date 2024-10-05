@@ -24,7 +24,7 @@ namespace Mercader
             // Aquí puedes agregar el encargo a una lista si es necesario
         }
 
-        private void OnAgregarVentaClicked(object sender, EventArgs e, Balance balance)
+        private void OnAgregarVentaClicked(object sender, EventArgs e)
         {
             var venta = new Ventas
             {
@@ -35,7 +35,7 @@ namespace Mercader
             balance.Ventas.Add(venta);
         }
 
-        private void OnAgregarGastoClicked(object sender, EventArgs e, Balance balance)
+        private void OnAgregarGastoClicked(object sender, EventArgs e)
         {
             var gasto = new Gasto
             {
@@ -46,7 +46,7 @@ namespace Mercader
             balance.Gastos.Add(gasto);
         }
 
-        private void OnCalcularGananciasClicked(object sender, EventArgs e, Balance balance)
+        private void OnCalcularGananciasClicked(object sender, EventArgs e)
         {
             var ganancias = balance.CalcularGanancias();
             GananciasLabel.Text = $"Ganancias: {ganancias:C}";
