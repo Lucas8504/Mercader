@@ -6,34 +6,47 @@
 
 
 
-    <StackLayout Padding="10">
+    <StackLayout
+        Margin="10"
+        Padding="10"
+        Spacing="20">
+
         <Label Text="Encargo" />
+
         <Entry x:Name="EncargoEntry" Placeholder="Nombre del encargo" />
+
         <Entry
             x:Name="PrecioEntry"
             Keyboard="Numeric"
             Placeholder="Precio" />
+
         <Button Clicked="OnAgregarEncargoClicked" Text="Agregar Encargo" />
 
-        <Label Text="Ventas" />
+        <Label Margin="-9" Text="Ventas" />
+
         <Entry
             x:Name="CantidadEntry"
             Keyboard="Numeric"
             Placeholder="Cantidad" />
+
         <Button Clicked="OnAgregarVentaClicked" Text="Agregar Venta" />
 
         <Label Text="Gastos" />
+
         <Entry x:Name="DescripcionGastoEntry" Placeholder="Descripción del gasto" />
+
         <Entry
             x:Name="MontoGastoEntry"
             Keyboard="Numeric"
             Placeholder="Monto" />
+
         <Button Clicked="OnAgregarGastoClicked" Text="Agregar Gasto" />
 
         <Button Clicked="OnCalcularGananciasClicked" Text="Calcular Ganancias" />
+
         <Label x:Name="GananciasLabel" />
-        
-        <Button Text="Exportar a Excel" Clicked="OnExportarAExcelClicked" />
+
+        <Button Clicked="OnExportarAExcelClicked" Text="Exportar a Excel" />
 
     </StackLayout>
 
