@@ -11,9 +11,12 @@
         Title="Home"
         ContentTemplate="{DataTemplate local:MainPage}"
         Route="MainPage" />
-    <ShellContent
-        Title="Nueva Libro"
-        ContentTemplate="{DataTemplate local:NuevoLibro}"
-        />
+    <ShellContent Title="Nueva Libro" ContentTemplate="{DataTemplate local:NuevoLibro}" />
+    <ShellContent Title="Encargo" ContentTemplate="{DataTemplate local:Encargo}" />
+    <ShellContent Title="Ventas" ContentTemplate="{DataTemplate local:Ventas}" />
+    <ShellContent Title="Gasto" ContentTemplate="{DataTemplate local:Gasto}" />
+
+
+
 
 </Shell>
