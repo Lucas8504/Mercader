@@ -10,7 +10,7 @@
     <ShellContent
         Title="Home"
         ContentTemplate="{DataTemplate local:MainPage}"
-        Route="MainPage" />
+        Route="MainPage"/>
     <ShellContent Title="Nuevo Libro" ContentTemplate="{DataTemplate local:NuevoLibro}" />
     <ShellContent Title="Encargo" ContentTemplate="{DataTemplate local:Encargos}" />
     <ShellContent Title="Ventas" ContentTemplate="{DataTemplate local:Venta}" />

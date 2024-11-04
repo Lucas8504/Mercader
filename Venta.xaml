@@ -10,7 +10,7 @@
         Spacing="20">
         <Label
             HorizontalOptions="Center"
-            Text="Welcome to .NET MAUI!"
+            Text="ventas"
             VerticalOptions="Center" />
     </VerticalStackLayout>
 </ContentPage>
