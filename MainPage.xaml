@@ -21,6 +21,7 @@
             Placeholder="Precio" />
 
         <Button Clicked="OnAgregarEncargoClicked" Text="Agregar Encargo" />
+        
 
         <Label Margin="-9" Text="Ventas" />
 
@@ -41,6 +42,8 @@
             Placeholder="Monto" />
 
         <Button Clicked="OnAgregarGastoClicked" Text="Agregar Gasto" />
+
+        <Button Clicked="InAgregarGasto" Text="Agregar Gasto" />
 
         <Button Clicked="OnCalcularGananciasClicked" Text="Calcular Ganancias" />
 

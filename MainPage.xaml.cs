@@ -1,4 +1,9 @@
 ﻿using OfficeOpenXml;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
 namespace Mercader
 {
@@ -46,6 +51,12 @@ namespace Mercader
             balance.Gastos.Add(gasto);
         }
 
+        private void InAgregarGasto(object sender, EventArgs e)
+        {
+
+
+
+        }
         private void OnCalcularGananciasClicked(object sender, EventArgs e)
         {
             var ganancias = balance.CalcularGanancias();
@@ -59,6 +70,8 @@ namespace Mercader
             ExportExcel.ExportarBalanceAExcel(balance, rutaArchivo);
             DisplayAlert("Exportación Completa", $"Archivo exportado a {rutaArchivo}", "OK");
         }
+
+       
     }
 
 }
