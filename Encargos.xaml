@@ -13,8 +13,7 @@
             HorizontalOptions="Center"
             Text="Encargos"
             VerticalOptions="Center" />
-        
-        <BoxView 
-            />
+
+        <BoxView />
     </VerticalStackLayout>
 </ContentPage>

@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage
+    x:Class="Mercader.GastoModal"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    Title="GastoModal">
+    <VerticalStackLayout>
+        <Label
+            HorizontalOptions="Center"
+            Text="Nuevo gasto"
+            VerticalOptions="Center" />
+        <Button Clicked="Cancelar" Text="Cancelar" />
+
+        <Entry x:Name="DescripcionGastoEntry" Placeholder="Descripción del gasto" />
+
+        <Entry
+            x:Name="MontoGastoEntry"
+            Keyboard="Numeric"
+            Placeholder="Monto" />
+
+        <Button Clicked="OnAgregarGastoClicked" Text="Agregar Gasto" />
+
+    </VerticalStackLayout>
+</ContentPage>

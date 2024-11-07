@@ -9,7 +9,7 @@ namespace Mercader
 {
     public partial class MainPage : ContentPage
     {
-        private Balance balance; // Definir la variable balance
+        public Balance balance;
 
         public MainPage()
         {
@@ -40,20 +40,11 @@ namespace Mercader
             balance.Ventas.Add(venta);
         }
 
-        private void OnAgregarGastoClicked(object sender, EventArgs e)
-        {
-            var gasto = new Gasto
-            {
-                Descripcion = DescripcionGastoEntry.Text,
-                Monto = decimal.Parse(MontoGastoEntry.Text),
-                Fecha = DateTime.Now
-            };
-            balance.Gastos.Add(gasto);
-        }
+        
 
-        private void InAgregarGasto(object sender, EventArgs e)
+        private async void InAgregarGasto(object sender, EventArgs e)
         {
-
+            await Navigation.PushModalAsync(new GastoModal());
 
 
         }

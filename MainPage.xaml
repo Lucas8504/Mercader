@@ -34,15 +34,7 @@
 
         <Label Text="Gastos" />
 
-        <Entry x:Name="DescripcionGastoEntry" Placeholder="Descripción del gasto" />
-
-        <Entry
-            x:Name="MontoGastoEntry"
-            Keyboard="Numeric"
-            Placeholder="Monto" />
-
-        <Button Clicked="OnAgregarGastoClicked" Text="Agregar Gasto" />
-
+       
         <Button Clicked="InAgregarGasto" Text="Agregar Gasto" />
 
         <Button Clicked="OnCalcularGananciasClicked" Text="Calcular Ganancias" />
