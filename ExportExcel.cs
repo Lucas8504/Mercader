@@ -23,10 +23,10 @@ namespace Mercader
                 int row = 2;
                 foreach (var venta in balance.Ventas)
                 {
-                    worksheet.Cells[row, 1].Value = venta.Encargo.Nombre;
-                    worksheet.Cells[row, 2].Value = venta.Encargo.Precio;
-                    worksheet.Cells[row, 3].Value = venta.Cantidad;
-                    worksheet.Cells[row, 4].Value = venta.Fecha.ToString("dd/MM/yyyy");
+                    worksheet.Cells[row, 1].Value = venta.Precio;
+                    worksheet.Cells[row, 2].Value = venta.Cantidad;
+                    worksheet.Cells[row, 3].Value = venta.Fecha.ToString("f");
+                    worksheet.Cells[row, 4].Value = venta.Descripcion;
                     row++;
                 }
 

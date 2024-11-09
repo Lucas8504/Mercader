@@ -23,10 +23,7 @@ namespace Mercader
         {
             await Navigation.PushModalAsync(new EncModal());
 
-
         }
-
-
 
         private async void InAgregarVenta(object sender, EventArgs e)
         {
