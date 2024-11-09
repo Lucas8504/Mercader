@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage
+    x:Class="Mercader.VentaModal"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    Title="VentaModal">
+    <VerticalStackLayout>
+        <Label
+            HorizontalOptions="Center"
+            Text="Agregar Venta"
+            VerticalOptions="Center" />
+
+        <Entry
+            x:Name="PrecioEntry"
+            Keyboard="Numeric"
+            Placeholder="Precio" />
+
+        <Entry
+            x:Name="CantidadEntry"
+            Keyboard="Numeric"
+            Placeholder="Cantidad" />
+
+        <Entry
+            x:Name="DescripcionV_Entry"
+            Keyboard="Default"
+            Placeholder="Cantidad" />
+
+        <Button Clicked="OnAgregarVentaClicked" Text="Agregar" />
+
+    </VerticalStackLayout>
+</ContentPage>

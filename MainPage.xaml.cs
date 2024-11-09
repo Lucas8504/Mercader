@@ -19,8 +19,6 @@ namespace Mercader
         }
 
 
-       
-
         private async void InAgregarEncargo(object sender, EventArgs e)
         {
             await Navigation.PushModalAsync(new EncModal());
@@ -28,25 +26,17 @@ namespace Mercader
 
         }
 
-        private void OnAgregarVentaClicked(object sender, EventArgs e)
-        {
-            var venta = new Ventas
-            {
-                Precio = decimal.Parse(PrecioEntry.Text),
-                Cantidad = decimal.Parse(CantidadEntry.Text),
-                Descripcion = DescripcionV_Entry.Text,
-                Fecha = DateTime.Now
 
-            };
-            
+
+        private async void InAgregarVenta(object sender, EventArgs e)
+        {
+            await Navigation.PushModalAsync(new VentaModal());
         }
 
-        
 
         private async void InAgregarGasto(object sender, EventArgs e)
         {
             await Navigation.PushModalAsync(new GastoModal());
-
 
         }
         private void OnCalcularGananciasClicked(object sender, EventArgs e)
