@@ -32,11 +32,13 @@ namespace Mercader
         {
             var venta = new Ventas
             {
-                Encargo = new Encargo { Nombre = EncargoEntry.Text, Precio = decimal.Parse(PrecioEntry.Text) },
-                Cantidad = int.Parse(CantidadEntry.Text),
+                Precio = decimal.Parse(PrecioEntry.Text),
+                Cantidad = decimal.Parse(CantidadEntry.Text),
+                Descripcion = DescripcionV_Entry.Text,
                 Fecha = DateTime.Now
+
             };
-            balance.Ventas.Add(venta);
+            
         }
 
         

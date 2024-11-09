@@ -8,8 +8,9 @@ namespace Mercader
 {
     public class Ventas
     {
-        public required Encargo Encargo { get; set; }
-        public int Cantidad { get; set; }
+        public decimal Precio { get; set; }
+        public decimal Cantidad { get; set; }
+        public required string Descripcion { get; set; }
         public DateTime Fecha { get; set; }
     }
 }

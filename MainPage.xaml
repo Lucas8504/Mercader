@@ -13,22 +13,32 @@
 
         <Label Text="Encargo" />
 
-       
+
 
         <Button Clicked="InAgregarEncargo" Text="Agregar Gasto" />
 
         <Label Margin="-9" Text="Ventas" />
 
         <Entry
+            x:Name="PrecioEntry"
+            Keyboard="Numeric"
+            Placeholder="Precio" />
+
+        <Entry
             x:Name="CantidadEntry"
             Keyboard="Numeric"
+            Placeholder="Cantidad" />
+
+        <Entry
+            x:Name="DescripcionV_Entry"
+            Keyboard="Default"
             Placeholder="Cantidad" />
 
         <Button Clicked="OnAgregarVentaClicked" Text="Agregar Venta" />
 
         <Label Text="Gastos" />
 
-       
+
         <Button Clicked="InAgregarGasto" Text="Agregar Gasto" />
 
         <Button Clicked="OnCalcularGananciasClicked" Text="Calcular Ganancias" />
