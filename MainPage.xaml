@@ -13,15 +13,9 @@
 
         <Label Text="Encargo" />
 
-        <Entry x:Name="EncargoEntry" Placeholder="Nombre del encargo" />
+       
 
-        <Entry
-            x:Name="PrecioEntry"
-            Keyboard="Numeric"
-            Placeholder="Precio" />
-
-        <Button Clicked="OnAgregarEncargoClicked" Text="Agregar Encargo" />
-        
+        <Button Clicked="InAgregarEncargo" Text="Agregar Gasto" />
 
         <Label Margin="-9" Text="Ventas" />
 

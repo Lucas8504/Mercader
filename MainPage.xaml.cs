@@ -19,14 +19,13 @@ namespace Mercader
         }
 
 
-        private void OnAgregarEncargoClicked(object sender, EventArgs e)
+       
+
+        private async void InAgregarEncargo(object sender, EventArgs e)
         {
-            var encargo = new Encargo
-            {
-                Nombre = EncargoEntry.Text,
-                Precio = decimal.Parse(PrecioEntry.Text)
-            };
-            // Aquí puedes agregar el encargo a una lista si es necesario
+            await Navigation.PushModalAsync(new EncModal());
+
+
         }
 
         private void OnAgregarVentaClicked(object sender, EventArgs e)
