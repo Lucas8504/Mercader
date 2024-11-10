@@ -19,9 +19,7 @@
 
         <Label Margin="-9" Text="Ventas" />
 
-       
-
-        <Button Clicked="InAgregarVenta" Text="Agregar Venta"/>
+        <Button Clicked="InAgregarVenta" Text="Agregar Venta" />
 
         <Label Text="Gastos" />
 

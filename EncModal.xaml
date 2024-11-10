@@ -19,5 +19,9 @@
 
         <Button Clicked="OnAgregarEncargoClicked" Text="Agregar Encargo" />
 
+        <Button Clicked="Cancelar" Text="Cancelar" />
+
+
+
     </VerticalStackLayout>
 </ContentPage>

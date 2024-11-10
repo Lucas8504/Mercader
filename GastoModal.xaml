@@ -20,5 +20,7 @@
 
         <Button Clicked="OnAgregarGastoClicked" Text="Agregar Gasto" />
 
+        <Button Clicked="Cancelar" Text="Cancelar" />
+
     </VerticalStackLayout>
 </ContentPage>

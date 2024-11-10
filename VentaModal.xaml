@@ -27,5 +27,7 @@
 
         <Button Clicked="OnAgregarVentaClicked" Text="Agregar" />
 
+        <Button Clicked="Cancelar" Text="Cancelar" />
+
     </VerticalStackLayout>
 </ContentPage>
