@@ -15,8 +15,8 @@ public partial class VentaModal : ContentPage
             Cantidad = decimal.Parse(CantidadEntry.Text),
             Descripcion = DescripcionV_Entry.Text,
             Fecha = DateTime.Now
-
         };
+
 
     }
 

@@ -23,7 +23,7 @@
         <Entry
             x:Name="DescripcionV_Entry"
             Keyboard="Default"
-            Placeholder="Cantidad" />
+            Placeholder="Descripción" />
 
         <Button Clicked="OnAgregarVentaClicked" Text="Agregar" />
 
