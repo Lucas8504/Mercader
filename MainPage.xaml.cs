@@ -1,19 +1,21 @@
-﻿using OfficeOpenXml;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿
+
+
+using SQLite;
 
 namespace Mercader
 {
     public partial class MainPage : ContentPage
     {
+        static string filename = Path.Combine("");
+        static SQLiteConnection? conn;
+
         public Balance balance;
 
         public MainPage()
         {
             InitializeComponent();
+            conn = new SQLiteConnection(filename);
             balance = new Balance(); // Inicializar la variable balance
 
         }
