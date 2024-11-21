@@ -11,19 +11,15 @@
         Padding="10"
         Spacing="20">
 
-        <Label Text="Encargo" />
 
-        <Button Clicked="InAgregarEncargo" Text="Agregar Encargo" />
+
+        <Button Clicked="InAgregarEncargo" Text="Encargos" />
         
 
-        <Label Margin="-9" Text="Ventas" />
-
-        <Button Clicked="InAgregarVenta" Text="Agregar Venta" />
+        <Button Clicked="InAgregarVenta" Text="Ventas" />
         
 
-        <Label Text="Gastos" />
-
-        <Button Clicked="InAgregarGasto" Text="Agregar Gasto" />
+        <Button Clicked="InAgregarGasto" Text="Gastos" />
         
 
         <Button Clicked="OnCalcularGananciasClicked" Text="Balance" />
