@@ -8,7 +8,7 @@ namespace Mercader
     public partial class MainPage : ContentPage
     {
         static string filename = Path.Combine("");
-        static SQLiteConnection? conn;
+        static SQLiteConnection conn;
 
         public Balance balance;
 
