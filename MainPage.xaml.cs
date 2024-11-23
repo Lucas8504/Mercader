@@ -8,14 +8,13 @@ namespace Mercader
     public partial class MainPage : ContentPage
     {
         static string filename = Path.Combine("");
-        static SQLiteConnection? conn;
+        SQLiteConnection conn = new SQLiteConnection(filename);
 
         public Balance balance;
 
         public MainPage()
         {
             InitializeComponent();
-            conn = new SQLiteConnection(filename);
             balance = new Balance(); // Inicializar la variable balance
 
         }
