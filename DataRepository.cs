@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using SQLite;
+﻿using SQLite;
 namespace Mercader
 {
     public class DataRepository
@@ -12,10 +7,18 @@ namespace Mercader
 
         public DataRepository(string dbPath)
         {
+            if (string.IsNullOrEmpty(dbPath))
+                throw new ArgumentNullException(nameof(dbPath));
+
             _database = new SQLiteAsyncConnection(dbPath);
-            _database.CreateTableAsync<Encargo>().Wait();
-            _database.CreateTableAsync<Ventas>().Wait();
-            _database.CreateTableAsync<Gasto>().Wait();
+            InitializeDatabaseAsync().Wait();
+        }
+
+        private async Task InitializeDatabaseAsync()
+        {
+            await _database.CreateTableAsync<Encargo>();
+            await _database.CreateTableAsync<Ventas>();
+            await _database.CreateTableAsync<Gasto>();
         }
 
         // Métodos para guardar datos
@@ -31,7 +34,7 @@ namespace Mercader
             }
         }
 
-        public Task<int> SaveVentaAsync(Ventas ventas)
+        public Task<int> SaveVentasAsync(Ventas ventas)
         {
             if (ventas.Id != 0)
             {
@@ -61,13 +64,14 @@ namespace Mercader
             return _database.Table<Encargo>().ToListAsync();
         }
 
-        public Task<List<Venta>> GetVentasAsync()
+        public Task<List<Ventas>> GetVentasAsync()
         {
             return _database.Table<Ventas>().ToListAsync();
         }
 
         public Task<List<Gasto>> GetGastosAsync()
         {
+
             return _database.Table<Gasto>().ToListAsync();
         }
 
@@ -77,7 +81,7 @@ namespace Mercader
             return _database.DeleteAsync(encargo);
         }
 
-        public Task<int> DeleteVentaAsync(Venta venta)
+        public Task<int> DeleteVentaAsync(Ventas venta)
         {
             return _database.DeleteAsync(venta);
         }

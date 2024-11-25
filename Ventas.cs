@@ -7,13 +7,21 @@ using System.Threading.Tasks;
 
 namespace Mercader
 {
+    
+    [Table("Ventas")]
     public class Ventas
     {
         [PrimaryKey, AutoIncrement]
+        [Column("Id")]
         public int Id { get; set; }
-        public decimal Precio { get; set; }
-        public decimal Cantidad { get; set; }
-        public required string Descripcion { get; set; }
-        public DateTime Fecha { get; set; }
+
+        [Column("Precio")]
+        public decimal precio { get; set; }
+
+        [Column("Cantidad")]
+        public decimal cantidad { get; set; }
+
+        [Column("Fecha")]
+        public DateTime fecha { get; set; }
     }
 }
