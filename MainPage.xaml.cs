@@ -1,6 +1,5 @@
-﻿
-
-
+﻿using Microsoft.Maui;
+using Microsoft.Maui.Hosting;
 using SQLite;
 
 namespace Mercader
