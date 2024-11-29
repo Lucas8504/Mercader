@@ -21,5 +21,9 @@ namespace Mercader
 
             return builder.Build();
         }
+        public static void Main(string[] args)
+        {
+            CreateMauiApp();
+        }
     }
 }
