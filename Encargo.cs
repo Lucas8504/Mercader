@@ -11,10 +11,10 @@ namespace Mercader
         public int Id { get; set; }
 
         [Column("Precio")]
-        public decimal precio { get; set; }
+        public decimal Precio { get; set; }
 
         [Column("Cantidad")]
-        public decimal cantidad { get; set; }
+        public decimal Cantidad { get; set; }
 
         [Column("Descripcion")]
         public string? Descripcion { get; set; }
