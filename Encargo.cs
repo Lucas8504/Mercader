@@ -11,7 +11,21 @@ namespace Mercader
     {
         [PrimaryKey, AutoIncrement]
         public int Id { get; set; }
+
+        [Column("Nombre")]
         public required string Nombre { get; set; }
+
+        [Column("Precio")]
         public decimal Precio { get; set; }
+
+        [Column("Cantidad")]
+        public decimal Cantidad { get; set; }
+
+        [Column("Descripcion")]
+        public required string Descripcion { get; set; }
+
+        [Column("Fecha")]
+        public DateTime Fecha { get; set; }
+
     }
 }
