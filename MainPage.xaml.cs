@@ -1,13 +1,12 @@
-﻿
-
-
+﻿using Microsoft.Maui;
+using Microsoft.Maui.Hosting;
 using SQLite;
 
 namespace Mercader
 {
     public partial class MainPage : ContentPage
     {
-        static string filename = Path.Combine("");
+        static string filename = Path.Combine("dbmercader");
         SQLiteConnection conn = new SQLiteConnection(filename);
 
         public Balance balance;
