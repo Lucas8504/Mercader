@@ -1,4 +1,6 @@
 namespace Mercader;
+using System;
+using Microsoft.Maui.Controls;
 
 public partial class EncModal : ContentPage
 {
