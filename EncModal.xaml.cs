@@ -12,7 +12,11 @@ public partial class EncModal : ContentPage
         var encargo = new Encargo
         {
             Nombre = EncargoEntry.Text,
-            Precio = decimal.Parse(PrecioEntry.Text)
+            Precio = decimal.Parse(PrecioEntry.Text),
+            Cantidad = decimal.Parse(CantidadEntry.Text),
+            Descripcion = DescripcionEntry.Text,
+
+
         };
         // Aquí puedes agregar el encargo a una lista si es necesario
     }

@@ -22,7 +22,7 @@ namespace Mercader
         public decimal Cantidad { get; set; }
 
         [Column("Descripcion")]
-        public required string Descripcion { get; set; }
+        public string? Descripcion { get; set; }
 
         [Column("Fecha")]
         public DateTime Fecha { get; set; }

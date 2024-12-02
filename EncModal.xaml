@@ -17,6 +17,14 @@
             Keyboard="Numeric"
             Placeholder="Precio" />
 
+        <Entry
+            x:Name="CantidadEntry"
+            Keyboard="Numeric"
+            Placeholder="Cantidad" />
+
+        <Entry x:Name="DescripcionEntry" Placeholder="Descripcion" />
+
+
         <Button Clicked="OnAgregarEncargoClicked" Text="Agregar Encargo" />
 
         <Button Clicked="Cancelar" Text="Cancelar" />
