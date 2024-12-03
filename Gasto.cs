@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 
 namespace Mercader
 {
+    [Table("Gastos")]
     public class Gasto
     {
 
@@ -14,7 +15,7 @@ namespace Mercader
         public int Id { get; set; }
 
         [Column("Descripcion")]
-        public required string Descripcion { get; set; }
+        public string? Descripcion { get; set; }
 
         [Column("Monto")]
         public decimal Monto { get; set; }

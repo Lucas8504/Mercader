@@ -7,13 +7,14 @@ using System.Threading.Tasks;
 
 namespace Mercader
 {
+    [Table("Encargos")]
     public class Encargo
     {
         [PrimaryKey, AutoIncrement]
         public int Id { get; set; }
 
         [Column("Nombre")]
-        public required string Nombre { get; set; }
+        public string? Nombre { get; set; }
 
         [Column("Precio")]
         public decimal Precio { get; set; }
