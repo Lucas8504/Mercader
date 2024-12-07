@@ -1,13 +1,12 @@
 ﻿
-
-
+using Microsoft.Data.Sqlite;
 using SQLite;
 
 namespace Mercader
 {
     public partial class MainPage : ContentPage
     {
-        static string filename = Path.Combine("");
+        static string filename = Path.Combine("mercader.db3");
         SQLiteConnection conn = new SQLiteConnection(filename);
 
         public Balance balance;

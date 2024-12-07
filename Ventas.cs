@@ -11,7 +11,7 @@ namespace Mercader
     public class Ventas
     {
         
-        [PrimaryKey, AutoIncrement]
+        [PrimaryKey, AutoIncrement,Unique]
         public int Id { get; set; }
 
         [Column("Precio")]

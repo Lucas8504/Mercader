@@ -10,10 +10,10 @@ namespace Mercader
     [Table("Encargos")]
     public class Encargo
     {
-        [PrimaryKey, AutoIncrement]
+        [PrimaryKey, AutoIncrement,Unique]
         public int Id { get; set; }
 
-        [Column("Nombre")]
+        [Column("Nombre"),MaxLength(360),Unique]
         public string? Nombre { get; set; }
 
         [Column("Precio")]
