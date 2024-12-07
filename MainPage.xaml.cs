@@ -7,7 +7,7 @@ namespace Mercader
     public partial class MainPage : ContentPage
     {
         static string filename = Path.Combine("mercader.db3");
-        SQLiteConnection conn = new SQLiteConnection(filename);
+        SQLiteConnection? conn;
 
         public Balance balance;
 
