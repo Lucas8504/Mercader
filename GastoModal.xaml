@@ -4,7 +4,7 @@
     xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
     Title="GastoModal">
-    <VerticalStackLayout
+    <StackLayout
         Margin="10"
         Padding="10"
         Spacing="20">
@@ -12,8 +12,7 @@
             HorizontalOptions="Center"
             Text="Nuevo gasto"
             VerticalOptions="Center" />
-        <Button Clicked="Cancelar" Text="Cancelar" />
-
+        
         <Entry x:Name="DescripcionGastoEntry" Placeholder="Descripción del gasto" />
 
         <Entry
@@ -25,5 +24,5 @@
 
         <Button Clicked="Cancelar" Text="Cancelar" />
 
-    </VerticalStackLayout>
+    </StackLayout>
 </ContentPage>
