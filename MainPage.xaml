@@ -4,31 +4,55 @@
     xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml">
 
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*" />
+            <ColumnDefinition Width="*" />
+            <ColumnDefinition Width="*" />
+            <ColumnDefinition Width="*" />
+        </Grid.ColumnDefinitions>
+
+        <Button
+            Grid.Row="0"
+            Grid.Column="0"
+            Clicked="InAgregarEncargo"
+            Text="Encargos" />
+        <Button
+            Grid.Row="0"
+            Grid.Column="1"
+            Clicked="InAgregarVenta"
+            Text="Ventas" />
+        <Button
+            Grid.Row="0"
+            Grid.Column="2"
+            Clicked="InAgregarGasto"
+            Text="Gastos" />
+        <Button
+            Grid.Row="0"
+            Grid.Column="3"
+            Clicked="OnCalcularGananciasClicked"
+            Text="Balance" />
 
 
-    <StackLayout
-        Margin="10"
-        Padding="10"
-        Spacing="20">
+        <Button
+            Grid.Row="2"
+            Grid.ColumnSpan="4"
+            Clicked="OnExportarAExcelClicked"
+            Text="Exportar a Excel" />
 
+        <Label
+            x:Name="GananciasLabel"
+            Grid.Row="1"
+            Grid.ColumnSpan="4" />
 
-
-        <Button Clicked="InAgregarEncargo" Text="Encargos" />
-        
-
-        <Button Clicked="InAgregarVenta" Text="Ventas" />
-        
-
-        <Button Clicked="InAgregarGasto" Text="Gastos" />
-        
-
-        <Button Clicked="OnCalcularGananciasClicked" Text="Balance" />
-
-        <Label x:Name="GananciasLabel" />
-
-        <Button Clicked="OnExportarAExcelClicked" Text="Exportar a Excel" />
-
-    </StackLayout>
+    </Grid>
 
 
 
