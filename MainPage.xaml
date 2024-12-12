@@ -23,6 +23,7 @@
             Grid.Row="0"
             Grid.Column="0"
             Margin="4"
+            Padding="4"
             Clicked="InAgregarEncargo"
             FontSize="Caption"
             Text="Encargos" />
@@ -30,6 +31,7 @@
             Grid.Row="0"
             Grid.Column="1"
             Margin="4"
+            Padding="4"
             Clicked="InAgregarVenta"
             FontSize="Caption"
             Text="Ventas" />
@@ -37,6 +39,7 @@
             Grid.Row="0"
             Grid.Column="2"
             Margin="4"
+            Padding="4"
             Clicked="InAgregarGasto"
             FontSize="Caption"
             Text="Gastos" />
@@ -44,6 +47,7 @@
             Grid.Row="0"
             Grid.Column="3"
             Margin="4"
+            Padding="4"
             Clicked="OnCalcularGananciasClicked"
             FontSize="Caption"
             Text="Balance" />
@@ -55,6 +59,7 @@
             Grid.Row="2"
             Grid.ColumnSpan="4"
             Margin="24"
+            Padding="4"
             Clicked="OnExportarAExcelClicked"
             FontSize="Caption"
             Text="Exportar a Excel" />
@@ -62,8 +67,12 @@
         <Label
             x:Name="GananciasLabel"
             Grid.Row="3"
-            Grid.ColumnSpan="4"
-            Text="Ganancia" />
+            Grid.Column="0"
+            Margin="24"
+            Padding="2"
+            BackgroundColor="Black"
+            Text="Ganancia"
+            FontSize="Caption"/>
 
     </Grid>
 
