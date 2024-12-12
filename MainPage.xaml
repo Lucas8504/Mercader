@@ -22,38 +22,49 @@
         <Button
             Grid.Row="0"
             Grid.Column="0"
+            Margin="4"
             Clicked="InAgregarEncargo"
+            FontSize="Caption"
             Text="Encargos" />
         <Button
             Grid.Row="0"
             Grid.Column="1"
+            Margin="4"
             Clicked="InAgregarVenta"
+            FontSize="Caption"
             Text="Ventas" />
         <Button
             Grid.Row="0"
             Grid.Column="2"
+            Margin="4"
             Clicked="InAgregarGasto"
+            FontSize="Caption"
             Text="Gastos" />
         <Button
             Grid.Row="0"
             Grid.Column="3"
+            Margin="4"
             Clicked="OnCalcularGananciasClicked"
+            FontSize="Caption"
             Text="Balance" />
+
+        <Label Grid.Row="1" Grid.ColumnSpan="4" />
 
 
         <Button
             Grid.Row="2"
             Grid.ColumnSpan="4"
+            Margin="24"
             Clicked="OnExportarAExcelClicked"
+            FontSize="Caption"
             Text="Exportar a Excel" />
 
         <Label
             x:Name="GananciasLabel"
-            Grid.Row="1"
-            Grid.ColumnSpan="4" />
+            Grid.Row="3"
+            Grid.ColumnSpan="4"
+            Text="Ganancia" />
 
     </Grid>
-
-
 
 </ContentPage>
