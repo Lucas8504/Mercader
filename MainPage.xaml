@@ -64,43 +64,47 @@
             FontSize="Caption"
             Text="Exportar a Excel" />
 
-        <Label
+        <Entry
             Grid.Row="3"
             Grid.Column="0"
-            Margin="20"
-            Padding="1"
-            BackgroundColor="Black"
-            FontSize="Caption"
-            Text="Encargos" />
+            Margin="2"
+            BackgroundColor="#2a2a2a"
+            IsEnabled="False"
+            Placeholder="Encargos"
+            PlaceholderColor="#7d7c7c"
+            TextColor="#cccccc" />
 
         <Entry
             x:Name="GananciasLabel"
             Grid.Row="3"
             Grid.Column="3"
+            Margin="2"
             BackgroundColor="#2a2a2a"
+            HorizontalTextAlignment="Start"
             IsEnabled="False"
-            Placeholder="Ganancias."
+            Placeholder="Ganancias"
             PlaceholderColor="#7d7c7c"
             TextColor="#cccccc" />
 
-
-        <Label
-            Grid.Row="3"
-            Grid.Column="2"
-            Margin="20"
-            Padding="1"
-            BackgroundColor="Black"
-            FontSize="Caption"
-            Text="Gastos" />
-
-        <Label
+        <Entry
             Grid.Row="3"
             Grid.Column="1"
-            Margin="20"
-            Padding="1"
-            BackgroundColor="Black"
-            FontSize="Caption"
-            Text="Ventas" />
+            Margin="2"
+            BackgroundColor="#2a2a2a"
+            IsEnabled="False"
+            Placeholder="Ventas"
+            PlaceholderColor="#7d7c7c"
+            TextColor="#cccccc" />
+
+        <Entry
+            Grid.Row="3"
+            Grid.Column="2"
+            Margin="2"
+            BackgroundColor="#2a2a2a"
+            IsEnabled="False"
+            Placeholder="Gastos"
+            PlaceholderColor="#7d7c7c"
+            TextColor="#cccccc" />
 
     </Grid>
 
