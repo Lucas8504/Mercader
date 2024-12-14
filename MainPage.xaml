@@ -65,41 +65,42 @@
             Text="Exportar a Excel" />
 
         <Label
-            x:Name="GananciasLabel"
             Grid.Row="3"
             Grid.Column="0"
-            Margin="24"
-            Padding="2"
+            Margin="20"
+            Padding="1"
             BackgroundColor="Black"
             FontSize="Caption"
-            Text="Ganancia" />
+            Text="Encargos" />
 
-        <Label
+        <Entry
+            x:Name="GananciasLabel"
             Grid.Row="3"
-            Grid.Column="1"
-            Margin="24"
-            Padding="2"
-            BackgroundColor="Black"
-            FontSize="Caption"
-            Text="Ganancia" />
+            Grid.Column="3"
+            BackgroundColor="#2a2a2a"
+            IsEnabled="False"
+            Placeholder="Ganancias."
+            PlaceholderColor="#7d7c7c"
+            TextColor="#cccccc" />
+
 
         <Label
             Grid.Row="3"
             Grid.Column="2"
-            Margin="24"
-            Padding="2"
+            Margin="20"
+            Padding="1"
             BackgroundColor="Black"
             FontSize="Caption"
-            Text="Ganancia" />
+            Text="Gastos" />
 
         <Label
             Grid.Row="3"
-            Grid.Column="3"
-            Margin="24"
-            Padding="2"
+            Grid.Column="1"
+            Margin="20"
+            Padding="1"
             BackgroundColor="Black"
             FontSize="Caption"
-            Text="Ganancia" />
+            Text="Ventas" />
 
     </Grid>
 
