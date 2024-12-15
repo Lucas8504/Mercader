@@ -1,3 +1,5 @@
+using static Microsoft.IO.RecyclableMemoryStreamManager;
+
 namespace Mercader;
 
 public partial class VentaModal : ContentPage
@@ -15,9 +17,9 @@ public partial class VentaModal : ContentPage
             Cantidad = decimal.Parse(CantidadEntry.Text),
             Descripcion = DescripcionV_Entry.Text,
             Fecha = DateTime.Now
+ 
         };
-
-
+        
     }
 
     private async void Cancelar(object sender, EventArgs e)

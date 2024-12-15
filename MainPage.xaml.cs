@@ -1,6 +1,7 @@
 ﻿
 using Microsoft.Data.Sqlite;
 using SQLite;
+using static Microsoft.IO.RecyclableMemoryStreamManager;
 
 namespace Mercader
 {
@@ -40,6 +41,9 @@ namespace Mercader
         {
             var ganancias = balance.CalcularGanancias();
             GananciasLabel.Text = $"Ganancias: {ganancias:C}";
+
+            var ventas = balance.CalcularVentas();
+            VentasLabel.Text = ventas.ToString();
         }
 
 

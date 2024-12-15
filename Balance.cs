@@ -17,5 +17,12 @@ namespace Mercader
             decimal totalGastos = Gastos.Sum(g => g.Monto);
             return totalVentas - totalGastos;
         }
+
+        public decimal CalcularVentas()
+        {
+            decimal totalVentas = Ventas.Sum(v => v.Precio * v.Cantidad);
+
+            return totalVentas;
+        }
     }
 }

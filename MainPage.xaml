@@ -87,6 +87,7 @@
             TextColor="#cccccc" />
 
         <Entry
+            x:Name="VentasLabel"
             Grid.Row="3"
             Grid.Column="1"
             Margin="2"
