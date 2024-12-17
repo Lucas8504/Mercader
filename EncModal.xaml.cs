@@ -7,7 +7,7 @@ public partial class EncModal : ContentPage
 		InitializeComponent();
 	}
 
-    private void OnAgregarEncargoClicked(object sender, EventArgs e)
+    private async void OnAgregarEncargoClicked(object sender, EventArgs e)
     {
         var encargo = new Encargo
         {
@@ -18,6 +18,7 @@ public partial class EncModal : ContentPage
 
 
         };
+        await Navigation.PopModalAsync();
         // Aquí puedes agregar el encargo a una lista si es necesario
     }
 
