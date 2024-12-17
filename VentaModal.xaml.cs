@@ -9,7 +9,7 @@ public partial class VentaModal : ContentPage
 		InitializeComponent();
 	}
 
-    private void OnAgregarVentaClicked(object sender, EventArgs e)
+    private async void OnAgregarVentaClicked(object sender, EventArgs e)
     {
         var venta = new Ventas
         {
@@ -17,11 +17,11 @@ public partial class VentaModal : ContentPage
             Cantidad = decimal.Parse(CantidadEntry.Text),
             Descripcion = DescripcionV_Entry.Text,
             Fecha = DateTime.Now
- 
         };
 
-       
-        
+
+        Page page = await Navigation.PopModalAsync();
+
     }
 
     private async void Cancelar(object sender, EventArgs e)
