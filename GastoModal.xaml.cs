@@ -7,7 +7,7 @@ public partial class GastoModal : ContentPage
 		InitializeComponent();
 	}
 
-    private void OnAgregarGastoClicked(object sender, EventArgs e)
+    private async void OnAgregarGastoClicked(object sender, EventArgs e)
     {
         var gasto = new Gasto
         {
@@ -15,8 +15,9 @@ public partial class GastoModal : ContentPage
             Monto = decimal.Parse(MontoGastoEntry.Text),
             Fecha = DateTime.Now
         };
-       
-       
+        await Navigation.PopModalAsync();
+
+
     }
 
 
