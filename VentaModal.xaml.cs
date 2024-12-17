@@ -18,9 +18,7 @@ public partial class VentaModal : ContentPage
             Descripcion = DescripcionV_Entry.Text,
             Fecha = DateTime.Now
         };
-
-
-        Page page = await Navigation.PopModalAsync();
+        _ = await Navigation.PopModalAsync();
 
     }
 
