@@ -19,6 +19,8 @@ public partial class VentaModal : ContentPage
             Fecha = DateTime.Now
  
         };
+
+       
         
     }
 

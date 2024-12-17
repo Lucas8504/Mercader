@@ -17,6 +17,9 @@ namespace Mercader
             InitializeComponent();
             balance = new Balance(); // Inicializar la variable balance
 
+            var ventas = balance.CalcularVentas();
+            VentasLabel.Text = ventas.ToString();
+
         }
 
 
@@ -42,10 +45,9 @@ namespace Mercader
             var ganancias = balance.CalcularGanancias();
             GananciasLabel.Text = $"Ganancias: {ganancias:C}";
 
-            var ventas = balance.CalcularVentas();
-            VentasLabel.Text = ventas.ToString();
+            
         }
-
+        
 
         private void OnExportarAExcelClicked(object sender, EventArgs e)
         {
