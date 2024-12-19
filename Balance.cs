@@ -8,8 +8,8 @@ namespace Mercader
 {
     public class Balance
     {
-        public List<Ventas> Ventas { get; set; } = new List<Ventas>();
-        public List<Gasto> Gastos { get; set; } = new List<Gasto>();
+        public List<Ventas> Ventas { get; set; } = [];
+        public List<Gasto> Gastos { get; set; } = [];
 
         public decimal CalcularGanancias()
         {
@@ -20,8 +20,11 @@ namespace Mercader
 
         public decimal CalcularVentas()
         {
-            decimal totalVentas = Ventas.Sum(v => v.Precio * v.Cantidad);
-
+            decimal totalVentas = 0;
+            foreach (var venta in Ventas)
+            {
+                totalVentas += venta.Precio * venta.Cantidad;
+            }
             return totalVentas;
         }
     }

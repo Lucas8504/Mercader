@@ -11,17 +11,31 @@ namespace Mercader
         SQLiteConnection? conn;
 
         public Balance balance;
+       
+
 
         public MainPage()
         {
             InitializeComponent();
-            balance = new Balance(); // Inicializar la variable balance
+            balance = new Balance();
 
-            var ventas = balance.CalcularVentas();
-            VentasLabel.Text = ventas.ToString();
 
+            ActualizarEtiquetaVentas();
         }
 
+        public void ActualizarEtiquetaVentas()
+        {
+            try 
+            {
+                decimal ventas = balance.CalcularVentas();
+                VentasLabel.Text = ventas.ToString();
+                Console.WriteLine($"Total de ventas calculado: {ventas}"); // Para debug
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error al calcular ventas: {ex.Message}");
+            }
+        }
 
         private async void InAgregarEncargo(object sender, EventArgs e)
         {
