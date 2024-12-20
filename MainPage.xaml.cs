@@ -11,7 +11,7 @@ namespace Mercader
         SQLiteConnection? conn;
 
         public Balance balance;
-       
+
 
 
         public MainPage()
@@ -25,7 +25,7 @@ namespace Mercader
 
         public void ActualizarEtiquetaVentas()
         {
-            try 
+            try
             {
                 decimal ventas = balance.CalcularVentas();
                 VentasLabel.Text = ventas.ToString();
@@ -45,7 +45,7 @@ namespace Mercader
 
         private async void InAgregarVenta(object sender, EventArgs e)
         {
-            await Navigation.PushModalAsync(new VentaModal());
+            await Navigation.PushModalAsync(new VentaModal(this));
         }
 
 
@@ -59,9 +59,9 @@ namespace Mercader
             var ganancias = balance.CalcularGanancias();
             GananciasLabel.Text = $"Ganancias: {ganancias:C}";
 
-            
+
         }
-        
+
 
         private void OnExportarAExcelClicked(object sender, EventArgs e)
         {
@@ -70,7 +70,7 @@ namespace Mercader
             DisplayAlert("Exportación Completa", $"Archivo exportado a {rutaArchivo}", "OK");
         }
 
-       
+
     }
 
 }

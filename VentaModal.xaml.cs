@@ -4,9 +4,12 @@ namespace Mercader;
 
 public partial class VentaModal : ContentPage
 {
-    public VentaModal()
+    private MainPage mainPage;  // Agregar esta línea
+
+    public VentaModal(MainPage mainPage)  // Modificar el constructor
     {
         InitializeComponent();
+        this.mainPage = mainPage;
     }
 
     private async void OnAgregarVentaClicked(object sender, EventArgs e)
@@ -21,21 +24,9 @@ public partial class VentaModal : ContentPage
                 Fecha = DateTime.Now
             };
 
-            // Buscar la página principal
-            var mainPage = Navigation.NavigationStack
-                .OfType<MainPage>()
-                .FirstOrDefault();
-
-            if (mainPage != null)
-            {
-                mainPage.balance.Ventas.Add(venta);
-                Console.WriteLine($"Venta agregada: Precio={venta.Precio}, Cantidad={venta.Cantidad}"); // Para debug
-                mainPage.ActualizarEtiquetaVentas();
-            }
-            else
-            {
-                Console.WriteLine("No se encontró la página principal"); // Para debug
-            }
+            // Usar directamente la referencia a mainPage
+            mainPage.balance.Ventas.Add(venta);
+            mainPage.ActualizarEtiquetaVentas();
 
             await Navigation.PopModalAsync();
         }
@@ -44,12 +35,4 @@ public partial class VentaModal : ContentPage
             await DisplayAlert("Error", $"Error al agregar venta: {ex.Message}", "OK");
         }
     }
-
-    private async void Cancelar(object sender, EventArgs e)
-    {
-
-        await Navigation.PopModalAsync();
-
-    }
-
 }
