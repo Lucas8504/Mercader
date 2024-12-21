@@ -2,21 +2,29 @@ namespace Mercader;
 
 public partial class GastoModal : ContentPage
 {
-	public GastoModal()
+    private MainPage mainPage;  // Agregar esta línea
+    public GastoModal(MainPage mainPage)
 	{
 		InitializeComponent();
-	}
+        this.mainPage = mainPage;
+    }
 
     private async void OnAgregarGastoClicked(object sender, EventArgs e)
     {
-        var gasto = new Gasto
+        try
         {
-            Descripcion = DescripcionGastoEntry.Text,
-            Monto = decimal.Parse(MontoGastoEntry.Text),
-            Fecha = DateTime.Now
-        };
-        await Navigation.PopModalAsync();
-
+            var gasto = new Gasto
+            {
+                Descripcion = DescripcionGastoEntry.Text,
+                Monto = decimal.Parse(MontoGastoEntry.Text),
+                Fecha = DateTime.Now
+            };
+            await Navigation.PopModalAsync();
+        }
+        catch (Exception ex)
+        {
+            await DisplayAlert("Error", $"Error al agregar venta: {ex.Message}", "OK");
+        }
 
     }
 
