@@ -35,4 +35,12 @@ public partial class VentaModal : ContentPage
             await DisplayAlert("Error", $"Error al agregar venta: {ex.Message}", "OK");
         }
     }
+
+    private async void Cancelar(object sender, EventArgs e)
+    {
+
+        await Navigation.PopModalAsync();
+
+    }
+
 }
