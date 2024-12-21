@@ -29,7 +29,6 @@ namespace Mercader
             {
                 decimal ventas = balance.CalcularVentas();
                 VentasLabel.Text = ventas.ToString();
-                Console.WriteLine($"Total de ventas calculado: {ventas}"); // Para debug
             }
             catch (Exception ex)
             {
