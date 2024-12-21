@@ -11,13 +11,6 @@ namespace Mercader
         public List<Ventas> Ventas { get; set; } = [];
         public List<Gasto> Gastos { get; set; } = [];
 
-        public decimal CalcularGanancias()
-        {
-            decimal totalVentas = Ventas.Sum(v => v.Precio * v.Cantidad);
-            decimal totalGastos = Gastos.Sum(g => g.Monto);
-            return totalVentas - totalGastos;
-        }
-
         public decimal CalcularVentas()
         {
             decimal totalVentas = 0;
@@ -26,6 +19,13 @@ namespace Mercader
                 totalVentas += venta.Precio * venta.Cantidad;
             }
             return totalVentas;
+        }
+
+        public decimal CalcularGanancias()
+        {
+            decimal totalVentas = Ventas.Sum(v => v.Precio * v.Cantidad);
+            decimal totalGastos = Gastos.Sum(g => g.Monto);
+            return totalVentas - totalGastos;
         }
     }
 }
