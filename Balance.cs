@@ -11,6 +11,17 @@ namespace Mercader
         public List<Ventas> Ventas { get; set; } = [];
         public List<Gasto> Gastos { get; set; } = [];
 
+
+        public decimal CalcularGastos()
+        {
+            decimal totalGastos = 0;
+            foreach (var gasto in Gastos)
+            {
+                totalGastos += gasto.Monto;
+            }
+            return totalGastos;
+        }
+
         public decimal CalcularVentas()
         {
             decimal totalVentas = 0;

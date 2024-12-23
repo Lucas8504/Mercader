@@ -65,6 +65,7 @@
             Text="Exportar a Excel" />
 
         <Entry
+           
             Grid.Row="3"
             Grid.Column="0"
             Margin="2"
@@ -98,6 +99,7 @@
             TextColor="#cccccc" />
 
         <Entry
+            x:Name="GastosLabel"
             Grid.Row="3"
             Grid.Column="2"
             Margin="2"

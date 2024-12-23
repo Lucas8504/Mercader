@@ -19,7 +19,7 @@ namespace Mercader
             InitializeComponent();
             balance = new Balance();
 
-
+            ActualizarEtiquetaGastos();
             ActualizarEtiquetaVentas();
         }
 
@@ -29,6 +29,20 @@ namespace Mercader
             {
                 decimal ventas = balance.CalcularVentas();
                 VentasLabel.Text = ventas.ToString();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error al calcular ventas: {ex.Message}");
+            }
+        }
+        // Método público para actualizar la etiqueta
+        public void ActualizarEtiquetaGastos()
+        {
+            try
+            {
+                decimal gastos = balance.CalcularGastos();
+                GastosLabel.Text = gastos.ToString();
+                Console.WriteLine($"Total de ventas calculado: {gastos}"); // Para debug
             }
             catch (Exception ex)
             {
@@ -50,7 +64,7 @@ namespace Mercader
 
         private async void InAgregarGasto(object sender, EventArgs e)
         {
-            await Navigation.PushModalAsync(new GastoModal());
+            await Navigation.PushModalAsync(new GastoModal(this));
 
         }
         private void OnCalcularGananciasClicked(object sender, EventArgs e)
@@ -60,8 +74,7 @@ namespace Mercader
 
 
         }
-
-
+        
         private void OnExportarAExcelClicked(object sender, EventArgs e)
         {
             string rutaArchivo = Path.Combine(FileSystem.AppDataDirectory, "balance.xlsx");
