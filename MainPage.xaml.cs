@@ -1,7 +1,4 @@
-﻿
-using Microsoft.Data.Sqlite;
-using SQLite;
-using static Microsoft.IO.RecyclableMemoryStreamManager;
+﻿using SQLite;
 
 namespace Mercader
 {
@@ -74,7 +71,7 @@ namespace Mercader
 
 
         }
-        
+
         private void OnExportarAExcelClicked(object sender, EventArgs e)
         {
             string rutaArchivo = Path.Combine(FileSystem.AppDataDirectory, "balance.xlsx");
