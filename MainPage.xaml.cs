@@ -17,9 +17,11 @@ namespace Mercader
             balance = new Balance();
 
             ActualizarEtiquetaGastos();
+            ActualizarEtiquetaEncargos();
             ActualizarEtiquetaVentas();
         }
 
+        // Método público para actualizar la etiqueta
         public void ActualizarEtiquetaVentas()
         {
             try
@@ -32,8 +34,21 @@ namespace Mercader
                 Console.WriteLine($"Error al calcular ventas: {ex.Message}");
             }
         }
-        // Método público para actualizar la etiqueta
+     
         public void ActualizarEtiquetaGastos()
+        {
+            try
+            {
+                decimal gastos = balance.CalcularGastos();
+                GastosLabel.Text = gastos.ToString();
+                Console.WriteLine($"Total de ventas calculado: {gastos}"); // Para debug
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error al calcular ventas: {ex.Message}");
+            }
+        }
+        public void ActualizarEtiquetaEncargos()
         {
             try
             {
