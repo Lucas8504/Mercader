@@ -56,7 +56,7 @@
 
 
         <Button
-            Grid.Row="2"
+            Grid.Row="3"
             Grid.ColumnSpan="4"
             Margin="24"
             Padding="4"
@@ -66,7 +66,7 @@
 
         <Entry
            
-            Grid.Row="3"
+            Grid.Row="2"
             Grid.Column="0"
             Margin="2"
             BackgroundColor="#2a2a2a"
@@ -77,7 +77,7 @@
 
         <Entry
             x:Name="GananciasLabel"
-            Grid.Row="3"
+            Grid.Row="2"
             Grid.Column="3"
             Margin="2"
             BackgroundColor="#2a2a2a"
@@ -89,7 +89,7 @@
 
         <Entry
             x:Name="VentasLabel"
-            Grid.Row="3"
+            Grid.Row="2"
             Grid.Column="1"
             Margin="2"
             BackgroundColor="#2a2a2a"
@@ -100,7 +100,7 @@
 
         <Entry
             x:Name="GastosLabel"
-            Grid.Row="3"
+            Grid.Row="2"
             Grid.Column="2"
             Margin="2"
             BackgroundColor="#2a2a2a"
