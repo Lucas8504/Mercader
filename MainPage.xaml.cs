@@ -52,9 +52,9 @@ namespace Mercader
         {
             try
             {
-                decimal encargos = balance.CalcularGastos();
-                GastosLabel.Text = encargos.ToString();
-                Console.WriteLine($"Total de encargos calculado: {encargos}"); // Para debug
+                decimal encargo = balance.CalcularEncargos();
+                EncargosLabel.Text = encargo.ToString();
+                Console.WriteLine($"Total de encargos calculado: {encargo}"); // Para debug
             }
             catch (Exception ex)
             {

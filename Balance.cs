@@ -10,7 +10,7 @@ namespace Mercader
     {
         public List<Ventas> Ventas { get; set; } = [];
         public List<Gasto> Gastos { get; set; } = [];
-        public List<Encargos> Encargos { get; set; } = [];
+        public List<Encargo> Encargos { get; set; } = [];
 
 
         public decimal CalcularGastos()

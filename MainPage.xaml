@@ -65,7 +65,7 @@
             Text="Exportar a Excel" />
 
         <Entry
-           
+            x:Name="EncargosLabel"
             Grid.Row="2"
             Grid.Column="0"
             Margin="2"
