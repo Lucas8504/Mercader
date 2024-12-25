@@ -10,6 +10,7 @@ namespace Mercader
     {
         public List<Ventas> Ventas { get; set; } = [];
         public List<Gasto> Gastos { get; set; } = [];
+        public List<Encargos> Encargos { get; set; } = [];
 
 
         public decimal CalcularGastos()
@@ -30,6 +31,16 @@ namespace Mercader
                 totalVentas += venta.Precio * venta.Cantidad;
             }
             return totalVentas;
+        }
+
+        public decimal CalcularEncargos()
+        {
+            decimal totalEncargos = 0;
+            foreach (var encargo in Encargos)
+            {
+                totalEncargos += encargo.Precio * encargo.Cantidad;
+            }
+            return totalEncargos;
         }
 
         public decimal CalcularGanancias()

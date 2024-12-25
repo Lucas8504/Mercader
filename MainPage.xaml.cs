@@ -41,30 +41,30 @@ namespace Mercader
             {
                 decimal gastos = balance.CalcularGastos();
                 GastosLabel.Text = gastos.ToString();
-                Console.WriteLine($"Total de ventas calculado: {gastos}"); // Para debug
+                Console.WriteLine($"Total de gastos calculado: {gastos}"); // Para debug
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Error al calcular ventas: {ex.Message}");
+                Console.WriteLine($"Error al calcular gastos: {ex.Message}");
             }
         }
         public void ActualizarEtiquetaEncargos()
         {
             try
             {
-                decimal gastos = balance.CalcularGastos();
-                GastosLabel.Text = gastos.ToString();
-                Console.WriteLine($"Total de ventas calculado: {gastos}"); // Para debug
+                decimal encargos = balance.CalcularGastos();
+                GastosLabel.Text = encargos.ToString();
+                Console.WriteLine($"Total de encargos calculado: {encargos}"); // Para debug
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Error al calcular ventas: {ex.Message}");
+                Console.WriteLine($"Error al calcular encargos: {ex.Message}");
             }
         }
 
         private async void InAgregarEncargo(object sender, EventArgs e)
         {
-            await Navigation.PushModalAsync(new EncModal());
+            await Navigation.PushModalAsync(new EncModal(this));
 
         }
 

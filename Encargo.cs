@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Mercader
 {
-    [Table("Encargos")]
+    [Table("Encargo")]
     public class Encargo
     {
         [PrimaryKey, AutoIncrement,Unique]
