@@ -14,6 +14,11 @@
             VerticalOptions="Center" />
 
         <Entry
+            x:Name="DescripcionV_Entry"
+            Keyboard="Default"
+            Placeholder="Descripción" />
+
+        <Entry
             x:Name="PrecioEntry"
             Keyboard="Numeric"
             Placeholder="Precio" />
@@ -22,11 +27,6 @@
             x:Name="CantidadEntry"
             Keyboard="Numeric"
             Placeholder="Cantidad" />
-
-        <Entry
-            x:Name="DescripcionV_Entry"
-            Keyboard="Default"
-            Placeholder="Descripción" />
 
         <Button Clicked="OnAgregarVentaClicked" Text="Agregar" />
 

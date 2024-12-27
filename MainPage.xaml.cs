@@ -16,12 +16,21 @@ namespace Mercader
             InitializeComponent();
             balance = new Balance();
 
+            ActualizarEtiquetaGanancias();
             ActualizarEtiquetaGastos();
             ActualizarEtiquetaEncargos();
             ActualizarEtiquetaVentas();
         }
 
         // Método público para actualizar la etiqueta
+
+        public void ActualizarEtiquetaGanancias()
+        {
+            var ganancias = balance.CalcularGanancias();
+            GananciasLabel.Text = $"Ganancias: {ganancias:C}";
+
+        }
+
         public void ActualizarEtiquetaVentas()
         {
             try
