@@ -14,9 +14,11 @@ namespace Mercader
                     fonts.AddFont("OpenSans-Regular.ttf", "OpenSansRegular");
                     fonts.AddFont("OpenSans-Semibold.ttf", "OpenSansSemibold");
                 });
+            string dbPath = Path.Combine(FileSystem.AppDataDirectory, "mercader.db3");
+            builder.Services.AddSingleton<DataRepository>(s => ActivatorUtilities.CreateInstance<DataRepository>(s, dbPath));
 
 #if DEBUG
-    		builder.Logging.AddDebug();
+            builder.Logging.AddDebug();
 #endif
 
             return builder.Build();

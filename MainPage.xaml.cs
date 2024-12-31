@@ -9,8 +9,6 @@ namespace Mercader
 
         public Balance balance;
 
-
-
         public MainPage()
         {
             InitializeComponent();
@@ -20,6 +18,8 @@ namespace Mercader
             ActualizarEtiquetaGastos();
             ActualizarEtiquetaEncargos();
             ActualizarEtiquetaVentas();
+
+
         }
 
         // Método público para actualizar la etiqueta
@@ -35,15 +35,19 @@ namespace Mercader
         {
             try
             {
+
                 decimal ventas = balance.CalcularVentas();
                 VentasLabel.Text = ventas.ToString();
+                string save = VentasLabel.Text;
+
+
             }
             catch (Exception ex)
             {
                 Console.WriteLine($"Error al calcular ventas: {ex.Message}");
             }
         }
-     
+
         public void ActualizarEtiquetaGastos()
         {
             try
@@ -79,7 +83,15 @@ namespace Mercader
 
         private async void InAgregarVenta(object sender, EventArgs e)
         {
-            await Navigation.PushModalAsync(new VentaModal(this));
+            var ventaModal = new VentaModal(this);
+            await Navigation.PushModalAsync(ventaModal);
+            // Suponiendo que VentaModal tiene una propiedad Venta que contiene la nueva venta
+            var nuevaVenta = ventaModal.Venta;
+            if (nuevaVenta != null)
+            {
+                await App.DataRepo.SaveVentasAsync(nuevaVenta);
+                
+            }
         }
 
 

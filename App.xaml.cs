@@ -2,16 +2,26 @@
 {
     public partial class App : Application
     {
+        static DataRepository? dataRepo;
 
-        public static string? DatabasePath { get; private set; }
         public App()
         {
             InitializeComponent();
-            DatabasePath = Path.Combine(FileSystem.AppDataDirectory, "mercader.db3");
-            MainPage = new AppShell();
+
+            MainPage = new MainPage();
         }
 
-
+        public static DataRepository DataRepo
+        {
+            get
+            {
+                if (dataRepo == null)
+                {
+                    dataRepo = new DataRepository(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "mercader.db3"));
+                }
+                return dataRepo;
+            }
+        }
     }
 
 }

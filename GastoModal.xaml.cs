@@ -4,8 +4,8 @@ public partial class GastoModal : ContentPage
 {
     private MainPage mainPage;  // Agregar esta línea
     public GastoModal(MainPage mainPage)
-	{
-		InitializeComponent();
+    {
+        InitializeComponent();
         this.mainPage = mainPage;
     }
 
@@ -33,9 +33,9 @@ public partial class GastoModal : ContentPage
 
 
     private async void Cancelar(object sender, EventArgs e)
-	{
+    {
 
-	  await Navigation.PopModalAsync();
+        await Navigation.PopModalAsync();
 
-	}
+    }
 }

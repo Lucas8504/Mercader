@@ -3,10 +3,10 @@
 
 namespace Mercader
 {
-     public static class ExportExcel
+    public static class ExportExcel
     {
 
-     
+
 
 
         public static void ExportarBalanceAExcel(Balance balance, string rutaArchivo)

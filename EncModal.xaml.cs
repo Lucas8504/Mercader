@@ -4,8 +4,8 @@ public partial class EncModal : ContentPage
 {
     private MainPage mainPage;  // Agregar esta línea
     public EncModal(MainPage mainPage)
-	{
-		InitializeComponent();
+    {
+        InitializeComponent();
         this.mainPage = mainPage;
     }
 
@@ -25,6 +25,7 @@ public partial class EncModal : ContentPage
         mainPage.balance.Encargos.Add(encargo);
         mainPage.ActualizarEtiquetaEncargos();
         await Navigation.PopModalAsync();
+
     }
 
     private async void Cancelar(object sender, EventArgs e)

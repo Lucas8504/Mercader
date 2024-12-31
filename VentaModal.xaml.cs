@@ -1,15 +1,16 @@
-using static Microsoft.IO.RecyclableMemoryStreamManager;
-
 namespace Mercader;
 
 public partial class VentaModal : ContentPage
 {
+    public Ventas Venta { get; set; }
     private MainPage mainPage;  // Agregar esta línea
+
 
     public VentaModal(MainPage mainPage)  // Modificar el constructor
     {
         InitializeComponent();
         this.mainPage = mainPage;
+        Venta = new Ventas();
     }
 
     private async void OnAgregarVentaClicked(object sender, EventArgs e)

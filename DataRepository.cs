@@ -3,10 +3,12 @@ namespace Mercader
 {
     public class DataRepository
     {
-        private readonly SQLiteAsyncConnection _database;
+        private SQLiteAsyncConnection _database;
+        string _dbPath;
 
         public DataRepository(string dbPath)
         {
+            _dbPath = dbPath;
             if (string.IsNullOrEmpty(dbPath))
                 throw new ArgumentNullException(nameof(dbPath));
 

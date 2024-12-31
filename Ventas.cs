@@ -1,17 +1,12 @@
 ﻿using SQLite;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Mercader
 {
     [Table("Ventas")]
     public class Ventas
     {
-        
-        [PrimaryKey, AutoIncrement,Unique]
+
+        [PrimaryKey, AutoIncrement, Unique]
         public int Id { get; set; }
 
         [Column("Precio")]
