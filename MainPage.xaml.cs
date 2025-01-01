@@ -4,9 +4,7 @@ namespace Mercader
 {
     public partial class MainPage : ContentPage
     {
-        static string filename = Path.Combine("mercader.db3");
-        SQLiteConnection? conn;
-
+        
         public Balance balance;
 
         public MainPage()
@@ -87,11 +85,11 @@ namespace Mercader
             await Navigation.PushModalAsync(ventaModal);
             // Suponiendo que VentaModal tiene una propiedad Venta que contiene la nueva venta
             var nuevaVenta = ventaModal.Venta;
-            if (nuevaVenta != null)
-            {
-                await App.DataRepo.SaveVentasAsync(nuevaVenta);
+            //if (nuevaVenta != null)
+            //{
+               // await App.DataRepo.SaveVentasAsync(nuevaVenta);
                 
-            }
+            //}
         }
 
 
