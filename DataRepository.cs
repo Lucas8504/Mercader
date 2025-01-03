@@ -3,55 +3,59 @@ namespace Mercader
 {
     public class DataRepository
     {
-        public required SQLiteAsyncConnection _database;
-        string _dbPath;
+        private SQLiteAsyncConnection? _database;
+        private readonly string _dbPath;
 
         public DataRepository(string dbPath)
         {
-            _dbPath = dbPath;
-            
+            _dbPath = dbPath ?? throw new ArgumentNullException(nameof(dbPath));
         }
 
-        public void InitializeDatabaseAsync()
+        public async Task InitializeDatabaseAsync()
         {
-            if (_database != null)
-                return;
+            try
+            {
+                if (_database is not null)
+                    return;
 
                 _database = new SQLiteAsyncConnection(_dbPath);
 
-                _database.CreateTableAsync<Encargo>();
-                _database.CreateTableAsync<Ventas>();
-                _database.CreateTableAsync<Gasto>();
+                await _database.CreateTableAsync<Encargo>();
+                await _database.CreateTableAsync<Ventas>();
+                await _database.CreateTableAsync<Gasto>();
+            }
+            catch (Exception ex)
+            {
+                throw new InvalidOperationException("Error al inicializar la base de datos", ex);
+            }
         }
-
         // Métodos para guardar datos
-        public Task<int> SaveEncargoAsync(Encargo encargo)
+        public async Task<int> SaveEncargoAsync(Encargo encargo)
         {
-            if (encargo.Id != 0)
+            ArgumentNullException.ThrowIfNull(encargo);
+
+            if (_database is null)
             {
-                return _database.UpdateAsync(encargo);
+                throw new InvalidOperationException("La base de datos no está inicializada.");
             }
-            else
-            {
-                return _database.InsertAsync(encargo);
-            }
+            return encargo.Id != 0 ?
+                await _database.UpdateAsync(encargo):
+                await _database.InsertAsync(encargo);
+
         }
 
         public Task<int> SaveVentasAsync(Ventas ventas)
         {
-            if (_database == null)
+            ArgumentNullException.ThrowIfNull(ventas);
+
+            if (_database is null)
             {
-                throw new InvalidOperationException("La conexión a la base de datos no está inicializada.");
+                throw new InvalidOperationException("La base de datos no está inicializada.");
             }
 
-            if (ventas.Id != 0)
-            {
-                return _database.UpdateAsync(ventas);
-            }
-            else
-            {
-                return _database.InsertAsync(ventas);
-            }
+            return ventas.Id != 0 ?
+                _database.UpdateAsync(ventas) :
+                _database.InsertAsync(ventas);
         }
 
         public Task<int> SaveGastoAsync(Gasto gasto)

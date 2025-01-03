@@ -23,7 +23,7 @@ public partial class VentaModal : ContentPage
                 return;
             }
 
-            App.DataRepo.InitializeDatabaseAsync(); // Asegúrate de inicializar la base de datos
+            
 
             var venta = new Ventas
             {
@@ -35,15 +35,8 @@ public partial class VentaModal : ContentPage
 
             // Usar directamente la referencia a mainPage
             mainPage.balance.Ventas.Add(venta);
+            await App.DataRepo.SaveVentasAsync(venta);
             mainPage.ActualizarEtiquetaVentas();
-
-            // Guardar la venta en la base de datos
-            await App.DataRepo.SaveVentasAsync(Venta);
-
-            // Actualizar la etiqueta de ventas en la página principal
-            mainPage.ActualizarEtiquetaVentas();
-
-            // Cerrar el modal
             await Navigation.PopModalAsync();
         }
         catch (Exception ex)
