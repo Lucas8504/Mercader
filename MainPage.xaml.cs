@@ -1,10 +1,8 @@
-﻿using SQLite;
-
-namespace Mercader
+﻿namespace Mercader
 {
     public partial class MainPage : ContentPage
     {
-        
+
         public Balance balance;
 
         public MainPage()
@@ -12,11 +10,11 @@ namespace Mercader
             InitializeComponent();
             balance = new Balance();
 
+
             ActualizarEtiquetaGanancias();
             ActualizarEtiquetaGastos();
             ActualizarEtiquetaEncargos();
             ActualizarEtiquetaVentas();
-
 
         }
 
@@ -84,11 +82,10 @@ namespace Mercader
             var ventaModal = new VentaModal(this);
             await Navigation.PushModalAsync(ventaModal);
             // Suponiendo que VentaModal tiene una propiedad Venta que contiene la nueva venta
-            var nuevaVenta = ventaModal.Venta;
+            //var nuevaVenta = ventaModal.Venta;
             //if (nuevaVenta != null)
             //{
-               // await App.DataRepo.SaveVentasAsync(nuevaVenta);
-                
+            // await App.DataRepo.SaveVentasAsync(nuevaVenta);                
             //}
         }
 

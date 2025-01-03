@@ -3,24 +3,25 @@ namespace Mercader
 {
     public class DataRepository
     {
-        private SQLiteAsyncConnection _database;
+        public required SQLiteAsyncConnection _database;
         string _dbPath;
 
         public DataRepository(string dbPath)
         {
             _dbPath = dbPath;
-            if (string.IsNullOrEmpty(dbPath))
-                throw new ArgumentNullException(nameof(dbPath));
-
-            _database = new SQLiteAsyncConnection(dbPath);
-            InitializeDatabaseAsync().Wait();
+            
         }
 
-        private async Task InitializeDatabaseAsync()
+        public void InitializeDatabaseAsync()
         {
-            await _database.CreateTableAsync<Encargo>();
-            await _database.CreateTableAsync<Ventas>();
-            await _database.CreateTableAsync<Gasto>();
+            if (_database != null)
+                return;
+
+                _database = new SQLiteAsyncConnection(_dbPath);
+
+                _database.CreateTableAsync<Encargo>();
+                _database.CreateTableAsync<Ventas>();
+                _database.CreateTableAsync<Gasto>();
         }
 
         // Métodos para guardar datos
@@ -38,6 +39,11 @@ namespace Mercader
 
         public Task<int> SaveVentasAsync(Ventas ventas)
         {
+            if (_database == null)
+            {
+                throw new InvalidOperationException("La conexión a la base de datos no está inicializada.");
+            }
+
             if (ventas.Id != 0)
             {
                 return _database.UpdateAsync(ventas);

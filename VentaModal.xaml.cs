@@ -17,6 +17,14 @@ public partial class VentaModal : ContentPage
     {
         try
         {
+            if (App.DataRepo == null)
+            {
+                await DisplayAlert("Error", "No hay conexión con la base de datos", "OK");
+                return;
+            }
+
+            App.DataRepo.InitializeDatabaseAsync(); // Asegúrate de inicializar la base de datos
+
             var venta = new Ventas
             {
                 Precio = decimal.Parse(PrecioEntry.Text),
@@ -29,6 +37,13 @@ public partial class VentaModal : ContentPage
             mainPage.balance.Ventas.Add(venta);
             mainPage.ActualizarEtiquetaVentas();
 
+            // Guardar la venta en la base de datos
+            await App.DataRepo.SaveVentasAsync(Venta);
+
+            // Actualizar la etiqueta de ventas en la página principal
+            mainPage.ActualizarEtiquetaVentas();
+
+            // Cerrar el modal
             await Navigation.PopModalAsync();
         }
         catch (Exception ex)
