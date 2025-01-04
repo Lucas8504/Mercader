@@ -58,16 +58,17 @@ namespace Mercader
                 _database.InsertAsync(ventas);
         }
 
-        public Task<int> SaveGastoAsync(Gasto gasto)
+        public async Task<int> SaveGastoAsync(Gasto gasto)
         {
-            if (gasto.Id != 0)
+            ArgumentNullException.ThrowIfNull(gasto);
+
+            if (_database is null)
             {
-                return _database.UpdateAsync(gasto);
+                throw new InvalidOperationException("La base de datos no está inicializada.");
             }
-            else
-            {
-                return _database.InsertAsync(gasto);
-            }
+            return gasto.Id != 0 ?
+            await _database.UpdateAsync(gasto) :
+            await _database.InsertAsync(gasto);
         }
 
         // Métodos para obtener datos
