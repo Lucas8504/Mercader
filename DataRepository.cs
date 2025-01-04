@@ -72,36 +72,70 @@ namespace Mercader
         }
 
         // Métodos para obtener datos
-        public Task<List<Encargo>> GetEncargosAsync()
+        public async Task<List<Encargo>> GetEncargosAsync()
         {
-            return _database.Table<Encargo>().ToListAsync();
+            if (_database is null)
+            {
+                throw new InvalidOperationException("La base de datos no está inicializada.");
+            }
+
+            return await _database.Table<Encargo>().ToListAsync();
         }
 
-        public Task<List<Ventas>> GetVentasAsync()
+        public async Task<List<Ventas>> GetVentasAsync()
         {
-            return _database.Table<Ventas>().ToListAsync();
+            if (_database is null)
+            {
+                throw new InvalidOperationException("La base de datos no está inicializada.");
+            }
+            return await _database.Table<Ventas>().ToListAsync();
+
         }
 
-        public Task<List<Gasto>> GetGastosAsync()
+        public async Task<List<Gasto>> GetGastosAsync()
         {
 
-            return _database.Table<Gasto>().ToListAsync();
+            if (_database is null)
+            {
+                throw new InvalidOperationException("La base de datos no está inicializada.");
+            }
+            return await _database.Table<Gasto>().ToListAsync();
         }
 
         // Métodos para eliminar datos
-        public Task<int> DeleteEncargoAsync(Encargo encargo)
+        public async Task<int> DeleteEncargoAsync(Encargo encargo)
         {
-            return _database.DeleteAsync(encargo);
+            ArgumentNullException.ThrowIfNull(encargo);
+
+            if (_database is null)
+            {
+                throw new InvalidOperationException("La base de datos no está inicializada.");
+            }
+            return await _database.DeleteAsync(encargo);
         }
 
-        public Task<int> DeleteVentaAsync(Ventas venta)
+        public async Task<int> DeleteVentaAsync(Ventas venta)
         {
-            return _database.DeleteAsync(venta);
+            ArgumentNullException.ThrowIfNull(venta);
+
+            if (_database is null)
+            {
+                throw new InvalidOperationException("La base de datos no está inicializada.");
+            }
+
+            return await _database.DeleteAsync(venta);
+
         }
 
-        public Task<int> DeleteGastoAsync(Gasto gasto)
+        public async Task<int> DeleteGastoAsync(Gasto gasto)
         {
-            return _database.DeleteAsync(gasto);
+            ArgumentNullException.ThrowIfNull(gasto);
+
+            if (_database is null)
+            {
+                throw new InvalidOperationException("La base de datos no está inicializada.");
+            }
+            return await _database.DeleteAsync(gasto);
         }
     }
 
