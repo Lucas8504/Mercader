@@ -1,43 +1,64 @@
+using System.Globalization;
+
 namespace Mercader;
 
 public partial class VentaModal : ContentPage
 {
-    public Ventas Venta { get; set; }
-    private MainPage mainPage;  // Agregar esta línea
+    private readonly MainPage _mainPage;
+    private Ventas _venta = null!; // Null forgiving operator
 
 
     public VentaModal(MainPage mainPage)  // Modificar el constructor
     {
+        ArgumentNullException.ThrowIfNull(mainPage);
+
         InitializeComponent();
-        this.mainPage = mainPage;
-        Venta = new Ventas();
+        _mainPage = mainPage;
+        InitializeVenta();
+    }
+
+
+    private void InitializeVenta()
+    {
+        _venta = new()
+        {
+            Id = 0,
+            Descripcion = string.Empty,
+            Precio = 0,
+            Cantidad = 0,
+            Fecha = DateTime.Now
+        };
     }
 
     private async void OnAgregarVentaClicked(object sender, EventArgs e)
     {
+        if (string.IsNullOrWhiteSpace(PrecioEntry?.Text) ||
+            string.IsNullOrWhiteSpace(CantidadEntry?.Text) ||
+            string.IsNullOrWhiteSpace(DescripcionV_Entry?.Text))
+        {
+            await DisplayAlert("Error", "Todos los campos son requeridos", "OK");
+            return;
+        }
+
         try
         {
-            if (App.DataRepo == null)
+            _venta = new()
             {
-                await DisplayAlert("Error", "No hay conexión con la base de datos", "OK");
-                return;
-            }
-
-            
-
-            var venta = new Ventas
-            {
-                Precio = decimal.Parse(PrecioEntry.Text),
-                Cantidad = decimal.Parse(CantidadEntry.Text),
+                Precio = decimal.Parse(PrecioEntry.Text, CultureInfo.InvariantCulture),
+                Cantidad = decimal.Parse(CantidadEntry.Text, CultureInfo.InvariantCulture),
                 Descripcion = DescripcionV_Entry.Text,
                 Fecha = DateTime.Now
             };
 
-            // Usar directamente la referencia a mainPage
-            mainPage.balance.Ventas.Add(venta);
-            await App.DataRepo.SaveVentasAsync(venta);
-            mainPage.ActualizarEtiquetaVentas();
+
+            _mainPage.balance.Ventas.Add(_venta);
+            await App.DataRepo.SaveVentasAsync(_venta);
+            _mainPage.ActualizarEtiquetaVentas();
             await Navigation.PopModalAsync();
+        }
+        catch (FormatException)
+        {
+            await DisplayAlert("Error", "Por favor, ingrese valores numéricos válidos", "OK");
         }
         catch (Exception ex)
         {

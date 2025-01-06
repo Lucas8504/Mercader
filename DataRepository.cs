@@ -1,14 +1,15 @@
 ﻿using SQLite;
 namespace Mercader
 {
-    public class DataRepository
+    public sealed class DataRepository
     {
         private SQLiteAsyncConnection? _database;
         private readonly string _dbPath;
 
         public DataRepository(string dbPath)
         {
-            _dbPath = dbPath ?? throw new ArgumentNullException(nameof(dbPath));
+            ArgumentException.ThrowIfNullOrEmpty(dbPath); // Nuevo en .NET 8
+            _dbPath = dbPath;
         }
 
         public async Task InitializeDatabaseAsync()
@@ -20,9 +21,11 @@ namespace Mercader
 
                 _database = new SQLiteAsyncConnection(_dbPath);
 
-                await _database.CreateTableAsync<Encargo>();
-                await _database.CreateTableAsync<Ventas>();
-                await _database.CreateTableAsync<Gasto>();
+                 await Task.WhenAll(
+                 _database.CreateTableAsync<Encargo>(),
+                 _database.CreateTableAsync<Ventas>(),
+                 _database.CreateTableAsync<Gasto>());
+
             }
             catch (Exception ex)
             {
@@ -44,7 +47,7 @@ namespace Mercader
 
         }
 
-        public Task<int> SaveVentasAsync(Ventas ventas)
+        public async Task<int> SaveVentasAsync(Ventas ventas)
         {
             ArgumentNullException.ThrowIfNull(ventas);
 
@@ -54,8 +57,8 @@ namespace Mercader
             }
 
             return ventas.Id != 0 ?
-                _database.UpdateAsync(ventas) :
-                _database.InsertAsync(ventas);
+                await _database.UpdateAsync(ventas) :
+                await _database.InsertAsync(ventas);
         }
 
         public async Task<int> SaveGastoAsync(Gasto gasto)

@@ -6,16 +6,16 @@
         public static DataRepository DataRepo =>
         _dataRepo ?? throw new InvalidOperationException("DataRepo no está inicializado.");
 
-        public App(DataRepository repo)
+        public App()
         {
 
-            _dataRepo = repo ?? throw new ArgumentNullException(nameof(repo));
-
             InitializeComponent();
-            MainPage = new AppShell();
+            
+            var dbPath = Path.Combine(FileSystem.AppDataDirectory, "MercaderDB.db3");
+            _dataRepo = new(dbPath); // Target-typed new en C# 9+
 
             MainThread.BeginInvokeOnMainThread(InitializeDatabaseAsync);
-
+            MainPage = new AppShell();
         }
         private async void InitializeDatabaseAsync()
         {

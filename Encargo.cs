@@ -21,7 +21,7 @@ namespace Mercader
         public string? Descripcion { get; set; }
 
         [Column("Fecha")]
-        public required DateTime Fecha { get; set; }
+        public DateTime Fecha { get; set; }
 
     }
 }
