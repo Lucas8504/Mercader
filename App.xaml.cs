@@ -1,4 +1,6 @@
-﻿namespace Mercader
+﻿using System.Diagnostics;
+
+namespace Mercader
 {
     public partial class App : Application
     {
@@ -9,32 +11,42 @@
         public App()
         {
 
-            InitializeComponent();
-            
-            var dbPath = Path.Combine(FileSystem.AppDataDirectory, "MercaderDB.db3");
-            _dataRepo = new(dbPath); // Target-typed new en C# 9+
-
-            MainThread.BeginInvokeOnMainThread(InitializeDatabaseAsync);
-            MainPage = new AppShell();
-        }
-        private async void InitializeDatabaseAsync()
-        {
             try
             {
-                await DataRepo.InitializeDatabaseAsync();
-
+                InitializeComponent();
+                string dbPath = Path.Combine(FileSystem.AppDataDirectory, "MercaderDB.db3");
+                _dataRepo = new(dbPath);
+                InitializeDatabase(); // Llamamos al método de inicialización
+                MainPage = new AppShell();
             }
             catch (Exception ex)
             {
-                // Manejar cualquier error de inicialización
-                if (Current?.MainPage != null)
-                {
-                    await Current.MainPage.DisplayAlert("Error",
-                        "Error al inicializar la base de datos: " + ex.Message, "OK");
-                }
+                Debug.WriteLine($"Error en la inicialización: {ex.Message}");
+                throw;
             }
+        }
+        private void InitializeDatabase()
+        {
+            Task.Run(async () =>
+            {
+                try
+                {
+                    await _dataRepo!.InitializeDatabaseAsync();
+                }
+                catch (Exception ex)
+                {
+                    await MainThread.InvokeOnMainThreadAsync(async () =>
+                    {
+                        if (Current?.MainPage != null)
+                        {
+                            await Current.MainPage.DisplayAlert("Error",
+                                $"Error al inicializar la base de datos: {ex.Message}",
+                                "OK");
+                        }
+                    });
+                }
+            }).ConfigureAwait(false);
         }
     }
 }
-
 

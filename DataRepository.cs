@@ -5,6 +5,7 @@ namespace Mercader
     {
         private SQLiteAsyncConnection? _database;
         private readonly string _dbPath;
+        private readonly SemaphoreSlim _semaphore = new(1, 1);
 
         public DataRepository(string dbPath)
         {
@@ -16,20 +17,20 @@ namespace Mercader
         {
             try
             {
+                await _semaphore.WaitAsync();
+
                 if (_database is not null)
                     return;
 
+
                 _database = new SQLiteAsyncConnection(_dbPath);
-
-                 await Task.WhenAll(
-                 _database.CreateTableAsync<Encargo>(),
-                 _database.CreateTableAsync<Ventas>(),
-                 _database.CreateTableAsync<Gasto>());
-
+                await _database.CreateTableAsync<Encargo>();
+                await _database.CreateTableAsync<Ventas>();
+                await _database.CreateTableAsync<Gasto>();
             }
-            catch (Exception ex)
+            finally
             {
-                throw new InvalidOperationException("Error al inicializar la base de datos", ex);
+                _semaphore.Release();
             }
         }
         // Métodos para guardar datos
@@ -51,14 +52,28 @@ namespace Mercader
         {
             ArgumentNullException.ThrowIfNull(ventas);
 
-            if (_database is null)
+            await _semaphore.WaitAsync();
+            try
             {
-                throw new InvalidOperationException("La base de datos no está inicializada.");
+                if (_database is null)
+                {
+                    throw new InvalidOperationException("Base de datos no inicializada");
+                }
+                return ventas.Id != 0
+                ? await _database.UpdateAsync(ventas)
+                : await _database.InsertAsync(ventas);
             }
+            finally
+            {
+                _semaphore.Release();
+            }
+        }
 
-            return ventas.Id != 0 ?
-                await _database.UpdateAsync(ventas) :
-                await _database.InsertAsync(ventas);
+        // Implementa el patrón IDisposable para limpiar recursos
+        public void Dispose()
+        {
+            _semaphore.Dispose();
+            _database?.CloseAsync().Wait();
         }
 
         public async Task<int> SaveGastoAsync(Gasto gasto)
