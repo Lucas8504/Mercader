@@ -14,15 +14,9 @@ public partial class VentaModal : ContentPage
 
         InitializeComponent();
         _mainPage = mainPage;
-        InitializeVenta();
-    }
 
-
-    private void InitializeVenta()
-    {
         _venta = new()
         {
-            Id = 0,
             Descripcion = string.Empty,
             Precio = 0,
             Cantidad = 0,
@@ -30,31 +24,24 @@ public partial class VentaModal : ContentPage
         };
     }
 
+
     private async void OnAgregarVentaClicked(object sender, EventArgs e)
     {
-        if (string.IsNullOrWhiteSpace(PrecioEntry?.Text) ||
-            string.IsNullOrWhiteSpace(CantidadEntry?.Text) ||
-            string.IsNullOrWhiteSpace(DescripcionV_Entry?.Text))
-        {
-            await DisplayAlert("Error", "Todos los campos son requeridos", "OK");
+        if (!ValidateEntries())
             return;
-        }
+
 
         try
         {
             _venta = new()
             {
-                Precio = decimal.Parse(PrecioEntry.Text, CultureInfo.InvariantCulture),
-                Cantidad = decimal.Parse(CantidadEntry.Text, CultureInfo.InvariantCulture),
-                Descripcion = DescripcionV_Entry.Text,
+                Precio = decimal.Parse(PrecioEntry!.Text!, CultureInfo.InvariantCulture),
+                Cantidad = decimal.Parse(CantidadEntry!.Text!, CultureInfo.InvariantCulture),
+                Descripcion = DescripcionV_Entry!.Text!,
                 Fecha = DateTime.Now
             };
 
-
-            _mainPage.balance.Ventas.Add(_venta);
-            await App.DataRepo.SaveVentasAsync(_venta);
-            _mainPage.ActualizarEtiquetaVentas();
-            await Navigation.PopModalAsync();
+            await SaveVentaAsync();
         }
         catch (FormatException)
         {
@@ -65,6 +52,20 @@ public partial class VentaModal : ContentPage
             await DisplayAlert("Error", $"Error al agregar venta: {ex.Message}", "OK");
         }
     }
+
+    private async Task SaveVentaAsync()
+    {
+        _mainPage.balance.Ventas.Add(_venta);
+        await App.DataRepo.SaveVentasAsync(_venta);
+        _mainPage.ActualizarEtiquetaVentas();
+        await Navigation.PopModalAsync();
+    }
+
+    private bool ValidateEntries() =>
+        !string.IsNullOrWhiteSpace(PrecioEntry?.Text) &&
+        !string.IsNullOrWhiteSpace(CantidadEntry?.Text) &&
+        !string.IsNullOrWhiteSpace(DescripcionV_Entry?.Text);
+
 
     private async void Cancelar(object sender, EventArgs e)
     {
