@@ -13,10 +13,13 @@ namespace Mercader
 
             try
             {
+                // Inicializar SQLite
+                SQLitePCL.Batteries_V2.Init();
+
                 InitializeComponent();
                 string dbPath = Path.Combine(FileSystem.AppDataDirectory, "MercaderDB.db3");
                 _dataRepo = new(dbPath);
-                InitializeDatabase(); // Llamamos al método de inicialización
+                InitializeDatabase();
                 MainPage = new AppShell();
             }
             catch (Exception ex)
@@ -45,7 +48,7 @@ namespace Mercader
                         }
                     });
                 }
-            }).ConfigureAwait(false);
+            });
         }
     }
 }
