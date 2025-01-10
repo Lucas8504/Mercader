@@ -1,8 +1,10 @@
-﻿namespace Mercader
+﻿using SQLite;
+
+namespace Mercader
 {
     public partial class MainPage : ContentPage
     {
-
+        
         public Balance balance;
 
         public MainPage()
@@ -10,11 +12,12 @@
             InitializeComponent();
             balance = new Balance();
 
-
+            
             ActualizarEtiquetaGanancias();
             ActualizarEtiquetaGastos();
             ActualizarEtiquetaEncargos();
             ActualizarEtiquetaVentas();
+
 
         }
 

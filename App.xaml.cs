@@ -8,6 +8,7 @@ namespace Mercader
         public static DataRepository DataRepo =>
         _dataRepo ?? throw new InvalidOperationException("DataRepo no está inicializado.");
 
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Interoperability", "CA1416:Validar la compatibilidad de la plataforma", Justification = "<pendiente>")]
         public App()
         {
 
@@ -17,7 +18,8 @@ namespace Mercader
                 SQLitePCL.Batteries_V2.Init();
 
                 InitializeComponent();
-                string dbPath = Path.Combine(FileSystem.AppDataDirectory, "MercaderDB.db3");
+                string dbPath = Path.Combine(
+                    FileSystem.AppDataDirectory, "MercaderDB.db3");
                 _dataRepo = new(dbPath);
                 InitializeDatabase();
                 MainPage = new AppShell();
