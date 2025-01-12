@@ -1,12 +1,27 @@
+using static Microsoft.IO.RecyclableMemoryStreamManager;
+
 namespace Mercader;
 
 public partial class GastoModal : ContentPage
 {
-    private MainPage mainPage;  // Agregar esta línea
+    private readonly MainPage _mainPage;
+    private Gasto _gasto = null!; // Null forgiving operator
+
     public GastoModal(MainPage mainPage)
     {
+        ArgumentNullException.ThrowIfNull(mainPage);
+
+
         InitializeComponent();
-        this.mainPage = mainPage;
+        this._mainPage = mainPage;
+
+        _gasto = new()
+        {
+            Descripcion = string.Empty,
+            Monto = 0,
+            Cantidad = 0,
+            Fecha = DateTime.Now
+        };
     }
 
     private async void OnAgregarGastoClicked(object sender, EventArgs e)
@@ -20,8 +35,8 @@ public partial class GastoModal : ContentPage
                 Fecha = DateTime.Now
             };
             // Usar directamente la referencia a mainPage
-            mainPage.balance.Gastos.Add(gasto);
-            mainPage.ActualizarEtiquetaGastos();
+            _mainPage.balance.Gastos.Add(gasto);
+            _mainPage.ActualizarEtiquetaGastos();
             await Navigation.PopModalAsync();
         }
         catch (Exception ex)

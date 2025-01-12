@@ -39,7 +39,6 @@ namespace Mercader
                 VentasLabel.Text = ventas.ToString();
                 string save = VentasLabel.Text;
 
-
             }
             catch (Exception ex)
             {
