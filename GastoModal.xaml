@@ -12,11 +12,16 @@
             HorizontalOptions="Center"
             Text="Nuevo gasto"
             VerticalOptions="Center" />
-        
+
         <Entry x:Name="DescripcionGastoEntry" Placeholder="Descripción del gasto" />
 
         <Entry
             x:Name="MontoGastoEntry"
+            Keyboard="Numeric"
+            Placeholder="Monto" />
+
+        <Entry
+            x:Name="CantidadG_Entry"
             Keyboard="Numeric"
             Placeholder="Monto" />
 

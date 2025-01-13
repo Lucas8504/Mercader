@@ -27,7 +27,7 @@ public partial class GastoModal : ContentPage
 
     private async void OnAgregarGastoClicked(object sender, EventArgs e)
     {
-        if (!ValidateEntries())
+        if (!ValidateGEntries())
             return;
 
         try
@@ -36,7 +36,7 @@ public partial class GastoModal : ContentPage
             {
                 Descripcion = DescripcionGastoEntry.Text,
                 Cantidad = decimal.Parse(CantidadG_Entry!.Text!, CultureInfo.InvariantCulture),
-                Monto = decimal.Parse(MontoGastoEntry.Text),
+                Monto = decimal.Parse(MontoGastoEntry!.Text!, CultureInfo.InvariantCulture),
                 Fecha = DateTime.Now
             };
             // Usar directamente la referencia a mainPage
@@ -63,10 +63,10 @@ public partial class GastoModal : ContentPage
         await Navigation.PopModalAsync();
     }
 
-    private bool ValidateEntries() =>
+    private bool ValidateGEntries() =>
         !string.IsNullOrWhiteSpace(MontoGastoEntry?.Text) &&
         !string.IsNullOrWhiteSpace(CantidadG_Entry?.Text) &&
-        !string.IsNullOrWhiteSpace(DescripcionG_Entry?.Text);
+        !string.IsNullOrWhiteSpace(DescripcionGastoEntry?.Text);
 
 
     private async void Cancelar(object sender, EventArgs e)
