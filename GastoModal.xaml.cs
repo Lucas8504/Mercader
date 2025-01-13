@@ -1,3 +1,4 @@
+using System.Globalization;
 using static Microsoft.IO.RecyclableMemoryStreamManager;
 
 namespace Mercader;
@@ -26,25 +27,46 @@ public partial class GastoModal : ContentPage
 
     private async void OnAgregarGastoClicked(object sender, EventArgs e)
     {
+        if (!ValidateEntries())
+            return;
+
         try
         {
-            var gasto = new Gasto
+            _gasto = new Gasto
             {
                 Descripcion = DescripcionGastoEntry.Text,
+                Cantidad = decimal.Parse(CantidadG_Entry!.Text!, CultureInfo.InvariantCulture),
                 Monto = decimal.Parse(MontoGastoEntry.Text),
                 Fecha = DateTime.Now
             };
             // Usar directamente la referencia a mainPage
-            _mainPage.balance.Gastos.Add(gasto);
+            _mainPage.balance.Gastos.Add(_gasto);
             _mainPage.ActualizarEtiquetaGastos();
             await Navigation.PopModalAsync();
         }
+        catch (FormatException)
+        {
+            await DisplayAlert("Error", "Por favor, ingrese valores numéricos válidos", "OK");
+        }
         catch (Exception ex)
         {
-            await DisplayAlert("Error", $"Error al agregar venta: {ex.Message}", "OK");
+            await DisplayAlert("Error", $"Error al agregar gasto: {ex.Message}", "OK");
         }
 
     }
+
+    private async Task SaveGastoAsync()
+    {
+        _mainPage.balance.Gastos.Add(_gasto);
+        await App.DataRepo.SaveGastoAsync(_gasto);
+        _mainPage.ActualizarEtiquetaGastos();
+        await Navigation.PopModalAsync();
+    }
+
+    private bool ValidateEntries() =>
+        !string.IsNullOrWhiteSpace(MontoGastoEntry?.Text) &&
+        !string.IsNullOrWhiteSpace(CantidadG_Entry?.Text) &&
+        !string.IsNullOrWhiteSpace(DescripcionG_Entry?.Text);
 
 
     private async void Cancelar(object sender, EventArgs e)
