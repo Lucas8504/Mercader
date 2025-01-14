@@ -23,7 +23,7 @@
         <Entry
             x:Name="CantidadG_Entry"
             Keyboard="Numeric"
-            Placeholder="Monto" />
+            Placeholder="Cantidad" />
 
         <Button Clicked="OnAgregarGastoClicked" Text="Agregar Gasto" />
 
