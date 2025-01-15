@@ -31,9 +31,9 @@ public partial class EncModal : ContentPage
         {
             _encargo = new Encargo
             {
-                Nombre = NombreEntry.Text,
-                Cantidad = decimal.Parse(CantidadEntry!.Text!, CultureInfo.InvariantCulture),
-                Precio = decimal.Parse(PrecioEntry!.Text!, CultureInfo.InvariantCulture),
+                Nombre = EncargoEntry.Text,
+                Cantidad = decimal.Parse(CantidadEntry!.Text!),
+                Precio = decimal.Parse(PrecioEntry!.Text!),
                 Descripcion = DescripcionEntry.Text,
                 Fecha = DateTime.Now
             };
@@ -63,7 +63,7 @@ public partial class EncModal : ContentPage
 
     private bool ValidateGEntries()
     {
-        if (string.IsNullOrWhiteSpace(NombreEntry.Text))
+        if (string.IsNullOrWhiteSpace(EncargoEntry.Text))
         {
             DisplayAlert("Error", "Por favor, ingrese un nombre", "OK");
             return false;
