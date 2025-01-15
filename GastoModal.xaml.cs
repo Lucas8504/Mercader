@@ -39,10 +39,7 @@ public partial class GastoModal : ContentPage
                 Monto = decimal.Parse(MontoGastoEntry!.Text!, CultureInfo.InvariantCulture),
                 Fecha = DateTime.Now
             };
-            // Usar directamente la referencia a mainPage
-            _mainPage.balance.Gastos.Add(_gasto);
-            _mainPage.ActualizarEtiquetaGastos();
-            await Navigation.PopModalAsync();
+            await SaveGastoAsync();
         }
         catch (FormatException)
         {

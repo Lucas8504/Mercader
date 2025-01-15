@@ -37,10 +37,7 @@ public partial class EncModal : ContentPage
                 Descripcion = DescripcionEntry.Text,
                 Fecha = DateTime.Now
             };
-            // Usar directamente la referencia a mainPage
-            _mainPage.balance.Encargos.Add(_encargo);
-            _mainPage.ActualizarEtiquetaEncargos();
-            await Navigation.PopModalAsync();
+            await SaveEncargoAsync();
         }
         catch (FormatException)
         {
