@@ -37,6 +37,7 @@ namespace Mercader
                 try
                 {
                     await _dataRepo!.InitializeDatabaseAsync();
+                    await LoadDataAsync();
                 }
                 catch (Exception ex)
                 {
@@ -52,6 +53,28 @@ namespace Mercader
                 }
             });
         }
+        private async Task LoadDataAsync()
+        {
+            var encargos = await _dataRepo!.GetEncargosAsync();
+            var gastos = await _dataRepo.GetGastosAsync();
+            var ventas = await _dataRepo.GetVentasAsync();
+
+            // Asigna los datos cargados a la instancia de Balance
+            var mainPage = MainPage as MainPage;
+            if (mainPage != null)
+            {
+                mainPage.balance.Encargos = encargos;
+                mainPage.balance.Gastos = gastos;
+                mainPage.balance.Ventas = ventas;
+
+                // Actualiza las etiquetas
+                mainPage.ActualizarEtiquetaEncargos();
+                mainPage.ActualizarEtiquetaGastos();
+                mainPage.ActualizarEtiquetaVentas();
+                mainPage.ActualizarEtiquetaGanancias();
+            }
+        }
+
     }
 }
 
