@@ -32,7 +32,7 @@ public partial class GastoModal : ContentPage
 
         try
         {
-            _gasto = new Gasto
+            Gasto = new Gasto
             {
                 Descripcion = DescripcionGastoEntry.Text,
                 Cantidad = decimal.Parse(CantidadG_Entry!.Text!, CultureInfo.InvariantCulture),
@@ -54,8 +54,8 @@ public partial class GastoModal : ContentPage
 
     private async Task SaveGastoAsync()
     {
-        _mainPage.balance.Gastos.Add(_gasto);
-        await App.DataRepo.SaveGastoAsync(_gasto);
+        _mainPage.balance.Gastos.Add(Gasto);
+        await App.DataRepo.SaveGastoAsync(Gasto);
         _mainPage.ActualizarEtiquetaGastos();
         await Navigation.PopModalAsync();
     }
