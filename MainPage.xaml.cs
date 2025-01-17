@@ -103,15 +103,15 @@ namespace Mercader
 
         private async void InAgregarGasto(object sender, EventArgs e)
         {
- var gastoModal = new GastoModal(this);
-    await Navigation.PushModalAsync(gastoModal);
-    var nuevoGasto = gastoModal.Gasto;
-    if (nuevoGasto != null)
-    {
-        await App.DataRepo.SaveGastoAsync(nuevoGasto);
-        balance.Gastos.Add(nuevoGasto);
-        ActualizarEtiquetaGastos();
-    }
+            var gastoModal = new GastoModal(this);
+            await Navigation.PushModalAsync(gastoModal);
+            var nuevoGasto = gastoModal.Gasto;
+            if (nuevoGasto != null)
+            {
+                await App.DataRepo.SaveGastoAsync(nuevoGasto);
+                balance.Gastos.Add(nuevoGasto);
+                ActualizarEtiquetaGastos();
+            }
         }
         private void OnCalcularGananciasClicked(object sender, EventArgs e)
         {
