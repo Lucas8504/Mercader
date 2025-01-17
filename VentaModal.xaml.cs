@@ -5,17 +5,17 @@ namespace Mercader;
 public partial class VentaModal : ContentPage
 {
     private readonly MainPage _mainPage;
-    private Ventas _venta = null!; // Null forgiving operator
+    public Ventas Venta { get; private set; } = null!; // Null forgiving operator
 
 
-    public VentaModal(MainPage mainPage)  // Modificar el constructor
+    public VentaModal(MainPage mainPage)
     {
         ArgumentNullException.ThrowIfNull(mainPage);
 
         InitializeComponent();
         _mainPage = mainPage;
 
-        _venta = new()
+        Venta = new()
         {
             Descripcion = string.Empty,
             Precio = 0,
@@ -33,14 +33,13 @@ public partial class VentaModal : ContentPage
 
         try
         {
-            _venta = new()
+            Venta = new Ventas
             {
                 Precio = decimal.Parse(PrecioEntry!.Text!, CultureInfo.InvariantCulture),
                 Cantidad = decimal.Parse(CantidadEntry!.Text!, CultureInfo.InvariantCulture),
                 Descripcion = DescripcionV_Entry!.Text!,
                 Fecha = DateTime.Now
             };
-
             await SaveVentaAsync();
         }
         catch (FormatException)
@@ -55,8 +54,8 @@ public partial class VentaModal : ContentPage
 
     private async Task SaveVentaAsync()
     {
-        _mainPage.balance.Ventas.Add(_venta);
-        await App.DataRepo.SaveVentasAsync(_venta);
+        _mainPage.balance.Ventas.Add(Venta);
+        await App.DataRepo.SaveVentasAsync(Venta);
         _mainPage.ActualizarEtiquetaVentas();
         await Navigation.PopModalAsync();
     }
