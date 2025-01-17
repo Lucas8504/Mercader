@@ -2,8 +2,9 @@ namespace Mercader;
 
 public partial class EncModal : ContentPage
 {
-    private readonly MainPage _mainPage;  // Agregar esta línea
-    private Encargo _encargo = null!; // Null forgiving operator
+    private readonly MainPage _mainPage;
+    public Encargo Encargo { get; private set; } = null!; // Null forgiving operator
+
     public EncModal(MainPage mainPage)
     {
         ArgumentNullException.ThrowIfNull(mainPage);
@@ -12,7 +13,7 @@ public partial class EncModal : ContentPage
         InitializeComponent();
         this._mainPage = mainPage;
 
-        _encargo = new()
+        Encargo = new()
         {
             Nombre = string.Empty,
             Precio = 0,
@@ -29,7 +30,7 @@ public partial class EncModal : ContentPage
 
         try
         {
-            _encargo = new Encargo
+            Encargo = new Encargo
             {
                 Nombre = EncargoEntry.Text,
                 Cantidad = decimal.Parse(CantidadEntry!.Text!),
@@ -52,8 +53,8 @@ public partial class EncModal : ContentPage
 
     private async Task SaveEncargoAsync()
     {
-        _mainPage.balance.Encargos.Add(_encargo);
-        await App.DataRepo.SaveEncargoAsync(_encargo);
+        _mainPage.balance.Encargos.Add(Encargo);
+        await App.DataRepo.SaveEncargoAsync(Encargo);
         _mainPage.ActualizarEtiquetaEncargos();
         await Navigation.PopModalAsync();
     }

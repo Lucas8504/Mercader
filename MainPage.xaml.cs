@@ -75,7 +75,15 @@ namespace Mercader
 
         private async void InAgregarEncargo(object sender, EventArgs e)
         {
-            await Navigation.PushModalAsync(new EncModal(this));
+            var encargoModal = new EncModal(this);
+            await Navigation.PushModalAsync(encargoModal);
+            var nuevoEncargo = encargoModal.Encargo;
+            if (nuevoEncargo != null)
+            {
+                await App.DataRepo.SaveEncargoAsync(nuevoEncargo);
+                balance.Encargos.Add(nuevoEncargo);
+                ActualizarEtiquetaEncargos();
+            };
 
         }
 
@@ -83,19 +91,27 @@ namespace Mercader
         {
             var ventaModal = new VentaModal(this);
             await Navigation.PushModalAsync(ventaModal);
-            // Suponiendo que VentaModal tiene una propiedad Venta que contiene la nueva venta
-            //var nuevaVenta = ventaModal.Venta;
-            //if (nuevaVenta != null)
-            //{
-            // await App.DataRepo.SaveVentasAsync(nuevaVenta);                
-            //}
+            var nuevaVenta = ventaModal.Venta;
+            if (nuevaVenta != null)
+            {
+                await App.DataRepo.SaveVentasAsync(nuevaVenta);
+                balance.Ventas.Add(nuevaVenta);
+                ActualizarEtiquetaVentas();
+            }
         }
 
 
         private async void InAgregarGasto(object sender, EventArgs e)
         {
-            await Navigation.PushModalAsync(new GastoModal(this));
-
+ var gastoModal = new GastoModal(this);
+    await Navigation.PushModalAsync(gastoModal);
+    var nuevoGasto = gastoModal.Gasto;
+    if (nuevoGasto != null)
+    {
+        await App.DataRepo.SaveGastoAsync(nuevoGasto);
+        balance.Gastos.Add(nuevoGasto);
+        ActualizarEtiquetaGastos();
+    }
         }
         private void OnCalcularGananciasClicked(object sender, EventArgs e)
         {
