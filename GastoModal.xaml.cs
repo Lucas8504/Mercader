@@ -6,7 +6,7 @@ namespace Mercader;
 public partial class GastoModal : ContentPage
 {
     private readonly MainPage _mainPage;
-    private Gasto _gasto = null!; // Null forgiving operator
+    public Gasto Gasto { get; private set; } = null!; // Null forgiving operator
 
     public GastoModal(MainPage mainPage)
     {
@@ -14,9 +14,9 @@ public partial class GastoModal : ContentPage
 
 
         InitializeComponent();
-        this._mainPage = mainPage;
+        _mainPage = mainPage;
 
-        _gasto = new()
+        Gasto = new()
         {
             Descripcion = string.Empty,
             Monto = 0,
