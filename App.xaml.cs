@@ -22,7 +22,7 @@ namespace Mercader
                     FileSystem.AppDataDirectory, "MercaderDB.db3");
                 _dataRepo = new(dbPath);
                 InitializeDatabase();
-                MainPage = new AppShell();
+                MainPage = new MainPage();
             }
             catch (Exception ex)
             {
