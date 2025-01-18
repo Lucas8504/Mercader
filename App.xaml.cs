@@ -8,7 +8,7 @@ namespace Mercader
         public static DataRepository DataRepo =>
         _dataRepo ?? throw new InvalidOperationException("DataRepo no está inicializado.");
 
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Interoperability", "CA1416:Validar la compatibilidad de la plataforma", Justification = "<pendiente>")]
+        //[System.Diagnostics.CodeAnalysis.SuppressMessage("Interoperability", "CA1416:Validar la compatibilidad de la plataforma", Justification = "<pendiente>")]
         public App()
         {
 

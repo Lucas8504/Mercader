@@ -2,46 +2,28 @@
 {
     public class Balance
     {
-        public List<Ventas> Ventas { get; set; } = [];
-        public List<Gasto> Gastos { get; set; } = [];
-        public List<Encargo> Encargos { get; set; } = [];
-
+        public List<Ventas> Ventas { get; set; } = new List<Ventas>();
+        public List<Gasto> Gastos { get; set; } = new List<Gasto>();
+        public List<Encargo> Encargos { get; set; } = new List<Encargo>();
 
         public decimal CalcularGastos()
         {
-            decimal totalGastos = 0;
-            foreach (var gasto in Gastos)
-            {
-                totalGastos += gasto.Monto;
-            }
-            return totalGastos;
+            return Gastos.Sum(g => g.Monto * g.Cantidad);
         }
 
         public decimal CalcularVentas()
         {
-            decimal totalVentas = 0;
-            foreach (var venta in Ventas)
-            {
-                totalVentas += venta.Precio * venta.Cantidad;
-            }
-            return totalVentas;
+            return Ventas.Sum(v => v.Precio * v.Cantidad);
         }
 
         public decimal CalcularEncargos()
         {
-            decimal totalEncargos = 0;
-            foreach (var encargo in Encargos)
-            {
-                totalEncargos += encargo.Precio * encargo.Cantidad;
-            }
-            return totalEncargos;
+            return Encargos.Sum(e => e.Precio * e.Cantidad);
         }
 
         public decimal CalcularGanancias()
         {
-            decimal totalVentas = CalcularVentas();
-            decimal totalGastos = CalcularGastos();
-            return totalVentas - totalGastos;
+            return CalcularVentas() - CalcularGastos();
         }
     }
 }
