@@ -22,7 +22,7 @@ namespace Mercader
                     FileSystem.AppDataDirectory, "MercaderDB.db3");
                 _dataRepo = new(dbPath);
                 InitializeDatabase();
-                MainPage = new MainPage();
+                MainPage = new AppShell();
             }
             catch (Exception ex)
             {
@@ -60,8 +60,8 @@ namespace Mercader
             var ventas = await _dataRepo.GetVentasAsync();
 
             // Asigna los datos cargados a la instancia de Balance
-            var mainPage = MainPage as MainPage;
-            if (mainPage != null)
+            if (MainPage is AppShell appShell && appShell.CurrentPage is MainPage mainPage)
+               
             {
                 mainPage.balance.Encargos = encargos;
                 mainPage.balance.Gastos = gastos;

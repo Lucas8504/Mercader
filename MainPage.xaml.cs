@@ -4,7 +4,6 @@ namespace Mercader
 {
     public partial class MainPage : ContentPage
     {
-        
         public Balance balance;
 
         public MainPage()
@@ -12,33 +11,28 @@ namespace Mercader
             InitializeComponent();
             balance = new Balance();
 
-            
+            // Actualizar etiquetas al iniciar la aplicación
             ActualizarEtiquetaGanancias();
             ActualizarEtiquetaGastos();
             ActualizarEtiquetaEncargos();
             ActualizarEtiquetaVentas();
-
-
         }
 
-        // Método público para actualizar la etiqueta
-
+        // Método público para actualizar la etiqueta de ganancias
         public void ActualizarEtiquetaGanancias()
         {
             var ganancias = balance.CalcularGanancias();
             GananciasLabel.Text = $"Ganancias: {ganancias:C}";
-
         }
 
+        // Método público para actualizar la etiqueta de ventas
         public void ActualizarEtiquetaVentas()
         {
             try
             {
-
                 decimal ventas = balance.CalcularVentas();
                 VentasLabel.Text = ventas.ToString();
                 string save = VentasLabel.Text;
-
             }
             catch (Exception ex)
             {
@@ -46,6 +40,7 @@ namespace Mercader
             }
         }
 
+        // Método público para actualizar la etiqueta de gastos
         public void ActualizarEtiquetaGastos()
         {
             try
@@ -59,6 +54,8 @@ namespace Mercader
                 Console.WriteLine($"Error al calcular gastos: {ex.Message}");
             }
         }
+
+        // Método público para actualizar la etiqueta de encargos
         public void ActualizarEtiquetaEncargos()
         {
             try
@@ -83,8 +80,7 @@ namespace Mercader
                 await App.DataRepo.SaveEncargoAsync(nuevoEncargo);
                 balance.Encargos.Add(nuevoEncargo);
                 ActualizarEtiquetaEncargos();
-            };
-
+            }
         }
 
         private async void InAgregarVenta(object sender, EventArgs e)
@@ -100,7 +96,6 @@ namespace Mercader
             }
         }
 
-
         private async void InAgregarGasto(object sender, EventArgs e)
         {
             var gastoModal = new GastoModal(this);
@@ -113,12 +108,11 @@ namespace Mercader
                 ActualizarEtiquetaGastos();
             }
         }
+
         private void OnCalcularGananciasClicked(object sender, EventArgs e)
         {
             var ganancias = balance.CalcularGanancias();
             GananciasLabel.Text = $"Ganancias: {ganancias:C}";
-
-
         }
 
         private void OnExportarAExcelClicked(object sender, EventArgs e)
@@ -127,8 +121,6 @@ namespace Mercader
             ExportExcel.ExportarBalanceAExcel(balance, rutaArchivo);
             DisplayAlert("Exportación Completa", $"Archivo exportado a {rutaArchivo}", "OK");
         }
-
-
     }
 
 }
