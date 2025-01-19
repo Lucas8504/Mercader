@@ -18,11 +18,11 @@ namespace Mercader
                 SQLitePCL.Batteries_V2.Init();
 
                 InitializeComponent();
-                string dbPath = Path.Combine(
-                    FileSystem.AppDataDirectory, "MercaderDB.db3");
+                string dbPath = Path.Combine(FileSystem.AppDataDirectory, "MercaderDB.db3");
                 _dataRepo = new(dbPath);
-                InitializeDatabase();
                 MainPage = new AppShell();
+                InitializeDatabase();
+                
             }
             catch (Exception ex)
             {
@@ -60,19 +60,26 @@ namespace Mercader
             var ventas = await _dataRepo.GetVentasAsync();
 
             // Asigna los datos cargados a la instancia de Balance
-            if (MainPage is AppShell appShell && appShell.CurrentPage is MainPage mainPage)
-               
-            {
-                mainPage.balance.Encargos = encargos;
-                mainPage.balance.Gastos = gastos;
-                mainPage.balance.Ventas = ventas;
+            await MainThread.InvokeOnMainThreadAsync(() =>
 
-                // Actualiza las etiquetas
-                mainPage.ActualizarEtiquetaEncargos();
-                mainPage.ActualizarEtiquetaGastos();
-                mainPage.ActualizarEtiquetaVentas();
-                mainPage.ActualizarEtiquetaGanancias();
-            }
+            {
+                if (MainPage is AppShell appShell)
+                {
+                    var mainPage = appShell.CurrentPage as MainPage;
+                    if (mainPage != null)
+                    {
+                        mainPage.balance.Encargos = encargos;
+                        mainPage.balance.Gastos = gastos;
+                        mainPage.balance.Ventas = ventas;
+
+                        // Actualiza las etiquetas
+                        mainPage.ActualizarEtiquetaEncargos();
+                        mainPage.ActualizarEtiquetaGastos();
+                        mainPage.ActualizarEtiquetaVentas();
+                        mainPage.ActualizarEtiquetaGanancias();
+                    }
+                }
+            });
         }
 
     }
