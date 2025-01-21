@@ -8,10 +8,8 @@ namespace Mercader
         public static DataRepository DataRepo =>
         _dataRepo ?? throw new InvalidOperationException("DataRepo no está inicializado.");
 
-        //[System.Diagnostics.CodeAnalysis.SuppressMessage("Interoperability", "CA1416:Validar la compatibilidad de la plataforma", Justification = "<pendiente>")]
         public App()
         {
-
             try
             {
                 // Inicializar SQLite
@@ -20,9 +18,7 @@ namespace Mercader
                 InitializeComponent();
                 string dbPath = Path.Combine(FileSystem.AppDataDirectory, "MercaderDB.db3");
                 _dataRepo = new(dbPath);
-                MainPage = new AppShell();
-                InitializeDatabase();
-                
+                InitializeDatabase(); // Llamada al método para inicializar la base de datos
             }
             catch (Exception ex)
             {
@@ -30,6 +26,7 @@ namespace Mercader
                 throw;
             }
         }
+
         private void InitializeDatabase()
         {
             Task.Run(async () =>
@@ -53,6 +50,7 @@ namespace Mercader
                 }
             });
         }
+
         private async Task LoadDataAsync()
         {
             var encargos = await _dataRepo!.GetEncargosAsync();
@@ -61,7 +59,6 @@ namespace Mercader
 
             // Asigna los datos cargados a la instancia de Balance
             await MainThread.InvokeOnMainThreadAsync(() =>
-
             {
                 if (MainPage is AppShell appShell)
                 {
@@ -81,7 +78,6 @@ namespace Mercader
                 }
             });
         }
-
     }
 }
 
