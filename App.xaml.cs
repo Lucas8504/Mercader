@@ -6,19 +6,23 @@ namespace Mercader
     {
         private static DataRepository? _dataRepo;
         public static DataRepository DataRepo =>
-        _dataRepo ?? throw new InvalidOperationException("DataRepo no está inicializado.");
+            _dataRepo ?? throw new InvalidOperationException("DataRepo no está inicializado.");
 
         public App()
         {
             InitializeComponent();
+
+            // Inicializar SQLite primero
+            SQLitePCL.Batteries_V2.Init();
+
             string dbPath = Path.Combine(FileSystem.AppDataDirectory, "MercaderDB.db3");
             _dataRepo = new(dbPath);
 
-            // Inicializar de forma asíncrona
-            MainThread.BeginInvokeOnMainThread(async () => {
-                await InitializeDatabaseAsync();
-                MainPage = new AppShell();
-            });
+            // Establecer MainPage antes de la inicialización de la base de datos
+            MainPage = new AppShell();
+
+            // Inicializar la base de datos después de establecer MainPage
+            InitializeDatabaseAsync().ConfigureAwait(false);
         }
 
         private async Task InitializeDatabaseAsync()
@@ -26,16 +30,22 @@ namespace Mercader
             try
             {
                 await _dataRepo!.InitializeDatabaseAsync();
-                await LoadDataAsync();
+
+                // Cargar datos después de inicializar la base de datos
+                await MainThread.InvokeOnMainThreadAsync(async () =>
+                {
+                    await LoadDataAsync();
+                });
             }
             catch (Exception ex)
-            { 
-                Debug.WriteLine($"Error: {ex.Message}");
-                if (Current?.MainPage != null)
+            {
+                Debug.WriteLine($"Error en inicialización: {ex.Message}");
+                await MainThread.InvokeOnMainThreadAsync(async () =>
                 {
-                    await Current.MainPage.DisplayAlert("Error",
-                        $"Error de inicialización: {ex.Message}", "OK");
-                }
+                    await Current!.MainPage!.DisplayAlert("Error",
+                        $"Error al inicializar la base de datos: {ex.Message}",
+                        "OK");
+                });
             }
             
         }
@@ -49,30 +59,27 @@ namespace Mercader
                 var ventas = await _dataRepo.GetVentasAsync();
 
                 // Asigna los datos cargados a la instancia de Balance
-                await MainThread.InvokeOnMainThreadAsync(() =>
-                {
-                    if (MainPage is AppShell appShell)
+                
+                    if (MainPage is AppShell appShell &&
+               appShell.CurrentPage is MainPage mainPage)
                     {
-                        var mainPage = appShell.CurrentPage as MainPage;
-                        if (mainPage != null)
-                        {
-                            mainPage.balance.Encargos = encargos;
-                            mainPage.balance.Gastos = gastos;
-                            mainPage.balance.Ventas = ventas;
+                        mainPage.balance.Encargos = encargos;
+                        mainPage.balance.Gastos = gastos;
+                        mainPage.balance.Ventas = ventas;
 
-                            // Actualiza las etiquetas
-                            mainPage.ActualizarEtiquetaEncargos();
-                            mainPage.ActualizarEtiquetaGastos();
-                            mainPage.ActualizarEtiquetaVentas();
-                            mainPage.ActualizarEtiquetaGanancias();
-                        }
+                        mainPage.ActualizarEtiquetaEncargos();
+                        mainPage.ActualizarEtiquetaGastos();
+                        mainPage.ActualizarEtiquetaVentas();
+                        mainPage.ActualizarEtiquetaGanancias();
                     }
-                });
+                
             }
             catch (Exception ex)
             {
                 Debug.WriteLine($"Error al cargar datos: {ex.Message}");
-                throw;
+                await Current!.MainPage!.DisplayAlert("Error",
+                    $"Error al cargar datos: {ex.Message}",
+                    "OK");
             }
         }
     }
