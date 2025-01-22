@@ -16,9 +16,10 @@ namespace Mercader
                 SQLitePCL.Batteries_V2.Init();
 
                 InitializeComponent();
+                MainPage = new AppShell();
                 string dbPath = Path.Combine(FileSystem.AppDataDirectory, "MercaderDB.db3");
                 _dataRepo = new(dbPath);
-                InitializeDatabase(); // Llamada al método para inicializar la base de datos
+                InitializeDatabase();
             }
             catch (Exception ex)
             {
@@ -53,30 +54,38 @@ namespace Mercader
 
         private async Task LoadDataAsync()
         {
-            var encargos = await _dataRepo!.GetEncargosAsync();
-            var gastos = await _dataRepo.GetGastosAsync();
-            var ventas = await _dataRepo.GetVentasAsync();
-
-            // Asigna los datos cargados a la instancia de Balance
-            await MainThread.InvokeOnMainThreadAsync(() =>
+            try
             {
-                if (MainPage is AppShell appShell)
-                {
-                    var mainPage = appShell.CurrentPage as MainPage;
-                    if (mainPage != null)
-                    {
-                        mainPage.balance.Encargos = encargos;
-                        mainPage.balance.Gastos = gastos;
-                        mainPage.balance.Ventas = ventas;
+                var encargos = await _dataRepo!.GetEncargosAsync();
+                var gastos = await _dataRepo.GetGastosAsync();
+                var ventas = await _dataRepo.GetVentasAsync();
 
-                        // Actualiza las etiquetas
-                        mainPage.ActualizarEtiquetaEncargos();
-                        mainPage.ActualizarEtiquetaGastos();
-                        mainPage.ActualizarEtiquetaVentas();
-                        mainPage.ActualizarEtiquetaGanancias();
+                // Asigna los datos cargados a la instancia de Balance
+                await MainThread.InvokeOnMainThreadAsync(() =>
+                {
+                    if (MainPage is AppShell appShell)
+                    {
+                        var mainPage = appShell.CurrentPage as MainPage;
+                        if (mainPage != null)
+                        {
+                            mainPage.balance.Encargos = encargos;
+                            mainPage.balance.Gastos = gastos;
+                            mainPage.balance.Ventas = ventas;
+
+                            // Actualiza las etiquetas
+                            mainPage.ActualizarEtiquetaEncargos();
+                            mainPage.ActualizarEtiquetaGastos();
+                            mainPage.ActualizarEtiquetaVentas();
+                            mainPage.ActualizarEtiquetaGanancias();
+                        }
                     }
-                }
-            });
+                });
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine($"Error al cargar datos: {ex.Message}");
+                throw;
+            }
         }
     }
 }

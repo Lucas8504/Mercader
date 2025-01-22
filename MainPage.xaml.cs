@@ -21,8 +21,15 @@ namespace Mercader
         // Método público para actualizar la etiqueta de ganancias
         public void ActualizarEtiquetaGanancias()
         {
-            var ganancias = balance.CalcularGanancias();
-            GananciasLabel.Text = $"Ganancias: {ganancias:C}";
+            try
+            {
+                var ganancias = balance.CalcularGanancias();
+                GananciasLabel.Text = $"Ganancias: {ganancias:C}";
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error al actualizar etiqueta de ganancias: {ex.Message}");
+            }
         }
 
         // Método público para actualizar la etiqueta de ventas
@@ -32,7 +39,6 @@ namespace Mercader
             {
                 decimal ventas = balance.CalcularVentas();
                 VentasLabel.Text = ventas.ToString();
-                string save = VentasLabel.Text;
             }
             catch (Exception ex)
             {
@@ -111,15 +117,29 @@ namespace Mercader
 
         private void OnCalcularGananciasClicked(object sender, EventArgs e)
         {
-            var ganancias = balance.CalcularGanancias();
-            GananciasLabel.Text = $"Ganancias: {ganancias:C}";
+            try
+            {
+                var ganancias = balance.CalcularGanancias();
+                GananciasLabel.Text = $"Ganancias: {ganancias:C}";
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error al calcular ganancias: {ex.Message}");
+            }
         }
 
         private void OnExportarAExcelClicked(object sender, EventArgs e)
         {
-            string rutaArchivo = Path.Combine(FileSystem.AppDataDirectory, "balance.xlsx");
-            ExportExcel.ExportarBalanceAExcel(balance, rutaArchivo);
-            DisplayAlert("Exportación Completa", $"Archivo exportado a {rutaArchivo}", "OK");
+            try
+            {
+                string rutaArchivo = Path.Combine(FileSystem.AppDataDirectory, "balance.xlsx");
+                ExportExcel.ExportarBalanceAExcel(balance, rutaArchivo);
+                DisplayAlert("Exportación Completa", $"Archivo exportado a {rutaArchivo}", "OK");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error al exportar a Excel: {ex.Message}");
+            }
         }
     }
 
