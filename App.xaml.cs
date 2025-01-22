@@ -10,46 +10,34 @@ namespace Mercader
 
         public App()
         {
-            try
-            {
-                // Inicializar SQLite
-                SQLitePCL.Batteries_V2.Init();
+            InitializeComponent();
+            string dbPath = Path.Combine(FileSystem.AppDataDirectory, "MercaderDB.db3");
+            _dataRepo = new(dbPath);
 
-                InitializeComponent();
+            // Inicializar de forma asíncrona
+            MainThread.BeginInvokeOnMainThread(async () => {
+                await InitializeDatabaseAsync();
                 MainPage = new AppShell();
-                string dbPath = Path.Combine(FileSystem.AppDataDirectory, "MercaderDB.db3");
-                _dataRepo = new(dbPath);
-                InitializeDatabase();
-            }
-            catch (Exception ex)
-            {
-                Debug.WriteLine($"Error en la inicialización: {ex.Message}");
-                throw;
-            }
+            });
         }
 
-        private void InitializeDatabase()
+        private async Task InitializeDatabaseAsync()
         {
-            Task.Run(async () =>
+            try
             {
-                try
+                await _dataRepo!.InitializeDatabaseAsync();
+                await LoadDataAsync();
+            }
+            catch (Exception ex)
+            { 
+                Debug.WriteLine($"Error: {ex.Message}");
+                if (Current?.MainPage != null)
                 {
-                    await _dataRepo!.InitializeDatabaseAsync();
-                    await LoadDataAsync();
+                    await Current.MainPage.DisplayAlert("Error",
+                        $"Error de inicialización: {ex.Message}", "OK");
                 }
-                catch (Exception ex)
-                {
-                    await MainThread.InvokeOnMainThreadAsync(async () =>
-                    {
-                        if (Current?.MainPage != null)
-                        {
-                            await Current.MainPage.DisplayAlert("Error",
-                                $"Error al inicializar la base de datos: {ex.Message}",
-                                "OK");
-                        }
-                    });
-                }
-            });
+            }
+            
         }
 
         private async Task LoadDataAsync()

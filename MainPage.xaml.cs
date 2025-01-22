@@ -12,10 +12,12 @@ namespace Mercader
             balance = new Balance();
 
             // Actualizar etiquetas al iniciar la aplicación
-            ActualizarEtiquetaGanancias();
-            ActualizarEtiquetaGastos();
-            ActualizarEtiquetaEncargos();
-            ActualizarEtiquetaVentas();
+            MainThread.BeginInvokeOnMainThread(() => {
+                ActualizarEtiquetaGanancias();
+                ActualizarEtiquetaGastos();
+                ActualizarEtiquetaEncargos();
+                ActualizarEtiquetaVentas();
+            });
         }
 
         // Método público para actualizar la etiqueta de ganancias
