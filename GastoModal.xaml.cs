@@ -27,7 +27,7 @@ public partial class GastoModal : ContentPage
 
     private async void OnAgregarGastoClicked(object sender, EventArgs e)
     {
-        if (!ValidateGEntries())
+        if (!ValidateG_Entries())
             return;
 
         try
@@ -39,7 +39,7 @@ public partial class GastoModal : ContentPage
                 Monto = decimal.Parse(MontoGastoEntry!.Text!, CultureInfo.InvariantCulture),
                 Fecha = DateTime.Now
             };
-            await SaveGastoAsync();
+            
         }
         catch (FormatException)
         {
@@ -49,7 +49,7 @@ public partial class GastoModal : ContentPage
         {
             await DisplayAlert("Error", $"Error al agregar gasto: {ex.Message}", "OK");
         }
-
+        await SaveGastoAsync();
     }
 
     private async Task SaveGastoAsync()
@@ -60,10 +60,27 @@ public partial class GastoModal : ContentPage
         await Navigation.PopModalAsync();
     }
 
-    private bool ValidateGEntries() =>
-        !string.IsNullOrWhiteSpace(MontoGastoEntry?.Text) &&
-        !string.IsNullOrWhiteSpace(CantidadG_Entry?.Text) &&
-        !string.IsNullOrWhiteSpace(DescripcionGastoEntry?.Text);
+    private bool ValidateG_Entries()
+    {
+
+        if (string.IsNullOrWhiteSpace(DescripcionGastoEntry.Text))
+        {
+            DisplayAlert("Error", "Por favor, ingrese una descripción", "OK");
+            return false;
+        }
+        if (string.IsNullOrWhiteSpace(MontoGastoEntry.Text))
+        {
+            DisplayAlert("Error", "Por favor, ingrese un Monto", "OK");
+            return false;
+        }
+        if (string.IsNullOrWhiteSpace(CantidadG_Entry.Text))
+        {
+            DisplayAlert("Error", "Por favor, ingrese una cantidad", "OK");
+            return false;
+        }
+
+        return true;
+    }
 
 
     private async void Cancelar(object sender, EventArgs e)

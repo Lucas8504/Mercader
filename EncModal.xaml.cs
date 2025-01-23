@@ -25,7 +25,7 @@ public partial class EncModal : ContentPage
 
     private async void OnAgregarEncargoClicked(object sender, EventArgs e)
     {
-        if (!ValidateGEntries())
+        if (!ValidateE_Entries())
             return;
 
         try
@@ -38,7 +38,7 @@ public partial class EncModal : ContentPage
                 Descripcion = DescripcionEntry.Text,
                 Fecha = DateTime.Now
             };
-            await SaveEncargoAsync();
+           
         }
         catch (FormatException)
         {
@@ -48,7 +48,7 @@ public partial class EncModal : ContentPage
         {
             await DisplayAlert("Error", $"Error al agregar encargo: {ex.Message}", "OK");
         }
-
+        await SaveEncargoAsync();
     }
 
     private async Task SaveEncargoAsync()
@@ -59,11 +59,16 @@ public partial class EncModal : ContentPage
         await Navigation.PopModalAsync();
     }
 
-    private bool ValidateGEntries()
+    private bool ValidateE_Entries()
     {
         if (string.IsNullOrWhiteSpace(EncargoEntry.Text))
         {
             DisplayAlert("Error", "Por favor, ingrese un nombre", "OK");
+            return false;
+        }
+        if (string.IsNullOrWhiteSpace(DescripcionEntry.Text))
+        {
+            DisplayAlert("Error", "Por favor, ingrese una descripción", "OK");
             return false;
         }
         if (string.IsNullOrWhiteSpace(PrecioEntry.Text))
@@ -76,11 +81,7 @@ public partial class EncModal : ContentPage
             DisplayAlert("Error", "Por favor, ingrese una cantidad", "OK");
             return false;
         }
-        if (string.IsNullOrWhiteSpace(DescripcionEntry.Text))
-        {
-            DisplayAlert("Error", "Por favor, ingrese una descripción", "OK");
-            return false;
-        }
+        
         return true;
     }
 

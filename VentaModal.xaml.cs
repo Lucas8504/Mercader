@@ -27,7 +27,7 @@ public partial class VentaModal : ContentPage
 
     private async void OnAgregarVentaClicked(object sender, EventArgs e)
     {
-        if (!ValidateEntries())
+        if (!ValidateV_Entries())
             return;
 
 
@@ -40,7 +40,7 @@ public partial class VentaModal : ContentPage
                 Descripcion = DescripcionV_Entry!.Text!,
                 Fecha = DateTime.Now
             };
-            await SaveVentaAsync();
+            
         }
         catch (FormatException)
         {
@@ -50,6 +50,7 @@ public partial class VentaModal : ContentPage
         {
             await DisplayAlert("Error", $"Error al agregar venta: {ex.Message}", "OK");
         }
+        await SaveVentaAsync();
     }
 
     private async Task SaveVentaAsync()
@@ -60,10 +61,28 @@ public partial class VentaModal : ContentPage
         await Navigation.PopModalAsync();
     }
 
-    private bool ValidateEntries() =>
-        !string.IsNullOrWhiteSpace(PrecioEntry?.Text) &&
-        !string.IsNullOrWhiteSpace(CantidadEntry?.Text) &&
-        !string.IsNullOrWhiteSpace(DescripcionV_Entry?.Text);
+    private bool ValidateV_Entries()
+    {
+        
+        if (string.IsNullOrWhiteSpace(DescripcionV_Entry.Text))
+        {
+            DisplayAlert("Error", "Por favor, ingrese una descripción", "OK");
+            return false;
+        }
+        if (string.IsNullOrWhiteSpace(PrecioEntry.Text))
+        {
+            DisplayAlert("Error", "Por favor, ingrese un precio", "OK");
+            return false;
+        }
+        if (string.IsNullOrWhiteSpace(CantidadEntry.Text))
+        {
+            DisplayAlert("Error", "Por favor, ingrese una cantidad", "OK");
+            return false;
+        }
+
+        return true;
+    }
+
 
 
     private async void Cancelar(object sender, EventArgs e)
