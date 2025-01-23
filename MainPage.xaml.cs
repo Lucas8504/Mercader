@@ -13,6 +13,7 @@ namespace Mercader
 
             // Actualizar etiquetas al iniciar la aplicación
             MainThread.BeginInvokeOnMainThread(() => {
+
                 ActualizarEtiquetaGanancias();
                 ActualizarEtiquetaGastos();
                 ActualizarEtiquetaEncargos();
@@ -83,8 +84,10 @@ namespace Mercader
             var encargoModal = new EncModal(this);
             await Navigation.PushModalAsync(encargoModal);
             var nuevoEncargo = encargoModal.Encargo;
+            await App.DataRepo.DeleteEncargoAsync(nuevoEncargo);
             if (nuevoEncargo != null)
             {
+                
                 await App.DataRepo.SaveEncargoAsync(nuevoEncargo);
                 balance.Encargos.Add(nuevoEncargo);
                 ActualizarEtiquetaEncargos();

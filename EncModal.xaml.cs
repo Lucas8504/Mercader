@@ -32,7 +32,7 @@ public partial class EncModal : ContentPage
         {
             Encargo = new Encargo
             {
-                Nombre = EncargoEntry.Text,
+                Nombre = EncargoEntry!.Text,
                 Cantidad = decimal.Parse(CantidadEntry!.Text!),
                 Precio = decimal.Parse(PrecioEntry!.Text!),
                 Descripcion = DescripcionEntry.Text,

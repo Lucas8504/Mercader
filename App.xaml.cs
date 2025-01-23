@@ -61,7 +61,7 @@ namespace Mercader
                 // Asigna los datos cargados a la instancia de Balance
                 
                     if (MainPage is AppShell appShell &&
-               appShell.CurrentPage is MainPage mainPage)
+                     appShell.CurrentPage is MainPage mainPage)
                     {
                         mainPage.balance.Encargos = encargos;
                         mainPage.balance.Gastos = gastos;
@@ -84,4 +84,3 @@ namespace Mercader
         }
     }
 }
-
