@@ -1,34 +1,32 @@
 <?xml version="1.0" encoding="utf-8" ?>
-<ContentPage
-    x:Class="Mercader.Gastos"
-    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
-    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-    Title="Gastos">
-    <VerticalStackLayout
-        Margin="10"
-        Padding="10"
-        Spacing="20">
-        <Label
-            HorizontalOptions="Center"
-            Text="Gastos"
-            VerticalOptions="Center" />
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="Mercader.Gastos"
+             Title="Gastos">
 
-        <Grid
-            Padding="5"
-            ColumnSpacing="1"
-            RowSpacing="1">
-            <Grid.RowDefinitions>
+    <StackLayout>
+        <Label Text="Lista de Gastos" 
+               FontSize="Large" 
+               HorizontalOptions="Center" 
+               VerticalOptions="Start" />
 
-                <RowDefinition Height="auto" />
-                <RowDefinition Height="auto" />
-                <RowDefinition Height="auto" />
-                <RowDefinition Height="auto" />
-                <RowDefinition Height="*" />
-
-
-            </Grid.RowDefinitions>
-        </Grid>
-
-        <Entry Placeholder="" />
-    </VerticalStackLayout>
+        <CollectionView x:Name="GastosCollectionView">
+            <CollectionView.ItemTemplate>
+                <DataTemplate>
+                    <Grid Padding="10">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="2*" />
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+                        <Label Grid.Column="0" Text="{Binding Descripcion}" />
+                        <Label Grid.Column="1" Text="{Binding Monto}" />
+                        <Label Grid.Column="2" Text="{Binding Cantidad}" />
+                        <Label Grid.Column="3" Text="{Binding Fecha, StringFormat='{0:dd/MM/yyyy}'}" />
+                    </Grid>
+                </DataTemplate>
+            </CollectionView.ItemTemplate>
+        </CollectionView>
+    </StackLayout>
 </ContentPage>
