@@ -16,13 +16,6 @@ public partial class GastoModal : ContentPage
         InitializeComponent();
         _mainPage = mainPage;
 
-        Gasto = new()
-        {
-            Descripcion = string.Empty,
-            Monto = 0,
-            Cantidad = 0,
-            Fecha = DateTime.Now
-        };
     }
 
     private async void OnAgregarGastoClicked(object sender, EventArgs e)
