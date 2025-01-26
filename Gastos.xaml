@@ -13,7 +13,7 @@
         <!-- Encabezados de las columnas -->
         <Grid Padding="10">
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="2*" />
+                <ColumnDefinition Width="*" />
                 <ColumnDefinition Width="*" />
                 <ColumnDefinition Width="*" />
                 <ColumnDefinition Width="*" />
@@ -27,9 +27,9 @@
         <CollectionView x:Name="GastosCollectionView">
             <CollectionView.ItemTemplate>
                 <DataTemplate>
-                    <Grid Padding="10">
+                    <Grid Padding="1">
                         <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="2*" />
+                            <ColumnDefinition Width="*" />
                             <ColumnDefinition Width="*" />
                             <ColumnDefinition Width="*" />
                             <ColumnDefinition Width="*" />
