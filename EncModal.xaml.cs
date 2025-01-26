@@ -13,14 +13,7 @@ public partial class EncModal : ContentPage
         InitializeComponent();
         this._mainPage = mainPage;
 
-        Encargo = new()
-        {
-            Nombre = string.Empty,
-            Precio = 0,
-            Cantidad = 0,
-            Descripcion = string.Empty,
-            Fecha = DateTime.Now
-        };
+       
     }
 
     private async void OnAgregarEncargoClicked(object sender, EventArgs e)

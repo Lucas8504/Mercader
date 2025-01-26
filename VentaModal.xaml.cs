@@ -15,13 +15,7 @@ public partial class VentaModal : ContentPage
         InitializeComponent();
         _mainPage = mainPage;
 
-        Venta = new()
-        {
-            Descripcion = string.Empty,
-            Precio = 0,
-            Cantidad = 0,
-            Fecha = DateTime.Now
-        };
+        
     }
 
 
