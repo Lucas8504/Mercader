@@ -125,7 +125,7 @@ namespace Mercader
             try
             {
                 var ganancias = balance.CalcularGanancias();
-                GananciasLabel.Text = $"Ganancias: {ganancias:C}";
+                GananciasLabel.Text = ganancias.ToString();
             }
             catch (Exception ex)
             {
