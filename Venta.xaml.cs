@@ -20,4 +20,28 @@ public partial class Venta : ContentPage
         }
     }
 
+    private void OnSelectionChanged(object sender, SelectionChangedEventArgs e)
+    {
+        // Manejar la selección del elemento
+        var selectedItem = e.CurrentSelection.FirstOrDefault();
+        if (selectedItem != null)
+        {
+            // Lógica para editar el elemento seleccionado
+        }
+    }
+
+    private void OnEditSwipeItemInvoked(object sender, EventArgs e)
+    {
+        var swipeItem = sender as SwipeItem;
+        var item = swipeItem?.BindingContext;
+        // Lógica para editar el elemento
+    }
+
+    private void OnDeleteSwipeItemInvoked(object sender, EventArgs e)
+    {
+        var swipeItem = sender as SwipeItem;
+        var item = swipeItem?.BindingContext;
+        // Lógica para eliminar el elemento
+    }
+
 }

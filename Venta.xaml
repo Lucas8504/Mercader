@@ -28,26 +28,32 @@
                 <Label Grid.Column="3" Text="Fecha" FontAttributes="Bold" />
             </Grid>
 
-            <CollectionView x:Name="VentasCollectionView">
+            <CollectionView x:Name="VentasCollectionView" SelectionMode="Single" SelectionChanged="OnSelectionChanged">
                 <CollectionView.ItemTemplate>
                     <DataTemplate>
-                        <Grid Padding="1">
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="*" />
-                                <ColumnDefinition Width="*" />
-                                <ColumnDefinition Width="*" />
-                                <ColumnDefinition Width="*" />
-                            </Grid.ColumnDefinitions>
-                            <Label Grid.Column="0" Text="{Binding Descripcion}" TextColor="Coral" />
-                            <Label Grid.Column="1" Text="{Binding Precio}" TextColor="Coral"/>
-                            <Label Grid.Column="2" Text="{Binding Cantidad}" TextColor="Coral"/>
-                            <Label Grid.Column="3" Text="{Binding Fecha, StringFormat='{0:dd/MM/yyyy}'}" TextColor="Coral"/>
-                        </Grid>
+                        <SwipeView>
+                            <SwipeView.RightItems>
+                                <SwipeItems>
+                                    <SwipeItem Text="Editar" BackgroundColor="LightBlue" Invoked="OnEditSwipeItemInvoked"/>
+                                    <SwipeItem Text="Eliminar" BackgroundColor="LightCoral" Invoked="OnDeleteSwipeItemInvoked"/>
+                                </SwipeItems>
+                            </SwipeView.RightItems>
+                            <Grid Padding="1">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="*" />
+                                </Grid.ColumnDefinitions>
+                                <Label Grid.Column="0" Text="{Binding Descripcion}" TextColor="Coral" />
+                                <Label Grid.Column="1" Text="{Binding Precio}" TextColor="Coral"/>
+                                <Label Grid.Column="2" Text="{Binding Cantidad}" TextColor="Coral"/>
+                                <Label Grid.Column="3" Text="{Binding Fecha, StringFormat='{0:dd/MM/yyyy}'}" TextColor="Coral"/>
+                            </Grid>
+                        </SwipeView>
                     </DataTemplate>
                 </CollectionView.ItemTemplate>
             </CollectionView>
-
-
         </VerticalStackLayout>
     </ScrollView>
 </ContentPage>
