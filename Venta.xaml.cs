@@ -20,15 +20,52 @@ public partial class Venta : ContentPage
         }
     }
 
-    private void OnSelectionChanged(object sender, SelectionChangedEventArgs e)
+    private async void OnSelectionChanged(object sender, SelectionChangedEventArgs e)
     {
         // Manejar la selección del elemento
         var selectedItem = e.CurrentSelection.FirstOrDefault();
         if (selectedItem != null)
         {
             // Lógica para editar el elemento seleccionado
+
+            await HandleSelectedItem(selectedItem);
+
+            // Deseleccionar el elemento después de la acción
+            ((CollectionView)sender).SelectedItem = null;
+
+        }
+
+        async Task HandleSelectedItem(object? selectedItem)
+        {
+            string action = await DisplayActionSheet("Opciones", "Cancelar", null, "Editar", "Eliminar");
+            switch (action)
+            {
+                case "Editar":
+                    // Lógica para editar el elemento seleccionado
+                    await EditarVenta(selectedItem!);
+                    break;
+                case "Eliminar":
+                    // Lógica para eliminar el elemento seleccionado
+                    await EliminarVenta(selectedItem!);
+                    break;
+            }
         }
     }
+
+    private Task EditarVenta(object selectedItem)
+    {
+        // Implementa la lógica para editar la venta
+        Console.WriteLine("Editar venta: " + selectedItem);
+        return Task.CompletedTask;
+    }
+
+    private Task EliminarVenta(object selectedItem)
+    {
+        // Implementa la lógica para eliminar la venta
+        Console.WriteLine("Eliminar venta: " + selectedItem);
+        return Task.CompletedTask;
+    }
+
 
     private void OnEditSwipeItemInvoked(object sender, EventArgs e)
     {
