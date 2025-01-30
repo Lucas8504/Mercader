@@ -7,6 +7,7 @@ public partial class Venta : ContentPage
         InitializeComponent();
         CargarVentas();
     }
+
     private async void CargarVentas()
     {
         try
@@ -22,17 +23,11 @@ public partial class Venta : ContentPage
 
     private async void OnSelectionChanged(object sender, SelectionChangedEventArgs e)
     {
-        // Manejar la selección del elemento
         var selectedItem = e.CurrentSelection.FirstOrDefault();
         if (selectedItem != null)
         {
-            // Lógica para editar el elemento seleccionado
-
             await HandleSelectedItem(selectedItem);
-
-            // Deseleccionar el elemento después de la acción
             ((CollectionView)sender).SelectedItem = null;
-
         }
 
         async Task HandleSelectedItem(object? selectedItem)
@@ -41,31 +36,42 @@ public partial class Venta : ContentPage
             switch (action)
             {
                 case "Editar":
-                    // Lógica para editar el elemento seleccionado
                     await EditarVenta(selectedItem!);
                     break;
                 case "Eliminar":
-                    // Lógica para eliminar el elemento seleccionado
                     await EliminarVenta(selectedItem!);
                     break;
             }
         }
     }
 
-    private Task EditarVenta(object selectedItem)
+    private async Task EditarVenta(object selectedItem)
     {
         // Implementa la lógica para editar la venta
         Console.WriteLine("Editar venta: " + selectedItem);
-        return Task.CompletedTask;
+        await Task.CompletedTask;
     }
 
-    private Task EliminarVenta(object selectedItem)
+    private async Task EliminarVenta(object selectedItem)
     {
-        // Implementa la lógica para eliminar la venta
-        Console.WriteLine("Eliminar venta: " + selectedItem);
-        return Task.CompletedTask;
+        try
+        {
+            if (selectedItem is Ventas venta)
+            {
+                await App.DataRepo.DeleteVentaAsync(venta);
+                await DisplayAlert("Éxito", "Venta eliminada correctamente", "OK");
+                CargarVentas(); // Recargar la lista de ventas
+            }
+            else
+            {
+                await DisplayAlert("Error", "No se pudo eliminar la venta: el elemento seleccionado no es una venta válida.", "OK");
+            }
+        }
+        catch (Exception ex)
+        {
+            await DisplayAlert("Error", $"No se pudo eliminar la venta: {ex.Message}", "OK");
+        }
     }
-
 
     private void OnEditSwipeItemInvoked(object sender, EventArgs e)
     {
@@ -80,5 +86,4 @@ public partial class Venta : ContentPage
         var item = swipeItem?.BindingContext;
         // Lógica para eliminar el elemento
     }
-
 }
