@@ -43,26 +43,31 @@ public partial class Gastos : ContentPage
             }
         }
     }
-    private async Task EditarGasto(object? selectedItem)
+    private async Task EditarGasto(object selectedItem)
     {
         // Implementa la lógica para editar la gasto
         Console.WriteLine("Editar gasto: " + selectedItem);
         await Task.CompletedTask;
     }
 
-    private async Task EliminarGasto(object? selectedItem)
+    private async Task EliminarGasto(object selectedItem)
     {
         try
         {
             if (selectedItem is Gastos gasto)
             {
                 await App.DataRepo.DeleteGastoAsync(gasto);
-                await CargarGastos();
+                await DisplayAlert("Éxito", "Gasto eliminado correctamente", "OK");
+                CargarGastos();
+            }
+            else
+            {
+                await DisplayAlert("Error", "No se pudo eliminar el gasto: el elemento seleccionado no es un gasto válido.", "OK");
             }
         }
         catch (Exception ex)
         {
-            Console.WriteLine($"Error al eliminar el gasto: {ex.Message}");
+            await DisplayAlert("Error", $"No se pudo eliminar el gasto: {ex.Message}","OK");
         }
     }
 
