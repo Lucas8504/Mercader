@@ -84,7 +84,6 @@ namespace Mercader
             var encargoModal = new EncModal(this);
             await Navigation.PushModalAsync(encargoModal);
             var nuevoEncargo = encargoModal.Encargo;
-            await App.DataRepo.DeleteEncargoAsync(nuevoEncargo);
             if (nuevoEncargo != null)
             {
                 
