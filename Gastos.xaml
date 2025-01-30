@@ -5,7 +5,7 @@
              Title="Gastos">
 
     <ScrollView>
-        <StackLayout>
+        <VerticalStackLayout>
             <Label Text="Lista de Gastos" 
                    FontSize="Large" 
                    HorizontalOptions="Center" 
@@ -25,7 +25,7 @@
                 <Label Grid.Column="3" Text="Fecha" FontAttributes="Bold" />
             </Grid>
 
-            <CollectionView x:Name="GastosCollectionView">
+            <CollectionView x:Name="GastosCollectionView" SelectionMode="Single" SelectionChanged="OnSelectionChanged">
                 <CollectionView.ItemTemplate>
                     <DataTemplate>
                         <SwipeView>
@@ -52,6 +52,6 @@
                     </DataTemplate>
                 </CollectionView.ItemTemplate>
             </CollectionView>
-        </StackLayout>
+        </VerticalStackLayout>
     </ScrollView>
 </ContentPage>
