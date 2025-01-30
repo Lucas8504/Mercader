@@ -29,6 +29,7 @@ public partial class Gastos : ContentPage
             await HandleSelectedItem(selectedItem);
             ((CollectionView)sender).SelectedItem = null;
         }
+
         async Task HandleSelectedItem(object? selectedItem)
         {
             string action = await DisplayActionSheet("Opciones", "Cancelar", null, "Editar", "Eliminar");
@@ -43,9 +44,10 @@ public partial class Gastos : ContentPage
             }
         }
     }
+
     private async Task EditarGasto(object selectedItem)
     {
-        // Implementa la lógica para editar la gasto
+        // Implementa la lógica para editar el gasto
         Console.WriteLine("Editar gasto: " + selectedItem);
         await Task.CompletedTask;
     }
@@ -54,11 +56,11 @@ public partial class Gastos : ContentPage
     {
         try
         {
-            if (selectedItem is Gastos gasto)
+            if (selectedItem is Gasto gasto)
             {
                 await App.DataRepo.DeleteGastoAsync(gasto);
                 await DisplayAlert("Éxito", "Gasto eliminado correctamente", "OK");
-                CargarGastos();
+                CargarGastos(); // Recargar la lista de gastos
             }
             else
             {
@@ -67,7 +69,7 @@ public partial class Gastos : ContentPage
         }
         catch (Exception ex)
         {
-            await DisplayAlert("Error", $"No se pudo eliminar el gasto: {ex.Message}","OK");
+            await DisplayAlert("Error", $"No se pudo eliminar el gasto: {ex.Message}", "OK");
         }
     }
 
