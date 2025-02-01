@@ -12,13 +12,23 @@ namespace Mercader
             balance = new Balance();
 
             // Actualizar etiquetas al iniciar la aplicación
-            MainThread.BeginInvokeOnMainThread(() => {
-
+            MainThread.BeginInvokeOnMainThread(() =>
+            {
                 ActualizarEtiquetaGanancias();
                 ActualizarEtiquetaGastos();
                 ActualizarEtiquetaEncargos();
                 ActualizarEtiquetaVentas();
             });
+        }
+
+        protected override void OnAppearing()
+        {
+            base.OnAppearing();
+            // Actualizar etiquetas cada vez que la página aparece
+            ActualizarEtiquetaGanancias();
+            ActualizarEtiquetaGastos();
+            ActualizarEtiquetaEncargos();
+            ActualizarEtiquetaVentas();
         }
 
         // Método público para actualizar la etiqueta de ganancias
@@ -86,7 +96,6 @@ namespace Mercader
             var nuevoEncargo = encargoModal.Encargo;
             if (nuevoEncargo != null)
             {
-                
                 await App.DataRepo.SaveEncargoAsync(nuevoEncargo);
                 balance.Encargos.Add(nuevoEncargo);
                 ActualizarEtiquetaEncargos();
