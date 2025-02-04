@@ -157,6 +157,13 @@ namespace Mercader
                 Console.WriteLine($"Error al exportar a Excel: {ex.Message}");
             }
         }
+
+        private async void OnVerEncargosClicked(object sender, EventArgs e)
+        {
+            var encargosPage = new Encargos(this);
+            await Navigation.PushAsync(encargosPage);
+        }
+
     }
 
 }

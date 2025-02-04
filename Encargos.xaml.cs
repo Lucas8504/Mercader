@@ -2,17 +2,20 @@ namespace Mercader;
 
 public partial class Encargos : ContentPage
 {
-    public Encargos()
+    private readonly MainPage _mainPage;
+
+    public Encargos(MainPage mainPage)
     {
         InitializeComponent();
+        _mainPage = mainPage;
         CargarEncargos();
     }
 
-    private async void CargarEncargos()
+    private void CargarEncargos()
     {
         try
         {
-            var encargos = await App.DataRepo.GetEncargosAsync();
+            var encargos = _mainPage.balance.Encargos;
             EncargosCollectionView.ItemsSource = encargos;
         }
         catch (Exception ex)
@@ -29,6 +32,7 @@ public partial class Encargos : ContentPage
             await HandleSelectedItem(selectedItem);
             ((CollectionView)sender).SelectedItem = null;
         }
+
         async Task HandleSelectedItem(object? selectedItem)
         {
             string action = await DisplayActionSheet("Opciones", "Cancelar", null, "Editar", "Eliminar");
@@ -57,17 +61,19 @@ public partial class Encargos : ContentPage
         {
             if (selectedItem is Encargo encargo)
             {
+                _mainPage.balance.Encargos.Remove(encargo);
                 await App.DataRepo.DeleteEncargoAsync(encargo);
+                _mainPage.ActualizarEtiquetaEncargos();
                 CargarEncargos();
             }
             else
             {
-                await DisplayAlert("Error", "No se pudo eliminar el encargo: el elemento seleccionado no es un gasto válido.", "OK");
+                await DisplayAlert("Error", "No se pudo eliminar el encargo: el elemento seleccionado no es un encargo válido.", "OK");
             }
         }
         catch (Exception ex)
         {
-            Console.WriteLine($"Error al eliminar el encargo: {ex.Message}");
+            await DisplayAlert("Error", $"No se pudo eliminar el encargo: {ex.Message}", "OK");
         }
     }
 
@@ -84,6 +90,5 @@ public partial class Encargos : ContentPage
         var item = swipeItem?.BindingContext;
         // Lógica para eliminar el elemento
     }
-
 }
 
