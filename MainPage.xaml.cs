@@ -160,10 +160,12 @@ namespace Mercader
 
         private async void OnVerEncargosClicked(object sender, EventArgs e)
         {
-            var encargosPage = new Encargos(this);
-            await Navigation.PushAsync(encargosPage);
+            var navigationParameter = new Dictionary<string, object>
+                {
+                    { "MainPage", this }
+                };
+            await Shell.Current.GoToAsync(nameof(Encargos), navigationParameter);
         }
-
     }
 
 }

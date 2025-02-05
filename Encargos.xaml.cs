@@ -2,20 +2,32 @@ namespace Mercader;
 
 public partial class Encargos : ContentPage
 {
-    private readonly MainPage _mainPage;
+    private MainPage? _mainPage;
 
-    public Encargos(MainPage mainPage)
+    public Encargos()
     {
         InitializeComponent();
-        _mainPage = mainPage;
         CargarEncargos();
+    }
+
+    protected override void OnNavigatedTo(NavigatedToEventArgs args)
+    {
+        base.OnNavigatedTo(args);
+        if (Shell.Current.Navigation.NavigationStack.LastOrDefault() is Encargos page)
+        {
+            if (Shell.Current.Navigation.NavigationStack.FirstOrDefault() is MainPage mainPage)
+            {
+                _mainPage = mainPage;
+                CargarEncargos();
+            }
+        }
     }
 
     private void CargarEncargos()
     {
         try
         {
-            var encargos = _mainPage.balance.Encargos;
+            var encargos = _mainPage?.balance.Encargos;
             EncargosCollectionView.ItemsSource = encargos;
         }
         catch (Exception ex)
@@ -61,9 +73,9 @@ public partial class Encargos : ContentPage
         {
             if (selectedItem is Encargo encargo)
             {
-                _mainPage.balance.Encargos.Remove(encargo);
+                _mainPage?.balance.Encargos.Remove(encargo);
                 await App.DataRepo.DeleteEncargoAsync(encargo);
-                _mainPage.ActualizarEtiquetaEncargos();
+                _mainPage?.ActualizarEtiquetaEncargos();
                 CargarEncargos();
             }
             else
