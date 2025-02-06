@@ -7,19 +7,16 @@ public partial class Encargos : ContentPage
     public Encargos()
     {
         InitializeComponent();
-        CargarEncargos();
+    
     }
 
     protected override void OnNavigatedTo(NavigatedToEventArgs args)
     {
         base.OnNavigatedTo(args);
-        if (Shell.Current.Navigation.NavigationStack.LastOrDefault() is Encargos page)
+        if (Shell.Current.Navigation.NavigationStack.LastOrDefault() is Encargos page && Shell.Current.Navigation.NavigationStack.FirstOrDefault() is MainPage mainPage)
         {
-            if (Shell.Current.Navigation.NavigationStack.FirstOrDefault() is MainPage mainPage)
-            {
-                _mainPage = mainPage;
-                CargarEncargos();
-            }
+            _mainPage = mainPage;
+            CargarEncargos();
         }
     }
 
