@@ -25,11 +25,33 @@ namespace Mercader
         {
             base.OnAppearing();
             Console.WriteLine("OnAppearing ejecutado");
-            // Actualizar etiquetas cada vez que la página aparece
-            ActualizarEtiquetaGanancias();
-            ActualizarEtiquetaGastos();
-            ActualizarEtiquetaEncargos();
-            ActualizarEtiquetaVentas();
+
+            // Cargar datos de la base de datos cada vez que la página aparece
+            CargarDatosAsync().ConfigureAwait(false);
+        }
+
+        private async Task CargarDatosAsync()
+        {
+            try
+            {
+                var encargos = await App.DataRepo.GetEncargosAsync();
+                var gastos = await App.DataRepo.GetGastosAsync();
+                var ventas = await App.DataRepo.GetVentasAsync();
+
+                balance.Encargos = encargos;
+                balance.Gastos = gastos;
+                balance.Ventas = ventas;
+
+                ActualizarEtiquetaEncargos();
+                ActualizarEtiquetaGastos();
+                ActualizarEtiquetaVentas();
+                ActualizarEtiquetaGanancias();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error al cargar datos: {ex.Message}");
+                await DisplayAlert("Error", $"Error al cargar datos: {ex.Message}", "OK");
+            }
         }
 
         // Método público para actualizar la etiqueta de ganancias
@@ -161,9 +183,9 @@ namespace Mercader
         private async void OnVerEncargosClicked(object sender, EventArgs e)
         {
             var navigationParameter = new Dictionary<string, object>
-                {
-                    { "MainPage", this }
-                };
+                    {
+                        { "MainPage", this }
+                    };
             await Shell.Current.GoToAsync(nameof(Encargos), navigationParameter);
         }
     }
