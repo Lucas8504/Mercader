@@ -2,29 +2,17 @@ namespace Mercader;
 
 public partial class Encargos : ContentPage
 {
-    private MainPage? _mainPage;
-
     public Encargos()
     {
         InitializeComponent();
-    
+        CargarEncargos();
     }
 
-    protected override void OnNavigatedTo(NavigatedToEventArgs args)
-    {
-        base.OnNavigatedTo(args);
-        if (Shell.Current.Navigation.NavigationStack.LastOrDefault() is Encargos page && Shell.Current.Navigation.NavigationStack.FirstOrDefault() is MainPage mainPage)
-        {
-            _mainPage = mainPage;
-            CargarEncargos();
-        }
-    }
-
-    private void CargarEncargos()
+    private async void CargarEncargos()
     {
         try
         {
-            var encargos = _mainPage?.balance.Encargos;
+            var encargos = await App.DataRepo.GetEncargosAsync();
             EncargosCollectionView.ItemsSource = encargos;
         }
         catch (Exception ex)
@@ -41,7 +29,6 @@ public partial class Encargos : ContentPage
             await HandleSelectedItem(selectedItem);
             ((CollectionView)sender).SelectedItem = null;
         }
-
         async Task HandleSelectedItem(object? selectedItem)
         {
             string action = await DisplayActionSheet("Opciones", "Cancelar", null, "Editar", "Eliminar");
@@ -70,19 +57,17 @@ public partial class Encargos : ContentPage
         {
             if (selectedItem is Encargo encargo)
             {
-                _mainPage?.balance.Encargos.Remove(encargo);
                 await App.DataRepo.DeleteEncargoAsync(encargo);
-                _mainPage?.ActualizarEtiquetaEncargos();
                 CargarEncargos();
             }
             else
             {
-                await DisplayAlert("Error", "No se pudo eliminar el encargo: el elemento seleccionado no es un encargo válido.", "OK");
+                await DisplayAlert("Error", "No se pudo eliminar el encargo: el elemento seleccionado no es un gasto válido.", "OK");
             }
         }
         catch (Exception ex)
         {
-            await DisplayAlert("Error", $"No se pudo eliminar el encargo: {ex.Message}", "OK");
+            Console.WriteLine($"Error al eliminar el encargo: {ex.Message}");
         }
     }
 
@@ -99,5 +84,6 @@ public partial class Encargos : ContentPage
         var item = swipeItem?.BindingContext;
         // Lógica para eliminar el elemento
     }
+
 }
 
