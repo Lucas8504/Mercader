@@ -14,8 +14,4 @@
     <ShellContent Title="Encargo" ContentTemplate="{DataTemplate local:Encargos}" />
     <ShellContent Title="Ventas" ContentTemplate="{DataTemplate local:Venta}" />
     <ShellContent Title="Gasto" ContentTemplate="{DataTemplate local:Gastos}" />
-
-
-
-
 </Shell>

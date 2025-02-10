@@ -2,7 +2,14 @@
 <ContentPage
     x:Class="Mercader.MainPage"
     xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
-    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml">
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:local="clr-namespace:Mercader">
+
+    <ContentPage.Resources>
+        <ResourceDictionary>
+            <local:GridLengthToDoubleConverter x:Key="GridLengthToDoubleConverter"/>
+        </ResourceDictionary>
+    </ContentPage.Resources>
 
     <Grid>
         <Grid.RowDefinitions>
@@ -51,9 +58,6 @@
             Clicked="OnCalcularGananciasClicked"
             FontSize="Caption"
             Text="Balance" />
-
-
-
 
         <Button
             Grid.Row="3"
@@ -108,7 +112,5 @@
             Placeholder="Gastos"
             PlaceholderColor="#7d7c7c"
             TextColor="#cccccc" />
-
     </Grid>
-
 </ContentPage>
