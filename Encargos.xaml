@@ -3,33 +3,41 @@
     x:Class="Mercader.Encargos"
     xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:local="clr-namespace:Mercader"
     Title="Encargos">
-  <ScrollView>
-     <StackLayout
-        Margin="10"
-        Padding="10"
-        Spacing="20">
 
-        <Label
-            HorizontalOptions="Center"
-            Text="Encargos"
-            VerticalOptions="Center" />
+    <ContentPage.Resources>
+        <ResourceDictionary>
+            <local:GridLengthToDoubleConverter x:Key="GridLengthToDoubleConverter"/>
+        </ResourceDictionary>
+    </ContentPage.Resources>
 
-        <!-- Encabezados de las columnas -->
-        <Grid Padding="0">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="*" />
-                <ColumnDefinition Width="*" />
-                <ColumnDefinition Width="*" />
-                <ColumnDefinition Width="*" />
-                <ColumnDefinition Width="*" />
-            </Grid.ColumnDefinitions>
-            <Label Grid.Column="0" Text="Nombre" FontAttributes="Bold"/>
-            <Label Grid.Column="1" Text="Descripción" FontAttributes="Bold" />
-            <Label Grid.Column="2" Text="Precio" FontAttributes="Bold" />
-            <Label Grid.Column="3" Text="Cantidad" FontAttributes="Bold" />
-            <Label Grid.Column="4" Text="Fecha" FontAttributes="Bold" />
-        </Grid>
+    <ScrollView>
+        <StackLayout
+            Margin="10"
+            Padding="10"
+            Spacing="20">
+
+            <Label
+                HorizontalOptions="Center"
+                Text="Encargos"
+                VerticalOptions="Center" />
+
+            <!-- Encabezados de las columnas -->
+            <Grid Padding="0">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+                <Label Grid.Column="0" Text="Nombre" FontAttributes="Bold"/>
+                <Label Grid.Column="1" Text="Descripción" FontAttributes="Bold" />
+                <Label Grid.Column="2" Text="Precio" FontAttributes="Bold" />
+                <Label Grid.Column="3" Text="Cantidad" FontAttributes="Bold" />
+                <Label Grid.Column="4" Text="Fecha" FontAttributes="Bold" />
+            </Grid>
 
             <CollectionView x:Name="EncargosCollectionView" SelectionMode="Single" SelectionChanged="OnSelectionChanged">
                 <CollectionView.ItemTemplate>
@@ -59,6 +67,6 @@
                     </DataTemplate>
                 </CollectionView.ItemTemplate>
             </CollectionView>
-     </StackLayout>
- </ScrollView>
+        </StackLayout>
+    </ScrollView>
 </ContentPage>

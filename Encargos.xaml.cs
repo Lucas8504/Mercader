@@ -84,6 +84,5 @@ public partial class Encargos : ContentPage
         var item = swipeItem?.BindingContext;
         // Lógica para eliminar el elemento
     }
-
 }
 
