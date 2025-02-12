@@ -8,6 +8,11 @@ public partial class Encargos : ContentPage
         CargarEncargos();
     }
 
+    protected override void OnAppearing()
+    {
+        base.OnAppearing();
+        CargarEncargos();
+    }
     private async void CargarEncargos()
     {
         try

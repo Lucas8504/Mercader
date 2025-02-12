@@ -8,6 +8,11 @@ public partial class Venta : ContentPage
         CargarVentas();
     }
 
+    protected override void OnAppearing()
+    {
+        base.OnAppearing();
+        CargarVentas();
+    }
     private async void CargarVentas()
     {
         try

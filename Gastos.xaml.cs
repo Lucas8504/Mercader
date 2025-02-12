@@ -8,6 +8,12 @@ public partial class Gastos : ContentPage
         CargarGastos();
     }
 
+    protected override void OnAppearing()
+    {
+        base.OnAppearing();
+        CargarGastos();
+    }
+
     private async void CargarGastos()
     {
         try
