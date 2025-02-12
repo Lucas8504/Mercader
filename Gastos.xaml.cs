@@ -5,7 +5,7 @@ public partial class Gastos : ContentPage
     public Gastos()
     {
         InitializeComponent();
-        CargarGastos();
+        
     }
 
     protected override void OnAppearing()

@@ -13,14 +13,7 @@ namespace Mercader
             InitializeComponent();
             balance = new Balance();
 
-            // Actualizar etiquetas al iniciar la aplicación
-            MainThread.BeginInvokeOnMainThread(() =>
-            {
-                ActualizarEtiquetaGanancias();
-                ActualizarEtiquetaGastos();
-                ActualizarEtiquetaEncargos();
-                ActualizarEtiquetaVentas();
-            });
+            
         }
 
         protected override void OnAppearing()

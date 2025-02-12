@@ -5,7 +5,7 @@ public partial class Venta : ContentPage
     public Venta()
     {
         InitializeComponent();
-        CargarVentas();
+        
     }
 
     protected override void OnAppearing()

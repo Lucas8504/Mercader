@@ -5,7 +5,7 @@ public partial class Encargos : ContentPage
     public Encargos()
     {
         InitializeComponent();
-        CargarEncargos();
+       
     }
 
     protected override void OnAppearing()
