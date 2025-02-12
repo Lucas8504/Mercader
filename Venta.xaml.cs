@@ -59,23 +59,17 @@ public partial class Venta : ContentPage
 
     private async Task EliminarVenta(object selectedItem)
     {
-        try
+       
+        if (selectedItem is Ventas venta)
         {
-            if (selectedItem is Ventas venta)
+            bool confirm = await DisplayAlert("Confirmación", "¿Realmente deseas eliminar esta venta?", "Sí", "No");
+            if (confirm)
             {
                 await App.DataRepo.DeleteVentaAsync(venta);
                 await DisplayAlert("Éxito", "Venta eliminada correctamente", "OK");
-                CargarVentas(); // Recargar la lista de ventas
+                CargarVentas();
             }
-            else
-            {
-                await DisplayAlert("Error", "No se pudo eliminar la venta: el elemento seleccionado no es una venta válida.", "OK");
-            }
-        }
-        catch (Exception ex)
-        {
-            await DisplayAlert("Error", $"No se pudo eliminar la venta: {ex.Message}", "OK");
-        }
+        }   
     }
 
     private void OnEditSwipeItemInvoked(object sender, EventArgs e)
