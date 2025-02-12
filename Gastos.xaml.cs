@@ -60,23 +60,22 @@ public partial class Gastos : ContentPage
 
     private async Task EliminarGasto(object selectedItem)
     {
-        try
-        {
-            if (selectedItem is Gasto gasto)
+        
+        
+       if (selectedItem is Gasto gasto)
+       {
+            var confirm = await DisplayAlert("Confirmar", $"¿Estás seguro de eliminar el gasto \"{gasto.Descripcion}\" del dia {gasto.Fecha}?", "Sí", "No");
+            if (confirm)
             {
-                await App.DataRepo.DeleteGastoAsync(gasto);
-                await DisplayAlert("Éxito", "Gasto eliminado correctamente", "OK");
-                CargarGastos(); // Recargar la lista de gastos
+              
+                    await App.DataRepo.DeleteGastoAsync(gasto);
+                    await DisplayAlert("Éxito", "Gasto eliminado correctamente", "Aceptar");
+                    CargarGastos();
+               
             }
-            else
-            {
-                await DisplayAlert("Error", "No se pudo eliminar el gasto: el elemento seleccionado no es un gasto válido.", "OK");
-            }
-        }
-        catch (Exception ex)
-        {
-            await DisplayAlert("Error", $"No se pudo eliminar el gasto: {ex.Message}", "OK");
-        }
+
+       }
+       
     }
 
     private void OnEditSwipeItemInvoked(object sender, EventArgs e)

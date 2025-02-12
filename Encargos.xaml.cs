@@ -61,7 +61,7 @@ public partial class Encargos : ContentPage
         
         if (selectedItem is Encargo encargo)
         {
-            bool confirm = await DisplayAlert("Confirmación", "¿Realmente deseas eliminar este encargo?", "Sí", "No");
+            bool confirm = await DisplayAlert("Confirmación", $"¿Realmente deseas eliminar el encargo de \"{encargo.Nombre}\" hecho el dia: {encargo.Fecha}?", "Sí", "No");
             if (confirm)
             {
                 await App.DataRepo.DeleteEncargoAsync(encargo);

@@ -62,7 +62,7 @@ public partial class Venta : ContentPage
        
         if (selectedItem is Ventas venta)
         {
-            bool confirm = await DisplayAlert("Confirmación", "¿Realmente deseas eliminar esta venta?", "Sí", "No");
+            bool confirm = await DisplayAlert("Confirmación", $"¿Realmente deseas eliminar la venta de \"{venta.Descripcion}\" del dia {venta.Fecha}?", "Sí", "No");
             if (confirm)
             {
                 await App.DataRepo.DeleteVentaAsync(venta);
