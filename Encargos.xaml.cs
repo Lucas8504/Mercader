@@ -58,22 +58,17 @@ public partial class Encargos : ContentPage
 
     private async Task EliminarEncargo(object selectedItem)
     {
-        try
+        
+        if (selectedItem is Encargo encargo)
         {
-            if (selectedItem is Encargo encargo)
+            bool confirm = await DisplayAlert("Confirmación", "¿Realmente deseas eliminar este encargo?", "Sí", "No");
+            if (confirm)
             {
                 await App.DataRepo.DeleteEncargoAsync(encargo);
+                await DisplayAlert("Éxito", "Encargo eliminado correctamente", "OK");
                 CargarEncargos();
             }
-            else
-            {
-                await DisplayAlert("Error", "No se pudo eliminar el encargo: el elemento seleccionado no es un gasto válido.", "OK");
-            }
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine($"Error al eliminar el encargo: {ex.Message}");
-        }
+        }       
     }
 
     private void OnEditSwipeItemInvoked(object sender, EventArgs e)
