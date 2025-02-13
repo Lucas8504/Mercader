@@ -9,13 +9,17 @@ public partial class EditarEncargoPage : ContentPage
         InitializeComponent();
         _encargo = encargo;
         NombreEntry.Text = _encargo.Nombre;
-        FechaDatePicker.Date = _encargo.Fecha;
+        DescripcionEntry.Text = _encargo.Descripcion;
+        PrecioEntry.Text = _encargo.Precio.ToString();
+        CantidadEntry.Text = _encargo.Cantidad.ToString();
     }
 
     private async void OnGuardarClicked(object sender, EventArgs e)
     {
         _encargo.Nombre = NombreEntry.Text;
-        _encargo.Fecha = FechaDatePicker.Date;
+        _encargo.Descripcion = DescripcionEntry.Text;
+        _encargo.Precio = decimal.Parse(PrecioEntry.Text);
+        _encargo.Cantidad = decimal.Parse(CantidadEntry.Text);
 
         await App.DataRepo.SaveEncargoAsync(_encargo);
         await DisplayAlert("Éxito", "Encargo actualizado correctamente", "OK");

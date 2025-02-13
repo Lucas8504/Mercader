@@ -7,7 +7,7 @@
 
     <ContentPage.Resources>
         <ResourceDictionary>
-            <local:GridLengthToDoubleConverter x:Key="GridLengthToDoubleConverter"/>
+            <local:GridLengthToDoubleConverter x:Key="GridLengthToDoubleConverter" />
         </ResourceDictionary>
     </ContentPage.Resources>
 
