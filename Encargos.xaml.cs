@@ -51,9 +51,14 @@ public partial class Encargos : ContentPage
 
     private async Task EditarEncargo(object selectedItem)
     {
-        // Implementa la lógica para editar el encargo
-        Console.WriteLine("Editar encargo: " + selectedItem);
-        await Task.CompletedTask;
+        if (selectedItem is Encargo encargo)
+        {
+            await Navigation.PushAsync(new EditarEncargoPage(encargo));
+        }
+        else
+        {
+            await DisplayAlert("Error", "No se pudo editar el encargo: el elemento seleccionado no es un encargo válido.", "OK");
+        }
     }
 
     private async Task EliminarEncargo(object selectedItem)

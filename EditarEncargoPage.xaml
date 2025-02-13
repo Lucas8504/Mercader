@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage
+    x:Class="Mercader.EditarEncargoPage"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml">
+    <StackLayout Padding="10">
+        <Label FontSize="Large" Text="Editar Encargo" />
+        <Entry x:Name="NombreEntry" Placeholder="Nombre" />
+        <DatePicker x:Name="FechaDatePicker" />
+        <Button Clicked="OnGuardarClicked" Text="Guardar" />
+    </StackLayout>
+</ContentPage>
