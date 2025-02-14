@@ -52,9 +52,14 @@ public partial class Venta : ContentPage
 
     private async Task EditarVenta(object selectedItem)
     {
-        // Implementa la lógica para editar la venta
-        Console.WriteLine("Editar venta: " + selectedItem);
-        await Task.CompletedTask;
+        if (selectedItem is Ventas venta)
+        {
+            await Navigation.PushAsync(new EditarVentaPage(venta));
+        }
+        else
+        {
+            await DisplayAlert("Error", "No se pudo editar la venta: el elemento seleccionado no es una venta válida.", "OK");
+        }
     }
 
     private async Task EliminarVenta(object selectedItem)
