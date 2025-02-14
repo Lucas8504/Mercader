@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="Mercader.EditarGastoPage">
+    <StackLayout Padding="10">
+        <Label Text="Editar Gasto" FontSize="Large" />
+        <Entry x:Name="DescripcionEntry" Placeholder="Descripción" />
+        <Entry x:Name="PrecioEntry" Placeholder="Precio" Keyboard="Numeric" />
+        <Entry x:Name="CantidadEntry" Placeholder="Cantidad" Keyboard="Numeric" />
+        
+        <Button Text="Guardar" Clicked="OnGuardarClicked" />
+    </StackLayout>
+</ContentPage>

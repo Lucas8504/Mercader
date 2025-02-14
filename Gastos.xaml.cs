@@ -53,9 +53,14 @@ public partial class Gastos : ContentPage
 
     private async Task EditarGasto(object selectedItem)
     {
-        // Implementa la lógica para editar el gasto
-        Console.WriteLine("Editar gasto: " + selectedItem);
-        await Task.CompletedTask;
+        if (selectedItem is Gasto gasto)
+        {
+            await Navigation.PushAsync(new EditarGastoPage(gasto));
+        }
+        else
+        {
+            await DisplayAlert("Error", "No se pudo editar el gasto: el elemento seleccionado no es un gasto válido.", "OK");
+        }
     }
 
     private async Task EliminarGasto(object selectedItem)
