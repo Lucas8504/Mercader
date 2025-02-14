@@ -8,7 +8,7 @@
 
     <ContentPage.Resources>
         <ResourceDictionary>
-            <local:GridLengthToDoubleConverter x:Key="GridLengthToDoubleConverter"/>
+            <local:GridLengthToDoubleConverter x:Key="GridLengthToDoubleConverter" />
         </ResourceDictionary>
     </ContentPage.Resources>
 
@@ -23,7 +23,7 @@
                 Text="Encargos"
                 VerticalOptions="Center" />
 
-            <!-- Encabezados de las columnas -->
+            <!--  Encabezados de las columnas  -->
             <Grid Padding="0">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="*" />
@@ -32,21 +32,45 @@
                     <ColumnDefinition Width="*" />
                     <ColumnDefinition Width="*" />
                 </Grid.ColumnDefinitions>
-                <Label Grid.Column="0" Text="Nombre" FontAttributes="Bold"/>
-                <Label Grid.Column="1" Text="Descripción" FontAttributes="Bold" />
-                <Label Grid.Column="2" Text="Precio" FontAttributes="Bold" />
-                <Label Grid.Column="3" Text="Cantidad" FontAttributes="Bold" />
-                <Label Grid.Column="4" Text="Fecha" FontAttributes="Bold" />
+                <Label
+                    Grid.Column="0"
+                    FontAttributes="Bold"
+                    Text="Nombre" />
+                <Label
+                    Grid.Column="1"
+                    FontAttributes="Bold"
+                    Text="Descripción" />
+                <Label
+                    Grid.Column="2"
+                    FontAttributes="Bold"
+                    Text="Precio" />
+                <Label
+                    Grid.Column="3"
+                    FontAttributes="Bold"
+                    Text="Cantidad" />
+                <Label
+                    Grid.Column="4"
+                    FontAttributes="Bold"
+                    Text="Fecha" />
             </Grid>
 
-            <CollectionView x:Name="EncargosCollectionView" SelectionMode="Single" SelectionChanged="OnSelectionChanged">
+            <CollectionView
+                x:Name="EncargosCollectionView"
+                SelectionChanged="OnSelectionChanged"
+                SelectionMode="Single">
                 <CollectionView.ItemTemplate>
                     <DataTemplate>
                         <SwipeView>
                             <SwipeView.RightItems>
                                 <SwipeItems>
-                                    <SwipeItem Text="Editar" BackgroundColor="LightBlue" Invoked="OnEditSwipeItemInvoked"/>
-                                    <SwipeItem Text="Eliminar" BackgroundColor="LightCoral" Invoked="OnDeleteSwipeItemInvoked"/>
+                                    <SwipeItem
+                                        BackgroundColor="LightBlue"
+                                        Invoked="OnEditSwipeItemInvoked"
+                                        Text="Editar" />
+                                    <SwipeItem
+                                        BackgroundColor="LightCoral"
+                                        Invoked="OnDeleteSwipeItemInvoked"
+                                        Text="Eliminar" />
                                 </SwipeItems>
                             </SwipeView.RightItems>
                             <Grid Padding="1">
@@ -57,11 +81,26 @@
                                     <ColumnDefinition Width="*" />
                                     <ColumnDefinition Width="*" />
                                 </Grid.ColumnDefinitions>
-                                <Label Grid.Column="0" Text="{Binding Nombre}" TextColor="Coral" />
-                                <Label Grid.Column="1" Text="{Binding Descripcion}" TextColor="Coral" />
-                                <Label Grid.Column="2" Text="{Binding Precio}" TextColor="Coral"/>
-                                <Label Grid.Column="3" Text="{Binding Cantidad}" TextColor="Coral"/>
-                                <Label Grid.Column="4" Text="{Binding Fecha, StringFormat='{0:dd/MM/yyyy}'}" TextColor="Coral"/>
+                                <Label
+                                    Grid.Column="0"
+                                    Text="{Binding Nombre}"
+                                    TextColor="Coral" />
+                                <Label
+                                    Grid.Column="1"
+                                    Text="{Binding Descripcion}"
+                                    TextColor="Coral" />
+                                <Label
+                                    Grid.Column="2"
+                                    Text="{Binding Precio}"
+                                    TextColor="Coral" />
+                                <Label
+                                    Grid.Column="3"
+                                    Text="{Binding Cantidad}"
+                                    TextColor="Coral" />
+                                <Label
+                                    Grid.Column="4"
+                                    Text="{Binding Fecha, StringFormat='{0:dd/MM/yyyy}'}"
+                                    TextColor="Coral" />
                             </Grid>
                         </SwipeView>
                     </DataTemplate>
