@@ -16,6 +16,8 @@
         <Entry x:Name="EncargoEntry" Placeholder="Nombre del encargo" />
 
         <Entry x:Name="DescripcionEntry" Placeholder="Descripcion" />
+        
+        <DatePicker x:Name="FechaEntregaDatePicker" />
 
         <Entry
             x:Name="PrecioEntry"

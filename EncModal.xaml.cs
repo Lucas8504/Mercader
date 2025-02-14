@@ -29,6 +29,7 @@ public partial class EncModal : ContentPage
                 Cantidad = decimal.Parse(CantidadEntry!.Text!),
                 Precio = decimal.Parse(PrecioEntry!.Text!),
                 Descripcion = DescripcionEntry.Text,
+                FechaEntrega = FechaEntregaDatePicker.Date,
                 Fecha = DateTime.Now
             };
            
