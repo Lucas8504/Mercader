@@ -23,5 +23,8 @@ namespace Mercader
         [Column("Fecha")]
         public DateTime Fecha { get; set; }
 
+        [Column("FechaEntrega")]
+        public DateTime FechaEntrega { get; set; }
+
     }
 }

@@ -10,6 +10,7 @@ public partial class EditarEncargoPage : ContentPage
         _encargo = encargo;
         NombreEntry.Text = _encargo.Nombre;
         DescripcionEntry.Text = _encargo.Descripcion;
+        FechaEntregaDatePicker.Date = _encargo.FechaEntrega;
         PrecioEntry.Text = _encargo.Precio.ToString();
         CantidadEntry.Text = _encargo.Cantidad.ToString();
     }
@@ -18,6 +19,7 @@ public partial class EditarEncargoPage : ContentPage
     {
         _encargo.Nombre = NombreEntry.Text;
         _encargo.Descripcion = DescripcionEntry.Text;
+        _encargo.FechaEntrega = FechaEntregaDatePicker.Date;
         _encargo.Precio = decimal.Parse(PrecioEntry.Text);
         _encargo.Cantidad = decimal.Parse(CantidadEntry.Text);
 

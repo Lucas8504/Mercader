@@ -7,6 +7,7 @@
         <Label FontSize="Large" Text="Editar Encargo" />
         <Entry x:Name="NombreEntry" Placeholder="Nombre" />
         <Entry x:Name="DescripcionEntry" Placeholder="Descripcion" />
+        <DatePicker x:Name="FechaEntregaDatePicker" />
         <Entry x:Name="PrecioEntry" Placeholder="Precio" />
         <Entry x:Name="CantidadEntry" Placeholder="Cantidad" />
         <Button Clicked="OnGuardarClicked" Text="Guardar" />
