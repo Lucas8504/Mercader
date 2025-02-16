@@ -5,7 +5,6 @@ public partial class Encargos : ContentPage
     public Encargos()
     {
         InitializeComponent();
-       
     }
 
     protected override void OnAppearing()
@@ -13,6 +12,7 @@ public partial class Encargos : ContentPage
         base.OnAppearing();
         CargarEncargos();
     }
+
     private async void CargarEncargos()
     {
         try
@@ -34,9 +34,10 @@ public partial class Encargos : ContentPage
             await HandleSelectedItem(selectedItem);
             ((CollectionView)sender).SelectedItem = null;
         }
+
         async Task HandleSelectedItem(object? selectedItem)
         {
-            string action = await DisplayActionSheet("Opciones", "Cancelar", null, "Editar", "Eliminar");
+            string action = await DisplayActionSheet("Opciones", "Cancelar", null, "Editar", "Eliminar", "Concretar Venta");
             switch (action)
             {
                 case "Editar":
@@ -45,35 +46,50 @@ public partial class Encargos : ContentPage
                 case "Eliminar":
                     await EliminarEncargo(selectedItem!);
                     break;
+                case "Concretar Venta":
+                    await ConcretarVenta(selectedItem!);
+                    break;
             }
         }
     }
 
     private async Task EditarEncargo(object selectedItem)
     {
-        if (selectedItem is Encargo encargo)
-        {
-            await Navigation.PushAsync(new EditarEncargoPage(encargo));
-        }
-        else
-        {
-            await DisplayAlert("Error", "No se pudo editar el encargo: el elemento seleccionado no es un encargo válido.", "OK");
-        }
+        // Implementa la lógica para editar el encargo
+        Console.WriteLine("Editar encargo: " + selectedItem);
+        await Task.CompletedTask;
     }
 
     private async Task EliminarEncargo(object selectedItem)
     {
-        
         if (selectedItem is Encargo encargo)
         {
-            bool confirm = await DisplayAlert("Confirmación", $"¿Realmente deseas eliminar el encargo de \"{encargo.Nombre}\" hecho el dia: {encargo.Fecha}?", "Sí", "No");
+            bool confirm = await DisplayAlert("Confirmación", $"¿Realmente deseas eliminar el encargo de \"{encargo.Nombre}\" hecho el día: {encargo.Fecha}?", "Sí", "No");
             if (confirm)
             {
                 await App.DataRepo.DeleteEncargoAsync(encargo);
                 await DisplayAlert("Éxito", "Encargo eliminado correctamente", "OK");
                 CargarEncargos();
             }
-        }       
+        }
+    }
+
+    private async Task ConcretarVenta(object selectedItem)
+    {
+        if (selectedItem is Encargo encargo)
+        {
+            var venta = new Ventas
+            {
+                Descripcion = encargo.Descripcion,
+                Precio = encargo.Precio,
+                Cantidad = encargo.Cantidad,
+                Fecha = DateTime.Now // Puedes ajustar la fecha según sea necesario
+            };
+
+            await App.DataRepo.SaveVentasAsync(venta);
+            await DisplayAlert("Éxito", "Venta concretada correctamente", "OK");
+            CargarEncargos();
+        }
     }
 
     private void OnEditSwipeItemInvoked(object sender, EventArgs e)
@@ -88,6 +104,16 @@ public partial class Encargos : ContentPage
         var swipeItem = sender as SwipeItem;
         var item = swipeItem?.BindingContext;
         // Lógica para eliminar el elemento
+    }
+
+    private void OnConcretarVentaSwipeItemInvoked(object sender, EventArgs e)
+    {
+        var swipeItem = sender as SwipeItem;
+        var item = swipeItem?.BindingContext;
+        if (item != null)
+        {
+            _ = ConcretarVenta(item);
+        }
     }
 }
 

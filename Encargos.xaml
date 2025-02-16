@@ -71,6 +71,10 @@
                                         BackgroundColor="LightCoral"
                                         Invoked="OnDeleteSwipeItemInvoked"
                                         Text="Eliminar" />
+                                    <SwipeItem
+                                        BackgroundColor="LightGreen"
+                                        Invoked="OnConcretarVentaSwipeItemInvoked"
+                                        Text="Concretar Venta" />
                                 </SwipeItems>
                             </SwipeView.RightItems>
                             <Grid Padding="1">
