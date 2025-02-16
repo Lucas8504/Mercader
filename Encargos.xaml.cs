@@ -87,6 +87,7 @@ public partial class Encargos : ContentPage
             };
 
             await App.DataRepo.SaveVentasAsync(venta);
+            await App.DataRepo.DeleteEncargoAsync(encargo);
             await DisplayAlert("Éxito", "Venta concretada correctamente", "OK");
             CargarEncargos();
         }
@@ -113,6 +114,7 @@ public partial class Encargos : ContentPage
         if (item != null)
         {
             _ = ConcretarVenta(item);
+           
         }
     }
 }
