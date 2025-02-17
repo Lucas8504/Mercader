@@ -31,6 +31,7 @@
                     <ColumnDefinition Width="*" />
                     <ColumnDefinition Width="*" />
                     <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="*" />
                 </Grid.ColumnDefinitions>
                 <Label
                     Grid.Column="0"
@@ -52,6 +53,10 @@
                     Grid.Column="4"
                     FontAttributes="Bold"
                     Text="Fecha" />
+                <Label
+                    Grid.Column="5"
+                    FontAttributes="Bold"
+                    Text="Fecha de entrega" />
             </Grid>
 
             <CollectionView
@@ -84,6 +89,7 @@
                                     <ColumnDefinition Width="*" />
                                     <ColumnDefinition Width="*" />
                                     <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="*" />
                                 </Grid.ColumnDefinitions>
                                 <Label
                                     Grid.Column="0"
@@ -104,6 +110,10 @@
                                 <Label
                                     Grid.Column="4"
                                     Text="{Binding Fecha, StringFormat='{0:dd/MM/yyyy}'}"
+                                    TextColor="Coral" />
+                                <Label
+                                    Grid.Column="5"
+                                    Text="{Binding FechaEntrega, StringFormat='{0:dd/MM/yyyy}'}"
                                     TextColor="Coral" />
                             </Grid>
                         </SwipeView>
