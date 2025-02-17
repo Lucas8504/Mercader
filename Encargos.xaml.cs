@@ -78,18 +78,24 @@ public partial class Encargos : ContentPage
     {
         if (selectedItem is Encargo encargo)
         {
-            var venta = new Ventas
+            bool confirm = await DisplayAlert("Confirmación", $"¿Realmente deseas concretar la venta de {encargo.Descripcion} para \"{encargo.Nombre}\" pedido el día: {encargo.Fecha}?", "Sí", "No");
+            if (confirm)
             {
-                Descripcion = encargo.Descripcion,
-                Precio = encargo.Precio,
-                Cantidad = encargo.Cantidad,
-                Fecha = DateTime.Now // Puedes ajustar la fecha según sea necesario
-            };
 
-            await App.DataRepo.SaveVentasAsync(venta);
-            await App.DataRepo.DeleteEncargoAsync(encargo);
-            await DisplayAlert("Éxito", "Venta concretada correctamente", "OK");
-            CargarEncargos();
+                var venta = new Ventas
+                {
+                    Descripcion = encargo.Descripcion,
+                    Precio = encargo.Precio,
+                    Cantidad = encargo.Cantidad,
+                    Fecha = DateTime.Now // Puedes ajustar la fecha según sea necesario
+                };
+
+                await App.DataRepo.SaveVentasAsync(venta);
+                await App.DataRepo.DeleteEncargoAsync(encargo);
+                await DisplayAlert("Éxito", "Venta concretada correctamente", "OK");
+                CargarEncargos();
+            }
+
         }
     }
 
