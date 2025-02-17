@@ -18,9 +18,9 @@
             <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="*" />
             <ColumnDefinition Width="*" />
             <ColumnDefinition Width="*" />
             <ColumnDefinition Width="*" />
@@ -50,17 +50,10 @@
             Clicked="InAgregarGasto"
             FontSize="Caption"
             Text="Gastos" />
-        <Button
-            Grid.Row="0"
-            Grid.Column="3"
-            Margin="4"
-            Padding="4"
-            Clicked="OnCalcularGananciasClicked"
-            FontSize="Caption"
-            Text="Balance" />
+
 
         <Button
-            Grid.Row="3"
+            Grid.Row="5"
             Grid.ColumnSpan="4"
             Margin="24"
             Padding="4"
@@ -81,11 +74,11 @@
 
         <Entry
             x:Name="GananciasLabel"
-            Grid.Row="2"
-            Grid.Column="3"
+            Grid.Row="3"
+            Grid.Column="1"
             Margin="2"
             BackgroundColor="#2a2a2a"
-            HorizontalTextAlignment="Start"
+            HorizontalTextAlignment="Center"
             IsEnabled="False"
             Placeholder="Ganancias"
             PlaceholderColor="#7d7c7c"
