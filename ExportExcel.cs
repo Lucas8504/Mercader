@@ -3,10 +3,22 @@
 
 namespace Mercader
 {
+
     public static class ExportExcel
     {
+        static ExportExcel()
+        {
+            ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
+        }
+
         public static void ExportarBalanceAExcel(Balance balance, string rutaArchivo)
         {
+            // Verificar si la propiedad LicenseContext se ha establecido
+            if (ExcelPackage.LicenseContext == null)
+            {
+                throw new InvalidOperationException("La propiedad LicenseContext no se ha establecido. Por favor, establezca ExcelPackage.LicenseContext antes de crear un ExcelPackage.");
+            }
+
             using (ExcelPackage package = new ExcelPackage())
             {
                 // Hoja de Encargos
