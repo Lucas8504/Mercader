@@ -13,8 +13,6 @@ namespace Mercader
         {
             InitializeComponent();
             balance = new Balance();
-
-            
         }
 
         protected override void OnAppearing()
@@ -166,10 +164,16 @@ namespace Mercader
         {
             try
             {
-                var fileResult = await FileSaver.Default.SaveAsync(new SaveFileOptions
+                var fileResult = await FilePicker.Default.PickSaveFileAsync(new PickOptions
                 {
-                    SuggestedFileName = "balance.xlsx",
-                    FileTypes = FilePickerFileType.Pdf // Puedes cambiar esto según tus necesidades
+                    PickerTitle = "Guardar archivo Excel",
+                    FileTypes = new FilePickerFileType(new Dictionary<DevicePlatform, IEnumerable<string>>
+                        {
+                            { DevicePlatform.WinUI, new[] { ".xlsx" } },
+                            { DevicePlatform.MacCatalyst, new[] { "org.openxmlformats.spreadsheetml.sheet" } },
+                            { DevicePlatform.iOS, new[] { "org.openxmlformats.spreadsheetml.sheet" } },
+                            { DevicePlatform.Android, new[] { "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" } }
+                        })
                 });
 
                 if (fileResult != null)
@@ -188,9 +192,9 @@ namespace Mercader
         private async void OnVerEncargosClicked(object sender, EventArgs e)
         {
             var navigationParameter = new Dictionary<string, object>
-                            {
-                                { "MainPage", this }
-                            };
+                {
+                    { "MainPage", this }
+                };
             await Shell.Current.GoToAsync(nameof(Encargos), navigationParameter);
         }
     }
