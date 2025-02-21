@@ -1,6 +1,7 @@
-﻿using SQLite;
-using Microsoft.Maui.Controls;
-using System.Globalization;
+﻿using Microsoft.Maui.Storage;
+using OfficeOpenXml;
+using System.IO;
+using System.Threading.Tasks;
 
 namespace Mercader
 {
@@ -161,13 +162,22 @@ namespace Mercader
             }
         }
 
-        private void OnExportarAExcelClicked(object sender, EventArgs e)
+        private async void OnExportarAExcelClicked(object sender, EventArgs e)
         {
             try
             {
-                string rutaArchivo = Path.Combine(FileSystem.AppDataDirectory, "balance.xlsx");
-                ExportExcel.ExportarBalanceAExcel(balance, rutaArchivo);
-                DisplayAlert("Exportación Completa", $"Archivo exportado a {rutaArchivo}", "OK");
+                var fileResult = await FileSaver.Default.SaveAsync(new SaveFileOptions
+                {
+                    SuggestedFileName = "balance.xlsx",
+                    FileTypes = FilePickerFileType.Pdf // Puedes cambiar esto según tus necesidades
+                });
+
+                if (fileResult != null)
+                {
+                    string rutaArchivo = fileResult.FullPath;
+                    await ExportExcel.ExportarBalanceAExcelAsync(balance, rutaArchivo);
+                    await DisplayAlert("Exportación Completa", $"Archivo exportado a {rutaArchivo}", "OK");
+                }
             }
             catch (Exception ex)
             {
