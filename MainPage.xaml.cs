@@ -164,24 +164,40 @@ namespace Mercader
         {
             try
             {
-                var folderResult = await FilePicker.Default.PickAsync(new PickOptions
+                string rutaArchivo;
+
+                if (DeviceInfo.Platform == DevicePlatform.MacCatalyst || DeviceInfo.Platform == DevicePlatform.iOS || DeviceInfo.Platform == DevicePlatform.Android)
                 {
-                    PickerTitle = "Seleccionar carpeta para guardar archivo Excel",
-                    FileTypes = new FilePickerFileType(new Dictionary<DevicePlatform, IEnumerable<string>>
+                    var folderResult = await FilePicker.Default.PickAsync(new PickOptions
+                    {
+                        PickerTitle = "Seleccionar carpeta para guardar archivo Excel",
+                        FileTypes = new FilePickerFileType(new Dictionary<DevicePlatform, IEnumerable<string>>
                             {
                                 { DevicePlatform.WinUI, new[] { ".xlsx" } },
                                 { DevicePlatform.MacCatalyst, new[] { "org.openxmlformats.spreadsheetml.sheet" } },
                                 { DevicePlatform.iOS, new[] { "org.openxmlformats.spreadsheetml.sheet" } },
                                 { DevicePlatform.Android, new[] { "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" } }
                             })
-                });
+                    });
 
-                if (folderResult != null)
-                {
-                    string rutaArchivo = Path.Combine(folderResult.FullPath, "balance.xlsx");
-                    await ExportExcel.ExportarBalanceAExcelAsync(balance, rutaArchivo);
-                    await DisplayAlert("Exportación Completa", $"Archivo exportado a {rutaArchivo}", "OK");
+                    if (folderResult != null)
+                    {
+                        rutaArchivo = Path.Combine(folderResult.FullPath, "balance.xlsx");
+                    }
+                    else
+                    {
+                        await DisplayAlert("Error", "No se seleccionó ninguna carpeta.", "OK");
+                        return;
+                    }
                 }
+                else
+                {
+                    // Guardar en una ubicación predeterminada
+                    rutaArchivo = Path.Combine(FileSystem.AppDataDirectory, "balance.xlsx");
+                }
+
+                await ExportExcel.ExportarBalanceAExcelAsync(balance, rutaArchivo);
+                await DisplayAlert("Exportación Completa", $"Archivo exportado a {rutaArchivo}", "OK");
             }
             catch (Exception ex)
             {
@@ -192,9 +208,9 @@ namespace Mercader
         private async void OnVerEncargosClicked(object sender, EventArgs e)
         {
             var navigationParameter = new Dictionary<string, object>
-                    {
-                        { "MainPage", this }
-                    };
+                {
+                    { "MainPage", this }
+                };
             await Shell.Current.GoToAsync(nameof(Encargos), navigationParameter);
         }
     }
