@@ -173,7 +173,6 @@ namespace Mercader
                         PickerTitle = "Seleccionar carpeta para guardar archivo Excel",
                         FileTypes = new FilePickerFileType(new Dictionary<DevicePlatform, IEnumerable<string>>
                             {
-                                { DevicePlatform.WinUI, new[] { ".xlsx" } },
                                 { DevicePlatform.MacCatalyst, new[] { "org.openxmlformats.spreadsheetml.sheet" } },
                                 { DevicePlatform.iOS, new[] { "org.openxmlformats.spreadsheetml.sheet" } },
                                 { DevicePlatform.Android, new[] { "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" } }
