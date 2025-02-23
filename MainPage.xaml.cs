@@ -54,7 +54,6 @@ namespace Mercader
             try
             {
                 var ganancias = balance.CalcularGanancias();
-                Console.WriteLine($"Ganancias calculadas: {ganancias}");
                 GananciasLabel.Text = $"Ganancias: {ganancias:C}";
             }
             catch (Exception ex)
@@ -69,8 +68,7 @@ namespace Mercader
             try
             {
                 decimal ventas = balance.CalcularVentas();
-                Console.WriteLine($"Ventas calculadas: {ventas}");
-                VentasLabel.Text = $"Ventas: {ventas:C}";
+                VentasLabel.Text = $" {ventas:C}";
             }
             catch (Exception ex)
             {
@@ -84,8 +82,7 @@ namespace Mercader
             try
             {
                 decimal gastos = balance.CalcularGastos();
-                Console.WriteLine($"Gastos calculados: {gastos}");
-                GastosLabel.Text = $"Gastos: {gastos:C}";
+                GastosLabel.Text = $" {gastos:C}";
             }
             catch (Exception ex)
             {
@@ -99,8 +96,7 @@ namespace Mercader
             try
             {
                 decimal encargo = balance.CalcularEncargos();
-                Console.WriteLine($"Encargos calculados: {encargo}");
-                EncargosLabel.Text = $"Encargos: {encargo:C}";
+                EncargosLabel.Text = $" {encargo:C}";
             }
             catch (Exception ex)
             {
