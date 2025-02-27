@@ -41,7 +41,7 @@
                 <Label
                     Grid.Column="1"
                     FontAttributes="Bold"
-                    Text="Descripción" FontSize="11" />
+                    Text="Descrip." />
                 <Label
                     Grid.Column="2"
                     FontAttributes="Bold"
@@ -95,27 +95,27 @@
                                 <Label
                                     Grid.Column="0"
                                     Text="{Binding Nombre}"
-                                    TextColor="Coral" />
+                                    TextColor="#cccccc" />
                                 <Label
                                     Grid.Column="1"
                                     Text="{Binding Descripcion}"
-                                    TextColor="Coral" />
+                                    TextColor="#cccccc" />
                                 <Label
                                     Grid.Column="2"
                                     Text="{Binding Precio}"
-                                    TextColor="Coral" />
+                                    TextColor="#cccccc" />
                                 <Label
                                     Grid.Column="3"
                                     Text="{Binding Cantidad}"
-                                    TextColor="Coral" />
+                                    TextColor="#cccccc" />
                                 <Label
                                     Grid.Column="4"
-                                    Text="{Binding Fecha, StringFormat='{0:dd/MM/yyyy}'}"
-                                    TextColor="Coral" />
+                                    Text="{Binding Fecha, StringFormat='{0:dd/MM/yy}'}"
+                                    TextColor="#cccccc"/>
                                 <Label
                                     Grid.Column="5"
                                     Text="{Binding FechaEntrega, StringFormat='{0:dd/MM/yyyy}'}"
-                                    TextColor="Coral" />
+                                    TextColor="#cccccc" />
                             </Grid>
                         </SwipeView>
                     </DataTemplate>
