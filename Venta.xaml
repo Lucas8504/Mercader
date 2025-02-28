@@ -55,10 +55,10 @@
                                             <ColumnDefinition Width="*" />
                                             <ColumnDefinition Width="*" />
                                         </Grid.ColumnDefinitions>
-                                        <Label Grid.Column="0" Text="{Binding Descripcion}" TextColor="Coral" />
-                                        <Label Grid.Column="1" Text="{Binding Precio}" TextColor="Coral"/>
-                                        <Label Grid.Column="2" Text="{Binding Cantidad}" TextColor="Coral"/>
-                                        <Label Grid.Column="3" Text="{Binding Fecha, StringFormat='{0:dd/MM/yyyy}'}" TextColor="Coral"/>
+                                        <Label Grid.Column="0" Text="{Binding Descripcion}" TextColor="#cccccc" />
+                                        <Label Grid.Column="1" Text="{Binding Precio}" TextColor="#cccccc"/>
+                                        <Label Grid.Column="2" Text="{Binding Cantidad}" TextColor="#cccccc"/>
+                                        <Label Grid.Column="3" Text="{Binding Fecha, StringFormat='{0:dd/MM/yyyy}'}" TextColor="#cccccc"/>
                                     </Grid>
                         </SwipeView>
                     </DataTemplate>

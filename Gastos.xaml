@@ -80,19 +80,19 @@
                                     Grid.Column="0"
                                     Padding="3"
                                     Text="{Binding Descripcion}"
-                                    TextColor="Coral" />
+                                    TextColor="#cccccc" />
                                 <Label
                                     Grid.Column="1"
                                     Text="{Binding Monto}"
-                                    TextColor="Coral" />
+                                    TextColor="#cccccc" />
                                 <Label
                                     Grid.Column="2"
                                     Text="{Binding Cantidad}"
-                                    TextColor="Coral" />
+                                    TextColor="#cccccc" />
                                 <Label
                                     Grid.Column="3"
                                     Text="{Binding Fecha, StringFormat='{0:dd/MM/yyyy}'}"
-                                    TextColor="Coral" />
+                                    TextColor="#cccccc" />
                             </Grid>
                         </SwipeView>
                     </DataTemplate>
