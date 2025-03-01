@@ -158,46 +158,17 @@ namespace Mercader
 
         private async void OnExportarAExcelClicked(object sender, EventArgs e)
         {
-            try
-            {
+            
+            
                 string rutaArchivo;
 
-                if (DeviceInfo.Platform == DevicePlatform.MacCatalyst || DeviceInfo.Platform == DevicePlatform.iOS || DeviceInfo.Platform == DevicePlatform.Android)
-                {
-                    var folderResult = await FilePicker.Default.PickAsync(new PickOptions
-                    {
-                        PickerTitle = "Seleccionar carpeta para guardar archivo Excel",
-                        FileTypes = new FilePickerFileType(new Dictionary<DevicePlatform, IEnumerable<string>>
-                            {
-                                { DevicePlatform.MacCatalyst, new[] { "org.openxmlformats.spreadsheetml.sheet" } },
-                                { DevicePlatform.iOS, new[] { "org.openxmlformats.spreadsheetml.sheet" } },
-                                { DevicePlatform.Android, new[] { "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" } }
-                            })
-                    });
-
-                    if (folderResult != null)
-                    {
-                        rutaArchivo = Path.Combine(folderResult.FullPath, "balance.xlsx");
-                    }
-                    else
-                    {
-                        await DisplayAlert("Error", "No se seleccionó ninguna carpeta.", "OK");
-                        return;
-                    }
-                }
-                else
-                {
-                    // Guardar en una ubicación predeterminada
-                    rutaArchivo = Path.Combine(FileSystem.AppDataDirectory, "balance.xlsx");
-                }
+                // Guardar en una ubicación predeterminada
+                rutaArchivo = Path.Combine(FileSystem.AppDataDirectory, "balance.xlsx");
+                
 
                 await ExportExcel.ExportarBalanceAExcelAsync(balance, rutaArchivo);
                 await DisplayAlert("Exportación Completa", $"Archivo exportado a {rutaArchivo}", "OK");
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"Error al exportar a Excel: {ex.Message}");
-            }
+            
         }
 
         private async void OnVerEncargosClicked(object sender, EventArgs e)
