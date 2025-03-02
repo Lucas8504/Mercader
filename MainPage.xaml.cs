@@ -1,9 +1,4 @@
-﻿using Microsoft.Maui.Storage;
-using OfficeOpenXml;
-using System.IO;
-using System.Threading.Tasks;
-
-namespace Mercader
+﻿namespace Mercader
 {
     public partial class MainPage : ContentPage
     {
@@ -207,7 +202,7 @@ namespace Mercader
                         File = new ReadOnlyFile(rutaArchivo)
                     });
 
-                    
+
                 }
                 else if (DeviceInfo.Platform == DevicePlatform.iOS)
                 {
