@@ -158,17 +158,78 @@ namespace Mercader
 
         private async void OnExportarAExcelClicked(object sender, EventArgs e)
         {
-            
-            
-                string rutaArchivo;
+            try
+            {
+                // Definir la carpeta donde se guardará el archivo
+                string carpetaPersonalizada = Path.Combine(FileSystem.Current.AppDataDirectory, "Exportaciones");
 
-                // Guardar en una ubicación predeterminada
-                rutaArchivo = Path.Combine(FileSystem.AppDataDirectory, "balance.xlsx");
-                
+                // Crear la carpeta si no existe
+                if (!Directory.Exists(carpetaPersonalizada))
+                {
+                    Directory.CreateDirectory(carpetaPersonalizada);
+                }
 
+                // Definir la ruta completa del archivo
+                string nombreArchivo = $"balance_{DateTime.Now:yyyyMMdd_HHmmss}.xlsx";
+                string rutaArchivo = Path.Combine(carpetaPersonalizada, nombreArchivo);
+
+                // Exportar el balance a Excel
                 await ExportExcel.ExportarBalanceAExcelAsync(balance, rutaArchivo);
+
+                // Mostrar mensaje de éxito
                 await DisplayAlert("Exportación Completa", $"Archivo exportado a {rutaArchivo}", "OK");
-            
+
+                // Abrir la ubicación (carpeta) donde se guardó el archivo
+                await AbrirUbicacionArchivoAsync(rutaArchivo, carpetaPersonalizada);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error al exportar a Excel: {ex.Message}");
+                await DisplayAlert("Error", $"No se pudo exportar el archivo: {ex.Message}", "OK");
+            }
+        }
+
+        private async Task AbrirUbicacionArchivoAsync(string rutaArchivo, string rutaCarpeta)
+        {
+            try
+            {
+                if (string.IsNullOrEmpty(rutaArchivo) || !File.Exists(rutaArchivo))
+                {
+                    await DisplayAlert("Error", "No se pudo encontrar el archivo.", "OK");
+                    return;
+                }
+
+                if (DeviceInfo.Platform == DevicePlatform.Android)
+                {
+                    // Intentar abrir el archivo directamente
+                    await Launcher.OpenAsync(new OpenFileRequest
+                    {
+                        File = new ReadOnlyFile(rutaArchivo)
+                    });
+
+                    
+                }
+                else if (DeviceInfo.Platform == DevicePlatform.iOS)
+                {
+                    // En iOS, también mostramos un mensaje informativo
+                    await DisplayAlert("Información",
+                        $"El archivo ha sido guardado en:\n{rutaCarpeta}\n\nPuedes acceder a él mediante tu aplicación de archivos.",
+                        "OK");
+                }
+                else
+                {
+                    // Para otras plataformas, intentamos abrir la carpeta directamente
+                    await Launcher.OpenAsync(new OpenFileRequest
+                    {
+                        File = new ReadOnlyFile(rutaCarpeta)
+                    });
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error al abrir la ubicación del archivo: {ex.Message}");
+                await DisplayAlert("Error", $"No se pudo abrir la ubicación del archivo: {ex.Message}", "OK");
+            }
         }
 
         private async void OnVerEncargosClicked(object sender, EventArgs e)
