@@ -46,57 +46,38 @@
         // Método público para actualizar la etiqueta de ganancias
         public void ActualizarEtiquetaGanancias()
         {
-            try
-            {
+           
                 var ganancias = balance.CalcularGanancias();
                 GananciasLabel.Text = $"Ganancias: {ganancias:C}";
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"Error al actualizar etiqueta de ganancias: {ex.Message}");
-            }
+           
         }
 
         // Método público para actualizar la etiqueta de ventas
         public void ActualizarEtiquetaVentas()
         {
-            try
-            {
+           
                 decimal ventas = balance.CalcularVentas();
                 VentasLabel.Text = $" {ventas:C}";
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"Error al calcular ventas: {ex.Message}");
-            }
+           
         }
 
         // Método público para actualizar la etiqueta de gastos
         public void ActualizarEtiquetaGastos()
         {
-            try
-            {
+           
+            
                 decimal gastos = balance.CalcularGastos();
                 GastosLabel.Text = $" {gastos:C}";
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"Error al calcular gastos: {ex.Message}");
-            }
+           
         }
 
         // Método público para actualizar la etiqueta de encargos
         public void ActualizarEtiquetaEncargos()
         {
-            try
-            {
+            
                 decimal encargo = balance.CalcularEncargos();
                 EncargosLabel.Text = $" {encargo:C}";
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"Error al calcular encargos: {ex.Message}");
-            }
+           
         }
 
         private async void InAgregarEncargo(object sender, EventArgs e)
@@ -140,15 +121,10 @@
 
         private void OnCalcularGananciasClicked(object sender, EventArgs e)
         {
-            try
-            {
+           
                 var ganancias = balance.CalcularGanancias();
                 GananciasLabel.Text = $"Ganancias: {ganancias:C}";
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"Error al calcular ganancias: {ex.Message}");
-            }
+           
         }
 
         private async void OnExportarAExcelClicked(object sender, EventArgs e)
