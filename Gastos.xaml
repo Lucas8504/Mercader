@@ -18,6 +18,7 @@
         <VerticalStackLayout>
             <Label
                 FontSize="Large"
+                TextColor="#cccccc"
                 HorizontalOptions="Center"
                 Text="Lista de Gastos"
                 VerticalOptions="Start" />
@@ -32,21 +33,24 @@
                 </Grid.ColumnDefinitions>
                 <Label
                     Grid.Column="0"
-                    Padding="2"
                     FontAttributes="Bold"
-                    Text="Descripción" />
+                    Text="Descripción"
+                    TextColor="#cccccc"/>
                 <Label
                     Grid.Column="1"
                     FontAttributes="Bold"
-                    Text="Monto" />
+                    Text="Monto"
+                    TextColor="#cccccc"/>
                 <Label
                     Grid.Column="2"
                     FontAttributes="Bold"
-                    Text="Cantidad" />
+                    Text="Cantidad" 
+                    TextColor="#cccccc"/>
                 <Label
                     Grid.Column="3"
                     FontAttributes="Bold"
-                    Text="Fecha" />
+                    Text="Fecha" 
+                    TextColor="#cccccc"/>
             </Grid>
 
             <CollectionView
