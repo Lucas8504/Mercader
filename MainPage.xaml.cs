@@ -13,7 +13,6 @@
         protected override void OnAppearing()
         {
             base.OnAppearing();
-            Console.WriteLine("OnAppearing ejecutado");
 
             // Cargar datos de la base de datos cada vez que la página aparece
             CargarDatosAsync().ConfigureAwait(false);
@@ -154,7 +153,6 @@
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Error al exportar a Excel: {ex.Message}");
                 await DisplayAlert("Error", $"No se pudo exportar el archivo: {ex.Message}", "OK");
             }
         }
@@ -197,7 +195,6 @@
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Error al abrir la ubicación del archivo: {ex.Message}");
                 await DisplayAlert("Error", $"No se pudo abrir la ubicación del archivo: {ex.Message}", "OK");
             }
         }
