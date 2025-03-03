@@ -5,7 +5,8 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
     xmlns:local="clr-namespace:Mercader"
     Title="Mercader"
-    Shell.FlyoutBehavior="Flyout">
+    Shell.FlyoutBehavior="Flyout"
+    BackgroundColor="Black">
 
     <ShellContent
         Title="Home"
