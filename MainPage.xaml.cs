@@ -38,7 +38,6 @@
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Error al cargar datos: {ex.Message}");
                 await DisplayAlert("Error", $"Error al cargar datos: {ex.Message}", "OK");
             }
         }
