@@ -5,8 +5,8 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
     xmlns:local="clr-namespace:Mercader"
     Title="Mercader"
-    Shell.FlyoutBehavior="Flyout"
-    BackgroundColor="Black">
+    BackgroundColor="Black"
+    Shell.FlyoutBehavior="Flyout">
 
     <ShellContent
         Title="Home"
@@ -15,4 +15,11 @@
     <ShellContent Title="Encargo" ContentTemplate="{DataTemplate local:Encargos}" />
     <ShellContent Title="Ventas" ContentTemplate="{DataTemplate local:Venta}" />
     <ShellContent Title="Gasto" ContentTemplate="{DataTemplate local:Gastos}" />
+
+
+    <Shell.FlyoutHeader>
+        <Grid BackgroundColor="Black">
+            <Label Text="Mercader" TextColor="White" FontSize="Large" HorizontalOptions="Center" VerticalOptions="Center" />
+        </Grid>
+    </Shell.FlyoutHeader>
 </Shell>
