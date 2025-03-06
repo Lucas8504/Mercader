@@ -6,7 +6,8 @@
     xmlns:local="clr-namespace:Mercader"
     Title="Mercader"
     BackgroundColor="Black"
-    Shell.FlyoutBehavior="Flyout">
+    Shell.FlyoutBehavior="Flyout"
+    FlyoutBackgroundColor="Black">
 
     <ShellContent
         Title="Home"
@@ -16,10 +17,20 @@
     <ShellContent Title="Ventas" ContentTemplate="{DataTemplate local:Venta}" />
     <ShellContent Title="Gasto" ContentTemplate="{DataTemplate local:Gastos}" />
 
+    <Shell.ItemTemplate>
+        <DataTemplate>
+            <Label Text="{Binding Title}" TextColor="White" />
+        </DataTemplate>
+    </Shell.ItemTemplate>
 
     <Shell.FlyoutHeader>
         <Grid BackgroundColor="Black">
-            <Label Text="Mercader" TextColor="White" FontSize="Large" HorizontalOptions="Center" VerticalOptions="Center" />
+            <Label
+                FontSize="Large"
+                HorizontalOptions="Center"
+                Text="Mercader"
+                TextColor="White"
+                VerticalOptions="Center" />
         </Grid>
     </Shell.FlyoutHeader>
 </Shell>
