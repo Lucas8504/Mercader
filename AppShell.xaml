@@ -20,7 +20,8 @@
     <Shell.ItemTemplate>
         <DataTemplate>
             <Grid ColumnDefinitions=" .8*" HeightRequest="40" RowSpacing="0">
-                <Label Grid.Column="1" Margin="10,0,0,0" HorizontalOptions="Center" FontSize="17" Text="{Binding Title}" TextColor="White" />
+                <Label Grid.Column="1" Margin="10,0,0,0" HorizontalOptions="Center" VerticalOptions="Center" FontSize="17" Text="{Binding Title}" TextColor="#cccccc" />
+                <Rectangle Grid.ColumnSpan="2" Fill="WhiteSmoke" Opacity=".1"/>
 
             </Grid>
         </DataTemplate>
@@ -32,7 +33,7 @@
                 FontSize="Large"
                 HorizontalOptions="Center"
                 Text="Mercader"
-                TextColor="White"
+                TextColor="#cccccc"
                 VerticalOptions="Center" />
         </Grid>
     </Shell.FlyoutHeader>
