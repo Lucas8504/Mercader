@@ -19,7 +19,10 @@
 
     <Shell.ItemTemplate>
         <DataTemplate>
-            <Label Text="{Binding Title}" TextColor="White" />
+            <Grid ColumnDefinitions=" .8*" HeightRequest="40" RowSpacing="0">
+                <Label Grid.Column="1" Margin="10,0,0,0" HorizontalOptions="Center" FontSize="17" Text="{Binding Title}" TextColor="White" />
+
+            </Grid>
         </DataTemplate>
     </Shell.ItemTemplate>
 
