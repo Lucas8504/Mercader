@@ -4,7 +4,7 @@
     xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
     xmlns:local="clr-namespace:Mercader"
-    BackgroundColor="Black">
+    BackgroundColor="#1e1e1e">
 
     <ContentPage.Resources>
         <ResourceDictionary>
@@ -27,89 +27,125 @@
             <ColumnDefinition Width="*" />
         </Grid.ColumnDefinitions>
 
+        <!-- Botones de Acción -->
         <Button
             Grid.Row="0"
             Grid.Column="0"
-            Margin="4"
-            Padding="4"
+            Margin="10"
+            Padding="12"
             Clicked="InAgregarEncargo"
-            FontSize="Caption"
-            Text="Encargos" />
+            FontSize="16"
+            Text="Encargos"
+            BackgroundColor="#1f6bc2"
+            TextColor="White"
+            CornerRadius="8" />
         <Button
             Grid.Row="0"
             Grid.Column="1"
-            Margin="4"
-            Padding="4"
+            Margin="10"
+            Padding="12"
             Clicked="InAgregarVenta"
-            FontSize="Caption"
-            Text="Ventas" />
+            FontSize="16"
+            Text="Ventas"
+            BackgroundColor="#2e9449"
+            TextColor="White"
+            CornerRadius="8" />
         <Button
             Grid.Row="0"
             Grid.Column="2"
-            Margin="4"
-            Padding="4"
+            Margin="10"
+            Padding="12"
             Clicked="InAgregarGasto"
-            FontSize="Caption"
-            Text="Gastos" />
+            FontSize="16"
+            Text="Gastos"
+            BackgroundColor="#6e0a24"
+            TextColor="White"
+            CornerRadius="8" />
 
-
-        <Button
-            Grid.Row="5"
-            Grid.ColumnSpan="4"
-            Margin="24"
-            Padding="4"
-            Clicked="OnExportarAExcelClicked"
-            FontSize="Caption"
-            Text="Exportar a Excel" />
-
-        <Entry
-            x:Name="EncargosLabel"
+        <!-- Entradas de Información -->
+        <Frame
             Grid.Row="2"
             Grid.Column="0"
-            Margin="2"
+            Margin="10"
+            Padding="10"
             BackgroundColor="#2a2a2a"
-            IsEnabled="False"
-            Placeholder="Encargos"
-            PlaceholderColor="#7d7c7c"
-            TextColor="#cccccc"
-            FontSize="11"/>
+            CornerRadius="8">
+            <Entry
+                x:Name="EncargosLabel"
+                BackgroundColor="Transparent"
+                IsEnabled="False"
+                Placeholder="Encargos"
+                PlaceholderColor="#7d7c7c"
+                TextColor="#cccccc"
+                FontSize="14"
+                HorizontalTextAlignment="Center" />
+        </Frame>
 
-        <Entry
-            x:Name="GananciasLabel"
+        <Frame
+            Grid.Row="2"
+            Grid.Column="1"
+            Margin="10"
+            Padding="10"
+            BackgroundColor="#2a2a2a"
+            CornerRadius="8">
+            <Entry
+                x:Name="VentasLabel"
+                BackgroundColor="Transparent"
+                IsEnabled="False"
+                Placeholder="Ventas"
+                PlaceholderColor="#7d7c7c"
+                TextColor="#cccccc"
+                FontSize="14"
+                HorizontalTextAlignment="Center" />
+        </Frame>
+
+        <Frame
+            Grid.Row="2"
+            Grid.Column="2"
+            Margin="10"
+            Padding="10"
+            BackgroundColor="#2a2a2a"
+            CornerRadius="8">
+            <Entry
+                x:Name="GastosLabel"
+                BackgroundColor="Transparent"
+                IsEnabled="False"
+                Placeholder="Gastos"
+                PlaceholderColor="#7d7c7c"
+                TextColor="#cccccc"
+                FontSize="14"
+                HorizontalTextAlignment="Center" />
+        </Frame>
+
+        <Frame
             Grid.Row="3"
             Grid.ColumnSpan="3"
-            Margin="2"
+            Margin="10"
+            Padding="10"
             BackgroundColor="#2a2a2a"
-            HorizontalTextAlignment="Center"
-            IsEnabled="False"
-            Placeholder="Ganancias"
-            PlaceholderColor="#7d7c7c"
-            TextColor="#cccccc" />
+            CornerRadius="8">
+            <Entry
+                x:Name="GananciasLabel"
+                BackgroundColor="Transparent"
+                IsEnabled="False"
+                Placeholder="Ganancias"
+                PlaceholderColor="#7d7c7c"
+                TextColor="#cccccc"
+                FontSize="14"
+                HorizontalTextAlignment="Center" />
+        </Frame>
 
-        <Entry
-            x:Name="VentasLabel"
-            Grid.Row="2"
-            Grid.Column="1"
-            Margin="2"
-            BackgroundColor="#2a2a2a"
-            IsEnabled="False"
-            Placeholder="Ventas"
-            PlaceholderColor="#7d7c7c"
-            TextColor="#cccccc"
-            FontSize="11"/>
-
-        <Entry
-            x:Name="GastosLabel"
-            Grid.Row="2"
-            Grid.Column="2"
-            Margin="2"
-            BackgroundColor="#2a2a2a"
-            IsEnabled="False"
-            Placeholder="Gastos"
-            PlaceholderColor="#7d7c7c"
-            TextColor="#cccccc" 
-            FontSize="11"/>
+        <!-- Botón de Exportar a Excel -->
+        <Button
+            Grid.Row="5"
+            Grid.ColumnSpan="3"
+            Margin="20"
+            Padding="12"
+            Clicked="OnExportarAExcelClicked"
+            FontSize="16"
+            Text="Exportar a Excel"
+            BackgroundColor="#9C27B0"
+            TextColor="White"
+            CornerRadius="8" />
     </Grid>
-    
-
 </ContentPage>
