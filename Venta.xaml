@@ -4,12 +4,13 @@
     xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
     xmlns:local="clr-namespace:Mercader"
-    Title="Venta"
+    Title="Ventas"
     BackgroundColor="#2a2a2a">
 
     <ContentPage.Resources>
         <ResourceDictionary>
             <local:GridLengthToDoubleConverter x:Key="GridLengthToDoubleConverter"/>
+            <local:AlternatingRowColorConverter x:Key="AlternatingRowColorConverter" />
         </ResourceDictionary>
     </ContentPage.Resources>
 
@@ -18,10 +19,7 @@
         Margin="10"
         Padding="10"
         Spacing="20">
-            <Label
-            HorizontalOptions="Center"
-            Text="ventas"
-            VerticalOptions="Center" />
+            
 
             <!-- Encabezados de las columnas -->
             <Grid Padding="0">
@@ -43,23 +41,28 @@
                         <SwipeView>
                             <SwipeView.RightItems>
                                 <SwipeItems>
-                                    <SwipeItem Text="Editar" BackgroundColor="LightBlue" Invoked="OnEditSwipeItemInvoked"/>
-                                    <SwipeItem Text="Eliminar" BackgroundColor="LightCoral" Invoked="OnDeleteSwipeItemInvoked"/>
+                                    <SwipeItem Text="Editar" BackgroundColor="#4CAF50" Invoked="OnEditSwipeItemInvoked"/>
+                                    <SwipeItem Text="Eliminar" BackgroundColor="#FF5722" Invoked="OnDeleteSwipeItemInvoked"/>
                                 </SwipeItems>
                             </SwipeView.RightItems>
-                            
-                                    <Grid Padding="1">
-                                        <Grid.ColumnDefinitions>
-                                            <ColumnDefinition Width="*" />
-                                            <ColumnDefinition Width="*" />
-                                            <ColumnDefinition Width="*" />
-                                            <ColumnDefinition Width="*" />
-                                        </Grid.ColumnDefinitions>
-                                        <Label Grid.Column="0" Text="{Binding Descripcion}" TextColor="#cccccc" />
-                                        <Label Grid.Column="1" Text="{Binding Precio}" TextColor="#cccccc"/>
-                                        <Label Grid.Column="2" Text="{Binding Cantidad}" TextColor="#cccccc"/>
-                                        <Label Grid.Column="3" Text="{Binding Fecha, StringFormat='{0:dd/MM/yyyy}'}" TextColor="#cccccc"/>
-                                    </Grid>
+
+                            <!-- Fila de la lista -->
+                            <Grid Padding="10">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="*" />
+                                </Grid.ColumnDefinitions>
+                                <!-- Usar el convertidor para alternar colores -->
+                                <Grid.BackgroundColor>
+                                    <Binding Path="." Converter="{StaticResource AlternatingRowColorConverter}" />
+                                </Grid.BackgroundColor>
+                                <Label Grid.Column="0" Text="{Binding Descripcion}" TextColor="#cccccc" />
+                                <Label Grid.Column="1" Text="{Binding Precio}" TextColor="#cccccc"/>
+                                <Label Grid.Column="2" Text="{Binding Cantidad}" TextColor="#cccccc"/>
+                                <Label Grid.Column="3" Text="{Binding Fecha, StringFormat='{0:dd/MM/yyyy}'}" TextColor="#cccccc"/>
+                            </Grid>
                         </SwipeView>
                     </DataTemplate>
                 </CollectionView.ItemTemplate>

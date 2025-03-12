@@ -56,7 +56,7 @@
                     HeightRequest="30"
                     HorizontalOptions="Center"
                     VerticalOptions="Center"
-                    CornerRadius="15" />
+                    CornerRadius="15"  />
                 <!-- Texto del ítem -->
                 <Label
                     Grid.Column="1"
