@@ -68,11 +68,13 @@
                     TextColor="#cccccc" />
                 <!-- Separador -->
                 <Rectangle
-                    Grid.ColumnSpan="2"
+                    Grid.ColumnSpan="3"
+                    Grid.RowSpan="2"
                     Fill="#7d7c7c"
                     HeightRequest="0.5"
                     VerticalOptions="End"
-                    Opacity="0.2" />
+                    Opacity="0.2" 
+                    />
             </Grid>
         </DataTemplate>
     </Shell.ItemTemplate>

@@ -19,10 +19,6 @@
             Padding="10"
             Spacing="20">
 
-            <Label
-                HorizontalOptions="Center"
-                Text="Encargos"
-                VerticalOptions="Center" />
 
             <!--  Encabezados de las columnas  -->
             <Grid Padding="0">
@@ -37,27 +33,27 @@
                 <Label
                     Grid.Column="0"
                     FontAttributes="Bold"
-                    Text="Nombre" />
+                    Text="Nombre" TextColor="#cccccc"/>
                 <Label
                     Grid.Column="1"
                     FontAttributes="Bold"
-                    Text="Descrip." />
+                    Text="Descrip." TextColor="#cccccc"/>
                 <Label
                     Grid.Column="2"
                     FontAttributes="Bold"
-                    Text="Precio" />
+                    Text="Precio" TextColor="#cccccc"/>
                 <Label
                     Grid.Column="3"
                     FontAttributes="Bold"
-                    Text="Cant." />
+                    Text="Cant." TextColor="#cccccc"/>
                 <Label
                     Grid.Column="4"
                     FontAttributes="Bold"
-                    Text="Fecha" />
+                    Text="Fecha" TextColor="#cccccc"/>
                 <Label
                     Grid.Column="5"
                     FontAttributes="Bold"
-                    Text="Fecha de entrega" />
+                    Text="Fecha de entrega" TextColor="#cccccc"/>
             </Grid>
 
             <CollectionView
@@ -114,7 +110,7 @@
                                     TextColor="#cccccc"/>
                                 <Label
                                     Grid.Column="5"
-                                    Text="{Binding FechaEntrega, StringFormat='{0:dd/MM/yyyy}'}"
+                                    Text="{Binding FechaEntrega, StringFormat='{0:dd/MM/yy}'}"
                                     TextColor="#cccccc" />
                             </Grid>
                         </SwipeView>

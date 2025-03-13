@@ -16,12 +16,7 @@
 
     <ScrollView>
         <VerticalStackLayout>
-            <Label
-                FontSize="Large"
-                TextColor="#cccccc"
-                HorizontalOptions="Center"
-                Text="Lista de Gastos"
-                VerticalOptions="Start" />
+          
 
             <!--  Encabezados de las columnas  -->
             <Grid Padding="1">

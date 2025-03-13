@@ -5,23 +5,23 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
     xmlns:local="clr-namespace:Mercader"
     Title="Ventas"
-    BackgroundColor="#2a2a2a">
+    BackgroundColor="Black">
 
     <ContentPage.Resources>
         <ResourceDictionary>
-            <local:GridLengthToDoubleConverter x:Key="GridLengthToDoubleConverter"/>
+            <local:GridLengthToDoubleConverter x:Key="GridLengthToDoubleConverter" />
             <local:AlternatingRowColorConverter x:Key="AlternatingRowColorConverter" />
         </ResourceDictionary>
     </ContentPage.Resources>
 
     <ScrollView>
         <VerticalStackLayout
-        Margin="10"
-        Padding="10"
-        Spacing="20">
-            
+            Margin="10"
+            Padding="10"
+            Spacing="20">
 
-            <!-- Encabezados de las columnas -->
+
+            <!--  Encabezados de las columnas  -->
             <Grid Padding="0">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="*" />
@@ -29,24 +29,49 @@
                     <ColumnDefinition Width="*" />
                     <ColumnDefinition Width="*" />
                 </Grid.ColumnDefinitions>
-                <Label Grid.Column="0" Text="Descripción" FontAttributes="Bold" />
-                <Label Grid.Column="1" Text="Precio" FontAttributes="Bold" />
-                <Label Grid.Column="2" Text="Cantidad" FontAttributes="Bold" />
-                <Label Grid.Column="3" Text="Fecha" FontAttributes="Bold" />
+                <Label
+                    Grid.Column="0"
+                    FontAttributes="Bold"
+                    Text="Descripción"
+                    TextColor="#cccccc" />
+                <Label
+                    Grid.Column="1"
+                    FontAttributes="Bold"
+                    Text="Precio"
+                    TextColor="#cccccc" />
+                <Label
+                    Grid.Column="2"
+                    FontAttributes="Bold"
+                    Text="Cantidad"
+                    TextColor="#cccccc" />
+                <Label
+                    Grid.Column="3"
+                    FontAttributes="Bold"
+                    Text="Fecha"
+                    TextColor="#cccccc" />
             </Grid>
 
-            <CollectionView x:Name="VentasCollectionView" SelectionMode="Single" SelectionChanged="OnSelectionChanged">
+            <CollectionView
+                x:Name="VentasCollectionView"
+                SelectionChanged="OnSelectionChanged"
+                SelectionMode="Single">
                 <CollectionView.ItemTemplate>
                     <DataTemplate>
                         <SwipeView>
                             <SwipeView.RightItems>
                                 <SwipeItems>
-                                    <SwipeItem Text="Editar" BackgroundColor="#4CAF50" Invoked="OnEditSwipeItemInvoked"/>
-                                    <SwipeItem Text="Eliminar" BackgroundColor="#FF5722" Invoked="OnDeleteSwipeItemInvoked"/>
+                                    <SwipeItem
+                                        BackgroundColor="#4CAF50"
+                                        Invoked="OnEditSwipeItemInvoked"
+                                        Text="Editar" />
+                                    <SwipeItem
+                                        BackgroundColor="#FF5722"
+                                        Invoked="OnDeleteSwipeItemInvoked"
+                                        Text="Eliminar" />
                                 </SwipeItems>
                             </SwipeView.RightItems>
 
-                            <!-- Fila de la lista -->
+                            <!--  Fila de la lista  -->
                             <Grid Padding="10">
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="*" />
@@ -54,14 +79,31 @@
                                     <ColumnDefinition Width="*" />
                                     <ColumnDefinition Width="*" />
                                 </Grid.ColumnDefinitions>
-                                <!-- Usar el convertidor para alternar colores -->
-                                <Grid.BackgroundColor>
-                                    <Binding Path="." Converter="{StaticResource AlternatingRowColorConverter}" />
-                                </Grid.BackgroundColor>
-                                <Label Grid.Column="0" Text="{Binding Descripcion}" TextColor="#cccccc" />
-                                <Label Grid.Column="1" Text="{Binding Precio}" TextColor="#cccccc"/>
-                                <Label Grid.Column="2" Text="{Binding Cantidad}" TextColor="#cccccc"/>
-                                <Label Grid.Column="3" Text="{Binding Fecha, StringFormat='{0:dd/MM/yyyy}'}" TextColor="#cccccc"/>
+                                <!--  Usar el convertidor para alternar colores  -->
+
+                                <Label
+                                    Grid.Column="0"
+                                    Text="{Binding Descripcion}"
+                                    TextColor="#cccccc" />
+                                <Label
+                                    Grid.Column="1"
+                                    Text="{Binding Precio}"
+                                    TextColor="#cccccc" />
+                                <Label
+                                    Grid.Column="2"
+                                    Text="{Binding Cantidad}"
+                                    TextColor="#cccccc" />
+                                <Label
+                                    Grid.Column="3"
+                                    Text="{Binding Fecha, StringFormat='{0:dd/MM/yy}'}"
+                                    TextColor="#cccccc" />
+                                <Rectangle
+                                    Grid.ColumnSpan="4"
+                                    Fill="#cccccc"
+                                    HeightRequest="0.8"
+                                    Opacity="0.5"
+                                    VerticalOptions="End" BackgroundColor="Azure" />
+                                
                             </Grid>
                         </SwipeView>
                     </DataTemplate>
