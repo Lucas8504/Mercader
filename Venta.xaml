@@ -32,18 +32,20 @@
                 <Label
                     Grid.Column="0"
                     FontAttributes="Bold"
+                    FontSize="15"
                     Text="Descripción"
                     TextColor="#cccccc" />
                 <Label
                     Grid.Column="1"
                     FontAttributes="Bold"
                     Text="Precio"
-                    TextColor="#cccccc" />
+                    TextColor="#cccccc"
+                    HorizontalTextAlignment="Center"/>
                 <Label
                     Grid.Column="2"
                     FontAttributes="Bold"
                     Text="Cantidad"
-                    TextColor="#cccccc" />
+                    TextColor="#cccccc"  HorizontalTextAlignment="Center"/>
                 <Label
                     Grid.Column="3"
                     FontAttributes="Bold"
@@ -88,16 +90,16 @@
                                     CornerRadius="4"/>
                                 <Label
                                     Grid.Column="0"
-                                    Text="{Binding Descripcion}"
-                                    TextColor="#cccccc" />
+                                    Text="{Binding  Descripcion}"
+                                    TextColor="#cccccc"  HorizontalTextAlignment="Center"/>
                                 <Label
                                     Grid.Column="1"
                                     Text="{Binding Precio}"
-                                    TextColor="#cccccc" />
+                                    TextColor="#cccccc"  HorizontalTextAlignment="Center" />
                                 <Label
                                     Grid.Column="2"
                                     Text="{Binding Cantidad}"
-                                    TextColor="#cccccc" />
+                                    TextColor="#cccccc"  HorizontalTextAlignment="Center"/>
                                 <Label
                                     Grid.Column="3"
                                     Text="{Binding Fecha, StringFormat='{0:dd/MM/yy}'}"
