@@ -55,6 +55,7 @@
                 x:Name="VentasCollectionView"
                 SelectionChanged="OnSelectionChanged"
                 SelectionMode="Single">
+
                 <CollectionView.ItemTemplate>
                     <DataTemplate>
                         <SwipeView>
@@ -72,15 +73,19 @@
                             </SwipeView.RightItems>
 
                             <!--  Fila de la lista  -->
-                            <Grid Padding="10">
+                            <Grid Padding="2">
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="*" />
                                     <ColumnDefinition Width="*" />
                                     <ColumnDefinition Width="*" />
                                     <ColumnDefinition Width="*" />
                                 </Grid.ColumnDefinitions>
-                                <!--  Usar el convertidor para alternar colores  -->
 
+                                <!--  Usar el convertidor para alternar colores  -->
+                                <BoxView
+                                    Grid.ColumnSpan="4"
+                                    BackgroundColor="{Binding ., Converter={StaticResource AlternatingRowColorConverter}}"
+                                    CornerRadius="4"/>
                                 <Label
                                     Grid.Column="0"
                                     Text="{Binding Descripcion}"
@@ -97,13 +102,6 @@
                                     Grid.Column="3"
                                     Text="{Binding Fecha, StringFormat='{0:dd/MM/yy}'}"
                                     TextColor="#cccccc" />
-                                <Rectangle
-                                    Grid.ColumnSpan="4"
-                                    Fill="#cccccc"
-                                    HeightRequest="0.8"
-                                    Opacity="0.5"
-                                    VerticalOptions="End" BackgroundColor="Azure" />
-                                
                             </Grid>
                         </SwipeView>
                     </DataTemplate>
