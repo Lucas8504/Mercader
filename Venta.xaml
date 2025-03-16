@@ -5,7 +5,8 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
     xmlns:local="clr-namespace:Mercader"
     Title="Ventas"
-    BackgroundColor="Black">
+    BackgroundColor="#1e1e1e">
+    <!-- Fondo oscuro para combinar con MainPage -->
 
     <ContentPage.Resources>
         <ResourceDictionary>
@@ -18,45 +19,59 @@
         <VerticalStackLayout
             Margin="10"
             Padding="10"
-            Spacing="20">
+            Spacing="15">
 
+            <!-- Título de la página -->
+            
 
-            <!--  Encabezados de las columnas  -->
-            <Grid Padding="0">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="*" />
-                    <ColumnDefinition Width="*" />
-                    <ColumnDefinition Width="*" />
-                    <ColumnDefinition Width="*" />
-                </Grid.ColumnDefinitions>
-                <Label
-                    Grid.Column="0"
-                    FontAttributes="Bold"
-                    FontSize="15"
-                    Text="Descripción"
-                    TextColor="#cccccc" />
-                <Label
-                    Grid.Column="1"
-                    FontAttributes="Bold"
-                    Text="Precio"
-                    TextColor="#cccccc"
-                    HorizontalTextAlignment="Center"/>
-                <Label
-                    Grid.Column="2"
-                    FontAttributes="Bold"
-                    Text="Cantidad"
-                    TextColor="#cccccc"  HorizontalTextAlignment="Center"/>
-                <Label
-                    Grid.Column="3"
-                    FontAttributes="Bold"
-                    Text="Fecha"
-                    TextColor="#cccccc" />
-            </Grid>
+            <!-- Encabezados de las columnas -->
+            <Frame
+                BackgroundColor="#2a2a2a"
+                CornerRadius="8"
+                Padding="10"
+                HasShadow="True"
+                >
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+                    <Label
+                        Grid.Column="0"
+                        Text="Descripción"
+                        FontAttributes="Bold"
+                        TextColor="#cccccc"
+                        HorizontalTextAlignment="Center" />
+                    <Label
+                        Grid.Column="1"
+                        Text="Precio"
+                        FontAttributes="Bold"
+                        TextColor="#cccccc"
+                        HorizontalTextAlignment="Center" />
+                    <Label
+                        Grid.Column="2"
+                        Text="Cantidad"
+                        FontAttributes="Bold"
+                        TextColor="#cccccc"
+                        HorizontalTextAlignment="Center" />
+                    <Label
+                        Grid.Column="3"
+                        Text="Fecha"
+                        FontAttributes="Bold"
+                        TextColor="#cccccc"
+                        HorizontalTextAlignment="Center" />
+                </Grid>
+            </Frame>
 
+            <!-- Lista de ventas -->
             <CollectionView
                 x:Name="VentasCollectionView"
                 SelectionChanged="OnSelectionChanged"
-                SelectionMode="Single">
+                SelectionMode="Single"
+                 >
+                <!-- Espacio entre filas -->
 
                 <CollectionView.ItemTemplate>
                     <DataTemplate>
@@ -64,47 +79,52 @@
                             <SwipeView.RightItems>
                                 <SwipeItems>
                                     <SwipeItem
+                                        Text="Editar"
                                         BackgroundColor="#4CAF50"
-                                        Invoked="OnEditSwipeItemInvoked"
-                                        Text="Editar" />
+                                        Invoked="OnEditSwipeItemInvoked" />
                                     <SwipeItem
+                                        Text="Eliminar"
                                         BackgroundColor="#FF5722"
-                                        Invoked="OnDeleteSwipeItemInvoked"
-                                        Text="Eliminar" />
+                                        Invoked="OnDeleteSwipeItemInvoked" />
                                 </SwipeItems>
                             </SwipeView.RightItems>
 
-                            <!--  Fila de la lista  -->
-                            <Grid Padding="2">
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="*" />
-                                    <ColumnDefinition Width="*" />
-                                    <ColumnDefinition Width="*" />
-                                    <ColumnDefinition Width="*" />
-                                </Grid.ColumnDefinitions>
-
-                                <!--  Usar el convertidor para alternar colores  -->
-                                <BoxView
-                                    Grid.ColumnSpan="4"
-                                    BackgroundColor="{Binding ., Converter={StaticResource AlternatingRowColorConverter}}"
-                                    CornerRadius="4"/>
-                                <Label
-                                    Grid.Column="0"
-                                    Text="{Binding  Descripcion}"
-                                    TextColor="#cccccc"  HorizontalTextAlignment="Center"/>
-                                <Label
-                                    Grid.Column="1"
-                                    Text="{Binding Precio}"
-                                    TextColor="#cccccc"  HorizontalTextAlignment="Center" />
-                                <Label
-                                    Grid.Column="2"
-                                    Text="{Binding Cantidad}"
-                                    TextColor="#cccccc"  HorizontalTextAlignment="Center"/>
-                                <Label
-                                    Grid.Column="3"
-                                    Text="{Binding Fecha, StringFormat='{0:dd/MM/yy}'}"
-                                    TextColor="#cccccc" />
-                            </Grid>
+                            <!-- Fila de la lista -->
+                            <Frame
+                                BackgroundColor= "#2a2a2a"
+                                CornerRadius="8"
+                                Padding="10"
+                                HasShadow="False">
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*" />
+                                        <ColumnDefinition Width="*" />
+                                        <ColumnDefinition Width="*" />
+                                        <ColumnDefinition Width="*" />
+                                    </Grid.ColumnDefinitions>
+                                    <Label
+                                        Grid.Column="0"
+                                        Text="{Binding Descripcion}"
+                                        TextColor="#cccccc"
+                                        HorizontalTextAlignment="Center" 
+                                        />
+                                    <Label
+                                        Grid.Column="1"
+                                        Text="{Binding Precio}"
+                                        TextColor="#cccccc"
+                                        HorizontalTextAlignment="Center" />
+                                    <Label
+                                        Grid.Column="2"
+                                        Text="{Binding Cantidad}"
+                                        TextColor="#cccccc"
+                                        HorizontalTextAlignment="Center" />
+                                    <Label
+                                        Grid.Column="3"
+                                        Text="{Binding Fecha, StringFormat='{0:dd/MM/yy}'}"
+                                        TextColor="#cccccc"
+                                        HorizontalTextAlignment="Center" />
+                                </Grid>
+                            </Frame>
                         </SwipeView>
                     </DataTemplate>
                 </CollectionView.ItemTemplate>
