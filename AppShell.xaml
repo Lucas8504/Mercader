@@ -5,27 +5,27 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
     xmlns:local="clr-namespace:Mercader"
     Title="Mercader"
-    BackgroundColor="Transparent"
-    Shell.FlyoutBehavior="Flyout"
-    FlyoutBackgroundColor="#801e1e1e">
-    <!-- Color semitransparente -->
+    BackgroundColor="#1e1e1e"
+    FlyoutBackgroundColor="#1e1e1e"
+    Shell.FlyoutBehavior="Flyout">
+    <!--  Fondo oscuro para el flyout  -->
 
-    <!-- Flyout Header -->
+    <!--  Flyout Header  -->
     <Shell.FlyoutHeader>
-        <Grid BackgroundColor="#1e1e1e" Padding="20">
+        <Grid Padding="20" BackgroundColor="#1e1e1e">
             <Label
+                FontAttributes="Bold"
                 FontSize="24"
                 HorizontalOptions="Center"
                 Text="Mercader"
                 TextColor="#cccccc"
-                VerticalOptions="Center"
-                FontAttributes="Bold" />
+                VerticalOptions="Center" />
         </Grid>
     </Shell.FlyoutHeader>
 
-    <!-- Flyout Footer -->
+    <!--  Flyout Footer  -->
     <Shell.FlyoutFooter>
-        <Grid BackgroundColor="#1e1e1e" Padding="10">
+        <Grid Padding="10" BackgroundColor="#1e1e1e">
             <Label
                 FontSize="14"
                 HorizontalOptions="Center"
@@ -35,7 +35,7 @@
         </Grid>
     </Shell.FlyoutFooter>
 
-    <!-- Shell Content -->
+    <!--  Shell Content  -->
     <ShellContent
         Title="Home"
         ContentTemplate="{DataTemplate local:MainPage}"
@@ -44,37 +44,39 @@
     <ShellContent Title="Ventas" ContentTemplate="{DataTemplate local:Venta}" />
     <ShellContent Title="Gasto" ContentTemplate="{DataTemplate local:Gastos}" />
 
-    <!-- Item Template -->
+    <!--  Item Template  -->
     <Shell.ItemTemplate>
         <DataTemplate>
-            <Grid ColumnDefinitions=".2*, .8*" HeightRequest="50" RowSpacing="3">
-                <!-- Icono (puedes agregar un Image si tienes íconos) -->
+            <Grid
+                ColumnDefinitions=".2*, .8*"
+                HeightRequest="50"
+                RowSpacing="0">
+                <!--  Icono (puedes agregar un Image si tienes íconos)  -->
                 <BoxView
                     Grid.Column="0"
                     BackgroundColor="#4CAF50"
-                    WidthRequest="30"
+                    CornerRadius="15"
                     HeightRequest="30"
                     HorizontalOptions="Center"
                     VerticalOptions="Center"
-                    CornerRadius="15"  />
-                <!-- Texto del ítem -->
+                    WidthRequest="30" />
+                <!--  Texto del ítem  -->
                 <Label
                     Grid.Column="1"
                     Margin="10,0,0,0"
-                    HorizontalOptions="Start"
-                    VerticalOptions="Center"
                     FontSize="17"
+                    HorizontalOptions="Start"
                     Text="{Binding Title}"
-                    TextColor="#cccccc" />
-                <!-- Separador -->
+                    TextColor="#cccccc"
+                    VerticalOptions="Center" />
+                <!--  Texto claro para contraste  -->
+                <!--  Separador  -->
                 <Rectangle
-                    Grid.ColumnSpan="3"
-                    Grid.RowSpan="2"
+                    Grid.ColumnSpan="2"
                     Fill="#7d7c7c"
                     HeightRequest="0.5"
-                    VerticalOptions="End"
-                    Opacity="0.2" 
-                    />
+                    Opacity="0.2"
+                    VerticalOptions="End" />
             </Grid>
         </DataTemplate>
     </Shell.ItemTemplate>

@@ -94,9 +94,6 @@
 	  <MauiXaml Update="Gastos.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
-	  <MauiXaml Update="NuevoLibro.xaml">
-	    <Generator>MSBuild:Compile</Generator>
-	  </MauiXaml>
 	  <MauiXaml Update="Venta.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
