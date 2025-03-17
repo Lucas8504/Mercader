@@ -35,14 +35,6 @@
         </Grid>
     </Shell.FlyoutFooter>
 
-    <!--  Shell Content  -->
-    <ShellContent
-        Title="Home"
-        ContentTemplate="{DataTemplate local:MainPage}"
-        Route="MainPage" />
-    <ShellContent Title="Encargo" ContentTemplate="{DataTemplate local:Encargos}" />
-    <ShellContent Title="Ventas" ContentTemplate="{DataTemplate local:Venta}" />
-    <ShellContent Title="Gasto" ContentTemplate="{DataTemplate local:Gastos}" />
 
     <!--  Item Template  -->
     <Shell.ItemTemplate>
@@ -80,4 +72,15 @@
             </Grid>
         </DataTemplate>
     </Shell.ItemTemplate>
+
+    <!--  Shell Content  -->
+    <ShellContent
+        Title="Home"
+        ContentTemplate="{DataTemplate local:MainPage}"
+        Route="MainPage" />
+    <ShellContent Title="Encargo" ContentTemplate="{DataTemplate local:Encargos}" />
+    <ShellContent Title="Ventas" ContentTemplate="{DataTemplate local:Venta}" />
+    <ShellContent Title="Gasto" ContentTemplate="{DataTemplate local:Gastos}" />
+
+
 </Shell>
