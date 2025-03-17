@@ -5,10 +5,10 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
     xmlns:local="clr-namespace:Mercader"
     Title="Mercader"
-    BackgroundColor="#1e1e1e"
+    BackgroundColor="#6490E9"
     FlyoutBackgroundColor="#1e1e1e"
     Shell.FlyoutBehavior="Flyout">
-    <!--  Fondo oscuro para el flyout  -->
+    
 
     <!--  Flyout Header  -->
     <Shell.FlyoutHeader>
@@ -40,7 +40,7 @@
     <Shell.ItemTemplate>
         <DataTemplate>
             <Grid
-                ColumnDefinitions=".2*, .8*"
+                ColumnDefinitions=".2*,  .8*"
                 HeightRequest="50"
                 RowSpacing="0">
                 <!--  Icono (puedes agregar un Image si tienes íconos)  -->

@@ -144,8 +144,8 @@
             Clicked="OnExportarAExcelClicked"
             FontSize="16"
             Text="Exportar a Excel"
-            BackgroundColor="#9C27B0"
-            TextColor="White"
+            BackgroundColor="#6490E9"
+            TextColor="#1e1e1e"
             CornerRadius="8" />
     </Grid>
 </ContentPage>
