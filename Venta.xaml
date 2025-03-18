@@ -6,7 +6,7 @@
     xmlns:local="clr-namespace:Mercader"
     Title="Ventas"
     BackgroundColor="#1e1e1e">
-    <!-- Fondo oscuro para combinar con MainPage -->
+    <!--  Fondo oscuro para combinar con MainPage  -->
 
     <ContentPage.Resources>
         <ResourceDictionary>
@@ -21,16 +21,15 @@
             Padding="10"
             Spacing="15">
 
-            <!-- Título de la página -->
-            
+            <!--  Título de la página  -->
 
-            <!-- Encabezados de las columnas -->
+
+            <!--  Encabezados de las columnas  -->
             <Frame
+                Padding="10"
                 BackgroundColor="#2a2a2a"
                 CornerRadius="8"
-                Padding="10"
-                HasShadow="True"
-                >
+                HasShadow="True">
                 <Grid>
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="*" />
@@ -40,38 +39,37 @@
                     </Grid.ColumnDefinitions>
                     <Label
                         Grid.Column="0"
-                        Text="Descripción"
                         FontAttributes="Bold"
-                        TextColor="#cccccc"
-                        HorizontalTextAlignment="Center" />
+                        HorizontalTextAlignment="Center"
+                        Text="Descripción"
+                        TextColor="#cccccc" />
                     <Label
                         Grid.Column="1"
-                        Text="Precio"
                         FontAttributes="Bold"
-                        TextColor="#cccccc"
-                        HorizontalTextAlignment="Center" />
+                        HorizontalTextAlignment="Center"
+                        Text="Precio"
+                        TextColor="#cccccc" />
                     <Label
                         Grid.Column="2"
-                        Text="Cantidad"
                         FontAttributes="Bold"
-                        TextColor="#cccccc"
-                        HorizontalTextAlignment="Center" />
+                        HorizontalTextAlignment="Center"
+                        Text="Cantidad"
+                        TextColor="#cccccc" />
                     <Label
                         Grid.Column="3"
-                        Text="Fecha"
                         FontAttributes="Bold"
-                        TextColor="#cccccc"
-                        HorizontalTextAlignment="Center" />
+                        HorizontalTextAlignment="Center"
+                        Text="Fecha"
+                        TextColor="#cccccc" />
                 </Grid>
             </Frame>
 
-            <!-- Lista de ventas -->
+            <!--  Lista de ventas  -->
             <CollectionView
                 x:Name="VentasCollectionView"
                 SelectionChanged="OnSelectionChanged"
-                SelectionMode="Single"
-                 >
-                <!-- Espacio entre filas -->
+                SelectionMode="Single">
+                <!--  Espacio entre filas  -->
 
                 <CollectionView.ItemTemplate>
                     <DataTemplate>
@@ -79,21 +77,21 @@
                             <SwipeView.RightItems>
                                 <SwipeItems>
                                     <SwipeItem
-                                        Text="Editar"
                                         BackgroundColor="#4CAF50"
-                                        Invoked="OnEditSwipeItemInvoked" />
+                                        Invoked="OnEditSwipeItemInvoked"
+                                        Text="Editar" />
                                     <SwipeItem
-                                        Text="Eliminar"
                                         BackgroundColor="#FF5722"
-                                        Invoked="OnDeleteSwipeItemInvoked" />
+                                        Invoked="OnDeleteSwipeItemInvoked"
+                                        Text="Eliminar" />
                                 </SwipeItems>
                             </SwipeView.RightItems>
 
-                            <!-- Fila de la lista -->
+                            <!--  Fila de la lista  -->
                             <Frame
-                                BackgroundColor= "#2a2a2a"
-                                CornerRadius="8"
                                 Padding="10"
+                                BackgroundColor="#2a2a2a"
+                                CornerRadius="8"
                                 HasShadow="False">
                                 <Grid>
                                     <Grid.ColumnDefinitions>
@@ -104,25 +102,24 @@
                                     </Grid.ColumnDefinitions>
                                     <Label
                                         Grid.Column="0"
+                                        HorizontalTextAlignment="Center"
                                         Text="{Binding Descripcion}"
-                                        TextColor="#cccccc"
-                                        HorizontalTextAlignment="Center" 
-                                        />
+                                        TextColor="#cccccc" />
                                     <Label
                                         Grid.Column="1"
+                                        HorizontalTextAlignment="Center"
                                         Text="{Binding Precio}"
-                                        TextColor="#cccccc"
-                                        HorizontalTextAlignment="Center" />
+                                        TextColor="#cccccc" />
                                     <Label
                                         Grid.Column="2"
+                                        HorizontalTextAlignment="Center"
                                         Text="{Binding Cantidad}"
-                                        TextColor="#cccccc"
-                                        HorizontalTextAlignment="Center" />
+                                        TextColor="#cccccc" />
                                     <Label
                                         Grid.Column="3"
+                                        HorizontalTextAlignment="Center"
                                         Text="{Binding Fecha, StringFormat='{0:dd/MM/yy}'}"
-                                        TextColor="#cccccc"
-                                        HorizontalTextAlignment="Center" />
+                                        TextColor="#cccccc" />
                                 </Grid>
                             </Frame>
                         </SwipeView>

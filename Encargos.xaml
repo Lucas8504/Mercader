@@ -6,7 +6,7 @@
     xmlns:local="clr-namespace:Mercader"
     Title="Encargos"
     BackgroundColor="#1e1e1e">
-    <!-- Fondo oscuro para combinar con MainPage -->
+    <!--  Fondo oscuro para combinar con MainPage  -->
 
     <ContentPage.Resources>
         <ResourceDictionary>
@@ -22,11 +22,11 @@
             Spacing="15">
 
 
-            <!-- Encabezados de las columnas -->
+            <!--  Encabezados de las columnas  -->
             <Frame
+                Padding="10"
                 BackgroundColor="#2a2a2a"
                 CornerRadius="8"
-                Padding="10"
                 HasShadow="False">
                 <Grid>
                     <Grid.ColumnDefinitions>
@@ -39,50 +39,49 @@
                     </Grid.ColumnDefinitions>
                     <Label
                         Grid.Column="0"
-                        Text="Nombre"
                         FontAttributes="Bold"
-                        TextColor="#cccccc"
-                        HorizontalTextAlignment="Center" />
+                        HorizontalTextAlignment="Center"
+                        Text="Nombre"
+                        TextColor="#cccccc" />
                     <Label
                         Grid.Column="1"
-                        Text="Descr."
                         FontAttributes="Bold"
-                        TextColor="#cccccc"
-                        HorizontalTextAlignment="Center" />
+                        HorizontalTextAlignment="Center"
+                        Text="Descr."
+                        TextColor="#cccccc" />
                     <Label
                         Grid.Column="2"
-                        Text="Precio"
                         FontAttributes="Bold"
-                        TextColor="#cccccc"
-                        HorizontalTextAlignment="Center" />
+                        HorizontalTextAlignment="Center"
+                        Text="Precio"
+                        TextColor="#cccccc" />
                     <Label
                         Grid.Column="3"
-                        Text="Cant."
                         FontAttributes="Bold"
-                        TextColor="#cccccc"
-                        HorizontalTextAlignment="Center" />
+                        HorizontalTextAlignment="Center"
+                        Text="Cant."
+                        TextColor="#cccccc" />
                     <Label
                         Grid.Column="4"
-                        Text="Fecha"
                         FontAttributes="Bold"
-                        TextColor="#cccccc"
-                        HorizontalTextAlignment="Center" />
+                        HorizontalTextAlignment="Center"
+                        Text="Fecha"
+                        TextColor="#cccccc" />
                     <Label
                         Grid.Column="5"
-                        Text="Entrega"
                         FontAttributes="Bold"
-                        TextColor="#cccccc"
-                        HorizontalTextAlignment="Center" />
+                        HorizontalTextAlignment="Center"
+                        Text="Entrega"
+                        TextColor="#cccccc" />
                 </Grid>
             </Frame>
 
-            <!-- Lista de encargos -->
+            <!--  Lista de encargos  -->
             <CollectionView
                 x:Name="EncargosCollectionView"
                 SelectionChanged="OnSelectionChanged"
-                SelectionMode="Single"
-                >
-                <!-- Espacio entre filas -->
+                SelectionMode="Single">
+                <!--  Espacio entre filas  -->
 
                 <CollectionView.ItemTemplate>
                     <DataTemplate>
@@ -90,25 +89,25 @@
                             <SwipeView.RightItems>
                                 <SwipeItems>
                                     <SwipeItem
-                                        Text="Editar"
                                         BackgroundColor="#4CAF50"
-                                        Invoked="OnEditSwipeItemInvoked" />
+                                        Invoked="OnEditSwipeItemInvoked"
+                                        Text="Editar" />
                                     <SwipeItem
-                                        Text="Eliminar"
                                         BackgroundColor="#FF5722"
-                                        Invoked="OnDeleteSwipeItemInvoked" />
+                                        Invoked="OnDeleteSwipeItemInvoked"
+                                        Text="Eliminar" />
                                     <SwipeItem
-                                        Text="Concretar Venta"
                                         BackgroundColor="#2196F3"
-                                        Invoked="OnConcretarVentaSwipeItemInvoked" />
+                                        Invoked="OnConcretarVentaSwipeItemInvoked"
+                                        Text="Concretar Venta" />
                                 </SwipeItems>
                             </SwipeView.RightItems>
 
-                            <!-- Fila de la lista -->
+                            <!--  Fila de la lista  -->
                             <Frame
+                                Padding="10"
                                 BackgroundColor="{Binding ., Converter={StaticResource AlternatingRowColorConverter}}"
                                 CornerRadius="8"
-                                Padding="10"
                                 HasShadow="False">
                                 <Grid>
                                     <Grid.ColumnDefinitions>
@@ -121,34 +120,34 @@
                                     </Grid.ColumnDefinitions>
                                     <Label
                                         Grid.Column="0"
+                                        HorizontalTextAlignment="Center"
                                         Text="{Binding Nombre}"
-                                        TextColor="#cccccc"
-                                        HorizontalTextAlignment="Center" />
+                                        TextColor="#cccccc" />
                                     <Label
                                         Grid.Column="1"
+                                        HorizontalTextAlignment="Center"
                                         Text="{Binding Descripcion}"
-                                        TextColor="#cccccc"
-                                        HorizontalTextAlignment="Center" />
+                                        TextColor="#cccccc" />
                                     <Label
                                         Grid.Column="2"
+                                        HorizontalTextAlignment="Center"
                                         Text="{Binding Precio}"
-                                        TextColor="#cccccc"
-                                        HorizontalTextAlignment="Center" />
+                                        TextColor="#cccccc" />
                                     <Label
                                         Grid.Column="3"
+                                        HorizontalTextAlignment="Center"
                                         Text="{Binding Cantidad}"
-                                        TextColor="#cccccc"
-                                        HorizontalTextAlignment="Center" />
+                                        TextColor="#cccccc" />
                                     <Label
                                         Grid.Column="4"
+                                        HorizontalTextAlignment="Center"
                                         Text="{Binding Fecha, StringFormat='{0:dd/MM/yy}'}"
-                                        TextColor="#cccccc"
-                                        HorizontalTextAlignment="Center" />
+                                        TextColor="#cccccc" />
                                     <Label
                                         Grid.Column="5"
+                                        HorizontalTextAlignment="Center"
                                         Text="{Binding FechaEntrega, StringFormat='{0:dd/MM/yy}'}"
-                                        TextColor="#cccccc"
-                                        HorizontalTextAlignment="Center" />
+                                        TextColor="#cccccc" />
                                 </Grid>
                             </Frame>
                         </SwipeView>

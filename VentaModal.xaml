@@ -3,34 +3,88 @@
     x:Class="Mercader.VentaModal"
     xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-    Title="VentaModal">
-    <StackLayout
-        Margin="10"
-        Padding="10"
-        Spacing="20">
-        <Label
-            HorizontalOptions="Center"
-            Text="Agregar Venta"
-            VerticalOptions="Center" />
+    Title="Agregar Venta"
+    BackgroundColor="#1e1e1e">
+    <!-- Fondo oscuro para combinar con MainPage -->
 
-        <Entry
-            x:Name="DescripcionV_Entry"
-            Keyboard="Default"
-            Placeholder="Descripción" />
+    <ScrollView>
+        <VerticalStackLayout
+            Margin="20"
+            Padding="20"
+            Spacing="20">
 
-        <Entry
-            x:Name="PrecioEntry"
-            Keyboard="Numeric"
-            Placeholder="Precio" />
+            <!-- Título de la página -->
+            <Label
+                Text="Agregar Venta"
+                FontSize="20"
+                FontAttributes="Bold"
+                TextColor="#cccccc"
+                HorizontalOptions="Center" />
 
-        <Entry
-            x:Name="CantidadEntry"
-            Keyboard="Numeric"
-            Placeholder="Cantidad" />
+            <!-- Campo de Descripción -->
+            <Frame
+                BackgroundColor="#2a2a2a"
+                CornerRadius="8"
+                Padding="10"
+                HasShadow="False">
+                <Entry
+                    x:Name="DescripcionV_Entry"
+                    Keyboard="Default"
+                    Placeholder="Descripción"
+                    PlaceholderColor="#7d7c7c"
+                    TextColor="#cccccc"
+                    BackgroundColor="Transparent" />
+            </Frame>
 
-        <Button Clicked="OnAgregarVentaClicked" Text="Agregar" />
+            <!-- Campo de Precio -->
+            <Frame
+                BackgroundColor="#2a2a2a"
+                CornerRadius="8"
+                Padding="10"
+                HasShadow="False">
+                <Entry
+                    x:Name="PrecioEntry"
+                    Keyboard="Numeric"
+                    Placeholder="Precio"
+                    PlaceholderColor="#7d7c7c"
+                    TextColor="#cccccc"
+                    BackgroundColor="Transparent" />
+            </Frame>
 
-        <Button Clicked="Cancelar" Text="Cancelar" />
+            <!-- Campo de Cantidad -->
+            <Frame
+                BackgroundColor="#2a2a2a"
+                CornerRadius="8"
+                Padding="10"
+                HasShadow="False">
+                <Entry
+                    x:Name="CantidadEntry"
+                    Keyboard="Numeric"
+                    Placeholder="Cantidad"
+                    PlaceholderColor="#7d7c7c"
+                    TextColor="#cccccc"
+                    BackgroundColor="Transparent" />
+            </Frame>
 
-    </StackLayout>
+            <!-- Botón Agregar -->
+            <Button
+                Clicked="OnAgregarVentaClicked"
+                Text="Agregar"
+                BackgroundColor="#4CAF50"
+                TextColor="White"
+                CornerRadius="8"
+                FontSize="16"
+                Padding="15" />
+
+            <!-- Botón Cancelar -->
+            <Button
+                Clicked="Cancelar"
+                Text="Cancelar"
+                BackgroundColor="#FF5722"
+                TextColor="White"
+                CornerRadius="8"
+                FontSize="16"
+                Padding="15" />
+        </VerticalStackLayout>
+    </ScrollView>
 </ContentPage>
