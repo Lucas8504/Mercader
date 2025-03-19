@@ -3,39 +3,113 @@
     x:Class="Mercader.EncModal"
     xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-    Title="EncModal">
-    <StackLayout
-        Margin="10"
-        Padding="10"
-        Spacing="20">
-        <Label
-            HorizontalOptions="Center"
-            Text="Agregar Encargo"
-            VerticalOptions="Center" />
+    Title="Agregar Encargo"
+    BackgroundColor="#1e1e1e">
+    <!-- Fondo oscuro para combinar con MainPage -->
 
-        <Entry x:Name="EncargoEntry" Placeholder="Nombre del encargo" />
+    <ScrollView>
+        <VerticalStackLayout
+            Margin="20"
+            Padding="20"
+            Spacing="20">
 
-        <Entry x:Name="DescripcionEntry" Placeholder="Descripcion" />
+            <!-- Título de la página -->
+            <Label
+                Text="Agregar Encargo"
+                FontSize="20"
+                FontAttributes="Bold"
+                TextColor="#cccccc"
+                HorizontalOptions="Center" />
 
-        <DatePicker x:Name="FechaEntregaDatePicker" />
+            <!-- Campo de Nombre del Encargo -->
+            <Frame
+                BackgroundColor="#2a2a2a"
+                CornerRadius="8"
+                Padding="10"
+                HasShadow="False">
+                <Entry
+                    x:Name="EncargoEntry"
+                    Placeholder="Nombre del encargo"
+                    PlaceholderColor="#7d7c7c"
+                    TextColor="#cccccc"
+                    BackgroundColor="Transparent" />
+            </Frame>
 
-        <Entry
-            x:Name="PrecioEntry"
-            Keyboard="Numeric"
-            Placeholder="Precio" />
+            <!-- Campo de Descripción -->
+            <Frame
+                BackgroundColor="#2a2a2a"
+                CornerRadius="8"
+                Padding="10"
+                HasShadow="False">
+                <Entry
+                    x:Name="DescripcionEntry"
+                    Placeholder="Descripción"
+                    PlaceholderColor="#7d7c7c"
+                    TextColor="#cccccc"
+                    BackgroundColor="Transparent" />
+            </Frame>
 
-        <Entry
-            x:Name="CantidadEntry"
-            Keyboard="Numeric"
-            Placeholder="Cantidad" />
+            <!-- Campo de Fecha de Entrega -->
+            <Frame
+                BackgroundColor="#2a2a2a"
+                CornerRadius="8"
+                Padding="10"
+                HasShadow="False">
+                <DatePicker
+                    x:Name="FechaEntregaDatePicker"
+                    TextColor="#cccccc"
+                    BackgroundColor="Transparent" />
+            </Frame>
 
+            <!-- Campo de Precio -->
+            <Frame
+                BackgroundColor="#2a2a2a"
+                CornerRadius="8"
+                Padding="10"
+                HasShadow="False">
+                <Entry
+                    x:Name="PrecioEntry"
+                    Keyboard="Numeric"
+                    Placeholder="Precio"
+                    PlaceholderColor="#7d7c7c"
+                    TextColor="#cccccc"
+                    BackgroundColor="Transparent" />
+            </Frame>
 
+            <!-- Campo de Cantidad -->
+            <Frame
+                BackgroundColor="#2a2a2a"
+                CornerRadius="8"
+                Padding="10"
+                HasShadow="False">
+                <Entry
+                    x:Name="CantidadEntry"
+                    Keyboard="Numeric"
+                    Placeholder="Cantidad"
+                    PlaceholderColor="#7d7c7c"
+                    TextColor="#cccccc"
+                    BackgroundColor="Transparent" />
+            </Frame>
 
-        <Button Clicked="OnAgregarEncargoClicked" Text="Agregar Encargo" />
+            <!-- Botón Agregar Encargo -->
+            <Button
+                Clicked="OnAgregarEncargoClicked"
+                Text="Agregar Encargo"
+                BackgroundColor="#4CAF50"
+                TextColor="White"
+                CornerRadius="8"
+                FontSize="16"
+                Padding="15" />
 
-        <Button Clicked="Cancelar" Text="Cancelar" />
-
-
-
-    </StackLayout>
+            <!-- Botón Cancelar -->
+            <Button
+                Clicked="Cancelar"
+                Text="Cancelar"
+                BackgroundColor="#FF5722"
+                TextColor="White"
+                CornerRadius="8"
+                FontSize="16"
+                Padding="15" />
+        </VerticalStackLayout>
+    </ScrollView>
 </ContentPage>
