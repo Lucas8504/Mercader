@@ -3,31 +3,87 @@
     x:Class="Mercader.GastoModal"
     xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-    Title="GastoModal">
-    <StackLayout
-        Margin="10"
-        Padding="10"
-        Spacing="20">
-        <Label
-            HorizontalOptions="Center"
-            Text="Nuevo gasto"
-            VerticalOptions="Center" />
+    Title="Nuevo Gasto"
+    BackgroundColor="#1e1e1e">
+    <!-- Fondo oscuro para combinar con MainPage -->
 
-        <Entry x:Name="DescripcionGastoEntry" Placeholder="Descripción del gasto" />
+    <ScrollView>
+        <VerticalStackLayout
+            Margin="20"
+            Padding="20"
+            Spacing="20">
 
-        <Entry
-            x:Name="MontoGastoEntry"
-            Keyboard="Numeric"
-            Placeholder="Monto" />
+            <!-- Título de la página -->
+            <Label
+                Text="Nuevo Gasto"
+                FontSize="20"
+                FontAttributes="Bold"
+                TextColor="#cccccc"
+                HorizontalOptions="Center" />
 
-        <Entry
-            x:Name="CantidadG_Entry"
-            Keyboard="Numeric"
-            Placeholder="Cantidad" />
+            <!-- Campo de Descripción -->
+            <Frame
+                BackgroundColor="#2a2a2a"
+                CornerRadius="8"
+                Padding="10"
+                HasShadow="False">
+                <Entry
+                    x:Name="DescripcionGastoEntry"
+                    Placeholder="Descripción del gasto"
+                    PlaceholderColor="#7d7c7c"
+                    TextColor="#cccccc"
+                    BackgroundColor="Transparent" />
+            </Frame>
 
-        <Button Clicked="OnAgregarGastoClicked" Text="Agregar Gasto" />
+            <!-- Campo de Monto -->
+            <Frame
+                BackgroundColor="#2a2a2a"
+                CornerRadius="8"
+                Padding="10"
+                HasShadow="False">
+                <Entry
+                    x:Name="MontoGastoEntry"
+                    Keyboard="Numeric"
+                    Placeholder="Monto"
+                    PlaceholderColor="#7d7c7c"
+                    TextColor="#cccccc"
+                    BackgroundColor="Transparent" />
+            </Frame>
 
-        <Button Clicked="Cancelar" Text="Cancelar" />
+            <!-- Campo de Cantidad -->
+            <Frame
+                BackgroundColor="#2a2a2a"
+                CornerRadius="8"
+                Padding="10"
+                HasShadow="False">
+                <Entry
+                    x:Name="CantidadG_Entry"
+                    Keyboard="Numeric"
+                    Placeholder="Cantidad"
+                    PlaceholderColor="#7d7c7c"
+                    TextColor="#cccccc"
+                    BackgroundColor="Transparent" />
+            </Frame>
 
-    </StackLayout>
+            <!-- Botón Agregar Gasto -->
+            <Button
+                Clicked="OnAgregarGastoClicked"
+                Text="Agregar Gasto"
+                BackgroundColor="#4CAF50"
+                TextColor="White"
+                CornerRadius="8"
+                FontSize="16"
+                Padding="15" />
+
+            <!-- Botón Cancelar -->
+            <Button
+                Clicked="Cancelar"
+                Text="Cancelar"
+                BackgroundColor="#FF5722"
+                TextColor="White"
+                CornerRadius="8"
+                FontSize="16"
+                Padding="15" />
+        </VerticalStackLayout>
+    </ScrollView>
 </ContentPage>
