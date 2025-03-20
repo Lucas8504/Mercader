@@ -43,15 +43,21 @@
                 ColumnDefinitions=".2*,  .8*"
                 HeightRequest="50"
                 RowSpacing="0">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                </Grid.RowDefinitions>
                 <!--  Icono (puedes agregar un Image si tienes íconos)  -->
                 <BoxView
                     Grid.Column="0"
                     BackgroundColor="#4CAF50"
-                    CornerRadius="15"
-                    HeightRequest="30"
+                    CornerRadius="20"
+                    HeightRequest="20"
                     HorizontalOptions="Center"
                     VerticalOptions="Center"
-                    WidthRequest="30" />
+                    WidthRequest="20" />
                 <!--  Texto del ítem  -->
                 <Label
                     Grid.Column="1"
@@ -62,13 +68,7 @@
                     TextColor="#cccccc"
                     VerticalOptions="Center" />
                 <!--  Texto claro para contraste  -->
-                <!--  Separador  -->
-                <Rectangle
-                    Grid.ColumnSpan="2"
-                    Fill="#7d7c7c"
-                    HeightRequest="0.5"
-                    Opacity="0.2"
-                    VerticalOptions="End" />
+                
             </Grid>
         </DataTemplate>
     </Shell.ItemTemplate>
@@ -77,10 +77,11 @@
     <ShellContent
         Title="Home"
         ContentTemplate="{DataTemplate local:MainPage}"
-        Route="MainPage" />
-    <ShellContent Title="Encargo" ContentTemplate="{DataTemplate local:Encargos}" />
-    <ShellContent Title="Ventas" ContentTemplate="{DataTemplate local:Venta}" />
-    <ShellContent Title="Gasto" ContentTemplate="{DataTemplate local:Gastos}" />
+        Route="MainPage"
+        Grid.Row="0"/>
+    <ShellContent Title="Encargo" ContentTemplate="{DataTemplate local:Encargos}" Grid.Row="1" />
+    <ShellContent Title="Ventas" ContentTemplate="{DataTemplate local:Venta}"  Grid.Row="2"/>
+    <ShellContent Title="Gasto" ContentTemplate="{DataTemplate local:Gastos}"  Grid.Row="3"/>
 
 
 </Shell>

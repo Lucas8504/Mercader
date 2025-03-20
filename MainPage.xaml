@@ -6,11 +6,7 @@
     xmlns:local="clr-namespace:Mercader"
     BackgroundColor="#1e1e1e">
 
-    <ContentPage.Resources>
-        <ResourceDictionary>
-            <local:GridLengthToDoubleConverter x:Key="GridLengthToDoubleConverter" />
-        </ResourceDictionary>
-    </ContentPage.Resources>
+   
 
     <Grid>
         <Grid.RowDefinitions>
