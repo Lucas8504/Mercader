@@ -43,21 +43,17 @@
                 ColumnDefinitions=".2*,  .8*"
                 HeightRequest="50"
                 RowSpacing="0">
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="Auto" />
-                    <RowDefinition Height="Auto" />
-                    <RowDefinition Height="Auto" />
-                    <RowDefinition Height="Auto" />
-                </Grid.RowDefinitions>
+               
                 <!--  Icono (puedes agregar un Image si tienes íconos)  -->
                 <BoxView
                     Grid.Column="0"
+                    Grid.RowSpan="3"
                     BackgroundColor="#4CAF50"
-                    CornerRadius="20"
-                    HeightRequest="20"
+                    CornerRadius="15"
+                    HeightRequest="30"
                     HorizontalOptions="Center"
                     VerticalOptions="Center"
-                    WidthRequest="20" />
+                    WidthRequest="30" />
                 <!--  Texto del ítem  -->
                 <Label
                     Grid.Column="1"
@@ -68,7 +64,15 @@
                     TextColor="#cccccc"
                     VerticalOptions="Center" />
                 <!--  Texto claro para contraste  -->
-                
+                <!--  Separador  -->
+                <Rectangle
+                    Grid.ColumnSpan="3"
+                    Grid.RowSpan="4"
+                    Fill="#7d7c7c"
+                    HeightRequest="0.5"
+                    Opacity="0.2"
+                    VerticalOptions="End"
+                   />
             </Grid>
         </DataTemplate>
     </Shell.ItemTemplate>
