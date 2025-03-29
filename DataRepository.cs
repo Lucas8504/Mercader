@@ -120,6 +120,34 @@ namespace Mercader
             return await _database.Table<Gasto>().ToListAsync();
         }
 
+        // Obtener ventas de los últimos 6 meses
+        public async Task<List<Ventas>> GetVentasUltimos6MesesAsync()
+        {
+            if (_database is null)
+            {
+                throw new InvalidOperationException("La base de datos no está inicializada.");
+            }
+
+            DateTime fechaInicio = DateTime.Now.AddMonths(-6);
+            return await _database.Table<Ventas>()
+                                .Where(v => v.Fecha >= fechaInicio)
+                                .ToListAsync();
+        }
+
+        // Obtener gastos de los últimos 6 meses
+        public async Task<List<Gasto>> GetGastosUltimos6MesesAsync()
+        {
+            if (_database is null)
+            {
+                throw new InvalidOperationException("La base de datos no está inicializada.");
+            }
+
+            DateTime fechaInicio = DateTime.Now.AddMonths(-6);
+            return await _database.Table<Gasto>()
+                                .Where(g => g.Fecha >= fechaInicio)
+                                .ToListAsync();
+        }
+
         // Métodos para eliminar datos
         public async Task<int> DeleteEncargoAsync(Encargo encargo)
         {
