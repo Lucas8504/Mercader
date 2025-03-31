@@ -8,142 +8,104 @@
 
     <ScrollView>
 
-      <Grid>
-        <Grid.RowDefinitions>
-            <RowDefinition Height="Auto" />
-            <RowDefinition Height="Auto" />
-            <RowDefinition Height="Auto" />
-            <RowDefinition Height="Auto" />
-            <RowDefinition Height="Auto" />
-            <RowDefinition Height="Auto" />
-        </Grid.RowDefinitions>
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="*" />
-            <ColumnDefinition Width="*" />
-            <ColumnDefinition Width="*" />
-        </Grid.ColumnDefinitions>
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
 
-        <!-- Botones de Acción -->
-        <Button
-            Grid.Row="0"
-            Grid.Column="0"
-            Margin="10"
-            Padding="12"
-            Clicked="InAgregarEncargo"
-            FontSize="16"
-            Text="Encargos"
-            BackgroundColor="#1f6bc2"
-            TextColor="White"
-            CornerRadius="8" />
-        <Button
-            Grid.Row="0"
-            Grid.Column="1"
-            Margin="10"
-            Padding="12"
-            Clicked="InAgregarVenta"
-            FontSize="16"
-            Text="Ventas"
-            BackgroundColor="#2e9449"
-            TextColor="White"
-            CornerRadius="8" />
-        <Button
-            Grid.Row="0"
-            Grid.Column="2"
-            Margin="10"
-            Padding="12"
-            Clicked="InAgregarGasto"
-            FontSize="16"
-            Text="Gastos"
-            BackgroundColor="#6e0a24"
-            TextColor="White"
-            CornerRadius="8" />
+            <!--  Botones de Acción  -->
+            <!--  Botones principales  -->
+            <StackLayout
+                Grid.Row="0"
+                HorizontalOptions="Center"
+                Orientation="Horizontal"
+                Spacing="15">
+                <Button
+                    BackgroundColor="#1f6bc2"
+                    Clicked="InAgregarEncargo"
+                    CornerRadius="10"
+                    Text="➕ Encargo"
+                    TextColor="White" />
+                <Button
+                    BackgroundColor="#2e9449"
+                    Clicked="InAgregarVenta"
+                    CornerRadius="10"
+                    Text="💰 Venta"
+                    TextColor="White" />
+                <Button
+                    BackgroundColor="#6e0a24"
+                    Clicked="InAgregarGasto"
+                    CornerRadius="10"
+                    Text="💸 Gasto"
+                    TextColor="White" />
+            </StackLayout>
+            <!--  Resumen financiero  -->
+            <Frame
+                Grid.Row="1"
+                Padding="15"
+                BackgroundColor="#2a2a2a"
+                CornerRadius="10">
+                <Grid ColumnSpacing="10">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
 
-        <!-- Entradas de Información -->
-        <Frame
-            Grid.Row="2"
-            Grid.Column="0"
-            Margin="10"
-            Padding="10"
-            BackgroundColor="#2a2a2a"
-            CornerRadius="8">
-            <Entry
-                x:Name="EncargosLabel"
-                BackgroundColor="Transparent"
-                IsEnabled="False"
-                Placeholder="Encargos"
-                PlaceholderColor="#7d7c7c"
-                TextColor="#cccccc"
-                FontSize="14"
-                HorizontalTextAlignment="Center" />
-        </Frame>
+                    <Label
+                        Grid.Column="0"
+                        FontSize="14"
+                        HorizontalOptions="Center"
+                        Text="{Binding Source={x:Reference EncargosLabel}, Path=Text}"
+                        TextColor="#1f6bc2" />
+                    <Label
+                        Grid.Column="1"
+                        FontSize="14"
+                        HorizontalOptions="Center"
+                        Text="{Binding Source={x:Reference VentasLabel}, Path=Text}"
+                        TextColor="#2e9449" />
+                    <Label
+                        Grid.Column="2"
+                        FontSize="14"
+                        HorizontalOptions="Center"
+                        Text="{Binding Source={x:Reference GastosLabel}, Path=Text}"
+                        TextColor="#6e0a24" />
+                    <Label
+                        Grid.Column="3"
+                        FontAttributes="Bold"
+                        FontSize="14"
+                        HorizontalOptions="Center"
+                        Text="{Binding Source={x:Reference GananciasLabel}, Path=Text}"
+                        TextColor="#1f6bc2" />
+                </Grid>
+            </Frame>
 
-        <Frame
-            Grid.Row="2"
-            Grid.Column="1"
-            Margin="10"
-            Padding="10"
-            BackgroundColor="#2a2a2a"
-            CornerRadius="8">
-            <Entry
-                x:Name="VentasLabel"
-                BackgroundColor="Transparent"
-                IsEnabled="False"
-                Placeholder="Ventas"
-                PlaceholderColor="#7d7c7c"
-                TextColor="#cccccc"
-                FontSize="14"
-                HorizontalTextAlignment="Center" />
-        </Frame>
 
-        <Frame
-            Grid.Row="2"
-            Grid.Column="2"
-            Margin="10"
-            Padding="10"
-            BackgroundColor="#2a2a2a"
-            CornerRadius="8">
-            <Entry
-                x:Name="GastosLabel"
-                BackgroundColor="Transparent"
-                IsEnabled="False"
-                Placeholder="Gastos"
-                PlaceholderColor="#7d7c7c"
-                TextColor="#cccccc"
-                FontSize="14"
-                HorizontalTextAlignment="Center" />
-        </Frame>
 
-        <Frame
-            Grid.Row="3"
-            Grid.ColumnSpan="3"
-            Margin="10"
-            Padding="10"
-            BackgroundColor="#2a2a2a"
-            CornerRadius="8">
-            <Entry
-                x:Name="GananciasLabel"
-                BackgroundColor="Transparent"
-                IsEnabled="False"
-                Placeholder="Ganancias"
-                PlaceholderColor="#7d7c7c"
-                TextColor="#cccccc"
-                FontSize="14"
-                HorizontalTextAlignment="Center" />
-        </Frame>
-
-        <!-- Botón de Exportar a Excel -->
-        <Button
-            Grid.Row="5"
-            Grid.ColumnSpan="3"
-            Margin="20"
-            Padding="12"
-            Clicked="OnExportarAExcelClicked"
-            FontSize="16"
-            Text="Exportar a Excel"
-            BackgroundColor="#6490E9"
-            TextColor="#1e1e1e"
-            CornerRadius="8" />
-    </Grid>
+            <!--  Botón de Exportar a Excel  -->
+            <Button
+                Grid.Row="5"
+                Grid.ColumnSpan="3"
+                Margin="20"
+                Padding="12"
+                BackgroundColor="#6490E9"
+                Clicked="OnExportarAExcelClicked"
+                CornerRadius="8"
+                FontSize="16"
+                Text="Exportar a Excel"
+                TextColor="#1e1e1e" />
+        </Grid>
 
     </ScrollView>
 </ContentPage>
