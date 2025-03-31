@@ -1,35 +1,63 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace Mercader
+namespace Mercader.Helpers
 {
     public static class BalanceHelper
     {
-        // Agrupa ventas por mes
-        public static List<(string Mes, decimal Total)> AgruparPorMes(List<Ventas> ventas)
+        public static List<(string Mes, decimal Total)> AgruparVentasPorMes(List<Ventas> ventas)
         {
-            return ventas.GroupBy(v => new { v.Fecha.Year, v.Fecha.Month })
-                        .Select(g => (
-                            Mes: $"{g.Key.Year}-{g.Key.Month:D2}",
-                            Total: g.Sum(v => v.Precio * v.Cantidad)
-                        ))
-                        .OrderBy(x => x.Mes)
-                        .ToList();
+            if (ventas == null || !ventas.Any())
+                return new List<(string, decimal)>();
+
+            return ventas
+                .GroupBy(v => new DateTime(v.Fecha.Year, v.Fecha.Month, 1))
+                .Select(g => (
+                    Mes: g.Key.ToString("yyyy-MM", CultureInfo.InvariantCulture),
+                    Total: g.Sum(v => v.Precio * v.Cantidad)
+                ))
+                .OrderBy(x => x.Mes)
+                .ToList();
         }
 
-        // Agrupa gastos por mes
-        public static List<(string Mes, decimal Total)> AgruparPorMes(List<Gasto> gastos)
+        public static List<(string Mes, decimal Total)> AgruparGastosPorMes(List<Gasto> gastos)
         {
-            return gastos.GroupBy(g => new { g.Fecha.Year, g.Fecha.Month })
-                        .Select(g => (
-                            Mes: $"{g.Key.Year}-{g.Key.Month:D2}",
-                            Total: g.Sum(gt => gt.Monto * gt.Cantidad)
-                        ))
-                        .OrderBy(x => x.Mes)
-                        .ToList();
+            if (gastos == null || !gastos.Any())
+                return new List<(string, decimal)>();
+
+            return gastos
+                .GroupBy(g => new DateTime(g.Fecha.Year, g.Fecha.Month, 1))
+                .Select(g => (
+                    Mes: g.Key.ToString("yyyy-MM", CultureInfo.InvariantCulture),
+                    Total: g.Sum(x => x.Monto * x.Cantidad)
+                ))
+                .OrderBy(x => x.Mes)
+                .ToList();
+        }
+
+        public static List<(string Mes, decimal Total)> RellenarMesesFaltantes(
+            List<(string Mes, decimal Total)> datos, IEnumerable<string> mesesRequeridos)
+        {
+            return mesesRequeridos
+                .GroupJoin(datos,
+                    mes => mes,
+                    dato => dato.Mes,
+                    (mes, datosGrupo) => (
+                        Mes: mes,
+                        Total: datosGrupo.Select(d => d.Total).FirstOrDefault()
+                    ))
+                .Select(x => (x.Mes, x.Total))
+                .ToList();
+        }
+
+        public static List<string> ObtenerUltimos6Meses()
+        {
+            return Enumerable.Range(0, 6)
+                .Select(i => DateTime.Now.AddMonths(-i).ToString("yyyy-MM", CultureInfo.InvariantCulture))
+                .Reverse()
+                .ToList();
         }
     }
 }

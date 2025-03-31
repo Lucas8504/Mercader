@@ -6,9 +6,9 @@
     xmlns:local="clr-namespace:Mercader"
     BackgroundColor="#1e1e1e">
 
-   
+    <ScrollView>
 
-    <Grid>
+      <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
@@ -144,4 +144,6 @@
             TextColor="#1e1e1e"
             CornerRadius="8" />
     </Grid>
+
+    </ScrollView>
 </ContentPage>
