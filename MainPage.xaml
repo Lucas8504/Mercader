@@ -64,24 +64,28 @@
                     </Grid.ColumnDefinitions>
 
                     <Label
+                        x:Name="EncargosLabel"
                         Grid.Column="0"
                         FontSize="14"
                         HorizontalOptions="Center"
                         Text="{Binding Source={x:Reference EncargosLabel}, Path=Text}"
                         TextColor="#1f6bc2" />
                     <Label
+                        x:Name="VentasLabel"
                         Grid.Column="1"
                         FontSize="14"
                         HorizontalOptions="Center"
                         Text="{Binding Source={x:Reference VentasLabel}, Path=Text}"
                         TextColor="#2e9449" />
                     <Label
+                        x:Name="GastosLabel"
                         Grid.Column="2"
                         FontSize="14"
                         HorizontalOptions="Center"
                         Text="{Binding Source={x:Reference GastosLabel}, Path=Text}"
                         TextColor="#6e0a24" />
                     <Label
+                        x:Name="GananciasLabel"
                         Grid.Column="3"
                         FontAttributes="Bold"
                         FontSize="14"

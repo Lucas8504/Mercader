@@ -8,6 +8,7 @@
         {
             InitializeComponent();
             balance = new Balance();
+
         }
 
         protected override void OnAppearing()
