@@ -9,7 +9,7 @@
     BackgroundColor="#1e1e1e">
 
     <ScrollView>
-        <VerticalStackLayout Padding="20" Spacing="20">
+        <VerticalStackLayout Padding="20" Spacing="25">
 
             <!--  Sección Botones Principales  -->
             <HorizontalStackLayout
@@ -44,14 +44,13 @@
 
             <!--  Sección Resumen Financiero  -->
             <Frame
-                Padding="15"
+                Padding="16"
                 BackgroundColor="#2a2a2a"
-                CornerRadius="15"
+                CornerRadius="17"
                 HasShadow="True">
 
-                <Grid ColumnSpacing="15" RowSpacing="10">
+                <Grid ColumnSpacing="15" RowSpacing="15">
                     <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="*" />
                         <ColumnDefinition Width="*" />
                         <ColumnDefinition Width="*" />
                         <ColumnDefinition Width="*" />
@@ -67,7 +66,7 @@
                         <Label
                             x:Name="EncargosLabel"
                             FontAttributes="Bold"
-                            FontSize="16"
+                            FontSize="14"
                             HorizontalOptions="Center"
                             TextColor="#1f6bc2" />
                     </VerticalStackLayout>
@@ -82,7 +81,7 @@
                         <Label
                             x:Name="VentasLabel"
                             FontAttributes="Bold"
-                            FontSize="16"
+                            FontSize="13"
                             HorizontalOptions="Center"
                             TextColor="#2e9449" />
                     </VerticalStackLayout>
@@ -102,6 +101,22 @@
                             TextColor="#6e0a24" />
                     </VerticalStackLayout>
 
+
+                </Grid>
+            </Frame>
+
+            <!--  Sección Resumen Financiero  -->
+            <Frame
+                Padding="16"
+                BackgroundColor="#2a2a2a"
+                CornerRadius="17"
+                HasShadow="True">
+
+                <Grid ColumnSpacing="15" RowSpacing="15">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+
+                    </Grid.ColumnDefinitions>
                     <!--  Ganancias  -->
                     <VerticalStackLayout Grid.Column="3" Spacing="5">
                         <Label
@@ -118,7 +133,6 @@
                     </VerticalStackLayout>
                 </Grid>
             </Frame>
-
 
             <!--  Botón Exportar  -->
             <Button

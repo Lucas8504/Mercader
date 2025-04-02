@@ -47,7 +47,7 @@
         {
            
                 var ganancias = balance.CalcularGanancias();
-                GananciasLabel.Text = $"Ganancias: {ganancias:C}";
+                GananciasLabel.Text = $"{ganancias:C}";
            
         }
 
