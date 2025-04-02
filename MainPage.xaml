@@ -42,7 +42,7 @@
                     WidthRequest="120" />
             </HorizontalStackLayout>
 
-            <!--  Sección Resumen Financiero  -->
+            <!--  Sección 1 Resumen Financiero  -->
             <Frame
                 Padding="16"
                 BackgroundColor="#2a2a2a"
@@ -59,7 +59,7 @@
                     <!--  Encargos  -->
                     <VerticalStackLayout Grid.Column="0" Spacing="5">
                         <Label
-                            FontSize="12"
+                            FontSize="13"
                             HorizontalOptions="Center"
                             Text="ENCARGOS"
                             TextColor="#7d7c7c" />
@@ -74,14 +74,14 @@
                     <!--  Ventas  -->
                     <VerticalStackLayout Grid.Column="1" Spacing="5">
                         <Label
-                            FontSize="12"
+                            FontSize="13"
                             HorizontalOptions="Center"
                             Text="VENTAS"
                             TextColor="#7d7c7c" />
                         <Label
                             x:Name="VentasLabel"
                             FontAttributes="Bold"
-                            FontSize="13"
+                            FontSize="14"
                             HorizontalOptions="Center"
                             TextColor="#2e9449" />
                     </VerticalStackLayout>
@@ -89,14 +89,14 @@
                     <!--  Gastos  -->
                     <VerticalStackLayout Grid.Column="2" Spacing="5">
                         <Label
-                            FontSize="12"
+                            FontSize="13"
                             HorizontalOptions="Center"
                             Text="GASTOS"
                             TextColor="#7d7c7c" />
                         <Label
                             x:Name="GastosLabel"
                             FontAttributes="Bold"
-                            FontSize="16"
+                            FontSize="14"
                             HorizontalOptions="Center"
                             TextColor="#6e0a24" />
                     </VerticalStackLayout>
@@ -105,7 +105,7 @@
                 </Grid>
             </Frame>
 
-            <!--  Sección Resumen Financiero  -->
+            <!--  Sección 2 Resumen Financiero  -->
             <Frame
                 Padding="16"
                 BackgroundColor="#2a2a2a"
@@ -120,7 +120,7 @@
                     <!--  Ganancias  -->
                     <VerticalStackLayout Grid.Column="3" Spacing="5">
                         <Label
-                            FontSize="12"
+                            FontSize="14"
                             HorizontalOptions="Center"
                             Text="GANANCIAS"
                             TextColor="#7d7c7c" />
