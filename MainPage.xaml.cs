@@ -1,14 +1,20 @@
-﻿namespace Mercader
+﻿using Microcharts.Maui;
+using SkiaSharp;
+using Mercader.Helpers;
+
+namespace Mercader
 {
     public partial class MainPage : ContentPage
     {
         public Balance balance;
+        private readonly DataRepository _dataRepo;
 
-        public MainPage()
+
+        public MainPage(DataRepository _dataRepo)
         {
             InitializeComponent();
             balance = new Balance();
-
+            this._dataRepo = _dataRepo;
         }
 
         protected override void OnAppearing()
@@ -125,6 +131,111 @@
                 GananciasLabel.Text = $"Ganancias: {ganancias:C}";
            
         }
+
+        private async Task ActualizarGraficosAsync()
+        {
+            try
+            {
+                var ventas = await _dataRepo.GetVentasUltimos6MesesAsync();
+                var gastos = await _dataRepo.GetGastosUltimos6MesesAsync();
+                var mesesRequeridos = BalanceHelper.ObtenerUltimos6Meses();
+
+                var ventasPorMes = BalanceHelper.RellenarMesesFaltantes(
+                    BalanceHelper.AgruparVentasPorMes(ventas), mesesRequeridos);
+
+                var gastosPorMes = BalanceHelper.RellenarMesesFaltantes(
+                    BalanceHelper.AgruparGastosPorMes(gastos), mesesRequeridos);
+
+                MainThread.BeginInvokeOnMainThread(() =>
+                {
+                    ConfigurarGraficoVentas(ventasPorMes);
+                    ConfigurarGraficoGastos(gastosPorMes);
+                    ConfigurarGraficoGanancias(ventasPorMes, gastosPorMes);
+                });
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error actualizando gráficos: {ex.Message}");
+            }
+        }
+
+        private void ConfigurarGraficoVentas(List<(string Mes, decimal Total)> datos)
+        {
+            var entries = datos.Select(d => new ChartEntry((float)d.Total)
+            {
+                Label = DateTime.ParseExact(d.Mes, "yyyy-MM", CultureInfo.InvariantCulture).ToString("MMM"),
+                ValueLabel = d.Total >= 1000 ? $"{d.Total / 1000:F1}k" : d.Total.ToString("F0"),
+                Color = SKColor.Parse("#2e9449"),
+                TextColor = SKColors.White,
+                ValueLabelColor = SKColors.White
+            }).ToArray();
+
+            VentasChart.Chart = new LineChart
+            {
+                Entries = entries,
+                LabelTextSize = 24,
+                BackgroundColor = SKColor.Parse("#2a2a2a"),
+                LabelColor = SKColors.White,
+                LineSize = 6,
+                PointMode = PointMode.Circle,
+                PointSize = 16,
+                IsAnimated = true
+            };
+        }
+
+        private void ConfigurarGraficoGastos(List<(string Mes, decimal Total)> datos)
+        {
+            var entries = datos.Select(d => new ChartEntry((float)d.Total)
+            {
+                Label = DateTime.ParseExact(d.Mes, "yyyy-MM", CultureInfo.InvariantCulture).ToString("MMM"),
+                ValueLabel = d.Total >= 1000 ? $"{d.Total / 1000:F1}k" : d.Total.ToString("F0"),
+                Color = SKColor.Parse("#6e0a24"),
+                TextColor = SKColors.White,
+                ValueLabelColor = SKColors.White
+            }).ToArray();
+
+            GastosChart.Chart = new BarChart
+            {
+                Entries = entries,
+                LabelTextSize = 24,
+                BackgroundColor = SKColor.Parse("#2a2a2a"),
+                LabelColor = SKColors.White,
+                BarAreaAlpha = 120,
+                IsAnimated = true
+            };
+        }
+
+        private void ConfigurarGraficoGanancias(List<(string Mes, decimal TotalVentas)> ventas,
+                                              List<(string Mes, decimal TotalGastos)> gastos)
+        {
+            var ganancias = ventas.Zip(gastos, (v, g) => (
+                Mes: v.Mes,
+                Ganancia: v.TotalVentas - g.TotalGastos
+            )).ToList();
+
+            var entries = ganancias.Select(g => new ChartEntry((float)g.Ganancia)
+            {
+                Label = DateTime.ParseExact(g.Mes, "yyyy-MM", CultureInfo.InvariantCulture).ToString("MMM"),
+                ValueLabel = g.Ganancia >= 1000 ? $"{g.Ganancia / 1000:F1}k" :
+                             g.Ganancia <= -1000 ? $"{g.Ganancia / 1000:F1}k" : g.Ganancia.ToString("F0"),
+                Color = g.Ganancia >= 0 ? SKColor.Parse("#1f6bc2") : SKColor.Parse("#d32f2f"),
+                TextColor = SKColors.White,
+                ValueLabelColor = SKColors.White
+            }).ToArray();
+
+            GananciasChart.Chart = new LineChart
+            {
+                Entries = entries,
+                LabelTextSize = 24,
+                BackgroundColor = SKColor.Parse("#2a2a2a"),
+                LabelColor = SKColors.White,
+                LineMode = LineMode.Spline,
+                PointMode = PointMode.Square,
+                PointSize = 16,
+                IsAnimated = true
+            };
+        }
+
 
         private async void OnExportarAExcelClicked(object sender, EventArgs e)
         {
