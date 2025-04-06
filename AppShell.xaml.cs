@@ -2,11 +2,11 @@
 {
     public partial class AppShell : Shell
     {
-        public AppShell()
+        public AppShell(ShellItem mainPage)
         {
             InitializeComponent();
             Routing.RegisterRoute(nameof(MainPage), typeof(MainPage));
-            CurrentItem = new MainPage(); // Inicializar MainPage
+            CurrentItem = mainPage; // Inicializar MainPage
             Routing.RegisterRoute(nameof(Encargos), typeof(Encargos));
         }
     }

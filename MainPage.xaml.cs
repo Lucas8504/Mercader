@@ -1,6 +1,7 @@
 ﻿using Microcharts.Maui;
 using SkiaSharp;
 using Mercader.Helpers;
+using System.Globalization;
 
 namespace Mercader
 {
@@ -161,7 +162,7 @@ namespace Mercader
 
         private void ConfigurarGraficoVentas(List<(string Mes, decimal Total)> datos)
         {
-            var entries = datos.Select(d => new ChartEntry((float)d.Total)
+            var entries = datos.Select(d => new Microcharts.ChartEntry((float)d.Total)
             {
                 Label = DateTime.ParseExact(d.Mes, "yyyy-MM", CultureInfo.InvariantCulture).ToString("MMM"),
                 ValueLabel = d.Total >= 1000 ? $"{d.Total / 1000:F1}k" : d.Total.ToString("F0"),
@@ -170,14 +171,14 @@ namespace Mercader
                 ValueLabelColor = SKColors.White
             }).ToArray();
 
-            VentasChart.Chart = new LineChart
+            VentasChart.Chart = new Microcharts.LineChart
             {
                 Entries = entries,
                 LabelTextSize = 24,
                 BackgroundColor = SKColor.Parse("#2a2a2a"),
                 LabelColor = SKColors.White,
                 LineSize = 6,
-                PointMode = PointMode.Circle,
+                PointMode = Microcharts.PointMode.Circle,
                 PointSize = 16,
                 IsAnimated = true
             };
@@ -185,7 +186,7 @@ namespace Mercader
 
         private void ConfigurarGraficoGastos(List<(string Mes, decimal Total)> datos)
         {
-            var entries = datos.Select(d => new ChartEntry((float)d.Total)
+            var entries = datos.Select(d => new Microcharts.ChartEntry((float)d.Total)
             {
                 Label = DateTime.ParseExact(d.Mes, "yyyy-MM", CultureInfo.InvariantCulture).ToString("MMM"),
                 ValueLabel = d.Total >= 1000 ? $"{d.Total / 1000:F1}k" : d.Total.ToString("F0"),
@@ -194,7 +195,7 @@ namespace Mercader
                 ValueLabelColor = SKColors.White
             }).ToArray();
 
-            GastosChart.Chart = new BarChart
+            GastosChart.Chart = new Microcharts.BarChart
             {
                 Entries = entries,
                 LabelTextSize = 24,
@@ -213,7 +214,7 @@ namespace Mercader
                 Ganancia: v.TotalVentas - g.TotalGastos
             )).ToList();
 
-            var entries = ganancias.Select(g => new ChartEntry((float)g.Ganancia)
+            var entries = ganancias.Select(g => new Microcharts.ChartEntry((float)g.Ganancia)
             {
                 Label = DateTime.ParseExact(g.Mes, "yyyy-MM", CultureInfo.InvariantCulture).ToString("MMM"),
                 ValueLabel = g.Ganancia >= 1000 ? $"{g.Ganancia / 1000:F1}k" :
@@ -223,14 +224,14 @@ namespace Mercader
                 ValueLabelColor = SKColors.White
             }).ToArray();
 
-            GananciasChart.Chart = new LineChart
+            GananciasChart.Chart = new Microcharts.LineChart
             {
                 Entries = entries,
                 LabelTextSize = 24,
                 BackgroundColor = SKColor.Parse("#2a2a2a"),
                 LabelColor = SKColors.White,
-                LineMode = LineMode.Spline,
-                PointMode = PointMode.Square,
+                LineMode = Microcharts.LineMode.Spline,
+                PointMode = Microcharts.PointMode.Square,
                 PointSize = 16,
                 IsAnimated = true
             };

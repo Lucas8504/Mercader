@@ -15,11 +15,11 @@ namespace Mercader
             // Inicializar SQLite primero
             SQLitePCL.Batteries_V2.Init();
 
-            string dbPath = Path.Combine(FileSystem.AppDataDirectory, "MercaderDB.db3");
-            _dataRepo = new(dbPath);
+            // Obtener el servicio DataRepository del contenedor de servicios
+            _dataRepo = MauiProgram.CreateMauiApp().Services.GetRequiredService<DataRepository>();
 
             // Establecer MainPage antes de la inicialización de la base de datos
-            MainPage = new AppShell();
+            MainPage = new AppShell(new MainPage(_dataRepo));
 
             // Inicializar la base de datos después de establecer MainPage
             InitializeDatabaseAsync().ConfigureAwait(false);
@@ -47,7 +47,7 @@ namespace Mercader
                         "OK");
                 });
             }
-            
+
         }
 
         private async Task LoadDataAsync()
@@ -59,20 +59,20 @@ namespace Mercader
                 var ventas = await _dataRepo.GetVentasAsync();
 
                 // Asigna los datos cargados a la instancia de Balance
-                
-                    if (MainPage is AppShell appShell &&
-                     appShell.CurrentPage is MainPage mainPage)
-                    {
-                        mainPage.balance.Encargos = encargos;
-                        mainPage.balance.Gastos = gastos;
-                        mainPage.balance.Ventas = ventas;
 
-                        mainPage.ActualizarEtiquetaEncargos();
-                        mainPage.ActualizarEtiquetaGastos();
-                        mainPage.ActualizarEtiquetaVentas();
-                        mainPage.ActualizarEtiquetaGanancias();
-                    }
-                
+                if (MainPage is AppShell appShell &&
+                 appShell.CurrentPage is MainPage mainPage)
+                {
+                    mainPage.balance.Encargos = encargos;
+                    mainPage.balance.Gastos = gastos;
+                    mainPage.balance.Ventas = ventas;
+
+                    mainPage.ActualizarEtiquetaEncargos();
+                    mainPage.ActualizarEtiquetaGastos();
+                    mainPage.ActualizarEtiquetaVentas();
+                    mainPage.ActualizarEtiquetaGanancias();
+                }
+
             }
             catch (Exception ex)
             {

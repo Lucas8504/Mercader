@@ -9,7 +9,7 @@ namespace Mercader
 
         public DataRepository(string dbPath)
         {
-            ArgumentException.ThrowIfNullOrEmpty(dbPath); // Nuevo en .NET 8
+            ArgumentException.ThrowIfNullOrEmpty(dbPath);
             _dbPath = dbPath;
         }
 
