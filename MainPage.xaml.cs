@@ -42,6 +42,9 @@ namespace Mercader
                 ActualizarEtiquetaGastos();
                 ActualizarEtiquetaVentas();
                 ActualizarEtiquetaGanancias();
+
+                // Añadir esta línea para actualizar gráficos
+                await ActualizarGraficosAsync();
             }
             catch (Exception ex)
             {
@@ -166,7 +169,7 @@ namespace Mercader
             {
                 Label = DateTime.ParseExact(d.Mes, "yyyy-MM", CultureInfo.InvariantCulture).ToString("MMM"),
                 ValueLabel = d.Total >= 1000 ? $"{d.Total / 1000:F1}k" : d.Total.ToString("F0"),
-                Color = SKColor.Parse("#2e9449"),
+                Color = SKColor.Parse("#00E82A"),
                 TextColor = SKColors.White,
                 ValueLabelColor = SKColors.White
             }).ToArray();
@@ -208,11 +211,16 @@ namespace Mercader
 
         private void ConfigurarGraficoGanancias(List<(string Mes, decimal TotalVentas)> ventas,
                                               List<(string Mes, decimal TotalGastos)> gastos)
-        {
-            var ganancias = ventas.Zip(gastos, (v, g) => (
-                Mes: v.Mes,
-                Ganancia: v.TotalVentas - g.TotalGastos
-            )).ToList();
+                {
+                    var ganancias = ventas.Join(
+                 gastos,
+                 v => v.Mes,
+                 g => g.Mes,
+                 (v, g) => new
+                 {
+                     Mes = v.Mes,
+                     Ganancia = v.TotalVentas - g.TotalGastos
+                 }).ToList();
 
             var entries = ganancias.Select(g => new Microcharts.ChartEntry((float)g.Ganancia)
             {
