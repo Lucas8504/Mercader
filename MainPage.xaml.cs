@@ -2,6 +2,7 @@
 using SkiaSharp;
 using Mercader.Helpers;
 using System.Globalization;
+using Microcharts;
 
 namespace Mercader
 {
@@ -177,24 +178,30 @@ namespace Mercader
 
         private void ConfigurarGraficoVentas(List<(string Mes, decimal Total)> datos)
         {
-            var entries = datos.Select(d => new Microcharts.ChartEntry((float)d.Total)
+            // Crear entrada dummy si no hay datos
+            if (!datos.Any() || datos.All(d => d.Total == 0))
+            {
+                datos = new List<(string Mes, decimal Total)>
+        {
+            ("2023-01", 0),
+            ("2023-02", 0)
+        };
+            }
+
+            var entries = datos.Select(d => new ChartEntry((float)d.Total)
             {
                 Label = DateTime.ParseExact(d.Mes, "yyyy-MM", CultureInfo.InvariantCulture).ToString("MMM"),
-                ValueLabel = d.Total >= 1000 ? $"{d.Total / 1000:F1}k" : d.Total.ToString("F0"),
+                ValueLabel = d.Total.ToString("C0"),
                 Color = SKColor.Parse("#00E82A"),
-                TextColor = SKColors.White,
-                ValueLabelColor = SKColors.White
+                TextColor = SKColors.White
             }).ToArray();
 
-            VentasChart.Chart = new Microcharts.LineChart
+            VentasChart.Chart = new LineChart
             {
                 Entries = entries,
                 LabelTextSize = 24,
                 BackgroundColor = SKColor.Parse("#2a2a2a"),
-                LabelColor = SKColors.White,
                 LineSize = 6,
-                PointMode = Microcharts.PointMode.Circle,
-                PointSize = 16,
                 IsAnimated = true
             };
         }
