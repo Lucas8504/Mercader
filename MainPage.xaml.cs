@@ -142,13 +142,25 @@ namespace Mercader
             {
                 var ventas = await _dataRepo.GetVentasUltimos6MesesAsync();
                 var gastos = await _dataRepo.GetGastosUltimos6MesesAsync();
+
+                // Debug: Verifica cantidad de registros
+                Console.WriteLine($"Ventas últimos 6 meses: {ventas?.Count ?? 0} registros");
+                Console.WriteLine($"Gastos últimos 6 meses: {gastos?.Count ?? 0} registros");
+
                 var mesesRequeridos = BalanceHelper.ObtenerUltimos6Meses();
 
+                // Debug: Verifica meses requeridos
+                Console.WriteLine($"Meses requeridos: {string.Join(", ", mesesRequeridos)}");
+
                 var ventasPorMes = BalanceHelper.RellenarMesesFaltantes(
-                    BalanceHelper.AgruparVentasPorMes(ventas), mesesRequeridos);
+                    BalanceHelper.AgruparVentasPorMes(ventas!), mesesRequeridos);
 
                 var gastosPorMes = BalanceHelper.RellenarMesesFaltantes(
-                    BalanceHelper.AgruparGastosPorMes(gastos), mesesRequeridos);
+                    BalanceHelper.AgruparGastosPorMes(gastos!), mesesRequeridos);
+
+                // Debug: Verifica datos procesados
+                Console.WriteLine("Ventas por mes:");
+                foreach (var item in ventasPorMes) Console.WriteLine($"{item.Mes}: {item.Total}");
 
                 MainThread.BeginInvokeOnMainThread(() =>
                 {
