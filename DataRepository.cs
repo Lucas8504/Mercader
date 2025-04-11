@@ -123,14 +123,12 @@ namespace Mercader
         // Obtener ventas de los últimos 6 meses
         public async Task<List<Ventas>> GetVentasUltimos6MesesAsync()
         {
-            if (_database is null)
-            {
-                throw new InvalidOperationException("La base de datos no está inicializada.");
-            }
+            if (_database is null) throw new InvalidOperationException("BD no inicializada");
 
-            DateTime fechaInicio = DateTime.Now.AddMonths(-6);
+            DateTime fechaInicio = DateTime.Now.AddMonths(-6).Date;
             return await _database.Table<Ventas>()
                                 .Where(v => v.Fecha >= fechaInicio)
+                                .OrderBy(v => v.Fecha)
                                 .ToListAsync();
         }
 
