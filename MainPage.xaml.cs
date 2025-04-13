@@ -238,6 +238,17 @@ namespace Mercader
                 .ToList();
         }
 
+        private string FormatearEtiqueta(string periodo, string tipo)
+        {
+            return tipo switch
+            {
+                "Días" => DateTime.ParseExact(periodo, "yyyy-MM-dd", CultureInfo.InvariantCulture)
+                    .ToString("dd MMM"),
+                "Semanas" => periodo.Replace("Semana ", "Sem "),
+                _ => DateTime.ParseExact(periodo, "yyyy-MM", CultureInfo.InvariantCulture)
+                    .ToString("MMM")
+            };
+        }
 
         private void ConfigurarGraficoVentas(List<(string Periodo, decimal Total)> datos, string periodo)
         {
@@ -280,17 +291,7 @@ namespace Mercader
             };
         }
 
-        private string FormatearEtiqueta(string periodo, string tipo)
-        {
-            return tipo switch
-            {
-                "Días" => DateTime.ParseExact(periodo, "yyyy-MM-dd", CultureInfo.InvariantCulture)
-                    .ToString("dd MMM"),
-                "Semanas" => periodo.Replace("Semana ", "Sem "),
-                _ => DateTime.ParseExact(periodo, "yyyy-MM", CultureInfo.InvariantCulture)
-                    .ToString("MMM")
-            };
-        }
+       
 
         private void ConfigurarGraficoGastos(List<(string Mes, decimal Total)> datos, string periodo)
         {
@@ -371,7 +372,7 @@ namespace Mercader
             };
         }
 
-
+       
 
         private async void OnExportarAExcelClicked(object sender, EventArgs e)
         {
