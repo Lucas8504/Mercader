@@ -176,6 +176,9 @@ namespace Mercader
             }
         }
 
+
+
+
         private void ConfigurarGraficoVentas(List<(string Mes, decimal Total)> datos)
         {
             // Crear entrada dummy si no hay datos

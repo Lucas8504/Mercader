@@ -135,6 +135,18 @@
             </Frame>
 
 
+            <Picker
+                x:Name="PeriodSelector"
+                Title="Seleccionar período"
+                SelectedIndexChanged="PeriodSelector_OnSelectedIndexChanged">
+                <Picker.Items>
+                    <x:String>Días</x:String>
+                    <x:String>Semanas</x:String>
+                    <x:String>Meses</x:String>
+                </Picker.Items>
+            </Picker>
+
+
             <!--  Gráfico de Ventas  -->
             <Label
                 Grid.Row="2"
