@@ -142,7 +142,7 @@ namespace Mercader
             await ActualizarGraficosAsync();
         }
 
-        private async Task ActualizarGraficosAsync()
+        private Task ActualizarGraficosAsync()
         {
             try
             {
@@ -182,6 +182,8 @@ namespace Mercader
             {
                 Console.WriteLine($"Error: {ex}");
             }
+
+            return Task.CompletedTask;
         }
 
 
