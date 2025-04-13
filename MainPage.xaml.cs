@@ -237,21 +237,32 @@ namespace Mercader
         }
 
 
-        private void ConfigurarGraficoVentas(List<(string Mes, decimal Total)> datos)
+        private void ConfigurarGraficoVentas(List<(string Periodo, decimal Total)> datos, string periodo)
         {
-            // Crear entrada dummy si no hay datos
+            // Crear datos dummy si no hay registros
             if (!datos.Any() || datos.All(d => d.Total == 0))
             {
-                datos = new List<(string Mes, decimal Total)>
-        {
-            ("2023-01", 0),
-            ("2023-02", 0)
-        };
+                datos = periodo switch
+                {
+                    "Días" => Enumerable.Range(0, 7)
+                        .Select(i => DateTime.Now.AddDays(-i).ToString("yyyy-MM-dd"))
+                        .Reverse()
+                        .Select(d => (d, 0m))
+                        .ToList(),
+                    "Semanas" => Enumerable.Range(0, 6)
+                        .Select(i => $"Semana {DateTime.Now.AddDays(-7 * i):ww}")
+                        .Reverse()
+                        .Select(d => (d, 0m))
+                        .ToList(),
+                    _ => BalanceHelper.ObtenerUltimos6Meses()
+                        .Select(m => (m, 0m))
+                        .ToList()
+                };
             }
 
             var entries = datos.Select(d => new ChartEntry((float)d.Total)
             {
-                Label = DateTime.ParseExact(d.Mes, "yyyy-MM", CultureInfo.InvariantCulture).ToString("MMM"),
+                Label = FormatearEtiqueta(d.Periodo, periodo),
                 ValueLabel = d.Total.ToString("C0"),
                 Color = SKColor.Parse("#00E82A"),
                 TextColor = SKColors.White
@@ -267,63 +278,97 @@ namespace Mercader
             };
         }
 
-        private void ConfigurarGraficoGastos(List<(string Mes, decimal Total)> datos)
+        private string FormatearEtiqueta(string periodo, string tipo)
         {
-            var entries = datos.Select(d => new Microcharts.ChartEntry((float)d.Total)
+            return tipo switch
             {
-                Label = DateTime.ParseExact(d.Mes, "yyyy-MM", CultureInfo.InvariantCulture).ToString("MMM"),
-                ValueLabel = d.Total >= 1000 ? $"{d.Total / 1000:F1}k" : d.Total.ToString("F0"),
-                Color = SKColor.Parse("#6e0a24"),
-                TextColor = SKColors.White,
-                ValueLabelColor = SKColors.White
-            }).ToArray();
-
-            GastosChart.Chart = new Microcharts.BarChart
-            {
-                Entries = entries,
-                LabelTextSize = 24,
-                BackgroundColor = SKColor.Parse("#2a2a2a"),
-                LabelColor = SKColors.White,
-                BarAreaAlpha = 120,
-                IsAnimated = true
+                "Días" => DateTime.ParseExact(periodo, "yyyy-MM-dd", CultureInfo.InvariantCulture)
+                    .ToString("dd MMM"),
+                "Semanas" => periodo.Replace("Semana ", "Sem "),
+                _ => DateTime.ParseExact(periodo, "yyyy-MM", CultureInfo.InvariantCulture)
+                    .ToString("MMM")
             };
         }
 
-        private void ConfigurarGraficoGanancias(List<(string Mes, decimal TotalVentas)> ventas,
-                                              List<(string Mes, decimal TotalGastos)> gastos)
+        private void ConfigurarGraficoGastos(List<(string Mes, decimal Total)> datos, string periodo)
+        {
+            // Crear datos dummy si no hay registros
+            if (!datos.Any() || datos.All(d => d.Total == 0))
+            {
+                datos = periodo switch
                 {
-                    var ganancias = ventas.Join(
-                 gastos,
-                 v => v.Mes,
-                 g => g.Mes,
-                 (v, g) => new
-                 {
-                     Mes = v.Mes,
-                     Ganancia = v.TotalVentas - g.TotalGastos
-                 }).ToList();
-
-            var entries = ganancias.Select(g => new Microcharts.ChartEntry((float)g.Ganancia)
+                    "Días" => Enumerable.Range(0, 7)
+                        .Select(i => DateTime.Now.AddDays(-i).ToString("yyyy-MM-dd"))
+                        .Reverse()
+                        .Select(d => (d, 0m))
+                        .ToList(),
+                    "Semanas" => Enumerable.Range(0, 6)
+                        .Select(i => $"Semana {DateTime.Now.AddDays(-7 * i):ww}")
+                        .Reverse()
+                        .Select(d => (d, 0m))
+                        .ToList(),
+                    _ => BalanceHelper.ObtenerUltimos6Meses()
+                        .Select(m => (m, 0m))
+                        .ToList()
+                };
+            }
+            var entries = datos.Select(d => new ChartEntry((float)d.Total)
             {
-                Label = DateTime.ParseExact(g.Mes, "yyyy-MM", CultureInfo.InvariantCulture).ToString("MMM"),
-                ValueLabel = g.Ganancia >= 1000 ? $"{g.Ganancia / 1000:F1}k" :
-                             g.Ganancia <= -1000 ? $"{g.Ganancia / 1000:F1}k" : g.Ganancia.ToString("F0"),
-                Color = g.Ganancia >= 0 ? SKColor.Parse("#1f6bc2") : SKColor.Parse("#d32f2f"),
-                TextColor = SKColors.White,
-                ValueLabelColor = SKColors.White
+                Label = FormatearEtiqueta(d.Mes, periodo),
+                ValueLabel = d.Total.ToString("C0"),
+                Color = SKColor.Parse("#FF0000"),
+                TextColor = SKColors.White
             }).ToArray();
-
-            GananciasChart.Chart = new Microcharts.LineChart
+            GastosChart.Chart = new LineChart
             {
                 Entries = entries,
                 LabelTextSize = 24,
                 BackgroundColor = SKColor.Parse("#2a2a2a"),
-                LabelColor = SKColors.White,
-                LineMode = Microcharts.LineMode.Spline,
-                PointMode = Microcharts.PointMode.Square,
-                PointSize = 16,
+                LineSize = 6,
                 IsAnimated = true
             };
         }
+
+        private void ConfigurarGraficoGanancias(List<(string Mes, decimal Total)> ventas, List<(string Mes, decimal Total)> gastos, string periodo)
+        {
+            var ganancias = ventas.Zip(gastos, (v, g) => (v.Mes, Ganancia: v.Total - g.Total)).ToList();
+            // Crear datos dummy si no hay registros
+            if (!ganancias.Any() || ganancias.All(d => d.Ganancia == 0))
+            {
+                ganancias = periodo switch
+                {
+                    "Días" => Enumerable.Range(0, 7)
+                        .Select(i => DateTime.Now.AddDays(-i).ToString("yyyy-MM-dd"))
+                        .Reverse()
+                        .Select(d => (d, 0m))
+                        .ToList(),
+                    "Semanas" => Enumerable.Range(0, 6)
+                        .Select(i => $"Semana {DateTime.Now.AddDays(-7 * i):ww}")
+                        .Reverse()
+                        .Select(d => (d, 0m))
+                        .ToList(),
+                    _ => BalanceHelper.ObtenerUltimos6Meses()
+                        .Select(m => (m, 0m))
+                        .ToList()
+                };
+            }
+            var entries = ganancias.Select(d => new ChartEntry((float)d.Ganancia)
+            {
+                Label = FormatearEtiqueta(d.Mes, periodo),
+                ValueLabel = d.Ganancia.ToString("C0"),
+                Color = SKColor.Parse("#00E82A"),
+                TextColor = SKColors.White
+            }).ToArray();
+            GananciasChart.Chart = new LineChart
+            {
+                Entries = entries,
+                LabelTextSize = 24,
+                BackgroundColor = SKColor.Parse("#2a2a2a"),
+                LineSize = 6,
+                IsAnimated = true
+            };
+        }
+
 
 
         private async void OnExportarAExcelClicked(object sender, EventArgs e)
