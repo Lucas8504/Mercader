@@ -137,46 +137,104 @@ namespace Mercader
            
         }
 
+        private async void PeriodSelector_OnSelectedIndexChanged(object sender, EventArgs e)
+        {
+            await ActualizarGraficosAsync();
+        }
+
         private async Task ActualizarGraficosAsync()
         {
             try
             {
-                var ventas = await _dataRepo.GetVentasUltimos6MesesAsync();
-                var gastos = await _dataRepo.GetGastosUltimos6MesesAsync();
+                // Obtener período seleccionado
+                var periodo = PeriodSelector.SelectedItem?.ToString() ?? "Meses";
 
-                // Debug: Verifica cantidad de registros
-                Console.WriteLine($"Ventas últimos 6 meses: {ventas?.Count ?? 0} registros");
-                Console.WriteLine($"Gastos últimos 6 meses: {gastos?.Count ?? 0} registros");
+                // Obtener datos actuales de balance (ya cargados en labels)
+                var ventas = balance.Ventas;
+                var gastos = balance.Gastos;
 
-                var mesesRequeridos = BalanceHelper.ObtenerUltimos6Meses();
+                // Agrupar según período
+                var ventasAgrupadas = periodo switch
+                {
+                    "Días" => AgruparPorDia(ventas),
+                    "Semanas" => AgruparPorSemana(ventas),
+                    _ => AgruparPorMes(ventas)
+                };
 
-                // Debug: Verifica meses requeridos
-                Console.WriteLine($"Meses requeridos: {string.Join(", ", mesesRequeridos)}");
+                var gastosAgrupados = periodo switch
+                {
+                    "Días" => AgruparPorDia(gastos),
+                    "Semanas" => AgruparPorSemana(gastos),
+                    _ => AgruparPorMes(gastos)
+                };
 
-                var ventasPorMes = BalanceHelper.RellenarMesesFaltantes(
-                    BalanceHelper.AgruparVentasPorMes(ventas!), mesesRequeridos);
 
-                var gastosPorMes = BalanceHelper.RellenarMesesFaltantes(
-                    BalanceHelper.AgruparGastosPorMes(gastos!), mesesRequeridos);
 
-                // Debug: Verifica datos procesados
-                Console.WriteLine("Ventas por mes:");
-                foreach (var item in ventasPorMes) Console.WriteLine($"{item.Mes}: {item.Total}");
-
+                // Configurar gráficos con los datos agrupados
                 MainThread.BeginInvokeOnMainThread(() =>
                 {
-                    ConfigurarGraficoVentas(ventasPorMes);
-                    ConfigurarGraficoGastos(gastosPorMes);
-                    ConfigurarGraficoGanancias(ventasPorMes, gastosPorMes);
+                    ConfigurarGraficoVentas(ventasAgrupadas, periodo);
+                    ConfigurarGraficoGastos(gastosAgrupados, periodo);
+                    ConfigurarGraficoGanancias(ventasAgrupadas, gastosAgrupados, periodo);
                 });
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Error actualizando gráficos: {ex.Message}");
+                Console.WriteLine($"Error: {ex}");
             }
         }
 
 
+        // Métodos de agrupación
+        private List<(string Periodo, decimal Total)> AgruparPorDia(List<Ventas> ventas)
+        {
+            return ventas
+                .GroupBy(v => v.Fecha.ToString("yyyy-MM-dd"))
+                .Select(g => (g.Key, Total: g.Sum(v => v.Precio * v.Cantidad)))
+                .ToList();
+        }
+
+        private List<(string Periodo, decimal Total)> AgruparPorSemana(List<Ventas> ventas)
+        {
+            return ventas
+                .GroupBy(v => CultureInfo.CurrentCulture.Calendar.GetWeekOfYear(
+                    v.Fecha, CalendarWeekRule.FirstDay, DayOfWeek.Monday))
+                .Select(g => ($"Semana {g.Key}", Total: g.Sum(v => v.Precio * v.Cantidad)))
+                .ToList();
+        }
+
+        private List<(string Periodo, decimal Total)> AgruparPorMes(List<Ventas> ventas)
+        {
+            return ventas
+                .GroupBy(v => v.Fecha.ToString("yyyy-MM"))
+                .Select(g => (g.Key, Total: g.Sum(v => v.Precio * v.Cantidad)))
+                .ToList();
+        }
+
+        private List<(string Periodo, decimal Total)> AgruparPorDia(List<Gasto> gastos)
+        {
+            return gastos
+                .GroupBy(g => g.Fecha.ToString("yyyy-MM-dd"))
+                .Select(g => (g.Key, Total: g.Sum(x => x.Monto * x.Cantidad)))
+                .ToList();
+        }
+
+        private List<(string Periodo, decimal Total)> AgruparPorSemana(List<Gasto> gastos)
+        {
+            return gastos
+                .GroupBy(g => CultureInfo.CurrentCulture.Calendar.GetWeekOfYear(
+                    g.Fecha, CalendarWeekRule.FirstDay, DayOfWeek.Monday))
+                .Select(g => ($"Semana {g.Key}", Total: g.Sum(x => x.Monto * x.Cantidad)))
+                .ToList();
+        }
+
+        private List<(string Periodo, decimal Total)> AgruparPorMes(List<Gasto> gastos)
+        {
+            return gastos
+                .GroupBy(g => g.Fecha.ToString("yyyy-MM"))
+                .Select(g => (g.Key, Total: g.Sum(x => x.Monto * x.Cantidad)))
+                .ToList();
+        }
 
 
         private void ConfigurarGraficoVentas(List<(string Mes, decimal Total)> datos)
