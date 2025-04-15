@@ -137,9 +137,20 @@ namespace Mercader
            
         }
 
-        private async void PeriodSelector_OnSelectedIndexChanged(object sender, EventArgs e)
+        private void PeriodSelector_OnSelectedIndexChanged(object sender, EventArgs e)
         {
-            await ActualizarGraficosAsync();
+            var periodo = PeriodSelector.SelectedItem?.ToString() ?? "Meses";
+
+            // Actualizar los labels de los gráficos con el período seleccionado
+            MainThread.BeginInvokeOnMainThread(() =>
+            {
+                VentasChartLabel.Text = $"VENTAS ({periodo.ToUpper()})";
+                GastosChartLabel.Text = $"GASTOS ({periodo.ToUpper()})";
+                GananciasChartLabel.Text = $"GANANCIAS NETAS ({periodo.ToUpper()})";
+            });
+
+            // Actualizar los gráficos con el nuevo período
+            ActualizarGraficosAsync().ConfigureAwait(false);
         }
 
         private Task ActualizarGraficosAsync()

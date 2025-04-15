@@ -149,12 +149,13 @@
 
             <!--  Gráfico de Ventas  -->
             <Label
-                Grid.Row="2"
+                x:Name="VentasChartLabel"
                 FontAttributes="Bold"
                 FontSize="16"
                 HorizontalOptions="Center"
-                Text="VENTAS (últimos 6 meses)"
+                Text="VENTAS"
                 TextColor="#2e9449" />
+
             <microcharts:ChartView
                 x:Name="VentasChart"
                 Grid.Row="3"
@@ -164,12 +165,13 @@
 
             <!--  Gráfico de Gastos  -->
             <Label
-                Grid.Row="4"
+                x:Name="GastosChartLabel"
                 FontAttributes="Bold"
                 FontSize="16"
                 HorizontalOptions="Center"
-                Text="GASTOS (últimos 6 meses)"
+                Text="GASTOS"
                 TextColor="#6e0a24" />
+
             <microcharts:ChartView
                 x:Name="GastosChart"
                 Grid.Row="5"
@@ -179,12 +181,13 @@
 
             <!--  Gráfico de Ganancias  -->
             <Label
-                Grid.Row="6"
+                x:Name="GananciasChartLabel"
                 FontAttributes="Bold"
                 FontSize="16"
                 HorizontalOptions="Center"
-                Text="GANANCIAS NETAS (últimos 6 meses)"
+                Text="GANANCIAS NETAS"
                 TextColor="#1f6bc2" />
+            
             <microcharts:ChartView
                 x:Name="GananciasChart"
                 Grid.Row="7"
