@@ -248,14 +248,13 @@ namespace Mercader
                 .Select(g => (g.Key, Total: g.Sum(x => x.Monto * x.Cantidad)))
                 .ToList();
         }
-
         private string FormatearEtiqueta(string periodo, string tipo)
         {
             return tipo switch
             {
                 "Días" => DateTime.ParseExact(periodo, "yyyy-MM-dd", CultureInfo.InvariantCulture)
                     .ToString("dd MMM"),
-                "Semanas" => periodo.Replace("Semana ", "Sem "),
+                "Semanas" => $"Sem {periodo.Split('-')[1]}",
                 _ => DateTime.ParseExact(periodo, "yyyy-MM", CultureInfo.InvariantCulture)
                     .ToString("MMM")
             };
@@ -263,7 +262,7 @@ namespace Mercader
 
         private void ConfigurarGraficoVentas(List<(string Periodo, decimal Total)> datos, string periodo)
         {
-            // Crear datos dummy si no hay registros
+            // Crear entrada dummy si no hay datos
             if (!datos.Any() || datos.All(d => d.Total == 0))
             {
                 datos = periodo switch
@@ -302,14 +301,13 @@ namespace Mercader
             };
         }
 
-       
-
-        private void ConfigurarGraficoGastos(List<(string Mes, decimal Total)> datos, string periodo)
+        private void ConfigurarGraficoGastos(List<(string Mes, decimal Total)> gastos, string periodo)
         {
-            // Crear datos dummy si no hay registros
-            if (!datos.Any() || datos.All(d => d.Total == 0))
+
+            // Crear entrada dummy si no hay datos
+            if (!gastos.Any() || gastos.All(d => d.Total == 0))
             {
-                datos = periodo switch
+                gastos = periodo switch
                 {
                     "Días" => Enumerable.Range(0, 7)
                         .Select(i => DateTime.Now.AddDays(-i).ToString("yyyy-MM-dd"))
@@ -326,7 +324,8 @@ namespace Mercader
                         .ToList()
                 };
             }
-            var entries = datos.Select(d => new ChartEntry((float)d.Total)
+
+            var entries = gastos.Select(d => new ChartEntry((float)d.Total)
             {
                 Label = FormatearEtiqueta(d.Mes, periodo),
                 ValueLabel = d.Total.ToString("C0"),
@@ -342,6 +341,7 @@ namespace Mercader
                 IsAnimated = true
             };
         }
+
 
         private void ConfigurarGraficoGanancias(List<(string Mes, decimal Total)> ventas, List<(string Mes, decimal Total)> gastos, string periodo)
         {
