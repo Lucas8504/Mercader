@@ -284,9 +284,9 @@ namespace Mercader
             VentasChart.Chart = new LineChart
             {
                 Entries = entries,
-                LabelTextSize = 24,
+                LabelTextSize = 20,
                 BackgroundColor = SKColor.Parse("#2a2a2a"),
-                LineSize = 6,
+                LineSize = 2,
                 IsAnimated = true
             };
         }
@@ -325,9 +325,9 @@ namespace Mercader
             GastosChart.Chart = new LineChart
             {
                 Entries = entries,
-                LabelTextSize = 24,
+                LabelTextSize = 20,
                 BackgroundColor = SKColor.Parse("#2a2a2a"),
-                LineSize = 6,
+                LineSize = 2,
                 IsAnimated = true
             };
         }
@@ -365,9 +365,9 @@ namespace Mercader
             GananciasChart.Chart = new LineChart
             {
                 Entries = entries,
-                LabelTextSize = 24,
+                LabelTextSize = 20,
                 BackgroundColor = SKColor.Parse("#2a2a2a"),
-                LineSize = 6,
+                LineSize = 2,
                 IsAnimated = true
             };
         }
