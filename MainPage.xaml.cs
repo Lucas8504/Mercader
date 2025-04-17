@@ -153,48 +153,41 @@ namespace Mercader
             ActualizarGraficosAsync().ConfigureAwait(false);
         }
 
-        private Task ActualizarGraficosAsync()
+        private async Task ActualizarGraficosAsync()
         {
             try
             {
-                // Obtener período seleccionado
                 var periodo = PeriodSelector.SelectedItem?.ToString() ?? "Meses";
 
-                // Obtener datos actuales de balance (ya cargados en labels)
-                var ventas = balance.Ventas;
-                var gastos = balance.Gastos;
+                var ventas = await _dataRepo.GetVentasUltimos6MesesAsync();
+                var gastos = await _dataRepo.GetGastosUltimos6MesesAsync();
 
-                // Agrupar según período
-                var ventasAgrupadas = periodo switch
+                var periodosRequeridos = periodo switch
                 {
-                    "Días" => AgruparPorDia(ventas),
-                    "Semanas" => AgruparPorSemana(ventas),
-                    _ => AgruparPorMes(ventas)
+                    "Días" => BalanceHelper.ObtenerUltimosDias(7),
+                    "Semanas" => BalanceHelper.ObtenerUltimasSemanas(4),
+                    _ => BalanceHelper.ObtenerUltimosMeses(6)
                 };
 
-                var gastosAgrupados = periodo switch
-                {
-                    "Días" => AgruparPorDia(gastos),
-                    "Semanas" => AgruparPorSemana(gastos),
-                    _ => AgruparPorMes(gastos)
-                };
+                // Agrupar datos
+                var ventasPorPeriodo = BalanceHelper.RellenarPeriodosFaltantes(
+                    BalanceHelper.AgruparRegistros(ventas, periodo), periodosRequeridos);
+
+                var gastosPorPeriodo = BalanceHelper.RellenarPeriodosFaltantes(
+                    BalanceHelper.AgruparRegistros(gastos, periodo), periodosRequeridos);
 
 
-
-                // Configurar gráficos con los datos agrupados
                 MainThread.BeginInvokeOnMainThread(() =>
                 {
-                    ConfigurarGraficoVentas(ventasAgrupadas, periodo);
-                    ConfigurarGraficoGastos(gastosAgrupados, periodo);
-                    ConfigurarGraficoGanancias(ventasAgrupadas, gastosAgrupados, periodo);
+                    ConfigurarGraficoVentas(ventasPorPeriodo, periodo);
+                    ConfigurarGraficoGastos(gastosPorPeriodo, periodo);
+                    ConfigurarGraficoGanancias(ventasPorPeriodo, gastosPorPeriodo, periodo);
                 });
             }
             catch (Exception ex)
             {
                 Console.WriteLine($"Error: {ex}");
             }
-
-            return Task.CompletedTask;
         }
 
 
@@ -277,7 +270,7 @@ namespace Mercader
                         .Reverse()
                         .Select(d => (d, 0m))
                         .ToList(),
-                    _ => BalanceHelper.ObtenerUltimos6Meses()
+                    _ => BalanceHelper.ObtenerUltimosMeses(6)
                         .Select(m => (m, 0m))
                         .ToList()
                 };
@@ -319,7 +312,7 @@ namespace Mercader
                         .Reverse()
                         .Select(d => (d, 0m))
                         .ToList(),
-                    _ => BalanceHelper.ObtenerUltimos6Meses()
+                    _ => BalanceHelper.ObtenerUltimosMeses(6)
                         .Select(m => (m, 0m))
                         .ToList()
                 };
@@ -361,7 +354,7 @@ namespace Mercader
                         .Reverse()
                         .Select(d => (d, 0m))
                         .ToList(),
-                    _ => BalanceHelper.ObtenerUltimos6Meses()
+                    _ => BalanceHelper.ObtenerUltimosMeses(6)
                         .Select(m => (m, 0m))
                         .ToList()
                 };
