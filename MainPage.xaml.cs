@@ -56,38 +56,38 @@ namespace Mercader
         // Método público para actualizar la etiqueta de ganancias
         public void ActualizarEtiquetaGanancias()
         {
-           
-                var ganancias = balance.CalcularGanancias();
-                GananciasLabel.Text = $"{ganancias:C}";
-           
+
+            var ganancias = balance.CalcularGanancias();
+            GananciasLabel.Text = $"{ganancias:C}";
+
         }
 
         // Método público para actualizar la etiqueta de ventas
         public void ActualizarEtiquetaVentas()
         {
-           
-                decimal ventas = balance.CalcularVentas();
-                VentasLabel.Text = $" {ventas:C}";
-           
+
+            decimal ventas = balance.CalcularVentas();
+            VentasLabel.Text = $" {ventas:C}";
+
         }
 
         // Método público para actualizar la etiqueta de gastos
         public void ActualizarEtiquetaGastos()
         {
-           
-            
-                decimal gastos = balance.CalcularGastos();
-                GastosLabel.Text = $" {gastos:C}";
-           
+
+
+            decimal gastos = balance.CalcularGastos();
+            GastosLabel.Text = $" {gastos:C}";
+
         }
 
         // Método público para actualizar la etiqueta de encargos
         public void ActualizarEtiquetaEncargos()
         {
-            
-                decimal encargo = balance.CalcularEncargos();
-                EncargosLabel.Text = $" {encargo:C}";
-           
+
+            decimal encargo = balance.CalcularEncargos();
+            EncargosLabel.Text = $" {encargo:C}";
+
         }
 
         private async void InAgregarEncargo(object sender, EventArgs e)
@@ -131,63 +131,59 @@ namespace Mercader
 
         private void OnCalcularGananciasClicked(object sender, EventArgs e)
         {
-           
-                var ganancias = balance.CalcularGanancias();
-                GananciasLabel.Text = $"Ganancias: {ganancias:C}";
-           
+
+            var ganancias = balance.CalcularGanancias();
+            GananciasLabel.Text = $"Ganancias: {ganancias:C}";
+
         }
 
-        private void PeriodSelector_OnSelectedIndexChanged(object sender, EventArgs e)
+        private async void PeriodSelector_OnSelectedIndexChanged(object sender, EventArgs e)
         {
-            var periodo = PeriodSelector.SelectedItem?.ToString() ?? "Meses";
-
-            // Actualizar los labels de los gráficos con el período seleccionado
-            MainThread.BeginInvokeOnMainThread(() =>
-            {
-                VentasChartLabel.Text = $"VENTAS ({periodo.ToUpper()})";
-                GastosChartLabel.Text = $"GASTOS ({periodo.ToUpper()})";
-                GananciasChartLabel.Text = $"GANANCIAS NETAS ({periodo.ToUpper()})";
-            });
-
-            // Actualizar los gráficos con el nuevo período
-            ActualizarGraficosAsync().ConfigureAwait(false);
+            await ActualizarGraficosAsync();
         }
 
-        private async Task ActualizarGraficosAsync()
+        private Task ActualizarGraficosAsync()
         {
             try
             {
+                // Obtener período seleccionado
                 var periodo = PeriodSelector.SelectedItem?.ToString() ?? "Meses";
 
-                var ventas = await _dataRepo.GetVentasUltimos6MesesAsync();
-                var gastos = await _dataRepo.GetGastosUltimos6MesesAsync();
+                // Obtener datos actuales de balance (ya cargados en labels)
+                var ventas = balance.Ventas;
+                var gastos = balance.Gastos;
 
-                var periodosRequeridos = periodo switch
+                // Agrupar según período
+                var ventasAgrupadas = periodo switch
                 {
-                    "Días" => BalanceHelper.ObtenerUltimosDias(7),
-                    "Semanas" => BalanceHelper.ObtenerUltimasSemanas(4),
-                    _ => BalanceHelper.ObtenerUltimosMeses(6)
+                    "Días" => AgruparPorDia(ventas),
+                    "Semanas" => AgruparPorSemana(ventas),
+                    _ => AgruparPorMes(ventas)
                 };
 
-                // Agrupar datos
-                var ventasPorPeriodo = BalanceHelper.RellenarPeriodosFaltantes(
-                    BalanceHelper.AgruparRegistros(ventas, periodo), periodosRequeridos);
+                var gastosAgrupados = periodo switch
+                {
+                    "Días" => AgruparPorDia(gastos),
+                    "Semanas" => AgruparPorSemana(gastos),
+                    _ => AgruparPorMes(gastos)
+                };
 
-                var gastosPorPeriodo = BalanceHelper.RellenarPeriodosFaltantes(
-                    BalanceHelper.AgruparRegistros(gastos, periodo), periodosRequeridos);
 
 
+                // Configurar gráficos con los datos agrupados
                 MainThread.BeginInvokeOnMainThread(() =>
                 {
-                    ConfigurarGraficoVentas(ventasPorPeriodo, periodo);
-                    ConfigurarGraficoGastos(gastosPorPeriodo, periodo);
-                    ConfigurarGraficoGanancias(ventasPorPeriodo, gastosPorPeriodo, periodo);
+                    ConfigurarGraficoVentas(ventasAgrupadas, periodo);
+                    ConfigurarGraficoGastos(gastosAgrupados, periodo);
+                    ConfigurarGraficoGanancias(ventasAgrupadas, gastosAgrupados, periodo);
                 });
             }
             catch (Exception ex)
             {
                 Console.WriteLine($"Error: {ex}");
             }
+
+            return Task.CompletedTask;
         }
 
 
@@ -241,13 +237,14 @@ namespace Mercader
                 .Select(g => (g.Key, Total: g.Sum(x => x.Monto * x.Cantidad)))
                 .ToList();
         }
+
         private string FormatearEtiqueta(string periodo, string tipo)
         {
             return tipo switch
             {
                 "Días" => DateTime.ParseExact(periodo, "yyyy-MM-dd", CultureInfo.InvariantCulture)
                     .ToString("dd MMM"),
-                "Semanas" => $"Sem {periodo.Split('-')[1]}",
+                "Semanas" => periodo.Replace("Semana ", "Sem "),
                 _ => DateTime.ParseExact(periodo, "yyyy-MM", CultureInfo.InvariantCulture)
                     .ToString("MMM")
             };
@@ -255,7 +252,7 @@ namespace Mercader
 
         private void ConfigurarGraficoVentas(List<(string Periodo, decimal Total)> datos, string periodo)
         {
-            // Crear entrada dummy si no hay datos
+            // Crear datos dummy si no hay registros
             if (!datos.Any() || datos.All(d => d.Total == 0))
             {
                 datos = periodo switch
@@ -270,7 +267,7 @@ namespace Mercader
                         .Reverse()
                         .Select(d => (d, 0m))
                         .ToList(),
-                    _ => BalanceHelper.ObtenerUltimosMeses(6)
+                    _ => BalanceHelper.ObtenerUltimos6Meses()
                         .Select(m => (m, 0m))
                         .ToList()
                 };
@@ -294,13 +291,14 @@ namespace Mercader
             };
         }
 
-        private void ConfigurarGraficoGastos(List<(string Mes, decimal Total)> gastos, string periodo)
-        {
 
-            // Crear entrada dummy si no hay datos
-            if (!gastos.Any() || gastos.All(d => d.Total == 0))
+
+        private void ConfigurarGraficoGastos(List<(string Mes, decimal Total)> datos, string periodo)
+        {
+            // Crear datos dummy si no hay registros
+            if (!datos.Any() || datos.All(d => d.Total == 0))
             {
-                gastos = periodo switch
+                datos = periodo switch
                 {
                     "Días" => Enumerable.Range(0, 7)
                         .Select(i => DateTime.Now.AddDays(-i).ToString("yyyy-MM-dd"))
@@ -312,13 +310,12 @@ namespace Mercader
                         .Reverse()
                         .Select(d => (d, 0m))
                         .ToList(),
-                    _ => BalanceHelper.ObtenerUltimosMeses(6)
+                    _ => BalanceHelper.ObtenerUltimos6Meses()
                         .Select(m => (m, 0m))
                         .ToList()
                 };
             }
-
-            var entries = gastos.Select(d => new ChartEntry((float)d.Total)
+            var entries = datos.Select(d => new ChartEntry((float)d.Total)
             {
                 Label = FormatearEtiqueta(d.Mes, periodo),
                 ValueLabel = d.Total.ToString("C0"),
@@ -334,7 +331,6 @@ namespace Mercader
                 IsAnimated = true
             };
         }
-
 
         private void ConfigurarGraficoGanancias(List<(string Mes, decimal Total)> ventas, List<(string Mes, decimal Total)> gastos, string periodo)
         {
@@ -354,7 +350,7 @@ namespace Mercader
                         .Reverse()
                         .Select(d => (d, 0m))
                         .ToList(),
-                    _ => BalanceHelper.ObtenerUltimosMeses(6)
+                    _ => BalanceHelper.ObtenerUltimos6Meses()
                         .Select(m => (m, 0m))
                         .ToList()
                 };
@@ -376,7 +372,7 @@ namespace Mercader
             };
         }
 
-       
+
 
         private async void OnExportarAExcelClicked(object sender, EventArgs e)
         {
