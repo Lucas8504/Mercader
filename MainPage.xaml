@@ -135,16 +135,24 @@
             </Frame>
 
 
-            <Picker
-                x:Name="PeriodSelector"
-                Title="Seleccionar período"
-                SelectedIndexChanged="PeriodSelector_OnSelectedIndexChanged">
-                <Picker.Items>
-                    <x:String>Días</x:String>
-                    <x:String>Semanas</x:String>
-                    <x:String>Meses</x:String>
-                </Picker.Items>
-            </Picker>
+            <Frame
+                Padding="4"
+                BackgroundColor="#2a2a2a"
+                CornerRadius="17"
+                HasShadow="True">
+                <Picker
+                    x:Name="PeriodSelector"
+                    Title="Seleccionar período"
+                    TextColor="#7d7c7c"
+                    
+                    SelectedIndexChanged="PeriodSelector_OnSelectedIndexChanged">
+                    <Picker.Items>
+                        <x:String>Días</x:String>
+                        <x:String>Semanas</x:String>
+                        <x:String>Meses</x:String>
+                    </Picker.Items>
+                </Picker>
+            </Frame>
 
 
             <!--  Gráfico de Ventas  -->
@@ -187,7 +195,7 @@
                 HorizontalOptions="Center"
                 Text="GANANCIAS NETAS"
                 TextColor="#1f6bc2" />
-            
+
             <microcharts:ChartView
                 x:Name="GananciasChart"
                 Grid.Row="7"
