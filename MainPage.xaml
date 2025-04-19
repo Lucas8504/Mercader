@@ -143,9 +143,9 @@
                 <Picker
                     x:Name="PeriodSelector"
                     Title="Seleccionar período"
-                    TextColor="#7d7c7c"
-                    
-                    SelectedIndexChanged="PeriodSelector_OnSelectedIndexChanged">
+                    SelectedIndexChanged="PeriodSelector_OnSelectedIndexChanged"
+                    TextColor="#7f7c7c"
+                    TitleColor="#7c7c7c">
                     <Picker.Items>
                         <x:String>Días</x:String>
                         <x:String>Semanas</x:String>
@@ -164,12 +164,18 @@
                 Text="VENTAS"
                 TextColor="#2e9449" />
 
-            <microcharts:ChartView
-                x:Name="VentasChart"
-                Grid.Row="3"
-                Margin="0,0,0,10"
+            <Frame
+                Padding="16"
                 BackgroundColor="#2a2a2a"
-                HeightRequest="200" />
+                CornerRadius="17"
+                HasShadow="False">
+                <microcharts:ChartView
+                    x:Name="VentasChart"
+                    Grid.Row="3"
+                    Margin="0,0,0,10"
+                    BackgroundColor="#2a2a2a"
+                    HeightRequest="200" />
+            </Frame>
 
             <!--  Gráfico de Gastos  -->
             <Label
@@ -180,12 +186,18 @@
                 Text="GASTOS"
                 TextColor="#6e0a24" />
 
-            <microcharts:ChartView
-                x:Name="GastosChart"
-                Grid.Row="5"
-                Margin="0,0,0,10"
+            <Frame
+                Padding="16"
                 BackgroundColor="#2a2a2a"
-                HeightRequest="200" />
+                CornerRadius="15"
+                HasShadow="False">
+                <microcharts:ChartView
+                    x:Name="GastosChart"
+                    Grid.Row="5"
+                    Margin="0,0,0,10"
+                    BackgroundColor="#2a2a2a"
+                    HeightRequest="200" />
+            </Frame>
 
             <!--  Gráfico de Ganancias  -->
             <Label
@@ -196,11 +208,18 @@
                 Text="GANANCIAS NETAS"
                 TextColor="#1f6bc2" />
 
-            <microcharts:ChartView
-                x:Name="GananciasChart"
-                Grid.Row="7"
+            <!--  Gráfico de Ganancias  -->
+            <Frame
+                Padding="16"
                 BackgroundColor="#2a2a2a"
-                HeightRequest="200" />
+                CornerRadius="15"
+                HasShadow="False">
+                <microcharts:ChartView
+                    x:Name="GananciasChart"
+                    Grid.Row="7"
+                    BackgroundColor="#2a2a2a"
+                    HeightRequest="200" />
+            </Frame>
 
 
             <!--  Botón Exportar  -->
