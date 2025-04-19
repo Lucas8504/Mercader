@@ -8,7 +8,7 @@
     BackgroundColor="#6490E9"
     FlyoutBackgroundColor="#1e1e1e"
     Shell.FlyoutBehavior="Flyout">
-    
+
 
     <!--  Flyout Header  -->
     <Shell.FlyoutHeader>
@@ -43,11 +43,11 @@
                 ColumnDefinitions=".2*,  .8*"
                 HeightRequest="50"
                 RowSpacing="0">
-               
+
                 <!--  Icono (puedes agregar un Image si tienes íconos)  -->
                 <BoxView
-                    Grid.Column="0"
                     Grid.RowSpan="3"
+                    Grid.Column="0"
                     BackgroundColor="#4CAF50"
                     CornerRadius="15"
                     HeightRequest="30"
@@ -66,26 +66,18 @@
                 <!--  Texto claro para contraste  -->
                 <!--  Separador  -->
                 <Rectangle
+                    Grid.RowSpan="3"
                     Grid.ColumnSpan="3"
-                    Grid.RowSpan="4"
                     Fill="#7d7c7c"
                     HeightRequest="0.5"
                     Opacity="0.2"
-                    VerticalOptions="End"
-                   />
+                    VerticalOptions="End" />
             </Grid>
         </DataTemplate>
     </Shell.ItemTemplate>
 
-    <!--  Shell Content  -->
-    <ShellContent
-        Title="Home"
-        ContentTemplate="{DataTemplate local:MainPage}"
-        Route="MainPage"
-        Grid.Row="0"/>
-    <ShellContent Title="Encargo" ContentTemplate="{DataTemplate local:Encargos}" Grid.Row="1" />
-    <ShellContent Title="Ventas" ContentTemplate="{DataTemplate local:Venta}"  Grid.Row="2"/>
-    <ShellContent Title="Gasto" ContentTemplate="{DataTemplate local:Gastos}"  Grid.Row="3"/>
-
+    <ShellContent Title="Encargo" ContentTemplate="{DataTemplate local:Encargos}" />
+    <ShellContent Title="Ventas" ContentTemplate="{DataTemplate local:Venta}" />
+    <ShellContent Title="Gasto" ContentTemplate="{DataTemplate local:Gastos}" />
 
 </Shell>
