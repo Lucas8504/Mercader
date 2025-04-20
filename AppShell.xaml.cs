@@ -5,7 +5,7 @@
         public AppShell(ShellItem mainPage)
         {
             InitializeComponent();
-            CurrentItem = mainPage; // Inicializar MainPage
+            
             
         }
     }
