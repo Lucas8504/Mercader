@@ -205,7 +205,7 @@
                 FontAttributes="Bold"
                 FontSize="16"
                 HorizontalOptions="Center"
-                Text="GANANCIAS NETAS"
+                Text="GANANCIAS"
                 TextColor="#1f6bc2" />
 
             <!--  Gráfico de Ganancias  -->
