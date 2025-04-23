@@ -8,7 +8,7 @@
     BackgroundColor="#1e1e1e">
     <!--  Fondo oscuro para combinar con MainPage  -->
 
-   
+
 
     <ScrollView>
         <VerticalStackLayout
