@@ -41,7 +41,7 @@
                 Grid.Row="1"
                 FontSize="14"
                 HorizontalOptions="Center"
-                Text="por  Lu´ks.dev y FPDS Vasos :)"
+                Text="por  Luks.dev y FPDS Vasos :)"
                 TextColor="#7d7c7c"
                 VerticalOptions="Center" />
         </Grid>
