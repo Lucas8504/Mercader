@@ -26,10 +26,22 @@
     <!--  Flyout Footer  -->
     <Shell.FlyoutFooter>
         <Grid Padding="10" BackgroundColor="#1e1e1e">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
             <Label
+                Grid.Row="0"
                 FontSize="14"
                 HorizontalOptions="Center"
                 Text="Versión 1.0"
+                TextColor="#7d7c7c"
+                VerticalOptions="Center" />
+            <Label
+                Grid.Row="1"
+                FontSize="14"
+                HorizontalOptions="Center"
+                Text="por  Lu´ks.dev y FPDS Vasos :)"
                 TextColor="#7d7c7c"
                 VerticalOptions="Center" />
         </Grid>
