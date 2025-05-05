@@ -49,7 +49,7 @@ namespace Mercader
             }
             catch (Exception ex)
             {
-                await DisplayAlert("Error", $"Error al cargar datos: {ex.Message}", "OK");
+                Console.WriteLine($"Error al cargar datos: {ex.Message}");
             }
         }
 
