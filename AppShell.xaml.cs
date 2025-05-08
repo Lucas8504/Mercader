@@ -5,8 +5,9 @@
         public AppShell(ShellItem mainPage)
         {
             InitializeComponent();
-            
-            
+            Routing.RegisterRoute(nameof(Encargos), typeof(Encargos));
+
+
         }
     }
 }
