@@ -101,7 +101,7 @@
                             <!--  Fila de la lista  -->
                             <Frame
                                 Padding="10"
-                                BackgroundColor="{Binding ., Converter={StaticResource AlternatingRowColorConverter}}"
+                                BackgroundColor="#2a2a2a"
                                 CornerRadius="8"
                                 HasShadow="False">
                                 <Grid>
