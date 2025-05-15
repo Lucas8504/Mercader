@@ -13,9 +13,9 @@
 
             <!--  Sección Botones Principales  -->
             <HorizontalStackLayout
-                Margin="0,0,100,0"
+                Margin="-5,0,0,0"
                 HorizontalOptions="Center"
-                Spacing="1">
+                Spacing="7">
 
                 <Button
                     BackgroundColor="#1f6bc2"
@@ -23,7 +23,7 @@
                     CornerRadius="10"
                     Text="➕ Encargo"
                     TextColor="White"
-                    WidthRequest="120" />
+                    WidthRequest="106" />
 
                 <Button
                     BackgroundColor="#2e9449"
@@ -31,7 +31,7 @@
                     CornerRadius="10"
                     Text="💰 Venta"
                     TextColor="White"
-                    WidthRequest="120" />
+                    WidthRequest="106" />
 
                 <Button
                     BackgroundColor="#6e0a24"
@@ -39,7 +39,7 @@
                     CornerRadius="10"
                     Text="💸 Gasto"
                     TextColor="White"
-                    WidthRequest="120" />
+                    WidthRequest="106" />
             </HorizontalStackLayout>
 
             <!--  Sección 1 Resumen Financiero  -->
