@@ -13,7 +13,7 @@
 
             <!--  Sección Botones Principales  -->
             <HorizontalStackLayout
-                Margin="-5,0,0,0"
+                Margin="-1,0,0,0"
                 HorizontalOptions="Center"
                 Spacing="7">
 
