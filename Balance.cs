@@ -8,7 +8,16 @@
 
         public decimal CalcularGastos()
         {
-            return Gastos.Sum(g => g.Monto * g.Cantidad);
+            try
+            {
+                // Intenta calcular la suma de gastos
+                return Gastos.Sum(g => g.Monto * g.Cantidad);
+            }
+            catch (Exception)
+            {
+                // Si hay error (ej: Gastos es null, Monto/Cantidad inválidos), retorna 0
+                return 0m; // El sufijo "m" indica que es un decimal
+            }
         }
 
         public decimal CalcularVentas()
