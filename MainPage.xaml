@@ -6,7 +6,7 @@
     xmlns:local="clr-namespace:Mercader"
     xmlns:microcharts="clr-namespace:Microcharts.Maui;assembly=Microcharts.Maui"
     Title="Inicio"
-    BackgroundColor="#1e1e1e">
+    BackgroundColor="#1C1C1C">
 
     <ScrollView>
         <VerticalStackLayout Padding="20" Spacing="25">

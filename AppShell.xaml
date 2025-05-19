@@ -5,7 +5,7 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
     xmlns:local="clr-namespace:Mercader"
     Title="Mercader"
-    BackgroundColor="#6490E9"
+    BackgroundColor="#1C1C1C"
     FlyoutBackgroundColor="#1e1e1e"
     Shell.FlyoutBehavior="Flyout">
 
@@ -88,11 +88,9 @@
         </DataTemplate>
     </Shell.ItemTemplate>
 
-    <FlyoutItem Title="Inicio">
+    <FlyoutItem Title="Inicio" FlyoutDisplayOptions="AsSingleItem">
         <ShellContent Title="Home" ContentTemplate="{DataTemplate local:MainPage}" />
     </FlyoutItem>
-
-
     <ShellContent Title="Encargo" ContentTemplate="{DataTemplate local:Encargos}" />
     <ShellContent Title="Ventas" ContentTemplate="{DataTemplate local:Venta}" />
     <ShellContent Title="Gasto" ContentTemplate="{DataTemplate local:Gastos}" />
