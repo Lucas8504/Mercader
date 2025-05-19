@@ -7,7 +7,9 @@
     Title="Mercader"
     BackgroundColor="#1C1C1C"
     FlyoutBackgroundColor="#1e1e1e"
-    Shell.FlyoutBehavior="Flyout">
+    Shell.FlyoutBehavior="Flyout"
+    Shell.TitleColor="White"
+    Shell.NavBarHasShadow="False">
 
 
     <!--  Flyout Header  -->
@@ -87,6 +89,7 @@
             </Grid>
         </DataTemplate>
     </Shell.ItemTemplate>
+    
 
     <FlyoutItem Title="Inicio" FlyoutDisplayOptions="AsSingleItem">
         <ShellContent Title="Home" ContentTemplate="{DataTemplate local:MainPage}" />
