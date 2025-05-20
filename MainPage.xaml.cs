@@ -359,7 +359,7 @@ namespace Mercader
             {
                 Label = FormatearEtiqueta(d.Mes, periodo),
                 ValueLabel = d.Ganancia.ToString("C0"),
-                Color = SKColor.Parse("#00E82A"),
+                Color = SKColor.Parse("#1C6BC2"),
                 TextColor = SKColors.White
             }).ToArray();
             GananciasChart.Chart = new LineChart
