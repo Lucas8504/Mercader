@@ -56,9 +56,14 @@ public partial class DetalleEncargo : ContentPage
 
     private async void OnEditarClicked(object sender, EventArgs e)
     {
-        // Aquí puedes implementar la navegación a una página de edición
-        // Por ejemplo: await Navigation.PushAsync(new EditarEncargoPage(_encargo));
-        await DisplayAlert("Información", "Función de editar en desarrollo", "OK");
+        try
+        {
+            await Navigation.PushAsync(new EditarEncargoPage(_encargo));
+        }
+        catch (Exception ex)
+        {
+            await DisplayAlert("Error", $"Error al abrir la página de edición: {ex.Message}", "OK");
+        }
     }
 
     private async void OnEliminarClicked(object sender, EventArgs e)

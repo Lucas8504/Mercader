@@ -74,9 +74,14 @@ public partial class Encargos : ContentPage
     // Métodos auxiliares (mantener funcionalidad existente)
     private async Task EditarEncargo(Encargo encargo)
     {
-        // Implementa la lógica para editar el encargo
-        Console.WriteLine("Editar encargo: " + encargo.Nombre);
-        await DisplayAlert("Información", "Función de editar en desarrollo", "OK");
+        try
+        {
+            await Navigation.PushAsync(new EditarEncargoPage(encargo));
+        }
+        catch (Exception ex)
+        {
+            await DisplayAlert("Error", $"Error al abrir la página de edición: {ex.Message}", "OK");
+        }
     }
 
     private async Task EliminarEncargo(Encargo encargo)
