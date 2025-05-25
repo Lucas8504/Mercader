@@ -12,13 +12,7 @@
             Padding="20"
             Spacing="20">
 
-            <!-- Título principal -->
-            <Label
-                FontAttributes="Bold"
-                FontSize="24"
-                HorizontalTextAlignment="Center"
-                Text="Detalles del Encargo"
-                TextColor="#ffffff" />
+            
 
             <!-- Card con los detalles -->
             <Frame
