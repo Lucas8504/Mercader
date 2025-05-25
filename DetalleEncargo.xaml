@@ -1,0 +1,205 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage
+    x:Class="Mercader.DetalleEncargo"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    Title="Detalle del Encargo"
+    BackgroundColor="#1e1e1e">
+
+    <ScrollView>
+        <VerticalStackLayout
+            Margin="20"
+            Padding="20"
+            Spacing="20">
+
+            <!-- Título principal -->
+            <Label
+                FontAttributes="Bold"
+                FontSize="24"
+                HorizontalTextAlignment="Center"
+                Text="Detalles del Encargo"
+                TextColor="#ffffff" />
+
+            <!-- Card con los detalles -->
+            <Frame
+                Padding="20"
+                BackgroundColor="#2a2a2a"
+                CornerRadius="12"
+                HasShadow="True">
+                <VerticalStackLayout Spacing="15">
+
+                    <!-- Nombre del cliente -->
+                    <VerticalStackLayout Spacing="5">
+                        <Label
+                            FontAttributes="Bold"
+                            FontSize="16"
+                            Text="Cliente:"
+                            TextColor="#4CAF50" />
+                        <Label
+                            x:Name="LabelNombre"
+                            FontSize="18"
+                            Text="{Binding Nombre}"
+                            TextColor="#ffffff" />
+                    </VerticalStackLayout>
+
+                    <!-- Descripción -->
+                    <VerticalStackLayout Spacing="5">
+                        <Label
+                            FontAttributes="Bold"
+                            FontSize="16"
+                            Text="Descripción:"
+                            TextColor="#4CAF50" />
+                        <Label
+                            x:Name="LabelDescripcion"
+                            FontSize="16"
+                            Text="{Binding Descripcion}"
+                            TextColor="#cccccc" />
+                    </VerticalStackLayout>
+
+                    <!-- Precio y Cantidad en una fila -->
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+
+                        <!-- Precio -->
+                        <VerticalStackLayout Grid.Column="0" Spacing="5">
+                            <Label
+                                FontAttributes="Bold"
+                                FontSize="16"
+                                Text="Precio:"
+                                TextColor="#4CAF50" />
+                            <Label
+                                x:Name="LabelPrecio"
+                                FontSize="18"
+                                FontAttributes="Bold"
+                                Text="{Binding Precio, StringFormat='${0:F2}'}"
+                                TextColor="#FFC107" />
+                        </VerticalStackLayout>
+
+                        <!-- Cantidad -->
+                        <VerticalStackLayout Grid.Column="1" Spacing="5">
+                            <Label
+                                FontAttributes="Bold"
+                                FontSize="16"
+                                Text="Cantidad:"
+                                TextColor="#4CAF50" />
+                            <Label
+                                x:Name="LabelCantidad"
+                                FontSize="18"
+                                FontAttributes="Bold"
+                                Text="{Binding Cantidad}"
+                                TextColor="#ffffff" />
+                        </VerticalStackLayout>
+                    </Grid>
+
+                    <!-- Total -->
+                    <VerticalStackLayout Spacing="5">
+                        <Label
+                            FontAttributes="Bold"
+                            FontSize="16"
+                            Text="Total:"
+                            TextColor="#4CAF50" />
+                        <Label
+                            x:Name="LabelTotal"
+                            FontSize="20"
+                            FontAttributes="Bold"
+                            TextColor="#FFC107" />
+                    </VerticalStackLayout>
+
+                    <!-- Fechas en una fila -->
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+
+                        <!-- Fecha del encargo -->
+                        <VerticalStackLayout Grid.Column="0" Spacing="5">
+                            <Label
+                                FontAttributes="Bold"
+                                FontSize="16"
+                                Text="Fecha del Encargo:"
+                                TextColor="#4CAF50" />
+                            <Label
+                                x:Name="LabelFecha"
+                                FontSize="16"
+                                Text="{Binding Fecha, StringFormat='{0:dd/MM/yyyy}'}"
+                                TextColor="#cccccc" />
+                        </VerticalStackLayout>
+
+                        <!-- Fecha de entrega -->
+                        <VerticalStackLayout Grid.Column="1" Spacing="5">
+                            <Label
+                                FontAttributes="Bold"
+                                FontSize="16"
+                                Text="Fecha de Entrega:"
+                                TextColor="#4CAF50" />
+                            <Label
+                                x:Name="LabelFechaEntrega"
+                                FontSize="16"
+                                Text="{Binding FechaEntrega, StringFormat='{0:dd/MM/yyyy}'}"
+                                TextColor="#cccccc" />
+                        </VerticalStackLayout>
+                    </Grid>
+
+                </VerticalStackLayout>
+            </Frame>
+
+            <!-- Botones de acción -->
+            <VerticalStackLayout Spacing="15">
+
+                <!-- Botón Concretar Venta -->
+                <Button
+                    x:Name="BtnConcretarVenta"
+                    BackgroundColor="#4CAF50"
+                    Clicked="OnConcretarVentaClicked"
+                    CornerRadius="8"
+                    FontAttributes="Bold"
+                    FontSize="16"
+                    HeightRequest="50"
+                    Text="🛒 Concretar Venta"
+                    TextColor="White" />
+
+                <!-- Botón Editar -->
+                <Button
+                    x:Name="BtnEditar"
+                    BackgroundColor="#2196F3"
+                    Clicked="OnEditarClicked"
+                    CornerRadius="8"
+                    FontAttributes="Bold"
+                    FontSize="16"
+                    HeightRequest="50"
+                    Text="✏️ Editar Encargo"
+                    TextColor="White" />
+
+                <!-- Botón Eliminar -->
+                <Button
+                    x:Name="BtnEliminar"
+                    BackgroundColor="#FF5722"
+                    Clicked="OnEliminarClicked"
+                    CornerRadius="8"
+                    FontAttributes="Bold"
+                    FontSize="16"
+                    HeightRequest="50"
+                    Text="🗑️ Eliminar Encargo"
+                    TextColor="White" />
+
+                <!-- Botón Volver -->
+                <Button
+                    x:Name="BtnVolver"
+                    BackgroundColor="#666666"
+                    Clicked="OnVolverClicked"
+                    CornerRadius="8"
+                    FontAttributes="Bold"
+                    FontSize="16"
+                    HeightRequest="50"
+                    Text="⬅️ Volver"
+                    TextColor="White" />
+
+            </VerticalStackLayout>
+
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>
