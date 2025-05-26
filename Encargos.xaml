@@ -131,7 +131,7 @@
                                     <Label
                                         Grid.Column="3"
                                         HorizontalTextAlignment="Center"
-                                        Text="{Binding Cant.}"
+                                        Text="{Binding Cant}"
                                         TextColor="#cccccc" />
                                     <Label
                                         Grid.Column="4"

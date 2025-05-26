@@ -66,6 +66,36 @@ public partial class DetalleEncargo : ContentPage
         }
     }
 
+    protected override void OnAppearing()
+    {
+        base.OnAppearing();
+        ActualizarDatos();
+    }
+
+    private async void ActualizarDatos()
+    {
+        try
+        {
+            // Recargar el encargo desde la base de datos para obtener los datos más recientes
+            var encargosActualizados = await App.DataRepo.GetEncargosAsync();
+            if (encargosActualizados != null && encargosActualizados.Any())
+            {
+                // Asumimos que queremos el encargo correspondiente al ID actual
+                var encargoActualizado = encargosActualizados.FirstOrDefault(e => e.Id == _encargo.Id);
+                if (encargoActualizado != null)
+                {
+                    _encargo = encargoActualizado; // Asignación segura
+                    BindingContext = _encargo;
+                    CalcularTotal();
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error al actualizar datos: {ex.Message}");
+        }
+    }
+
     private async void OnEliminarClicked(object sender, EventArgs e)
     {
         bool confirm = await DisplayAlert(
