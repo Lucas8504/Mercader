@@ -26,7 +26,7 @@
                 <Grid>
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="*" />
-                        <ColumnDefinition Width="*" />
+                        
                         <ColumnDefinition Width="*" />
                         <ColumnDefinition Width="*" />
                         <ColumnDefinition Width="*" />
@@ -38,32 +38,27 @@
                         HorizontalTextAlignment="Center"
                         Text="Nombre"
                         TextColor="#cccccc" />
+                    
                     <Label
                         Grid.Column="1"
-                        FontAttributes="Bold"
-                        HorizontalTextAlignment="Center"
-                        Text="Descr."
-                        TextColor="#cccccc" />
-                    <Label
-                        Grid.Column="2"
                         FontAttributes="Bold"
                         HorizontalTextAlignment="Center"
                         Text="Precio"
                         TextColor="#cccccc" />
                     <Label
-                        Grid.Column="3"
+                        Grid.Column="2"
                         FontAttributes="Bold"
                         HorizontalTextAlignment="Center"
                         Text="Cant."
                         TextColor="#cccccc" />
                     <Label
-                        Grid.Column="4"
+                        Grid.Column="3"
                         FontAttributes="Bold"
                         HorizontalTextAlignment="Center"
                         Text="Fecha"
                         TextColor="#cccccc" />
                     <Label
-                        Grid.Column="5"
+                        Grid.Column="4"
                         FontAttributes="Bold"
                         HorizontalTextAlignment="Center"
                         Text="Entrega"
@@ -107,7 +102,7 @@
                                 <Grid>
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition Width="*" />
-                                        <ColumnDefinition Width="*" />
+                                        
                                         <ColumnDefinition Width="*" />
                                         <ColumnDefinition Width="*" />
                                         <ColumnDefinition Width="*" />
@@ -118,28 +113,24 @@
                                         HorizontalTextAlignment="Center"
                                         Text="{Binding Nombre}"
                                         TextColor="#cccccc" />
+                                   
                                     <Label
                                         Grid.Column="1"
-                                        HorizontalTextAlignment="Center"
-                                        Text="{Binding Descripcion}"
-                                        TextColor="#cccccc" />
-                                    <Label
-                                        Grid.Column="2"
                                         HorizontalTextAlignment="Center"
                                         Text="{Binding Precio}"
                                         TextColor="#cccccc" />
                                     <Label
-                                        Grid.Column="3"
+                                        Grid.Column="2"
                                         HorizontalTextAlignment="Center"
-                                        Text="{Binding Cant}"
+                                        Text="{Binding Cantidad}"
                                         TextColor="#cccccc" />
                                     <Label
-                                        Grid.Column="4"
+                                        Grid.Column="3"
                                         HorizontalTextAlignment="Center"
                                         Text="{Binding Fecha, StringFormat='{0:dd/MM}'}"
                                         TextColor="#cccccc" />
                                     <Label
-                                        Grid.Column="5"
+                                        Grid.Column="4"
                                         HorizontalTextAlignment="Center"
                                         Text="{Binding FechaEntrega, StringFormat='{0:dd/MM/yy}'}"
                                         TextColor="#cccccc" />
