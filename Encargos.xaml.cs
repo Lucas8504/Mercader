@@ -26,21 +26,20 @@ public partial class Encargos : ContentPage
         }
     }
 
-    // Método modificado para navegar a la página de detalles
-    private async void OnSelectionChanged(object sender, SelectionChangedEventArgs e)
+    // Método para manejar el tap en lugar de selección
+    private async void OnItemTapped(object sender, EventArgs e)
     {
-        var selectedItem = e.CurrentSelection.FirstOrDefault();
-        if (selectedItem != null && selectedItem is Encargo encargo)
+        var frame = sender as Frame;
+        var encargo = frame?.BindingContext as Encargo;
+
+        if (encargo != null)
         {
             // Navegar a la página de detalles
             await Navigation.PushAsync(new DetalleEncargo(encargo));
-
-            // Limpiar la selección
-            ((CollectionView)sender).SelectedItem = null;
         }
     }
 
-    // Métodos para los SwipeItems (mantener funcionalidad existente)
+    // Métodos para los SwipeItems
     private async void OnEditSwipeItemInvoked(object sender, EventArgs e)
     {
         var swipeItem = sender as SwipeItem;
@@ -61,17 +60,17 @@ public partial class Encargos : ContentPage
         }
     }
 
-    private async void OnConcretarVentaSwipeItemInvoked(object sender, EventArgs e)
+    private async void OnDetallesSwipeItemInvoked(object sender, EventArgs e)
     {
         var swipeItem = sender as SwipeItem;
         var item = swipeItem?.BindingContext;
         if (item is Encargo encargo)
         {
-            await ConcretarVenta(encargo);
+            await MostrarDetalles(encargo);
         }
     }
 
-    // Métodos auxiliares (mantener funcionalidad existente)
+    // Métodos auxiliares
     private async Task EditarEncargo(Encargo encargo)
     {
         try
@@ -99,6 +98,19 @@ public partial class Encargos : ContentPage
             {
                 await DisplayAlert("Error", $"Error al eliminar el encargo: {ex.Message}", "OK");
             }
+        }
+    }
+
+    // Método para mostrar detalles
+    private async Task MostrarDetalles(Encargo encargo)
+    {
+        try
+        {
+            await Navigation.PushAsync(new DetalleEncargo(encargo));
+        }
+        catch (Exception ex)
+        {
+            await DisplayAlert("Error", $"Error al abrir la página de detalles: {ex.Message}", "OK");
         }
     }
 
