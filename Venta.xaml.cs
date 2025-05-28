@@ -5,7 +5,6 @@ public partial class Venta : ContentPage
     public Venta()
     {
         InitializeComponent();
-        
     }
 
     protected override void OnAppearing()
@@ -13,6 +12,7 @@ public partial class Venta : ContentPage
         base.OnAppearing();
         CargarVentas();
     }
+
     private async void CargarVentas()
     {
         try
@@ -22,72 +22,80 @@ public partial class Venta : ContentPage
         }
         catch (Exception ex)
         {
-            Console.WriteLine($"Error al cargar los encargos: {ex.Message}");
+            Console.WriteLine($"Error al cargar las ventas: {ex.Message}");
         }
     }
 
-    private async void OnSelectionChanged(object sender, SelectionChangedEventArgs e)
+    // Método para manejar el tap y navegar a DetalleVenta
+    private async void OnItemTapped(object sender, EventArgs e)
     {
-        var selectedItem = e.CurrentSelection.FirstOrDefault();
-        if (selectedItem != null)
+        var frame = sender as Frame;
+        var venta = frame?.BindingContext as Ventas;
+        if (venta != null)
         {
-            await HandleSelectedItem(selectedItem);
-            ((CollectionView)sender).SelectedItem = null;
-        }
-
-        async Task HandleSelectedItem(object? selectedItem)
-        {
-            string action = await DisplayActionSheet("Opciones", "Cancelar", null, "Editar", "Eliminar");
-            switch (action)
+            try
             {
-                case "Editar":
-                    await EditarVenta(selectedItem!);
-                    break;
-                case "Eliminar":
-                    await EliminarVenta(selectedItem!);
-                    break;
+                await Navigation.PushAsync(new DetalleVenta(venta));
+            }
+            catch (Exception ex)
+            {
+                await DisplayAlert("Error", $"Error al abrir los detalles de la venta: {ex.Message}", "OK");
             }
         }
     }
 
-    private async Task EditarVenta(object selectedItem)
+    // Métodos para los SwipeItems
+    private async void OnEditSwipeItemInvoked(object sender, EventArgs e)
     {
-        if (selectedItem is Ventas venta)
+        var swipeItem = sender as SwipeItem;
+        var item = swipeItem?.BindingContext;
+        if (item is Ventas venta)
         {
-            await Navigation.PushAsync(new EditarVentaPage(venta));
-        }
-        else
-        {
-            await DisplayAlert("Error", "No se pudo editar la venta: el elemento seleccionado no es una venta válida.", "OK");
+            await EditarVenta(venta);
         }
     }
 
-    private async Task EliminarVenta(object selectedItem)
+    private async void OnDeleteSwipeItemInvoked(object sender, EventArgs e)
     {
-       
-        if (selectedItem is Ventas venta)
+        var swipeItem = sender as SwipeItem;
+        var item = swipeItem?.BindingContext;
+        if (item is Ventas venta)
         {
-            bool confirm = await DisplayAlert("Confirmación", $"¿Realmente deseas eliminar la venta de \"{venta.Descripcion}\" del dia {venta.Fecha}?", "Sí", "No");
-            if (confirm)
+            await EliminarVenta(venta);
+        }
+    }
+
+    // Métodos auxiliares
+    private async Task EditarVenta(Ventas venta)
+    {
+        try
+        {
+            await Navigation.PushAsync(new EditarVentaPage(venta));
+        }
+        catch (Exception ex)
+        {
+            await DisplayAlert("Error", $"Error al abrir la página de edición: {ex.Message}", "OK");
+        }
+    }
+
+    private async Task EliminarVenta(Ventas venta)
+    {
+        bool confirm = await DisplayAlert("Confirmación",
+            $"¿Estás seguro de eliminar la venta \"{venta.Descripcion}\" del día {venta.Fecha:dd/MM/yyyy}?",
+            "Sí", "No");
+
+        if (confirm)
+        {
+            try
             {
                 await App.DataRepo.DeleteVentaAsync(venta);
                 await DisplayAlert("Éxito", "Venta eliminada correctamente", "OK");
                 CargarVentas();
             }
-        }   
-    }
-
-    private void OnEditSwipeItemInvoked(object sender, EventArgs e)
-    {
-        var swipeItem = sender as SwipeItem;
-        var item = swipeItem?.BindingContext;
-        // Lógica para editar el elemento
-    }
-
-    private void OnDeleteSwipeItemInvoked(object sender, EventArgs e)
-    {
-        var swipeItem = sender as SwipeItem;
-        var item = swipeItem?.BindingContext;
-        // Lógica para eliminar el elemento
+            catch (Exception ex)
+            {
+                await DisplayAlert("Error", $"Error al eliminar la venta: {ex.Message}", "OK");
+            }
+        }
     }
 }

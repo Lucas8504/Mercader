@@ -8,15 +8,11 @@
     BackgroundColor="#1e1e1e">
     <!--  Fondo oscuro para combinar con MainPage  -->
 
-
     <ScrollView>
         <VerticalStackLayout
             Margin="10"
             Padding="10"
             Spacing="15">
-
-            <!--  Título de la página  -->
-
 
             <!--  Encabezados de las columnas  -->
             <Frame
@@ -61,32 +57,33 @@
             <!--  Lista de ventas  -->
             <CollectionView
                 x:Name="VentasCollectionView"
-                SelectionChanged="OnSelectionChanged"
-                SelectionMode="Single">
-                <!--  Espacio entre filas  -->
+                SelectionMode="None">
 
                 <CollectionView.ItemTemplate>
                     <DataTemplate>
                         <SwipeView>
                             <SwipeView.RightItems>
-                                <SwipeItems>
+                                <SwipeItems Mode="Reveal">
                                     <SwipeItem
                                         BackgroundColor="#4CAF50"
                                         Invoked="OnEditSwipeItemInvoked"
-                                        Text="Editar" />
+                                        Text="✏️" />
                                     <SwipeItem
                                         BackgroundColor="#FF5722"
                                         Invoked="OnDeleteSwipeItemInvoked"
-                                        Text="Eliminar" />
+                                        Text="🗑️" />
                                 </SwipeItems>
                             </SwipeView.RightItems>
 
-                            <!--  Fila de la lista  -->
+                            <!--  Fila de la lista con TapGestureRecognizer para navegación  -->
                             <Frame
                                 Padding="10"
                                 BackgroundColor="#2a2a2a"
                                 CornerRadius="8"
                                 HasShadow="False">
+                                <Frame.GestureRecognizers>
+                                    <TapGestureRecognizer Tapped="OnItemTapped" />
+                                </Frame.GestureRecognizers>
                                 <Grid>
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition Width="*" />
@@ -102,7 +99,7 @@
                                     <Label
                                         Grid.Column="1"
                                         HorizontalTextAlignment="Center"
-                                        Text="{Binding Precio}"
+                                        Text="{Binding Precio, StringFormat='${0:F2}'}"
                                         TextColor="#cccccc" />
                                     <Label
                                         Grid.Column="2"

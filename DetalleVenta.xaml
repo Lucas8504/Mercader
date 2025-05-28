@@ -1,0 +1,149 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage
+    x:Class="Mercader.DetalleVenta"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    Title="Detalle de la Venta"
+    BackgroundColor="#1e1e1e">
+
+    <ScrollView>
+        <VerticalStackLayout
+            Margin="20"
+            Padding="20"
+            Spacing="20">
+
+            <!-- Card con los detalles -->
+            <Frame
+                Padding="20"
+                BackgroundColor="#2a2a2a"
+                CornerRadius="12"
+                HasShadow="True">
+                <VerticalStackLayout Spacing="15">
+
+                    <!-- Descripción -->
+                    <VerticalStackLayout Spacing="5">
+                        <Label
+                            FontAttributes="Bold"
+                            FontSize="16"
+                            Text="Descripción:"
+                            TextColor="#4CAF50" />
+                        <Label
+                            x:Name="LabelDescripcion"
+                            FontSize="18"
+                            Text="{Binding Descripcion}"
+                            TextColor="#ffffff" />
+                    </VerticalStackLayout>
+
+                    <!-- Precio y Cantidad en una fila -->
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+
+                        <!-- Precio -->
+                        <VerticalStackLayout Grid.Column="0" Spacing="5">
+                            <Label
+                                FontAttributes="Bold"
+                                FontSize="16"
+                                Text="Precio:"
+                                TextColor="#4CAF50" />
+                            <Label
+                                x:Name="LabelPrecio"
+                                FontSize="18"
+                                FontAttributes="Bold"
+                                Text="{Binding Precio, StringFormat='${0:F2}'}"
+                                TextColor="#FFC107" />
+                        </VerticalStackLayout>
+
+                        <!-- Cantidad -->
+                        <VerticalStackLayout Grid.Column="1" Spacing="5">
+                            <Label
+                                FontAttributes="Bold"
+                                FontSize="16"
+                                Text="Cantidad:"
+                                TextColor="#4CAF50" />
+                            <Label
+                                x:Name="LabelCantidad"
+                                FontSize="18"
+                                FontAttributes="Bold"
+                                Text="{Binding Cantidad}"
+                                TextColor="#ffffff" />
+                        </VerticalStackLayout>
+                    </Grid>
+
+                    <!-- Total -->
+                    <VerticalStackLayout Spacing="5">
+                        <Label
+                            FontAttributes="Bold"
+                            FontSize="16"
+                            Text="Total:"
+                            TextColor="#4CAF50" />
+                        <Label
+                            x:Name="LabelTotal"
+                            FontSize="20"
+                            FontAttributes="Bold"
+                            TextColor="#FFC107" />
+                    </VerticalStackLayout>
+
+                    <!-- Fecha de la venta -->
+                    <VerticalStackLayout Spacing="5">
+                        <Label
+                            FontAttributes="Bold"
+                            FontSize="16"
+                            Text="Fecha de la Venta:"
+                            TextColor="#4CAF50" />
+                        <Label
+                            x:Name="LabelFecha"
+                            FontSize="16"
+                            Text="{Binding Fecha, StringFormat='{0:dd/MM/yyyy}'}"
+                            TextColor="#cccccc" />
+                    </VerticalStackLayout>
+
+                </VerticalStackLayout>
+            </Frame>
+
+            <!-- Botones de acción -->
+            <VerticalStackLayout Spacing="15">
+
+                <!-- Botón Editar -->
+                <Button
+                    x:Name="BtnEditar"
+                    BackgroundColor="#2196F3"
+                    Clicked="OnEditarClicked"
+                    CornerRadius="8"
+                    FontAttributes="Bold"
+                    FontSize="16"
+                    HeightRequest="50"
+                    Text="✏️ Editar Venta"
+                    TextColor="White" />
+
+                <!-- Botón Eliminar -->
+                <Button
+                    x:Name="BtnEliminar"
+                    BackgroundColor="#FF5722"
+                    Clicked="OnEliminarClicked"
+                    CornerRadius="8"
+                    FontAttributes="Bold"
+                    FontSize="16"
+                    HeightRequest="50"
+                    Text="🗑️ Eliminar Venta"
+                    TextColor="White" />
+
+                <!-- Botón Volver -->
+                <Button
+                    x:Name="BtnVolver"
+                    BackgroundColor="#666666"
+                    Clicked="OnVolverClicked"
+                    CornerRadius="8"
+                    FontAttributes="Bold"
+                    FontSize="16"
+                    HeightRequest="50"
+                    Text="⬅️ Volver"
+                    TextColor="White" />
+
+            </VerticalStackLayout>
+
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>
