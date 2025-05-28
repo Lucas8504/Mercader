@@ -8,15 +8,11 @@
     BackgroundColor="#1e1e1e">
     <!--  Fondo oscuro para combinar con MainPage  -->
 
-
-
     <ScrollView>
         <VerticalStackLayout
             Margin="10"
             Padding="10"
             Spacing="15">
-
-
 
             <!--  Encabezados de las columnas  -->
             <Frame
@@ -61,32 +57,37 @@
             <!--  Lista de gastos  -->
             <CollectionView
                 x:Name="GastosCollectionView"
-                SelectionChanged="OnSelectionChanged"
-                SelectionMode="Single">
-                <!--  Espacio entre filas  -->
+                SelectionMode="None">
+                <!--  Cambiado SelectionMode a None para evitar selección visual  -->
 
                 <CollectionView.ItemTemplate>
                     <DataTemplate>
                         <SwipeView>
                             <SwipeView.RightItems>
-                                <SwipeItems>
+                                <SwipeItems Mode="Reveal">
+                                    <!--  SwipeItems más compactos  -->
                                     <SwipeItem
                                         BackgroundColor="#4CAF50"
                                         Invoked="OnEditSwipeItemInvoked"
-                                        Text="Editar" />
+                                        Text="✏️"
+                                        />
                                     <SwipeItem
                                         BackgroundColor="#FF5722"
                                         Invoked="OnDeleteSwipeItemInvoked"
-                                        Text="Eliminar" />
+                                        Text="🗑️"
+                                        />
                                 </SwipeItems>
                             </SwipeView.RightItems>
 
-                            <!--  Fila de la lista  -->
+                            <!--  Fila de la lista con TapGestureRecognizer para navegación  -->
                             <Frame
                                 Padding="10"
                                 BackgroundColor="#2a2a2a"
                                 CornerRadius="8"
                                 HasShadow="False">
+                                <Frame.GestureRecognizers>
+                                    <TapGestureRecognizer Tapped="OnItemTapped" />
+                                </Frame.GestureRecognizers>
                                 <Grid>
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition Width="*" />
