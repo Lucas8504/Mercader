@@ -26,21 +26,22 @@ public partial class Gastos : ContentPage
         }
     }
 
-    // Método para manejar el tap en lugar de selección (si necesitas navegación a detalles)
+    
+    // Método actualizado para manejar el tap y navegar a DetalleGasto
     private async void OnItemTapped(object sender, EventArgs e)
     {
         var frame = sender as Frame;
         var gasto = frame?.BindingContext as Gasto;
-
         if (gasto != null)
         {
-            // Aquí puedes navegar a una página de detalles si la tienes
-            // await Navigation.PushAsync(new DetalleGasto(gasto));
-
-            // O mostrar información del gasto
-            await DisplayAlert("Detalle del Gasto",
-                $"Descripción: {gasto.Descripcion}\nMonto: ${gasto.Monto:F2}\nCantidad: {gasto.Cantidad}\nFecha: {gasto.Fecha:dd/MM/yyyy}",
-                "OK");
+            try
+            {
+                await Navigation.PushAsync(new DetalleGasto(gasto));
+            }
+            catch (Exception ex)
+            {
+                await DisplayAlert("Error", $"Error al abrir los detalles del gasto: {ex.Message}", "OK");
+            }
         }
     }
 
