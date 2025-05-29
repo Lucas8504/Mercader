@@ -25,4 +25,18 @@ public partial class EditarGastoPage : ContentPage
         await DisplayAlert("Éxito", "Gasto actualizado correctamente", "OK");
         await Navigation.PopAsync();
     }
+
+    private async void OnCancelarClicked(object sender, EventArgs e)
+    {
+        bool confirm = await DisplayAlert(
+            "Confirmar",
+            "¿Estás seguro de que deseas cancelar? Se perderán los cambios no guardados.",
+            "Sí",
+            "No");
+
+        if (confirm)
+        {
+            await Navigation.PopAsync();
+        }
+    }
 }
