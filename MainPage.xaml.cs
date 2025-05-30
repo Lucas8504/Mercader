@@ -11,7 +11,6 @@ namespace Mercader
         public Balance balance;
         private readonly DataRepository _dataRepo;
 
-
         public MainPage(DataRepository _dataRepo)
         {
             InitializeComponent();
@@ -22,8 +21,6 @@ namespace Mercader
         protected override void OnAppearing()
         {
             base.OnAppearing();
-
-            // Cargar datos de la base de datos cada vez que la página aparece
             CargarDatosAsync().ConfigureAwait(false);
         }
 
@@ -44,7 +41,6 @@ namespace Mercader
                 ActualizarEtiquetaVentas();
                 ActualizarEtiquetaGanancias();
 
-                // Añadir esta línea para actualizar gráficos
                 await ActualizarGraficosAsync();
             }
             catch (Exception ex)
@@ -53,43 +49,32 @@ namespace Mercader
             }
         }
 
-        // Método público para actualizar la etiqueta de ganancias
+        // ... métodos de actualización de etiquetas existentes ...
         public void ActualizarEtiquetaGanancias()
         {
-
             var ganancias = balance.CalcularGanancias();
             GananciasLabel.Text = $"{ganancias:C}";
-
         }
 
-        // Método público para actualizar la etiqueta de ventas
         public void ActualizarEtiquetaVentas()
         {
-
             decimal ventas = balance.CalcularVentas();
             VentasLabel.Text = $" {ventas:C}";
-
         }
 
-        // Método público para actualizar la etiqueta de gastos
         public void ActualizarEtiquetaGastos()
         {
-
-
             decimal gastos = balance.CalcularGastos();
             GastosLabel.Text = $" {gastos:C}";
-
         }
 
-        // Método público para actualizar la etiqueta de encargos
         public void ActualizarEtiquetaEncargos()
         {
-
             decimal encargo = balance.CalcularEncargos();
             EncargosLabel.Text = $" {encargo:C}";
-
         }
 
+        // ... métodos de navegación existentes ...
         private async void InAgregarEncargo(object sender, EventArgs e)
         {
             var encargoModal = new EncModal(this);
@@ -129,14 +114,6 @@ namespace Mercader
             }
         }
 
-        private void OnCalcularGananciasClicked(object sender, EventArgs e)
-        {
-
-            var ganancias = balance.CalcularGanancias();
-            GananciasLabel.Text = $"Ganancias: {ganancias:C}";
-
-        }
-
         private async void PeriodSelector_OnSelectedIndexChanged(object sender, EventArgs e)
         {
             await ActualizarGraficosAsync();
@@ -146,14 +123,10 @@ namespace Mercader
         {
             try
             {
-                // Obtener período seleccionado
                 var periodo = PeriodSelector.SelectedItem?.ToString() ?? "Meses";
-
-                // Obtener datos actuales de balance (ya cargados en labels)
                 var ventas = balance.Ventas;
                 var gastos = balance.Gastos;
 
-                // Agrupar según período
                 var ventasAgrupadas = periodo switch
                 {
                     "Días" => AgruparPorDia(ventas),
@@ -168,9 +141,6 @@ namespace Mercader
                     _ => AgruparPorMes(gastos)
                 };
 
-
-
-                // Configurar gráficos con los datos agrupados
                 MainThread.BeginInvokeOnMainThread(() =>
                 {
                     ConfigurarGraficoVentas(ventasAgrupadas, periodo);
@@ -186,218 +156,238 @@ namespace Mercader
             return Task.CompletedTask;
         }
 
-
-        // Métodos de agrupación
+        // MÉTODOS DE AGRUPACIÓN MEJORADOS
         private List<(string Periodo, decimal Total)> AgruparPorDia(List<Ventas> ventas)
         {
-            return ventas
-                .GroupBy(v => v.Fecha.ToString("yyyy-MM-dd"))
-                .Select(g => (g.Key, Total: g.Sum(v => v.Precio * v.Cantidad)))
+            var hoy = DateTime.Today;
+            var ultimosDias = Enumerable.Range(0, 7)
+                .Select(i => hoy.AddDays(-i))
+                .Reverse()
                 .ToList();
+
+            return ultimosDias.Select(fecha =>
+            {
+                var ventasDia = ventas.Where(v => v.Fecha.Date == fecha.Date);
+                var total = ventasDia.Sum(v => v.Precio * v.Cantidad);
+                return (fecha.ToString("dd/MM"), total);
+            }).ToList();
         }
 
         private List<(string Periodo, decimal Total)> AgruparPorSemana(List<Ventas> ventas)
         {
-            return ventas
-                .GroupBy(v => CultureInfo.CurrentCulture.Calendar.GetWeekOfYear(
-                    v.Fecha, CalendarWeekRule.FirstDay, DayOfWeek.Monday))
-                .Select(g => ($"Semana {g.Key}", Total: g.Sum(v => v.Precio * v.Cantidad)))
+            var hoy = DateTime.Today;
+            var ultimasSemanas = Enumerable.Range(0, 6)
+                .Select(i =>
+                {
+                    var inicioSemana = hoy.AddDays(-7 * i).AddDays(-(int)hoy.AddDays(-7 * i).DayOfWeek);
+                    var finSemana = inicioSemana.AddDays(6);
+                    return new { Inicio = inicioSemana, Fin = finSemana };
+                })
+                .Reverse()
                 .ToList();
+
+            return ultimasSemanas.Select(semana =>
+            {
+                var ventasSemana = ventas.Where(v => v.Fecha.Date >= semana.Inicio && v.Fecha.Date <= semana.Fin);
+                var total = ventasSemana.Sum(v => v.Precio * v.Cantidad);
+                return ($"{semana.Inicio:dd/MM}", total);
+            }).ToList();
         }
 
         private List<(string Periodo, decimal Total)> AgruparPorMes(List<Ventas> ventas)
         {
-            return ventas
-                .GroupBy(v => v.Fecha.ToString("yyyy-MM"))
-                .Select(g => (g.Key, Total: g.Sum(v => v.Precio * v.Cantidad)))
+            var hoy = DateTime.Today;
+            var ultimosMeses = Enumerable.Range(0, 6)
+                .Select(i => hoy.AddMonths(-i))
+                .Reverse()
                 .ToList();
+
+            return ultimosMeses.Select(mes =>
+            {
+                var ventasMes = ventas.Where(v => v.Fecha.Year == mes.Year && v.Fecha.Month == mes.Month);
+                var total = ventasMes.Sum(v => v.Precio * v.Cantidad);
+                return (mes.ToString("MMM"), total);
+            }).ToList();
         }
 
         private List<(string Periodo, decimal Total)> AgruparPorDia(List<Gasto> gastos)
         {
-            return gastos
-                .GroupBy(g => g.Fecha.ToString("yyyy-MM-dd"))
-                .Select(g => (g.Key, Total: g.Sum(x => x.Monto * x.Cantidad)))
+            var hoy = DateTime.Today;
+            var ultimosDias = Enumerable.Range(0, 7)
+                .Select(i => hoy.AddDays(-i))
+                .Reverse()
                 .ToList();
+
+            return ultimosDias.Select(fecha =>
+            {
+                var gastosDia = gastos.Where(g => g.Fecha.Date == fecha.Date);
+                var total = gastosDia.Sum(g => g.Monto * g.Cantidad);
+                return (fecha.ToString("dd/MM"), total);
+            }).ToList();
         }
 
         private List<(string Periodo, decimal Total)> AgruparPorSemana(List<Gasto> gastos)
         {
-            return gastos
-                .GroupBy(g => CultureInfo.CurrentCulture.Calendar.GetWeekOfYear(
-                    g.Fecha, CalendarWeekRule.FirstDay, DayOfWeek.Monday))
-                .Select(g => ($"Semana {g.Key}", Total: g.Sum(x => x.Monto * x.Cantidad)))
+            var hoy = DateTime.Today;
+            var ultimasSemanas = Enumerable.Range(0, 6)
+                .Select(i =>
+                {
+                    var inicioSemana = hoy.AddDays(-7 * i).AddDays(-(int)hoy.AddDays(-7 * i).DayOfWeek);
+                    var finSemana = inicioSemana.AddDays(6);
+                    return new { Inicio = inicioSemana, Fin = finSemana };
+                })
+                .Reverse()
                 .ToList();
+
+            return ultimasSemanas.Select(semana =>
+            {
+                var gastosSemana = gastos.Where(g => g.Fecha.Date >= semana.Inicio && g.Fecha.Date <= semana.Fin);
+                var total = gastosSemana.Sum(g => g.Monto * g.Cantidad);
+                return ($"{semana.Inicio:dd/MM}", total);
+            }).ToList();
         }
 
         private List<(string Periodo, decimal Total)> AgruparPorMes(List<Gasto> gastos)
         {
-            return gastos
-                .GroupBy(g => g.Fecha.ToString("yyyy-MM"))
-                .Select(g => (g.Key, Total: g.Sum(x => x.Monto * x.Cantidad)))
+            var hoy = DateTime.Today;
+            var ultimosMeses = Enumerable.Range(0, 6)
+                .Select(i => hoy.AddMonths(-i))
+                .Reverse()
                 .ToList();
-        }
 
-        private string FormatearEtiqueta(string periodo, string tipo)
-        {
-            return tipo switch
+            return ultimosMeses.Select(mes =>
             {
-                "Días" => DateTime.ParseExact(periodo, "yyyy-MM-dd", CultureInfo.InvariantCulture)
-                    .ToString("dd MMM"),
-                "Semanas" => periodo.Replace("Semana ", "Sem "),
-                _ => DateTime.ParseExact(periodo, "yyyy-MM", CultureInfo.InvariantCulture)
-                    .ToString("MMM")
-            };
+                var gastosMes = gastos.Where(g => g.Fecha.Year == mes.Year && g.Fecha.Month == mes.Month);
+                var total = gastosMes.Sum(g => g.Monto * g.Cantidad);
+                return (mes.ToString("MMM"), total);
+            }).ToList();
         }
 
+        // CONFIGURACIÓN DE GRÁFICOS MEJORADA
         private void ConfigurarGraficoVentas(List<(string Periodo, decimal Total)> datos, string periodo)
         {
-            // Crear datos dummy si no hay registros
-            if (!datos.Any() || datos.All(d => d.Total == 0))
-            {
-                datos = periodo switch
-                {
-                    "Días" => Enumerable.Range(0, 7)
-                        .Select(i => DateTime.Now.AddDays(-i).ToString("yyyy-MM-dd"))
-                        .Reverse()
-                        .Select(d => (d, 0m))
-                        .ToList(),
-                    "Semanas" => Enumerable.Range(0, 6)
-                        .Select(i => $"Semana {DateTime.Now.AddDays(-7 * i):ww}")
-                        .Reverse()
-                        .Select(d => (d, 0m))
-                        .ToList(),
-                    _ => BalanceHelper.ObtenerUltimos6Meses()
-                        .Select(m => (m, 0m))
-                        .ToList()
-                };
-            }
-
             var entries = datos.Select(d => new ChartEntry((float)d.Total)
             {
-                Label = FormatearEtiqueta(d.Periodo, periodo),
-                ValueLabel = d.Total.ToString("C0"),
-                Color = SKColor.Parse("#00E82A"),
-                TextColor = SKColors.White
+                Label = d.Periodo,
+                ValueLabel = FormatearValor(d.Total),
+                Color = SKColor.Parse("#2e9449"), // Verde más suave
+                TextColor = SKColor.Parse("#E0E0E0"), // Gris claro para mejor legibilidad
+                ValueLabelColor = SKColor.Parse("#FFFFFF") // Blanco para valores
             }).ToArray();
 
             VentasChart.Chart = new LineChart
             {
                 Entries = entries,
-                LabelTextSize = 20,
+                LabelTextSize = 24, // Texto más grande
+                ValueLabelTextSize = 20,
                 BackgroundColor = SKColor.Parse("#2a2a2a"),
-                LineSize = 2,
-                IsAnimated = true
+                LineSize = 4, // Línea más gruesa
+                PointSize = 12, // Puntos más grandes
+                IsAnimated = true,
+                AnimationDuration = TimeSpan.FromMilliseconds(800),
+                LabelOrientation = Orientation.Horizontal,
+                ValueLabelOrientation = Orientation.Horizontal,
+                // Añadir márgenes para mejor visualización
+                Margin = 40
             };
         }
 
-
-
-        private void ConfigurarGraficoGastos(List<(string Mes, decimal Total)> datos, string periodo)
+        private void ConfigurarGraficoGastos(List<(string Periodo, decimal Total)> datos, string periodo)
         {
-            // Crear datos dummy si no hay registros
-            if (!datos.Any() || datos.All(d => d.Total == 0))
-            {
-                datos = periodo switch
-                {
-                    "Días" => Enumerable.Range(0, 7)
-                        .Select(i => DateTime.Now.AddDays(-i).ToString("yyyy-MM-dd"))
-                        .Reverse()
-                        .Select(d => (d, 0m))
-                        .ToList(),
-                    "Semanas" => Enumerable.Range(0, 6)
-                        .Select(i => $"Semana {DateTime.Now.AddDays(-7 * i):ww}")
-                        .Reverse()
-                        .Select(d => (d, 0m))
-                        .ToList(),
-                    _ => BalanceHelper.ObtenerUltimos6Meses()
-                        .Select(m => (m, 0m))
-                        .ToList()
-                };
-            }
             var entries = datos.Select(d => new ChartEntry((float)d.Total)
             {
-                Label = FormatearEtiqueta(d.Mes, periodo),
-                ValueLabel = d.Total.ToString("C0"),
-                Color = SKColor.Parse("#FF0000"),
-                TextColor = SKColors.White
+                Label = d.Periodo,
+                ValueLabel = FormatearValor(d.Total),
+                Color = SKColor.Parse("#d63384"), // Rojo más suave
+                TextColor = SKColor.Parse("#E0E0E0"),
+                ValueLabelColor = SKColor.Parse("#FFFFFF")
             }).ToArray();
+
             GastosChart.Chart = new LineChart
             {
                 Entries = entries,
-                LabelTextSize = 20,
+                LabelTextSize = 24,
+                ValueLabelTextSize = 20,
                 BackgroundColor = SKColor.Parse("#2a2a2a"),
-                LineSize = 2,
-                IsAnimated = true
+                LineSize = 4,
+                PointSize = 12,
+                IsAnimated = true,
+                AnimationDuration = TimeSpan.FromMilliseconds(800),
+                LabelOrientation = Orientation.Horizontal,
+                ValueLabelOrientation = Orientation.Horizontal,
+                Margin = 40
             };
         }
 
-        private void ConfigurarGraficoGanancias(List<(string Mes, decimal Total)> ventas, List<(string Mes, decimal Total)> gastos, string periodo)
+        private void ConfigurarGraficoGanancias(List<(string Periodo, decimal Total)> ventas,
+                                                List<(string Periodo, decimal Total)> gastos,
+                                                string periodo)
         {
-            var ganancias = ventas.Zip(gastos, (v, g) => (v.Mes, Ganancia: v.Total - g.Total)).ToList();
-            // Crear datos dummy si no hay registros
-            if (!ganancias.Any() || ganancias.All(d => d.Ganancia == 0))
+            // Combinar datos asegurando que coincidan los períodos
+            var datosCompletos = ventas.Select(v =>
             {
-                ganancias = periodo switch
-                {
-                    "Días" => Enumerable.Range(0, 7)
-                        .Select(i => DateTime.Now.AddDays(-i).ToString("yyyy-MM-dd"))
-                        .Reverse()
-                        .Select(d => (d, 0m))
-                        .ToList(),
-                    "Semanas" => Enumerable.Range(0, 6)
-                        .Select(i => $"Semana {DateTime.Now.AddDays(-7 * i):ww}")
-                        .Reverse()
-                        .Select(d => (d, 0m))
-                        .ToList(),
-                    _ => BalanceHelper.ObtenerUltimos6Meses()
-                        .Select(m => (m, 0m))
-                        .ToList()
-                };
-            }
-            var entries = ganancias.Select(d => new ChartEntry((float)d.Ganancia)
+                var gastoCorrespondiente = gastos.FirstOrDefault(g => g.Periodo == v.Periodo);
+                var ganancia = v.Total - (gastoCorrespondiente.Total);
+                return new { Periodo = v.Periodo, Ganancia = ganancia };
+            }).ToList();
+
+            var entries = datosCompletos.Select(d => new ChartEntry((float)d.Ganancia)
             {
-                Label = FormatearEtiqueta(d.Mes, periodo),
-                ValueLabel = d.Ganancia.ToString("C0"),
-                Color = SKColor.Parse("#1C6BC2"),
-                TextColor = SKColors.White
+                Label = d.Periodo,
+                ValueLabel = FormatearValor(d.Ganancia),
+                // Color dinámico: verde para ganancias positivas, rojo para negativas
+                Color = d.Ganancia >= 0 ? SKColor.Parse("#1f6bc2") : SKColor.Parse("#dc3545"),
+                TextColor = SKColor.Parse("#E0E0E0"),
+                ValueLabelColor = SKColor.Parse("#FFFFFF")
             }).ToArray();
+
             GananciasChart.Chart = new LineChart
             {
                 Entries = entries,
-                LabelTextSize = 20,
+                LabelTextSize = 24,
+                ValueLabelTextSize = 20,
                 BackgroundColor = SKColor.Parse("#2a2a2a"),
-                LineSize = 2,
-                IsAnimated = true
+                LineSize = 4,
+                PointSize = 12,
+                IsAnimated = true,
+                AnimationDuration = TimeSpan.FromMilliseconds(800),
+                LabelOrientation = Orientation.Horizontal,
+                ValueLabelOrientation = Orientation.Horizontal,
+                Margin = 40,
+                // Mostrar línea de referencia en cero
+                ShowYAxisLines = true,
+                ShowYAxisText = true
             };
         }
 
+        // MÉTODO AUXILIAR PARA FORMATEAR VALORES
+        private string FormatearValor(decimal valor)
+        {
+            if (Math.Abs(valor) >= 1000000)
+                return $"{valor / 1000000:F1}M";
+            else if (Math.Abs(valor) >= 1000)
+                return $"{valor / 1000:F1}K";
+            else
+                return valor.ToString("C0");
+        }
 
-
+        // ... resto de métodos existentes (exportar, etc.) ...
         private async void OnExportarAExcelClicked(object sender, EventArgs e)
         {
             try
             {
-                // Definir la carpeta donde se guardará el archivo
                 string carpetaPersonalizada = Path.Combine(FileSystem.Current.AppDataDirectory, "Exportaciones");
 
-                // Crear la carpeta si no existe
                 if (!Directory.Exists(carpetaPersonalizada))
                 {
                     Directory.CreateDirectory(carpetaPersonalizada);
                 }
 
-                // Definir la ruta completa del archivo
                 string nombreArchivo = $"balance_{DateTime.Now:yyyyMMdd_HHmmss}.xlsx";
                 string rutaArchivo = Path.Combine(carpetaPersonalizada, nombreArchivo);
 
-                // Exportar el balance a Excel
                 await ExportExcel.ExportarBalanceAExcelAsync(balance, rutaArchivo);
-
-                // Mostrar mensaje de éxito
                 await DisplayAlert("Exportación Completa", $"Archivo exportado a {rutaArchivo}", "OK");
-
-                // Abrir la ubicación (carpeta) donde se guardó el archivo
                 await AbrirUbicacionArchivoAsync(rutaArchivo, carpetaPersonalizada);
             }
             catch (Exception ex)
@@ -418,24 +408,19 @@ namespace Mercader
 
                 if (DeviceInfo.Platform == DevicePlatform.Android)
                 {
-                    // Intentar abrir el archivo directamente
                     await Launcher.OpenAsync(new OpenFileRequest
                     {
                         File = new ReadOnlyFile(rutaArchivo)
                     });
-
-
                 }
                 else if (DeviceInfo.Platform == DevicePlatform.iOS)
                 {
-                    // En iOS, también mostramos un mensaje informativo
                     await DisplayAlert("Información",
                         $"El archivo ha sido guardado en:\n{rutaCarpeta}\n\nPuedes acceder a él mediante tu aplicación de archivos.",
                         "OK");
                 }
                 else
                 {
-                    // Para otras plataformas, intentamos abrir la carpeta directamente
                     await Launcher.OpenAsync(new OpenFileRequest
                     {
                         File = new ReadOnlyFile(rutaCarpeta)
@@ -446,15 +431,6 @@ namespace Mercader
             {
                 await DisplayAlert("Error", $"No se pudo abrir la ubicación del archivo: {ex.Message}", "OK");
             }
-        }
-
-        private async void OnVerEncargosClicked(object sender, EventArgs e)
-        {
-            var navigationParameter = new Dictionary<string, object>
-                {
-                    { "MainPage", this }
-                };
-            await Shell.Current.GoToAsync(nameof(Encargos), navigationParameter);
         }
     }
 }
