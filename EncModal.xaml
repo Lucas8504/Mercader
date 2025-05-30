@@ -49,18 +49,6 @@
                     BackgroundColor="Transparent" />
             </Frame>
 
-            <!-- Campo de Fecha de Entrega -->
-            <Frame
-                BackgroundColor="#2a2a2a"
-                CornerRadius="8"
-                Padding="10"
-                HasShadow="False">
-                <DatePicker
-                    x:Name="FechaEntregaDatePicker"
-                    TextColor="#cccccc"
-                    BackgroundColor="Transparent" />
-            </Frame>
-
             <!-- Campo de Precio -->
             <Frame
                 BackgroundColor="#2a2a2a"
@@ -89,6 +77,27 @@
                     PlaceholderColor="#7d7c7c"
                     TextColor="#cccccc"
                     BackgroundColor="Transparent" />
+            </Frame>
+
+            <!-- Campo de Fecha de Entrega -->
+            <Frame
+                BackgroundColor="#2a2a2a"
+                CornerRadius="8"
+                Padding="10"
+                HasShadow="False">
+                <Grid ColumnDefinitions="Auto, *" VerticalOptions="Center">
+                    <Label
+                        Text="Fecha de Entrega:"
+                        TextColor="#7d7c7c"
+                        FontSize="14"
+                        VerticalOptions="Center"
+                        Grid.Column="0" />
+                    <DatePicker
+                        x:Name="FechaEntregaDatePicker"
+                        TextColor="#cccccc"
+                        BackgroundColor="Transparent"
+                        Grid.Column="1" />
+                </Grid>
             </Frame>
 
             <!-- Botón Agregar Encargo -->
