@@ -5,7 +5,12 @@
         public AppShell(ShellItem mainPage)
         {
             InitializeComponent();
-            Routing.RegisterRoute(nameof(Encargos), typeof(Encargos));
+            // Configurar MainPage como página principal
+            Routing.RegisterRoute("MainPage", typeof(MainPage));
+            Routing.RegisterRoute("Encargos", typeof(Encargos));
+
+            // Establecer MainPage como la página raíz
+            
 
 
         }

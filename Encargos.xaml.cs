@@ -26,6 +26,13 @@ public partial class Encargos : ContentPage
         }
     }
 
+    protected override bool OnBackButtonPressed()
+    {
+        // Devolver true previene la acción del botón atrás
+        return true;
+    }
+
+
     // Método para manejar el tap en lugar de selección
     private async void OnItemTapped(object sender, EventArgs e)
     {
