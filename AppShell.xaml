@@ -9,7 +9,8 @@
     FlyoutBackgroundColor="#1e1e1e"
     Shell.FlyoutBehavior="Flyout"
     Shell.TitleColor="White"
-    Shell.NavBarHasShadow="False">
+    Shell.NavBarHasShadow="False"
+    FlyoutIcon="consultar_listas.png">
 
 
     <!--  Flyout Header  -->
@@ -89,7 +90,7 @@
             </Grid>
         </DataTemplate>
     </Shell.ItemTemplate>
-    
+
 
     <FlyoutItem Title="Inicio" FlyoutDisplayOptions="AsSingleItem">
         <ShellContent Title="Home" ContentTemplate="{DataTemplate local:MainPage}" />
