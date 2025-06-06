@@ -10,7 +10,7 @@
     Shell.FlyoutBehavior="Flyout"
     Shell.TitleColor="White"
     Shell.NavBarHasShadow="False"
-    FlyoutIcon="consultar_listas.png">
+    FlyoutIcon="consultar_listas_removebg.png" >
 
 
     <!--  Flyout Header  -->
