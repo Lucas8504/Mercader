@@ -13,7 +13,7 @@
 
             <!--  Sección Botones Principales  -->
             <HorizontalStackLayout
-                Margin="-1,0,0,0"
+                Margin=" -4,0,0,0"
                 HorizontalOptions="Center"
                 Spacing="7">
 
@@ -21,7 +21,7 @@
                     BackgroundColor="#1f6bc2"
                     Clicked="InAgregarEncargo"
                     CornerRadius="10"
-                    Text="➕ Encargo"
+                    Text="📦 Encargo"
                     TextColor="White"
                     WidthRequest="106" />
 

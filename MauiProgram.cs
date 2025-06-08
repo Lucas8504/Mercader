@@ -15,7 +15,7 @@ namespace Mercader
                 {
                     fonts.AddFont("OpenSans-Regular.ttf", "OpenSansRegular");
                     fonts.AddFont("OpenSans-Semibold.ttf", "OpenSansSemibold");
-                    fonts.AddFont("NotoColorEmoji-Regular.ttf", "NotoColorEmoji_Regular");
+                    fonts.AddFont("NotoColorEmoji-Regular.ttf", "NotoColorEmojiRegular");
                 });
             string dbPath = Path.Combine(FileSystem.AppDataDirectory, "MercaderDB.db3");
             builder.Services.AddSingleton<DataRepository>(s => new DataRepository(dbPath));
