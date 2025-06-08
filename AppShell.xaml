@@ -11,8 +11,6 @@
     Shell.TitleColor="White"
     Shell.NavBarHasShadow="False"
     FlyoutIcon="consultar_listas_removebg.png" >
-
-
     <!--  Flyout Header  -->
     <Shell.FlyoutHeader>
         <Grid Padding="20" BackgroundColor="#1e1e1e">
@@ -25,7 +23,6 @@
                 VerticalOptions="Center" />
         </Grid>
     </Shell.FlyoutHeader>
-
     <!--  Flyout Footer  -->
     <Shell.FlyoutFooter>
         <Grid Padding="10" BackgroundColor="#1e1e1e">
@@ -49,8 +46,6 @@
                 VerticalOptions="Center" />
         </Grid>
     </Shell.FlyoutFooter>
-
-
     <!--  Item Template  -->
     <Shell.ItemTemplate>
         <DataTemplate>
@@ -58,17 +53,14 @@
                 ColumnDefinitions=".2*,  .8*"
                 HeightRequest="50"
                 RowSpacing="0">
-
-                <!--  Icono (puedes agregar un Image si tienes íconos)  -->
-                <BoxView
-                    Grid.RowSpan="3"
+                <!--  Icono con Emoji  -->
+                <Label
                     Grid.Column="0"
-                    BackgroundColor="#4CAF50"
-                    CornerRadius="15"
-                    HeightRequest="30"
+                    FontFamily="NotoColorEmoji_Regular"
+                    FontSize="24"
                     HorizontalOptions="Center"
-                    VerticalOptions="Center"
-                    WidthRequest="30" />
+                    Text="{Binding Icon}"
+                    VerticalOptions="Center" />
                 <!--  Texto del ítem  -->
                 <Label
                     Grid.Column="1"
@@ -78,7 +70,6 @@
                     Text="{Binding Title}"
                     TextColor="#cccccc"
                     VerticalOptions="Center" />
-                <!--  Texto claro para contraste  -->
                 <!--  Separador  -->
                 <Rectangle
                     Grid.RowSpan="4"
@@ -91,13 +82,10 @@
         </DataTemplate>
     </Shell.ItemTemplate>
 
-
-    <FlyoutItem Title="Inicio" FlyoutDisplayOptions="AsSingleItem">
+    <FlyoutItem Title="Inicio" Icon="🏠" FlyoutDisplayOptions="AsSingleItem">
         <ShellContent Title="Home" ContentTemplate="{DataTemplate local:MainPage}" />
     </FlyoutItem>
-    <ShellContent Title="Encargo" ContentTemplate="{DataTemplate local:Encargos}" />
-    <ShellContent Title="Ventas" ContentTemplate="{DataTemplate local:Venta}" />
-    <ShellContent Title="Gasto" ContentTemplate="{DataTemplate local:Gastos}" />
-
-
+    <ShellContent Title="Encargo" Icon="📦" ContentTemplate="{DataTemplate local:Encargos}" />
+    <ShellContent Title="Ventas" Icon="💰" ContentTemplate="{DataTemplate local:Venta}" />
+    <ShellContent Title="Gasto" Icon="💸" ContentTemplate="{DataTemplate local:Gastos}" />
 </Shell>
