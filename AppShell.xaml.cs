@@ -14,5 +14,12 @@
 
 
         }
+
+        protected override bool OnBackButtonPressed()
+        {
+            // Devolver true previene la acción del botón atrás
+            return true;
+        }
+
     }
 }

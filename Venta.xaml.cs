@@ -26,6 +26,12 @@ public partial class Venta : ContentPage
         }
     }
 
+    protected override bool OnBackButtonPressed()
+    {
+        // Devolver true previene la acción del botón atrás
+        return true;
+    }
+
     // Método para manejar el tap y navegar a DetalleVenta
     private async void OnItemTapped(object sender, EventArgs e)
     {

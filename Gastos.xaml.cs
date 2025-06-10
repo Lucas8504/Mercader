@@ -26,7 +26,12 @@ public partial class Gastos : ContentPage
         }
     }
 
-    
+    protected override bool OnBackButtonPressed()
+    {
+        // Devolver true previene la acción del botón atrás
+        return true;
+    }
+
     // Método actualizado para manejar el tap y navegar a DetalleGasto
     private async void OnItemTapped(object sender, EventArgs e)
     {
