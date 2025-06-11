@@ -288,7 +288,10 @@ namespace Mercader
                 LabelOrientation = Orientation.Horizontal,
                 ValueLabelOrientation = Orientation.Horizontal,
                 // Añadir márgenes para mejor visualización
-                Margin = 40
+                Margin = 40,
+                // Mostrar línea de referencia en cero
+                ShowYAxisLines = true,
+                ShowYAxisText = true
             };
         }
 
@@ -315,7 +318,10 @@ namespace Mercader
                 AnimationDuration = TimeSpan.FromMilliseconds(800),
                 LabelOrientation = Orientation.Horizontal,
                 ValueLabelOrientation = Orientation.Horizontal,
-                Margin = 40
+                Margin = 40,
+                 // Mostrar línea de referencia en cero
+                ShowYAxisLines = true,
+                ShowYAxisText = true
             };
         }
 
