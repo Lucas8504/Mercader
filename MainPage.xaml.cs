@@ -156,7 +156,7 @@ namespace Mercader
             return Task.CompletedTask;
         }
 
-        // MÉTODOS DE AGRUPACIÓN MEJORADOS
+        // MÉTODOS DE AGRUPACIÓN
         private List<(string Periodo, decimal Total)> AgruparPorDia(List<Ventas> ventas)
         {
             var hoy = DateTime.Today;
@@ -263,7 +263,7 @@ namespace Mercader
             }).ToList();
         }
 
-        // CONFIGURACIÓN DE GRÁFICOS MEJORADA
+        
         private void ConfigurarGraficoVentas(List<(string Periodo, decimal Total)> datos, string periodo)
         {
             var entries = datos.Select(d => new ChartEntry((float)d.Total)
@@ -383,7 +383,7 @@ namespace Mercader
                     Directory.CreateDirectory(carpetaPersonalizada);
                 }
 
-                string nombreArchivo = $"balance_{DateTime.Now:yyyyMMdd_HHmmss}.xlsx";
+                string nombreArchivo = $"balance_{DateTime.Now:yyyyMMdd_HHmm}.xlsx";
                 string rutaArchivo = Path.Combine(carpetaPersonalizada, nombreArchivo);
 
                 await ExportExcel.ExportarBalanceAExcelAsync(balance, rutaArchivo);
