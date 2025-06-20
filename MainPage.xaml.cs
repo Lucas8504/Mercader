@@ -278,7 +278,7 @@ namespace Mercader
             VentasChart.Chart = new LineChart
             {
                 Entries = entries,
-                LabelTextSize = 24, // Texto más grande
+                LabelTextSize = 22, // Texto más grande
                 ValueLabelTextSize = 20,
                 BackgroundColor = SKColor.Parse("#2a2a2a"),
                 LineSize = 4, // Línea más gruesa
@@ -288,8 +288,10 @@ namespace Mercader
                 LabelOrientation = Orientation.Horizontal,
                 ValueLabelOrientation = Orientation.Horizontal,
                 // Añadir márgenes para mejor visualización
-                Margin = 44,
-                
+                Margin = 38,
+                ShowYAxisLines = true,
+                ShowYAxisText = true
+
             };
         }
 
@@ -307,7 +309,7 @@ namespace Mercader
             GastosChart.Chart = new LineChart
             {
                 Entries = entries,
-                LabelTextSize = 24,
+                LabelTextSize = 22,
                 ValueLabelTextSize = 20,
                 BackgroundColor = SKColor.Parse("#2a2a2a"),
                 LineSize = 4,
@@ -316,8 +318,10 @@ namespace Mercader
                 AnimationDuration = TimeSpan.FromMilliseconds(800),
                 LabelOrientation = Orientation.Horizontal,
                 ValueLabelOrientation = Orientation.Horizontal,
-                Margin = 44,
-                
+                Margin = 38,
+                ShowYAxisLines = true,
+                ShowYAxisText = true
+
             };
         }
 
@@ -346,7 +350,7 @@ namespace Mercader
             GananciasChart.Chart = new LineChart
             {
                 Entries = entries,
-                LabelTextSize = 24,
+                LabelTextSize = 22,
                 ValueLabelTextSize = 20,
                 BackgroundColor = SKColor.Parse("#2a2a2a"),
                 LineSize = 4,
@@ -355,8 +359,10 @@ namespace Mercader
                 AnimationDuration = TimeSpan.FromMilliseconds(800),
                 LabelOrientation = Orientation.Horizontal,
                 ValueLabelOrientation = Orientation.Horizontal,
-                Margin = 40,
-                
+                Margin = 38,
+                ShowYAxisLines = true,
+                ShowYAxisText = true
+
             };
         }
 
