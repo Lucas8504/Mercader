@@ -269,7 +269,7 @@ namespace Mercader
             var entries = datos.Select(d => new ChartEntry((float)d.Total)
             {
                 Label = d.Periodo,
-                ValueLabel = FormatearValor(d.Total),
+                ValueLabel = FormatearValorEntero(d.Total),
                 Color = SKColor.Parse("#2e9449"), // Verde más suave
                 TextColor = SKColor.Parse("#E0E0E0"), // Gris claro para mejor legibilidad
                 ValueLabelColor = SKColor.Parse("#FFFFFF") // Blanco para valores
@@ -300,7 +300,7 @@ namespace Mercader
             var entries = datos.Select(d => new ChartEntry((float)d.Total)
             {
                 Label = d.Periodo,
-                ValueLabel = FormatearValor(d.Total),
+                ValueLabel = FormatearValorEntero(d.Total),
                 Color = SKColor.Parse("#d63384"), // Rojo más suave
                 TextColor = SKColor.Parse("#E0E0E0"),
                 ValueLabelColor = SKColor.Parse("#FFFFFF")
@@ -340,7 +340,7 @@ namespace Mercader
             var entries = datosCompletos.Select(d => new ChartEntry((float)d.Ganancia)
             {
                 Label = d.Periodo,
-                ValueLabel = FormatearValor(d.Ganancia),
+                ValueLabel = FormatearValorEntero(d.Ganancia),
                 // Color dinámico: verde para ganancias positivas, rojo para negativas
                 Color = d.Ganancia >= 0 ? SKColor.Parse("#1f6bc2") : SKColor.Parse("#dc3545"),
                 TextColor = SKColor.Parse("#E0E0E0"),
@@ -366,15 +366,18 @@ namespace Mercader
             };
         }
 
-        // MÉTODO AUXILIAR PARA FORMATEAR VALORES
-        private string FormatearValor(decimal valor)
+        // MÉTODO AUXILIAR PARA FORMATEAR VALORES - Con números enteros
+        private string FormatearValorEntero(decimal valor)
         {
+            // Formatear solo con números enteros
             if (Math.Abs(valor) >= 1000000)
-                return $"{valor / 1000000:F1}M";
+                return $"${Math.Round(valor / 1000000)}M";
             else if (Math.Abs(valor) >= 1000)
-                return $"{valor / 1000:F1}K";
+                return $"${Math.Round(valor / 1000)}K";
+            else if (valor == 0)
+                return "$0";
             else
-                return valor.ToString("C0");
+                return $"${Math.Round(valor)}";
         }
 
         // ... resto de métodos existentes (exportar, etc.) ...
