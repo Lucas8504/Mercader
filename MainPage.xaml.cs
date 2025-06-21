@@ -290,7 +290,8 @@ namespace Mercader
                 // Añadir márgenes para mejor visualización
                 Margin = 38,
                 ShowYAxisLines = true,
-                ShowYAxisText = true
+                ShowYAxisText = true,
+                YAxisLinesPaint = new SKPaint { Color = SKColor.Parse("#3C3C3C") }
 
             };
         }
@@ -320,16 +321,17 @@ namespace Mercader
                 ValueLabelOrientation = Orientation.Horizontal,
                 Margin = 38,
                 ShowYAxisLines = true,
-                ShowYAxisText = true
+                ShowYAxisText = true,
+                YAxisLinesPaint = new SKPaint { Color = SKColor.Parse("#3C3C3C") }
 
             };
         }
 
         private void ConfigurarGraficoGanancias(List<(string Periodo, decimal Total)> ventas,
-                                                List<(string Periodo, decimal Total)> gastos,
-                                                string periodo)
+                                               List<(string Periodo, decimal Total)> gastos,
+                                               string periodo)
         {
-            // Combinar datos asegurando que coincidan los períodos
+            // Combinar datos asegurando que coincidan los períodos  
             var datosCompletos = ventas.Select(v =>
             {
                 var gastoCorrespondiente = gastos.FirstOrDefault(g => g.Periodo == v.Periodo);
@@ -341,7 +343,7 @@ namespace Mercader
             {
                 Label = d.Periodo,
                 ValueLabel = FormatearValorEntero(d.Ganancia),
-                // Color dinámico: verde para ganancias positivas, rojo para negativas
+                // Color dinámico: verde para ganancias positivas, rojo para negativas  
                 Color = d.Ganancia >= 0 ? SKColor.Parse("#1f6bc2") : SKColor.Parse("#dc3545"),
                 TextColor = SKColor.Parse("#E0E0E0"),
                 ValueLabelColor = SKColor.Parse("#FFFFFF")
@@ -361,8 +363,8 @@ namespace Mercader
                 ValueLabelOrientation = Orientation.Horizontal,
                 Margin = 38,
                 ShowYAxisLines = true,
-                ShowYAxisText = true
-
+                ShowYAxisText = true,
+                YAxisLinesPaint = new SKPaint { Color = SKColor.Parse("#3C3C3C") }
             };
         }
 
