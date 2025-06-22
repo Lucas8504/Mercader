@@ -11,11 +11,14 @@ namespace Mercader
         public Balance balance;
         private readonly DataRepository _dataRepo;
 
-        public MainPage(DataRepository _dataRepo)
+        public MainPage(DataRepository dataRepo)
         {
             InitializeComponent();
             balance = new Balance();
-            this._dataRepo = _dataRepo;
+            this._dataRepo = dataRepo;
+
+            // Configurar el selector de período con el valor por defecto
+            PeriodSelector.SelectedIndex = 2; // "Meses" por defecto
         }
 
         protected override void OnAppearing()
@@ -36,20 +39,27 @@ namespace Mercader
                 balance.Gastos = gastos;
                 balance.Ventas = ventas;
 
-                ActualizarEtiquetaEncargos();
-                ActualizarEtiquetaGastos();
-                ActualizarEtiquetaVentas();
-                ActualizarEtiquetaGanancias();
+                // Actualizar todas las etiquetas en el hilo principal
+                await MainThread.InvokeOnMainThreadAsync(() =>
+                {
+                    ActualizarEtiquetaEncargos();
+                    ActualizarEtiquetaGastos();
+                    ActualizarEtiquetaVentas();
+                    ActualizarEtiquetaGanancias();
+                    ActualizarEtiquetasPeriodo();
+                });
 
                 await ActualizarGraficosAsync();
             }
             catch (Exception ex)
             {
                 Console.WriteLine($"Error al cargar datos: {ex.Message}");
+                await DisplayAlert("Error", $"No se pudieron cargar los datos: {ex.Message}", "OK");
             }
         }
 
-        // ... métodos de actualización de etiquetas existentes ...
+        #region Actualización de Etiquetas
+
         public void ActualizarEtiquetaGanancias()
         {
             var ganancias = balance.CalcularGanancias();
@@ -59,64 +69,168 @@ namespace Mercader
         public void ActualizarEtiquetaVentas()
         {
             decimal ventas = balance.CalcularVentas();
-            VentasLabel.Text = $" {ventas:C}";
+            VentasLabel.Text = $"{ventas:C}";
         }
 
         public void ActualizarEtiquetaGastos()
         {
             decimal gastos = balance.CalcularGastos();
-            GastosLabel.Text = $" {gastos:C}";
+            GastosLabel.Text = $"{gastos:C}";
         }
 
         public void ActualizarEtiquetaEncargos()
         {
             decimal encargo = balance.CalcularEncargos();
-            EncargosLabel.Text = $" {encargo:C}";
+            EncargosLabel.Text = $"{encargo:C}";
         }
 
-        // ... métodos de navegación existentes ...
+        private void ActualizarEtiquetasPeriodo()
+        {
+            var periodo = PeriodSelector.SelectedItem?.ToString() ?? "Meses";
+
+            // Calcular totales del período seleccionado
+            var ventasPeriodo = CalcularTotalPeriodo(balance.Ventas, periodo);
+            var gastosPeriodo = CalcularTotalPeriodo(balance.Gastos, periodo);
+            var gananciasPeriodo = ventasPeriodo - gastosPeriodo;
+            var margenPorcentaje = ventasPeriodo > 0 ? (gananciasPeriodo / ventasPeriodo) * 100 : 0;
+
+            VentasPeriodoLabel.Text = $"{ventasPeriodo:C}";
+            GastosPeriodoLabel.Text = $"{gastosPeriodo:C}";
+            GananciasPeriodoLabel.Text = $"{gananciasPeriodo:C}";
+            MargenLabel.Text = $"{margenPorcentaje:F1}%";
+        }
+
+        private decimal CalcularTotalPeriodo(List<Ventas> ventas, string periodo)
+        {
+            var fechaLimite = periodo switch
+            {
+                "Días" => DateTime.Today.AddDays(-7),
+                "Semanas" => DateTime.Today.AddDays(-42), // 6 semanas
+                "Meses" => DateTime.Today.AddMonths(-6),
+                _ => DateTime.Today.AddMonths(-6)
+            };
+
+            return ventas.Where(v => v.Fecha >= fechaLimite)
+                        .Sum(v => v.Precio * v.Cantidad);
+        }
+
+        private decimal CalcularTotalPeriodo(List<Gasto> gastos, string periodo)
+        {
+            var fechaLimite = periodo switch
+            {
+                "Días" => DateTime.Today.AddDays(-7),
+                "Semanas" => DateTime.Today.AddDays(-42),
+                "Meses" => DateTime.Today.AddMonths(-6),
+                _ => DateTime.Today.AddMonths(-6)
+            };
+
+            return gastos.Where(g => g.Fecha >= fechaLimite)
+                        .Sum(g => g.Monto * g.Cantidad);
+        }
+
+        #endregion
+
+        #region Eventos de Navegación
+
         private async void InAgregarEncargo(object sender, EventArgs e)
         {
-            var encargoModal = new EncModal(this);
-            await Navigation.PushModalAsync(encargoModal);
-            var nuevoEncargo = encargoModal.Encargo;
-            if (nuevoEncargo != null)
+            try
             {
-                await App.DataRepo.SaveEncargoAsync(nuevoEncargo);
-                balance.Encargos.Add(nuevoEncargo);
-                ActualizarEtiquetaEncargos();
+                var encargoModal = new EncModal(this);
+                await Navigation.PushModalAsync(encargoModal);
+                var nuevoEncargo = encargoModal.Encargo;
+
+                if (nuevoEncargo != null)
+                {
+                    await App.DataRepo.SaveEncargoAsync(nuevoEncargo);
+                    balance.Encargos.Add(nuevoEncargo);
+                    ActualizarEtiquetaEncargos();
+                    ActualizarEtiquetaGanancias();
+                }
+            }
+            catch (Exception ex)
+            {
+                await DisplayAlert("Error", $"No se pudo agregar el encargo: {ex.Message}", "OK");
             }
         }
 
         private async void InAgregarVenta(object sender, EventArgs e)
         {
-            var ventaModal = new VentaModal(this);
-            await Navigation.PushModalAsync(ventaModal);
-            var nuevaVenta = ventaModal.Venta;
-            if (nuevaVenta != null)
+            try
             {
-                await App.DataRepo.SaveVentasAsync(nuevaVenta);
-                balance.Ventas.Add(nuevaVenta);
-                ActualizarEtiquetaVentas();
+                var ventaModal = new VentaModal(this);
+                await Navigation.PushModalAsync(ventaModal);
+                var nuevaVenta = ventaModal.Venta;
+
+                if (nuevaVenta != null)
+                {
+                    await App.DataRepo.SaveVentasAsync(nuevaVenta);
+                    balance.Ventas.Add(nuevaVenta);
+
+                    await MainThread.InvokeOnMainThreadAsync(() =>
+                    {
+                        ActualizarEtiquetaVentas();
+                        ActualizarEtiquetaGanancias();
+                        ActualizarEtiquetasPeriodo();
+                    });
+
+                    await ActualizarGraficosAsync();
+                }
+            }
+            catch (Exception ex)
+            {
+                await DisplayAlert("Error", $"No se pudo agregar la venta: {ex.Message}", "OK");
             }
         }
 
         private async void InAgregarGasto(object sender, EventArgs e)
         {
-            var gastoModal = new GastoModal(this);
-            await Navigation.PushModalAsync(gastoModal);
-            var nuevoGasto = gastoModal.Gasto;
-            if (nuevoGasto != null)
+            try
             {
-                await App.DataRepo.SaveGastoAsync(nuevoGasto);
-                balance.Gastos.Add(nuevoGasto);
-                ActualizarEtiquetaGastos();
+                var gastoModal = new GastoModal(this);
+                await Navigation.PushModalAsync(gastoModal);
+                var nuevoGasto = gastoModal.Gasto;
+
+                if (nuevoGasto != null)
+                {
+                    await App.DataRepo.SaveGastoAsync(nuevoGasto);
+                    balance.Gastos.Add(nuevoGasto);
+
+                    await MainThread.InvokeOnMainThreadAsync(() =>
+                    {
+                        ActualizarEtiquetaGastos();
+                        ActualizarEtiquetaGanancias();
+                        ActualizarEtiquetasPeriodo();
+                    });
+
+                    await ActualizarGraficosAsync();
+                }
+            }
+            catch (Exception ex)
+            {
+                await DisplayAlert("Error", $"No se pudo agregar el gasto: {ex.Message}", "OK");
             }
         }
 
+        #endregion
+
+        #region Gestión de Gráficos
+
         private async void PeriodSelector_OnSelectedIndexChanged(object sender, EventArgs e)
         {
-            await ActualizarGraficosAsync();
+            try
+            {
+                await MainThread.InvokeOnMainThreadAsync(() =>
+                {
+                    ActualizarEtiquetasPeriodo();
+                });
+
+                await ActualizarGraficosAsync();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error al cambiar período: {ex.Message}");
+            }
         }
 
         private Task ActualizarGraficosAsync()
@@ -124,21 +238,21 @@ namespace Mercader
             try
             {
                 var periodo = PeriodSelector.SelectedItem?.ToString() ?? "Meses";
-                var ventas = balance.Ventas;
-                var gastos = balance.Gastos;
+                var ventas = balance.Ventas ?? new List<Ventas>();
+                var gastos = balance.Gastos ?? new List<Gasto>();
 
                 var ventasAgrupadas = periodo switch
                 {
-                    "Días" => AgruparPorDia(ventas),
-                    "Semanas" => AgruparPorSemana(ventas),
-                    _ => AgruparPorMes(ventas)
+                    "Días" => AgruparVentasPorDia(ventas),
+                    "Semanas" => AgruparVentasPorSemana(ventas),
+                    _ => AgruparVentasPorMes(ventas)
                 };
 
                 var gastosAgrupados = periodo switch
                 {
-                    "Días" => AgruparPorDia(gastos),
-                    "Semanas" => AgruparPorSemana(gastos),
-                    _ => AgruparPorMes(gastos)
+                    "Días" => AgruparGastosPorDia(gastos),
+                    "Semanas" => AgruparGastosPorSemana(gastos),
+                    _ => AgruparGastosPorMes(gastos)
                 };
 
                 MainThread.BeginInvokeOnMainThread(() =>
@@ -150,14 +264,17 @@ namespace Mercader
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Error: {ex}");
+                Console.WriteLine($"Error al actualizar gráficos: {ex}");
             }
 
             return Task.CompletedTask;
         }
 
-        // MÉTODOS DE AGRUPACIÓN
-        private List<(string Periodo, decimal Total)> AgruparPorDia(List<Ventas> ventas)
+        #endregion
+
+        #region Métodos de Agrupación - Ventas
+
+        private List<(string Periodo, decimal Total)> AgruparVentasPorDia(List<Ventas> ventas)
         {
             var hoy = DateTime.Today;
             var ultimosDias = Enumerable.Range(0, 7)
@@ -173,7 +290,7 @@ namespace Mercader
             }).ToList();
         }
 
-        private List<(string Periodo, decimal Total)> AgruparPorSemana(List<Ventas> ventas)
+        private List<(string Periodo, decimal Total)> AgruparVentasPorSemana(List<Ventas> ventas)
         {
             var hoy = DateTime.Today;
             var ultimasSemanas = Enumerable.Range(0, 6)
@@ -194,7 +311,7 @@ namespace Mercader
             }).ToList();
         }
 
-        private List<(string Periodo, decimal Total)> AgruparPorMes(List<Ventas> ventas)
+        private List<(string Periodo, decimal Total)> AgruparVentasPorMes(List<Ventas> ventas)
         {
             var hoy = DateTime.Today;
             var ultimosMeses = Enumerable.Range(0, 6)
@@ -206,11 +323,15 @@ namespace Mercader
             {
                 var ventasMes = ventas.Where(v => v.Fecha.Year == mes.Year && v.Fecha.Month == mes.Month);
                 var total = ventasMes.Sum(v => v.Precio * v.Cantidad);
-                return (mes.ToString("MMM"), total);
+                return (mes.ToString("MMM", new CultureInfo("es-ES")), total);
             }).ToList();
         }
 
-        private List<(string Periodo, decimal Total)> AgruparPorDia(List<Gasto> gastos)
+        #endregion
+
+        #region Métodos de Agrupación - Gastos
+
+        private List<(string Periodo, decimal Total)> AgruparGastosPorDia(List<Gasto> gastos)
         {
             var hoy = DateTime.Today;
             var ultimosDias = Enumerable.Range(0, 7)
@@ -226,7 +347,7 @@ namespace Mercader
             }).ToList();
         }
 
-        private List<(string Periodo, decimal Total)> AgruparPorSemana(List<Gasto> gastos)
+        private List<(string Periodo, decimal Total)> AgruparGastosPorSemana(List<Gasto> gastos)
         {
             var hoy = DateTime.Today;
             var ultimasSemanas = Enumerable.Range(0, 6)
@@ -247,7 +368,7 @@ namespace Mercader
             }).ToList();
         }
 
-        private List<(string Periodo, decimal Total)> AgruparPorMes(List<Gasto> gastos)
+        private List<(string Periodo, decimal Total)> AgruparGastosPorMes(List<Gasto> gastos)
         {
             var hoy = DateTime.Today;
             var ultimosMeses = Enumerable.Range(0, 6)
@@ -259,136 +380,162 @@ namespace Mercader
             {
                 var gastosMes = gastos.Where(g => g.Fecha.Year == mes.Year && g.Fecha.Month == mes.Month);
                 var total = gastosMes.Sum(g => g.Monto * g.Cantidad);
-                return (mes.ToString("MMM"), total);
+                return (mes.ToString("MMM", new CultureInfo("es-ES")), total);
             }).ToList();
         }
 
-        
+        #endregion
+
+        #region Configuración de Gráficos
+
         private void ConfigurarGraficoVentas(List<(string Periodo, decimal Total)> datos, string periodo)
         {
-            var entries = datos.Select(d => new ChartEntry((float)d.Total)
+            try
             {
-                Label = d.Periodo,
-                ValueLabel = FormatearValorEntero(d.Total),
-                Color = SKColor.Parse("#2e9449"), // Verde más suave
-                TextColor = SKColor.Parse("#E0E0E0"), // Gris claro para mejor legibilidad
-                ValueLabelColor = SKColor.Parse("#FFFFFF") // Blanco para valores
-            }).ToArray();
+                var entries = datos.Select(d => new ChartEntry((float)d.Total)
+                {
+                    Label = d.Periodo,
+                    ValueLabel = FormatearValorEntero(d.Total),
+                    Color = SKColor.Parse("#2e9449"),
+                    TextColor = SKColor.Parse("#E0E0E0"),
+                    ValueLabelColor = SKColor.Parse("#FFFFFF")
+                }).ToArray();
 
-            VentasChart.Chart = new LineChart
+                VentasChart.Chart = new LineChart
+                {
+                    Entries = entries,
+                    LabelTextSize = 14,
+                    ValueLabelTextSize = 12,
+                    BackgroundColor = SKColor.Parse("#2a2a2a"),
+                    LineSize = 3,
+                    PointSize = 8,
+                    IsAnimated = true,
+                    AnimationDuration = TimeSpan.FromMilliseconds(600),
+                    LabelOrientation = Orientation.Horizontal,
+                    ValueLabelOrientation = Orientation.Horizontal,
+                    Margin = 20,
+                    ShowYAxisLines = true,
+                    YAxisLinesPaint = new SKPaint { Color = SKColor.Parse("#3C3C3C"), StrokeWidth = 1 }
+                };
+            }
+            catch (Exception ex)
             {
-                Entries = entries,
-                LabelTextSize = 22, // Texto más grande
-                ValueLabelTextSize = 20,
-                BackgroundColor = SKColor.Parse("#2a2a2a"),
-                LineSize = 4, // Línea más gruesa
-                PointSize = 12, // Puntos más grandes
-                IsAnimated = true,
-                AnimationDuration = TimeSpan.FromMilliseconds(800),
-                LabelOrientation = Orientation.Horizontal,
-                ValueLabelOrientation = Orientation.Horizontal,
-                // Añadir márgenes para mejor visualización
-                Margin = 38,
-                ShowYAxisLines = true,
-                ShowYAxisText = true,
-                YAxisLinesPaint = new SKPaint { Color = SKColor.Parse("#3C3C3C") }
-
-            };
+                Console.WriteLine($"Error configurando gráfico de ventas: {ex.Message}");
+            }
         }
 
         private void ConfigurarGraficoGastos(List<(string Periodo, decimal Total)> datos, string periodo)
         {
-            var entries = datos.Select(d => new ChartEntry((float)d.Total)
+            try
             {
-                Label = d.Periodo,
-                ValueLabel = FormatearValorEntero(d.Total),
-                Color = SKColor.Parse("#d63384"), // Rojo más suave
-                TextColor = SKColor.Parse("#E0E0E0"),
-                ValueLabelColor = SKColor.Parse("#FFFFFF")
-            }).ToArray();
+                var entries = datos.Select(d => new ChartEntry((float)d.Total)
+                {
+                    Label = d.Periodo,
+                    ValueLabel = FormatearValorEntero(d.Total),
+                    Color = SKColor.Parse("#d63384"),
+                    TextColor = SKColor.Parse("#E0E0E0"),
+                    ValueLabelColor = SKColor.Parse("#FFFFFF")
+                }).ToArray();
 
-            GastosChart.Chart = new LineChart
+                GastosChart.Chart = new LineChart
+                {
+                    Entries = entries,
+                    LabelTextSize = 14,
+                    ValueLabelTextSize = 12,
+                    BackgroundColor = SKColor.Parse("#2a2a2a"),
+                    LineSize = 3,
+                    PointSize = 8,
+                    IsAnimated = true,
+                    AnimationDuration = TimeSpan.FromMilliseconds(600),
+                    LabelOrientation = Orientation.Horizontal,
+                    ValueLabelOrientation = Orientation.Horizontal,
+                    Margin = 20,
+                    ShowYAxisLines = true,
+                    YAxisLinesPaint = new SKPaint { Color = SKColor.Parse("#3C3C3C"), StrokeWidth = 1 }
+                };
+            }
+            catch (Exception ex)
             {
-                Entries = entries,
-                LabelTextSize = 22,
-                ValueLabelTextSize = 20,
-                BackgroundColor = SKColor.Parse("#2a2a2a"),
-                LineSize = 4,
-                PointSize = 12,
-                IsAnimated = true,
-                AnimationDuration = TimeSpan.FromMilliseconds(800),
-                LabelOrientation = Orientation.Horizontal,
-                ValueLabelOrientation = Orientation.Horizontal,
-                Margin = 38,
-                ShowYAxisLines = true,
-                ShowYAxisText = true,
-                YAxisLinesPaint = new SKPaint { Color = SKColor.Parse("#3C3C3C") }
-
-            };
+                Console.WriteLine($"Error configurando gráfico de gastos: {ex.Message}");
+            }
         }
 
         private void ConfigurarGraficoGanancias(List<(string Periodo, decimal Total)> ventas,
                                                List<(string Periodo, decimal Total)> gastos,
                                                string periodo)
         {
-            // Combinar datos asegurando que coincidan los períodos  
-            var datosCompletos = ventas.Select(v =>
+            try
             {
-                var gastoCorrespondiente = gastos.FirstOrDefault(g => g.Periodo == v.Periodo);
-                var ganancia = v.Total - (gastoCorrespondiente.Total);
-                return new { Periodo = v.Periodo, Ganancia = ganancia };
-            }).ToList();
+                var datosCompletos = ventas.Select(v =>
+                {
+                    var gastoCorrespondiente = gastos.FirstOrDefault(g => g.Periodo == v.Periodo);
+                    var ganancia = v.Total - gastoCorrespondiente.Total;
+                    return new { Periodo = v.Periodo, Ganancia = ganancia };
+                }).ToList();
 
-            var entries = datosCompletos.Select(d => new ChartEntry((float)d.Ganancia)
-            {
-                Label = d.Periodo,
-                ValueLabel = FormatearValorEntero(d.Ganancia),
-                // Color dinámico: verde para ganancias positivas, rojo para negativas  
-                Color = d.Ganancia >= 0 ? SKColor.Parse("#1f6bc2") : SKColor.Parse("#dc3545"),
-                TextColor = SKColor.Parse("#E0E0E0"),
-                ValueLabelColor = SKColor.Parse("#FFFFFF")
-            }).ToArray();
+                var entries = datosCompletos.Select(d => new ChartEntry((float)d.Ganancia)
+                {
+                    Label = d.Periodo,
+                    ValueLabel = FormatearValorEntero(d.Ganancia),
+                    Color = d.Ganancia >= 0 ? SKColor.Parse("#1f6bc2") : SKColor.Parse("#dc3545"),
+                    TextColor = SKColor.Parse("#E0E0E0"),
+                    ValueLabelColor = SKColor.Parse("#FFFFFF")
+                }).ToArray();
 
-            GananciasChart.Chart = new LineChart
+                GananciasChart.Chart = new LineChart
+                {
+                    Entries = entries,
+                    LabelTextSize = 14,
+                    ValueLabelTextSize = 12,
+                    BackgroundColor = SKColor.Parse("#2a2a2a"),
+                    LineSize = 3,
+                    PointSize = 8,
+                    IsAnimated = true,
+                    AnimationDuration = TimeSpan.FromMilliseconds(600),
+                    LabelOrientation = Orientation.Horizontal,
+                    ValueLabelOrientation = Orientation.Horizontal,
+                    Margin = 20,
+                    ShowYAxisLines = true,
+                    YAxisLinesPaint = new SKPaint { Color = SKColor.Parse("#3C3C3C"), StrokeWidth = 1 }
+                };
+            }
+            catch (Exception ex)
             {
-                Entries = entries,
-                LabelTextSize = 22,
-                ValueLabelTextSize = 20,
-                BackgroundColor = SKColor.Parse("#2a2a2a"),
-                LineSize = 4,
-                PointSize = 12,
-                IsAnimated = true,
-                AnimationDuration = TimeSpan.FromMilliseconds(800),
-                LabelOrientation = Orientation.Horizontal,
-                ValueLabelOrientation = Orientation.Horizontal,
-                Margin = 38,
-                ShowYAxisLines = true,
-                ShowYAxisText = true,
-                YAxisLinesPaint = new SKPaint { Color = SKColor.Parse("#3C3C3C") }
-            };
+                Console.WriteLine($"Error configurando gráfico de ganancias: {ex.Message}");
+            }
         }
 
-        // MÉTODO AUXILIAR PARA FORMATEAR VALORES - Con números enteros
+        #endregion
+
+        #region Métodos Auxiliares
+
         private string FormatearValorEntero(decimal valor)
         {
-            // Formatear solo con números enteros
             if (Math.Abs(valor) >= 1000000)
-                return $"${Math.Round(valor / 1000000)}M";
+                return $"${Math.Round(valor / 1000000, 1)}M";
             else if (Math.Abs(valor) >= 1000)
-                return $"${Math.Round(valor / 1000)}K";
+                return $"${Math.Round(valor / 1000, 1)}K";
             else if (valor == 0)
                 return "$0";
             else
                 return $"${Math.Round(valor)}";
         }
 
-        // ... resto de métodos existentes (exportar, etc.) ...
+        #endregion
+
+        #region Exportación a Excel
+
         private async void OnExportarAExcelClicked(object sender, EventArgs e)
         {
             try
             {
-                // Mostrar indicador de carga
-                var loadingPopup = DisplayAlert("Exportando", "Generando reporte Excel...", "Cancelar");
+                // Deshabilitar el botón temporalmente para evitar múltiples clicks
+                var botonExportar = sender as Button;
+                if (botonExportar != null)
+                {
+                    botonExportar.IsEnabled = false;
+                    botonExportar.Text = "⏳ Exportando...";
+                }
 
                 string carpetaPersonalizada = Path.Combine(FileSystem.Current.AppDataDirectory, "Exportaciones");
 
@@ -403,13 +550,9 @@ namespace Mercader
                 // Asegurar que los datos estén actualizados
                 await CargarDatosAsync();
 
-                // Exportar con el nuevo formato mejorado
+                // Exportar con el nuevo formato
                 await ExportExcel.ExportarBalanceAExcelAsync(balance, rutaArchivo);
 
-                // Cancelar el popup de carga si todavía está visible
-                // (Esto es aproximado ya que DisplayAlert no tiene un handle directo para cancelar)
-
-                // Mostrar mensaje de éxito con más información
                 var mensaje = $"📊 ¡Reporte generado exitosamente!\n\n" +
                              $"📁 Archivo: {nombreArchivo}\n" +
                              $"📍 Ubicación: {carpetaPersonalizada}\n\n" +
@@ -417,8 +560,7 @@ namespace Mercader
                              $"• Resumen ejecutivo con métricas clave\n" +
                              $"• Análisis mensual detallado\n" +
                              $"• Registros completos por categoría\n" +
-                             $"• Datos listos para gráficos\n\n" +
-                             $"💡 Consejo: Abre la hoja 'Datos para Gráfico' y sigue las instrucciones para crear gráficos automáticamente.";
+                             $"• Datos listos para gráficos";
 
                 var respuesta = await DisplayAlert(
                     "✅ Exportación Completada",
@@ -436,12 +578,20 @@ namespace Mercader
             {
                 await DisplayAlert(
                     "❌ Error en la exportación",
-                    $"No se pudo generar el reporte Excel:\n\n{ex.Message}\n\nVerifica que tengas permisos de escritura y espacio suficiente.",
+                    $"No se pudo generar el reporte Excel:\n\n{ex.Message}",
                     "Entendido"
                 );
-
-                // Log del error para debugging
                 Console.WriteLine($"Error detallado en exportación: {ex}");
+            }
+            finally
+            {
+                // Rehabilitar el botón
+                var botonExportar = sender as Button;
+                if (botonExportar != null)
+                {
+                    botonExportar.IsEnabled = true;
+                    botonExportar.Text = "📊 EXPORTAR REPORTE COMPLETO";
+                }
             }
         }
 
@@ -481,5 +631,7 @@ namespace Mercader
                 await DisplayAlert("Error", $"No se pudo abrir la ubicación del archivo: {ex.Message}", "OK");
             }
         }
+
+        #endregion
     }
 }

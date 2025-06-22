@@ -13,7 +13,7 @@
 
             <!--  Sección Botones Principales  -->
             <HorizontalStackLayout
-                Margin=" -4,0,0,0"
+                Margin="-5,0,0,0"
                 HorizontalOptions="Center"
                 Spacing="7">
 
@@ -42,7 +42,7 @@
                     WidthRequest="106" />
             </HorizontalStackLayout>
 
-            <!--  Sección 1 Resumen Financiero  -->
+            <!--  Sección Resumen Financiero General  -->
             <Frame
                 Padding="16"
                 BackgroundColor="#2a2a2a"
@@ -100,41 +100,31 @@
                             HorizontalOptions="Center"
                             TextColor="#6e0a24" />
                     </VerticalStackLayout>
-
-
                 </Grid>
             </Frame>
 
-            <!--  Sección 2 Resumen Financiero  -->
+            <!--  Sección Ganancias  -->
             <Frame
                 Padding="16"
                 BackgroundColor="#2a2a2a"
                 CornerRadius="17"
                 HasShadow="True">
-
-                <Grid ColumnSpacing="15" RowSpacing="15">
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="*" />
-
-                    </Grid.ColumnDefinitions>
-                    <!--  Ganancias  -->
-                    <VerticalStackLayout Grid.Column="3" Spacing="5">
-                        <Label
-                            FontSize="14"
-                            HorizontalOptions="Center"
-                            Text="GANANCIAS"
-                            TextColor="#7d7c7c" />
-                        <Label
-                            x:Name="GananciasLabel"
-                            FontAttributes="Bold"
-                            FontSize="16"
-                            HorizontalOptions="Center"
-                            TextColor="#1f6bc2" />
-                    </VerticalStackLayout>
-                </Grid>
+                <VerticalStackLayout Spacing="5">
+                    <Label
+                        FontSize="14"
+                        HorizontalOptions="Center"
+                        Text="GANANCIAS TOTALES"
+                        TextColor="#7d7c7c" />
+                    <Label
+                        x:Name="GananciasLabel"
+                        FontAttributes="Bold"
+                        FontSize="18"
+                        HorizontalOptions="Center"
+                        TextColor="#1f6bc2" />
+                </VerticalStackLayout>
             </Frame>
 
-
+            <!--  Selector de Período  -->
             <Frame
                 Padding="4"
                 BackgroundColor="#2a2a2a"
@@ -142,10 +132,11 @@
                 HasShadow="True">
                 <Picker
                     x:Name="PeriodSelector"
-                    Title="Seleccionar período"
+                    Title="Seleccionar período de análisis"
                     SelectedIndexChanged="PeriodSelector_OnSelectedIndexChanged"
-                    TextColor="#7f7c7c"
-                    TitleColor="#7c7c7c">
+                    TextColor="#FFFFFF"
+                    TitleColor="#7c7c7c"
+                    FontSize="16">
                     <Picker.Items>
                         <x:String>Días</x:String>
                         <x:String>Semanas</x:String>
@@ -154,73 +145,165 @@
                 </Picker>
             </Frame>
 
-
-            <!--  Gráfico de Ventas  -->
-            <Label
-                x:Name="VentasChartLabel"
-                FontAttributes="Bold"
-                FontSize="16"
-                HorizontalOptions="Center"
-                Text="VENTAS"
-                TextColor="#2e9449" />
-
+            <!--  SECCIÓN VENTAS COMPLETA  -->
             <Frame
-                Padding="16"
+                Padding="20"
                 BackgroundColor="#2a2a2a"
                 CornerRadius="17"
-                HasShadow="False">
-                <microcharts:ChartView
-                    x:Name="VentasChart"
-                    Grid.Row="3"
-                    Margin="0,0,0,10"
-                    BackgroundColor="#2a2a2a"
-                    HeightRequest="200" />
+                HasShadow="True">
+                <VerticalStackLayout Spacing="15">
+                    <!-- Encabezado de Ventas -->
+                    <VerticalStackLayout Spacing="8">
+                        <Label
+                            FontAttributes="Bold"
+                            FontSize="18"
+                            HorizontalOptions="Center"
+                            Text="📈 ANÁLISIS DE VENTAS"
+                            TextColor="#2e9449" />
+                        <BoxView
+                            HeightRequest="2"
+                            BackgroundColor="#2e9449"
+                            HorizontalOptions="Fill"
+                            Opacity="0.6" />
+                    </VerticalStackLayout>
+
+                    <!-- Resumen de Ventas -->
+                    <HorizontalStackLayout 
+                        HorizontalOptions="Center" 
+                        Spacing="20">
+                        <VerticalStackLayout Spacing="3">
+                            <Label
+                                Text="TOTAL PERÍODO"
+                                FontSize="12"
+                                TextColor="#7d7c7c"
+                                HorizontalOptions="Center" />
+                            <Label
+                                x:Name="VentasPeriodoLabel"
+                                FontAttributes="Bold"
+                                FontSize="16"
+                                TextColor="#2e9449"
+                                HorizontalOptions="Center" />
+                        </VerticalStackLayout>
+                    </HorizontalStackLayout>
+
+                    <!-- Gráfico de Ventas -->
+                    <microcharts:ChartView
+                        x:Name="VentasChart"
+                        BackgroundColor="#2a2a2a"
+                        HeightRequest="220" />
+                </VerticalStackLayout>
             </Frame>
 
-            <!--  Gráfico de Gastos  -->
-            <Label
-                x:Name="GastosChartLabel"
-                FontAttributes="Bold"
-                FontSize="16"
-                HorizontalOptions="Center"
-                Text="GASTOS"
-                TextColor="#6e0a24" />
-
+            <!--  SECCIÓN GASTOS COMPLETA  -->
             <Frame
-                Padding="16"
+                Padding="20"
                 BackgroundColor="#2a2a2a"
-                CornerRadius="15"
-                HasShadow="False">
-                <microcharts:ChartView
-                    x:Name="GastosChart"
-                    Grid.Row="5"
-                    Margin="0,0,0,10"
-                    BackgroundColor="#2a2a2a"
-                    HeightRequest="200" />
+                CornerRadius="17"
+                HasShadow="True">
+                <VerticalStackLayout Spacing="15">
+                    <!-- Encabezado de Gastos -->
+                    <VerticalStackLayout Spacing="8">
+                        <Label
+                            FontAttributes="Bold"
+                            FontSize="18"
+                            HorizontalOptions="Center"
+                            Text="📉 ANÁLISIS DE GASTOS"
+                            TextColor="#d63384" />
+                        <BoxView
+                            HeightRequest="2"
+                            BackgroundColor="#d63384"
+                            HorizontalOptions="Fill"
+                            Opacity="0.6" />
+                    </VerticalStackLayout>
+
+                    <!-- Resumen de Gastos -->
+                    <HorizontalStackLayout 
+                        HorizontalOptions="Center" 
+                        Spacing="20">
+                        <VerticalStackLayout Spacing="3">
+                            <Label
+                                Text="TOTAL PERÍODO"
+                                FontSize="12"
+                                TextColor="#7d7c7c"
+                                HorizontalOptions="Center" />
+                            <Label
+                                x:Name="GastosPeriodoLabel"
+                                FontAttributes="Bold"
+                                FontSize="16"
+                                TextColor="#d63384"
+                                HorizontalOptions="Center" />
+                        </VerticalStackLayout>
+                    </HorizontalStackLayout>
+
+                    <!-- Gráfico de Gastos -->
+                    <microcharts:ChartView
+                        x:Name="GastosChart"
+                        BackgroundColor="#2a2a2a"
+                        HeightRequest="220" />
+                </VerticalStackLayout>
             </Frame>
 
-            <!--  Gráfico de Ganancias  -->
-            <Label
-                x:Name="GananciasChartLabel"
-                FontAttributes="Bold"
-                FontSize="16"
-                HorizontalOptions="Center"
-                Text="GANANCIAS"
-                TextColor="#1f6bc2" />
-
-            <!--  Gráfico de Ganancias  -->
+            <!--  SECCIÓN GANANCIAS COMPLETA  -->
             <Frame
-                Padding="16"
+                Padding="20"
                 BackgroundColor="#2a2a2a"
-                CornerRadius="15"
-                HasShadow="False">
-                <microcharts:ChartView
-                    x:Name="GananciasChart"
-                    Grid.Row="7"
-                    BackgroundColor="#2a2a2a"
-                    HeightRequest="200" />
-            </Frame>
+                CornerRadius="17"
+                HasShadow="True">
+                <VerticalStackLayout Spacing="15">
+                    <!-- Encabezado de Ganancias -->
+                    <VerticalStackLayout Spacing="8">
+                        <Label
+                            FontAttributes="Bold"
+                            FontSize="18"
+                            HorizontalOptions="Center"
+                            Text="💰 ANÁLISIS DE GANANCIAS"
+                            TextColor="#1f6bc2" />
+                        <BoxView
+                            HeightRequest="2"
+                            BackgroundColor="#1f6bc2"
+                            HorizontalOptions="Fill"
+                            Opacity="0.6" />
+                    </VerticalStackLayout>
 
+                    <!-- Resumen de Ganancias -->
+                    <HorizontalStackLayout 
+                        HorizontalOptions="Center" 
+                        Spacing="20">
+                        <VerticalStackLayout Spacing="3">
+                            <Label
+                                Text="GANANCIA PERÍODO"
+                                FontSize="12"
+                                TextColor="#7d7c7c"
+                                HorizontalOptions="Center" />
+                            <Label
+                                x:Name="GananciasPeriodoLabel"
+                                FontAttributes="Bold"
+                                FontSize="16"
+                                TextColor="#1f6bc2"
+                                HorizontalOptions="Center" />
+                        </VerticalStackLayout>
+                        <VerticalStackLayout Spacing="3">
+                            <Label
+                                Text="MARGEN %"
+                                FontSize="12"
+                                TextColor="#7d7c7c"
+                                HorizontalOptions="Center" />
+                            <Label
+                                x:Name="MargenLabel"
+                                FontAttributes="Bold"
+                                FontSize="16"
+                                TextColor="#17a2b8"
+                                HorizontalOptions="Center" />
+                        </VerticalStackLayout>
+                    </HorizontalStackLayout>
+
+                    <!-- Gráfico de Ganancias -->
+                    <microcharts:ChartView
+                        x:Name="GananciasChart"
+                        BackgroundColor="#2a2a2a"
+                        HeightRequest="220" />
+                </VerticalStackLayout>
+            </Frame>
 
             <!--  Botón Exportar  -->
             <Button
@@ -230,7 +313,7 @@
                 CornerRadius="10"
                 FontAttributes="Bold"
                 HeightRequest="50"
-                Text="📊 EXPORTAR A EXCEL"
+                Text="📊 EXPORTAR REPORTE COMPLETO"
                 TextColor="White" />
 
         </VerticalStackLayout>
