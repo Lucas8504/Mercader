@@ -387,6 +387,9 @@ namespace Mercader
         {
             try
             {
+                // Mostrar indicador de carga
+                var loadingPopup = DisplayAlert("Exportando", "Generando reporte Excel...", "Cancelar");
+
                 string carpetaPersonalizada = Path.Combine(FileSystem.Current.AppDataDirectory, "Exportaciones");
 
                 if (!Directory.Exists(carpetaPersonalizada))
@@ -394,16 +397,51 @@ namespace Mercader
                     Directory.CreateDirectory(carpetaPersonalizada);
                 }
 
-                string nombreArchivo = $"balance_{DateTime.Now:yyyyMMdd_HHmm}.xlsx";
+                string nombreArchivo = $"Balance_Financiero_{DateTime.Now:yyyyMMdd_HHmmss}.xlsx";
                 string rutaArchivo = Path.Combine(carpetaPersonalizada, nombreArchivo);
 
+                // Asegurar que los datos estén actualizados
+                await CargarDatosAsync();
+
+                // Exportar con el nuevo formato mejorado
                 await ExportExcel.ExportarBalanceAExcelAsync(balance, rutaArchivo);
-                await DisplayAlert("Exportación Completa", $"Archivo exportado a {rutaArchivo}", "OK");
-                await AbrirUbicacionArchivoAsync(rutaArchivo, carpetaPersonalizada);
+
+                // Cancelar el popup de carga si todavía está visible
+                // (Esto es aproximado ya que DisplayAlert no tiene un handle directo para cancelar)
+
+                // Mostrar mensaje de éxito con más información
+                var mensaje = $"📊 ¡Reporte generado exitosamente!\n\n" +
+                             $"📁 Archivo: {nombreArchivo}\n" +
+                             $"📍 Ubicación: {carpetaPersonalizada}\n\n" +
+                             $"✨ El reporte incluye:\n" +
+                             $"• Resumen ejecutivo con métricas clave\n" +
+                             $"• Análisis mensual detallado\n" +
+                             $"• Registros completos por categoría\n" +
+                             $"• Datos listos para gráficos\n\n" +
+                             $"💡 Consejo: Abre la hoja 'Datos para Gráfico' y sigue las instrucciones para crear gráficos automáticamente.";
+
+                var respuesta = await DisplayAlert(
+                    "✅ Exportación Completada",
+                    mensaje,
+                    "📂 Abrir archivo",
+                    "✋ Cerrar"
+                );
+
+                if (respuesta)
+                {
+                    await AbrirUbicacionArchivoAsync(rutaArchivo, carpetaPersonalizada);
+                }
             }
             catch (Exception ex)
             {
-                await DisplayAlert("Error", $"No se pudo exportar el archivo: {ex.Message}", "OK");
+                await DisplayAlert(
+                    "❌ Error en la exportación",
+                    $"No se pudo generar el reporte Excel:\n\n{ex.Message}\n\nVerifica que tengas permisos de escritura y espacio suficiente.",
+                    "Entendido"
+                );
+
+                // Log del error para debugging
+                Console.WriteLine($"Error detallado en exportación: {ex}");
             }
         }
 
