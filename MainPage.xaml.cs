@@ -63,39 +63,52 @@ namespace Mercader
         public void ActualizarEtiquetaGanancias()
         {
             var ganancias = balance.CalcularGanancias();
-            GananciasLabel.Text = $"{ganancias:C}";
+            // Esta etiqueta se actualiza en ActualizarEtiquetasPeriodo()
+            // No necesita actualización individual aquí ya que depende del período seleccionado
         }
 
         public void ActualizarEtiquetaVentas()
         {
             decimal ventas = balance.CalcularVentas();
-            VentasLabel.Text = $"{ventas:C}";
+            // Esta etiqueta se actualiza en ActualizarEtiquetasPeriodo()
+            // No necesita actualización individual aquí ya que depende del período seleccionado
         }
 
         public void ActualizarEtiquetaGastos()
         {
             decimal gastos = balance.CalcularGastos();
-            GastosLabel.Text = $"{gastos:C}";
+            // Esta etiqueta se actualiza en ActualizarEtiquetasPeriodo()
+            // No necesita actualización individual aquí ya que depende del período seleccionado
         }
 
         public void ActualizarEtiquetaEncargos()
         {
             decimal encargo = balance.CalcularEncargos();
-            EncargosLabel.Text = $"{encargo:C}";
+            // Los encargos no tienen etiqueta de período en el XAML actual
+            // Si necesitas mostrar el total de encargos, agrega la lógica aquí
         }
 
         private void ActualizarEtiquetasPeriodo()
         {
             var periodo = PeriodSelector.SelectedItem?.ToString() ?? "Meses";
 
-            // Calcular totales del período seleccionado
+            // Calcular totales del período seleccionado para ventas
             var ventasPeriodo = CalcularTotalPeriodo(balance.Ventas, periodo);
+
+            // Calcular totales del período seleccionado para gastos
             var gastosPeriodo = CalcularTotalPeriodo(balance.Gastos, periodo);
+
+            // Calcular totales del período seleccionado para encargos
+            var encargosPeriodo = CalcularTotalPeriodoEncargos(balance.Encargos, periodo);
+
+            // Calcular ganancias (ventas - gastos) y margen
             var gananciasPeriodo = ventasPeriodo - gastosPeriodo;
             var margenPorcentaje = ventasPeriodo > 0 ? (gananciasPeriodo / ventasPeriodo) * 100 : 0;
 
+            // Actualizar las etiquetas en el XAML
             VentasPeriodoLabel.Text = $"{ventasPeriodo:C}";
             GastosPeriodoLabel.Text = $"{gastosPeriodo:C}";
+            EncargosPeriodoLabel.Text = $"{encargosPeriodo:C}";
             GananciasPeriodoLabel.Text = $"{gananciasPeriodo:C}";
             MargenLabel.Text = $"{margenPorcentaje:F1}%";
         }
@@ -128,6 +141,20 @@ namespace Mercader
                         .Sum(g => g.Monto * g.Cantidad);
         }
 
+        private decimal CalcularTotalPeriodoEncargos(List<Encargo> encargos, string periodo)
+        {
+            var fechaLimite = periodo switch
+            {
+                "Días" => DateTime.Today.AddDays(-7),
+                "Semanas" => DateTime.Today.AddDays(-42),
+                "Meses" => DateTime.Today.AddMonths(-6),
+                _ => DateTime.Today.AddMonths(-6)
+            };
+
+            return encargos.Where(e => e.Fecha >= fechaLimite)
+                          .Sum(e => e.Precio * e.Cantidad);
+        }
+
         #endregion
 
         #region Eventos de Navegación
@@ -144,8 +171,15 @@ namespace Mercader
                 {
                     await App.DataRepo.SaveEncargoAsync(nuevoEncargo);
                     balance.Encargos.Add(nuevoEncargo);
-                    ActualizarEtiquetaEncargos();
-                    ActualizarEtiquetaGanancias();
+
+                    await MainThread.InvokeOnMainThreadAsync(() =>
+                    {
+                        ActualizarEtiquetaEncargos();
+                        ActualizarEtiquetaGanancias();
+                        ActualizarEtiquetasPeriodo();
+                    });
+
+                    await ActualizarGraficosAsync();
                 }
             }
             catch (Exception ex)
@@ -240,6 +274,7 @@ namespace Mercader
                 var periodo = PeriodSelector.SelectedItem?.ToString() ?? "Meses";
                 var ventas = balance.Ventas ?? new List<Ventas>();
                 var gastos = balance.Gastos ?? new List<Gasto>();
+                var encargos = balance.Encargos ?? new List<Encargo>();
 
                 var ventasAgrupadas = periodo switch
                 {
@@ -255,10 +290,18 @@ namespace Mercader
                     _ => AgruparGastosPorMes(gastos)
                 };
 
+                var encargosAgrupados = periodo switch
+                {
+                    "Días" => AgruparEncargosPorDia(encargos),
+                    "Semanas" => AgruparEncargosPorSemana(encargos),
+                    _ => AgruparEncargosPorMes(encargos)
+                };
+
                 MainThread.BeginInvokeOnMainThread(() =>
                 {
                     ConfigurarGraficoVentas(ventasAgrupadas, periodo);
                     ConfigurarGraficoGastos(gastosAgrupados, periodo);
+                    ConfigurarGraficoEncargos(encargosAgrupados, periodo);
                     ConfigurarGraficoGanancias(ventasAgrupadas, gastosAgrupados, periodo);
                 });
             }
@@ -386,6 +429,63 @@ namespace Mercader
 
         #endregion
 
+        #region Métodos de Agrupación - Encargos
+
+        private List<(string Periodo, decimal Total)> AgruparEncargosPorDia(List<Encargo> encargos)
+        {
+            var hoy = DateTime.Today;
+            var ultimosDias = Enumerable.Range(0, 7)
+                .Select(i => hoy.AddDays(-i))
+                .Reverse()
+                .ToList();
+
+            return ultimosDias.Select(fecha =>
+            {
+                var encargosDia = encargos.Where(e => e.Fecha.Date == fecha.Date);
+                var total = encargosDia.Sum(e => e.Precio * e.Cantidad);
+                return (fecha.ToString("dd/MM"), total);
+            }).ToList();
+        }
+
+        private List<(string Periodo, decimal Total)> AgruparEncargosPorSemana(List<Encargo> encargos)
+        {
+            var hoy = DateTime.Today;
+            var ultimasSemanas = Enumerable.Range(0, 6)
+                .Select(i =>
+                {
+                    var inicioSemana = hoy.AddDays(-7 * i).AddDays(-(int)hoy.AddDays(-7 * i).DayOfWeek);
+                    var finSemana = inicioSemana.AddDays(6);
+                    return new { Inicio = inicioSemana, Fin = finSemana };
+                })
+                .Reverse()
+                .ToList();
+
+            return ultimasSemanas.Select(semana =>
+            {
+                var encargosSemana = encargos.Where(e => e.Fecha.Date >= semana.Inicio && e.Fecha.Date <= semana.Fin);
+                var total = encargosSemana.Sum(e => e.Precio * e.Cantidad);
+                return ($"{semana.Inicio:dd/MM}", total);
+            }).ToList();
+        }
+
+        private List<(string Periodo, decimal Total)> AgruparEncargosPorMes(List<Encargo> encargos)
+        {
+            var hoy = DateTime.Today;
+            var ultimosMeses = Enumerable.Range(0, 6)
+                .Select(i => hoy.AddMonths(-i))
+                .Reverse()
+                .ToList();
+
+            return ultimosMeses.Select(mes =>
+            {
+                var encargosMes = encargos.Where(e => e.Fecha.Year == mes.Year && e.Fecha.Month == mes.Month);
+                var total = encargosMes.Sum(e => e.Precio * e.Cantidad);
+                return (mes.ToString("MMM", new CultureInfo("es-ES")), total);
+            }).ToList();
+        }
+
+        #endregion
+
         #region Configuración de Gráficos
 
         private void ConfigurarGraficoVentas(List<(string Periodo, decimal Total)> datos, string periodo)
@@ -457,6 +557,42 @@ namespace Mercader
             catch (Exception ex)
             {
                 Console.WriteLine($"Error configurando gráfico de gastos: {ex.Message}");
+            }
+        }
+
+        private void ConfigurarGraficoEncargos(List<(string Periodo, decimal Total)> datos, string periodo)
+        {
+            try
+            {
+                var entries = datos.Select(d => new ChartEntry((float)d.Total)
+                {
+                    Label = d.Periodo,
+                    ValueLabel = FormatearValorEntero(d.Total),
+                    Color = SKColor.Parse("#ff6b35"),
+                    TextColor = SKColor.Parse("#E0E0E0"),
+                    ValueLabelColor = SKColor.Parse("#FFFFFF")
+                }).ToArray();
+
+                EncargosChart.Chart = new LineChart
+                {
+                    Entries = entries,
+                    LabelTextSize = 14,
+                    ValueLabelTextSize = 12,
+                    BackgroundColor = SKColor.Parse("#2a2a2a"),
+                    LineSize = 3,
+                    PointSize = 8,
+                    IsAnimated = true,
+                    AnimationDuration = TimeSpan.FromMilliseconds(600),
+                    LabelOrientation = Orientation.Horizontal,
+                    ValueLabelOrientation = Orientation.Horizontal,
+                    Margin = 20,
+                    ShowYAxisLines = true,
+                    YAxisLinesPaint = new SKPaint { Color = SKColor.Parse("#3C3C3C"), StrokeWidth = 1 }
+                };
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error configurando gráfico de encargos: {ex.Message}");
             }
         }
 

@@ -85,7 +85,8 @@
     <FlyoutItem Title="Inicio" Icon="🏠" FlyoutDisplayOptions="AsSingleItem">
         <ShellContent Title="Home" ContentTemplate="{DataTemplate local:MainPage}" />
     </FlyoutItem>
-    <ShellContent Title="Encargo" Icon="📦" ContentTemplate="{DataTemplate local:Encargos}" />
-    <ShellContent Title="Ventas" Icon="💰" ContentTemplate="{DataTemplate local:Venta}" />
-    <ShellContent Title="Gasto" Icon="💸" ContentTemplate="{DataTemplate local:Gastos}" />
+    <ShellContent Title="Gastos" Icon="💸" ContentTemplate="{DataTemplate local:Gastos}" />
+    <ShellContent Title="Encargos" Icon="📦" ContentTemplate="{DataTemplate local:Encargos}" />
+    <ShellContent Title="Ventas" Icon="💵​" ContentTemplate="{DataTemplate local:Venta}" />
+
 </Shell>

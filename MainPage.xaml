@@ -17,11 +17,20 @@
                 HorizontalOptions="Center"
                 Spacing="7">
 
+
                 <Button
-                    BackgroundColor="#1f6bc2"
+                    BackgroundColor="#6e0a24"
+                    Clicked="InAgregarGasto"
+                    CornerRadius="10"
+                    Text="➕​ Gasto"
+                    TextColor="White"
+                    WidthRequest="106" />
+
+                <Button
+                    BackgroundColor="#ff6b35"
                     Clicked="InAgregarEncargo"
                     CornerRadius="10"
-                    Text="📦 Encargo"
+                    Text="➕ ​Encargo"
                     TextColor="White"
                     WidthRequest="106" />
 
@@ -29,100 +38,13 @@
                     BackgroundColor="#2e9449"
                     Clicked="InAgregarVenta"
                     CornerRadius="10"
-                    Text="💰 Venta"
+                    Text="➕​ Venta"
                     TextColor="White"
                     WidthRequest="106" />
 
-                <Button
-                    BackgroundColor="#6e0a24"
-                    Clicked="InAgregarGasto"
-                    CornerRadius="10"
-                    Text="💸 Gasto"
-                    TextColor="White"
-                    WidthRequest="106" />
+
             </HorizontalStackLayout>
 
-            <!--  Sección Resumen Financiero General  -->
-            <Frame
-                Padding="16"
-                BackgroundColor="#2a2a2a"
-                CornerRadius="17"
-                HasShadow="True">
-
-                <Grid ColumnSpacing="15" RowSpacing="15">
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="*" />
-                        <ColumnDefinition Width="*" />
-                        <ColumnDefinition Width="*" />
-                    </Grid.ColumnDefinitions>
-
-                    <!--  Encargos  -->
-                    <VerticalStackLayout Grid.Column="0" Spacing="5">
-                        <Label
-                            FontSize="13"
-                            HorizontalOptions="Center"
-                            Text="ENCARGOS"
-                            TextColor="#7d7c7c" />
-                        <Label
-                            x:Name="EncargosLabel"
-                            FontAttributes="Bold"
-                            FontSize="14"
-                            HorizontalOptions="Center"
-                            TextColor="#1f6bc2" />
-                    </VerticalStackLayout>
-
-                    <!--  Ventas  -->
-                    <VerticalStackLayout Grid.Column="1" Spacing="5">
-                        <Label
-                            FontSize="13"
-                            HorizontalOptions="Center"
-                            Text="VENTAS"
-                            TextColor="#7d7c7c" />
-                        <Label
-                            x:Name="VentasLabel"
-                            FontAttributes="Bold"
-                            FontSize="14"
-                            HorizontalOptions="Center"
-                            TextColor="#2e9449" />
-                    </VerticalStackLayout>
-
-                    <!--  Gastos  -->
-                    <VerticalStackLayout Grid.Column="2" Spacing="5">
-                        <Label
-                            FontSize="13"
-                            HorizontalOptions="Center"
-                            Text="GASTOS"
-                            TextColor="#7d7c7c" />
-                        <Label
-                            x:Name="GastosLabel"
-                            FontAttributes="Bold"
-                            FontSize="14"
-                            HorizontalOptions="Center"
-                            TextColor="#6e0a24" />
-                    </VerticalStackLayout>
-                </Grid>
-            </Frame>
-
-            <!--  Sección Ganancias  -->
-            <Frame
-                Padding="16"
-                BackgroundColor="#2a2a2a"
-                CornerRadius="17"
-                HasShadow="True">
-                <VerticalStackLayout Spacing="5">
-                    <Label
-                        FontSize="14"
-                        HorizontalOptions="Center"
-                        Text="GANANCIAS TOTALES"
-                        TextColor="#7d7c7c" />
-                    <Label
-                        x:Name="GananciasLabel"
-                        FontAttributes="Bold"
-                        FontSize="18"
-                        HorizontalOptions="Center"
-                        TextColor="#1f6bc2" />
-                </VerticalStackLayout>
-            </Frame>
 
             <!--  Selector de Período  -->
             <Frame
@@ -145,55 +67,6 @@
                 </Picker>
             </Frame>
 
-            <!--  SECCIÓN VENTAS COMPLETA  -->
-            <Frame
-                Padding="20"
-                BackgroundColor="#2a2a2a"
-                CornerRadius="17"
-                HasShadow="True">
-                <VerticalStackLayout Spacing="15">
-                    <!-- Encabezado de Ventas -->
-                    <VerticalStackLayout Spacing="8">
-                        <Label
-                            FontAttributes="Bold"
-                            FontSize="18"
-                            HorizontalOptions="Center"
-                            Text="📈 ANÁLISIS DE VENTAS"
-                            TextColor="#2e9449" />
-                        <BoxView
-                            HeightRequest="2"
-                            BackgroundColor="#2e9449"
-                            HorizontalOptions="Fill"
-                            Opacity="0.6" />
-                    </VerticalStackLayout>
-
-                    <!-- Resumen de Ventas -->
-                    <HorizontalStackLayout 
-                        HorizontalOptions="Center" 
-                        Spacing="20">
-                        <VerticalStackLayout Spacing="3">
-                            <Label
-                                Text="TOTAL PERÍODO"
-                                FontSize="12"
-                                TextColor="#7d7c7c"
-                                HorizontalOptions="Center" />
-                            <Label
-                                x:Name="VentasPeriodoLabel"
-                                FontAttributes="Bold"
-                                FontSize="16"
-                                TextColor="#2e9449"
-                                HorizontalOptions="Center" />
-                        </VerticalStackLayout>
-                    </HorizontalStackLayout>
-
-                    <!-- Gráfico de Ventas -->
-                    <microcharts:ChartView
-                        x:Name="VentasChart"
-                        BackgroundColor="#2a2a2a"
-                        HeightRequest="220" />
-                </VerticalStackLayout>
-            </Frame>
-
             <!--  SECCIÓN GASTOS COMPLETA  -->
             <Frame
                 Padding="20"
@@ -207,7 +80,7 @@
                             FontAttributes="Bold"
                             FontSize="18"
                             HorizontalOptions="Center"
-                            Text="📉 ANÁLISIS DE GASTOS"
+                            Text="💸 ANÁLISIS DE GASTOS"
                             TextColor="#d63384" />
                         <BoxView
                             HeightRequest="2"
@@ -217,8 +90,8 @@
                     </VerticalStackLayout>
 
                     <!-- Resumen de Gastos -->
-                    <HorizontalStackLayout 
-                        HorizontalOptions="Center" 
+                    <HorizontalStackLayout
+                        HorizontalOptions="Center"
                         Spacing="20">
                         <VerticalStackLayout Spacing="3">
                             <Label
@@ -238,6 +111,104 @@
                     <!-- Gráfico de Gastos -->
                     <microcharts:ChartView
                         x:Name="GastosChart"
+                        BackgroundColor="#2a2a2a"
+                        HeightRequest="220" />
+                </VerticalStackLayout>
+            </Frame>
+
+            <!--  SECCIÓN ENCARGOS COMPLETA  -->
+            <Frame
+                Padding="20"
+                BackgroundColor="#2a2a2a"
+                CornerRadius="17"
+                HasShadow="True">
+                <VerticalStackLayout Spacing="15">
+                    <!-- Encabezado de Encargos -->
+                    <VerticalStackLayout Spacing="8">
+                        <Label
+                            FontAttributes="Bold"
+                            FontSize="18"
+                            HorizontalOptions="Center"
+                            Text="📦 ANÁLISIS DE ENCARGOS"
+                            TextColor="#ff6b35" />
+                        <BoxView
+                            HeightRequest="2"
+                            BackgroundColor="#ff6b35"
+                            HorizontalOptions="Fill"
+                            Opacity="0.6" />
+                    </VerticalStackLayout>
+
+                    <!-- Resumen de Encargos -->
+                    <HorizontalStackLayout
+                        HorizontalOptions="Center"
+                        Spacing="20">
+                        <VerticalStackLayout Spacing="3">
+                            <Label
+                                Text="TOTAL PERÍODO"
+                                FontSize="12"
+                                TextColor="#7d7c7c"
+                                HorizontalOptions="Center" />
+                            <Label
+                                x:Name="EncargosPeriodoLabel"
+                                FontAttributes="Bold"
+                                FontSize="16"
+                                TextColor="#ff6b35"
+                                HorizontalOptions="Center" />
+                        </VerticalStackLayout>
+                    </HorizontalStackLayout>
+
+                    <!-- Gráfico de Encargos -->
+                    <microcharts:ChartView
+                        x:Name="EncargosChart"
+                        BackgroundColor="#2a2a2a"
+                        HeightRequest="220" />
+                </VerticalStackLayout>
+            </Frame>
+
+            <!--  SECCIÓN VENTAS COMPLETA  -->
+            <Frame
+                Padding="20"
+                BackgroundColor="#2a2a2a"
+                CornerRadius="17"
+                HasShadow="True">
+                <VerticalStackLayout Spacing="15">
+                    <!-- Encabezado de Ventas -->
+                    <VerticalStackLayout Spacing="8">
+                        <Label
+                            FontAttributes="Bold"
+                            FontSize="18"
+                            HorizontalOptions="Center"
+                            Text="💵​ ANÁLISIS DE VENTAS"
+                            TextColor="#2e9449" />
+                        <BoxView
+                            HeightRequest="2"
+                            BackgroundColor="#2e9449"
+                            HorizontalOptions="Fill"
+                            Opacity="0.6" />
+                    </VerticalStackLayout>
+
+                    <!-- Resumen de Ventas -->
+                    <HorizontalStackLayout
+                        HorizontalOptions="Center"
+                        Spacing="20">
+                        <VerticalStackLayout Spacing="3">
+                            <Label
+                                Text="TOTAL PERÍODO"
+                                FontSize="12"
+                                TextColor="#7d7c7c"
+                                HorizontalOptions="Center" />
+                            <Label
+                                x:Name="VentasPeriodoLabel"
+                                FontAttributes="Bold"
+                                FontSize="16"
+                                TextColor="#2e9449"
+                                HorizontalOptions="Center" />
+                        </VerticalStackLayout>
+                    </HorizontalStackLayout>
+
+                    <!-- Gráfico de Ventas -->
+                    <microcharts:ChartView
+                        x:Name="VentasChart"
                         BackgroundColor="#2a2a2a"
                         HeightRequest="220" />
                 </VerticalStackLayout>
@@ -266,8 +237,8 @@
                     </VerticalStackLayout>
 
                     <!-- Resumen de Ganancias -->
-                    <HorizontalStackLayout 
-                        HorizontalOptions="Center" 
+                    <HorizontalStackLayout
+                        HorizontalOptions="Center"
                         Spacing="20">
                         <VerticalStackLayout Spacing="3">
                             <Label
