@@ -4,119 +4,228 @@
     xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
     xmlns:local="clr-namespace:Mercader"
-    Title="Ventas"
-    BackgroundColor="#1e1e1e">
-    <!--  Fondo oscuro para combinar con MainPage  -->
+    Title="💵 Registro de Ventas"
+    BackgroundColor="#0f0f0f">
 
-    <ScrollView>
-        <VerticalStackLayout
-            Margin="10"
-            Padding="10"
-            Spacing="15">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
 
-            <!--  Encabezados de las columnas  -->
-            <Frame
-                Padding="10"
-                BackgroundColor="#2a2a2a"
-                CornerRadius="8"
-                HasShadow="True">
-                <Grid>
+        <!-- Header con título y estadísticas -->
+        <Frame
+            Grid.Row="0"
+            Margin="15,10,15,5"
+            Padding="20"
+            BackgroundColor="#1a1a1a"
+            BorderColor="#333333"
+            CornerRadius="12"
+            HasShadow="True">
+
+            <StackLayout Spacing="15">
+
+
+
+                <!-- Encabezados de columnas mejorados -->
+                <Grid Margin="0,5">
                     <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="*" />
-                        <ColumnDefinition Width="*" />
-                        <ColumnDefinition Width="*" />
-                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="2*" />
+                        <ColumnDefinition Width="1.2*" />
+                        <ColumnDefinition Width="1*" />
+                        <ColumnDefinition Width="1.3*" />
                     </Grid.ColumnDefinitions>
-                    <Label
-                        Grid.Column="0"
-                        FontAttributes="Bold"
-                        HorizontalTextAlignment="Center"
-                        Text="Descripción"
-                        TextColor="#cccccc" />
-                    <Label
-                        Grid.Column="1"
-                        FontAttributes="Bold"
-                        HorizontalTextAlignment="Center"
-                        Text="Precio"
-                        TextColor="#cccccc" />
-                    <Label
-                        Grid.Column="2"
-                        FontAttributes="Bold"
-                        HorizontalTextAlignment="Center"
-                        Text="Cantidad"
-                        TextColor="#cccccc" />
-                    <Label
-                        Grid.Column="3"
-                        FontAttributes="Bold"
-                        HorizontalTextAlignment="Center"
-                        Text="Fecha"
-                        TextColor="#cccccc" />
+
+                    <StackLayout Grid.Column="0" HorizontalOptions="Center">
+                        <Label
+                            FontAttributes="Bold"
+                            FontSize="14"
+                            Text="📋 PRODUCTO"
+                            TextColor="#4CAF50"
+                            HorizontalTextAlignment="Center" />
+                    </StackLayout>
+
+                    <StackLayout Grid.Column="1" HorizontalOptions="Center">
+                        <Label
+                            FontAttributes="Bold"
+                            FontSize="14"
+                            Text="💰 PRECIO"
+                            TextColor="#2196F3"
+                            HorizontalTextAlignment="Center" />
+                    </StackLayout>
+
+                    <StackLayout Grid.Column="2" HorizontalOptions="Center">
+                        <Label
+                            FontAttributes="Bold"
+                            FontSize="14"
+                            Text="📦 CANT."
+                            TextColor="#FF9800"
+                            HorizontalTextAlignment="Center" />
+                    </StackLayout>
+
+                    <StackLayout Grid.Column="3" HorizontalOptions="Center">
+                        <Label
+                            FontAttributes="Bold"
+                            FontSize="14"
+                            Text="📅 FECHA"
+                            TextColor="#9C27B0"
+                            HorizontalTextAlignment="Center" />
+                    </StackLayout>
                 </Grid>
-            </Frame>
+            </StackLayout>
+        </Frame>
 
-            <!--  Lista de ventas  -->
-            <CollectionView
-                x:Name="VentasCollectionView"
-                SelectionMode="None">
+        <!-- Lista de ventas -->
+        <ScrollView Grid.Row="1" Margin="10,0">
+            <StackLayout Spacing="8">
+                <CollectionView
+                    x:Name="VentasCollectionView"
+                    SelectionMode="None"
+                    ItemSizingStrategy="MeasureAllItems">
 
-                <CollectionView.ItemTemplate>
-                    <DataTemplate>
-                        <SwipeView>
-                            <SwipeView.RightItems>
-                                <SwipeItems Mode="Reveal">
-                                    <SwipeItem
-                                        BackgroundColor="#4CAF50"
-                                        Invoked="OnEditSwipeItemInvoked"
-                                        Text="✏️" />
-                                    <SwipeItem
-                                        BackgroundColor="#FF5722"
-                                        Invoked="OnDeleteSwipeItemInvoked"
-                                        Text="🗑️" />
-                                </SwipeItems>
-                            </SwipeView.RightItems>
+                    <CollectionView.ItemTemplate>
+                        <DataTemplate>
+                            <SwipeView Margin="5,2">
+                                <SwipeView.RightItems>
+                                    <SwipeItems Mode="Reveal">
+                                        <SwipeItem
+                                            BackgroundColor="#4CAF50"
+                                            Invoked="OnEditSwipeItemInvoked"
+                                            Text="✏️ Editar" />
+                                        <SwipeItem
+                                            BackgroundColor="#F44336"
+                                            Invoked="OnDeleteSwipeItemInvoked"
+                                            Text="🗑️ Eliminar" />
+                                    </SwipeItems>
+                                </SwipeView.RightItems>
 
-                            <!--  Fila de la lista con TapGestureRecognizer para navegación  -->
-                            <Frame
-                                Padding="10"
-                                BackgroundColor="#2a2a2a"
-                                CornerRadius="8"
-                                HasShadow="False">
-                                <Frame.GestureRecognizers>
-                                    <TapGestureRecognizer Tapped="OnItemTapped" />
-                                </Frame.GestureRecognizers>
-                                <Grid>
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="*" />
-                                        <ColumnDefinition Width="*" />
-                                        <ColumnDefinition Width="*" />
-                                        <ColumnDefinition Width="*" />
-                                    </Grid.ColumnDefinitions>
-                                    <Label
-                                        Grid.Column="0"
-                                        HorizontalTextAlignment="Center"
-                                        Text="{Binding Descripcion}"
-                                        TextColor="#cccccc" />
-                                    <Label
-                                        Grid.Column="1"
-                                        HorizontalTextAlignment="Center"
-                                        Text="{Binding Precio, StringFormat='${0:F2}'}"
-                                        TextColor="#cccccc" />
-                                    <Label
-                                        Grid.Column="2"
-                                        HorizontalTextAlignment="Center"
-                                        Text="{Binding Cantidad}"
-                                        TextColor="#cccccc" />
-                                    <Label
-                                        Grid.Column="3"
-                                        HorizontalTextAlignment="Center"
-                                        Text="{Binding Fecha, StringFormat='{0:dd/MM/yy}'}"
-                                        TextColor="#cccccc" />
-                                </Grid>
-                            </Frame>
-                        </SwipeView>
-                    </DataTemplate>
-                </CollectionView.ItemTemplate>
-            </CollectionView>
-        </VerticalStackLayout>
-    </ScrollView>
+                                <!-- Tarjeta de venta mejorada -->
+                                <Frame
+                                    Padding="15"
+                                    BackgroundColor="#1e1e1e"
+                                    BorderColor="#333333"
+                                    CornerRadius="10"
+                                    HasShadow="True">
+
+                                    <Frame.GestureRecognizers>
+                                        <TapGestureRecognizer Tapped="OnItemTapped" />
+                                    </Frame.GestureRecognizers>
+
+                                    <!-- Efecto visual al tocar -->
+                                    <Frame.Triggers>
+                                        <Trigger TargetType="Frame" Property="IsEnabled" Value="True">
+                                            <Setter Property="Opacity" Value="1" />
+                                        </Trigger>
+                                    </Frame.Triggers>
+
+                                    <Grid>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="2*" />
+                                            <ColumnDefinition Width="1.2*" />
+                                            <ColumnDefinition Width="1*" />
+                                            <ColumnDefinition Width="1.3*" />
+                                        </Grid.ColumnDefinitions>
+
+                                        <!-- Descripción del producto -->
+                                        <StackLayout Grid.Column="0" VerticalOptions="Center">
+                                            <Label
+                                                FontAttributes="Bold"
+                                                FontSize="16"
+                                                LineBreakMode="WordWrap"
+                                                MaxLines="2"
+                                                Text="{Binding Descripcion}"
+                                                TextColor="#ffffff"
+                                                VerticalTextAlignment="Center" />
+                                        </StackLayout>
+
+                                        <!-- Precio con formato mejorado -->
+                                        <StackLayout Grid.Column="1" VerticalOptions="Center" HorizontalOptions="Center">
+                                            <Frame
+                                                Padding="8,4"
+                                                BackgroundColor="#2196F3"
+                                                BorderColor="#1976D2"
+                                                CornerRadius="8"
+                                                HasShadow="False">
+                                                <Label
+                                                    FontAttributes="Bold"
+                                                    FontSize="14"
+                                                    Text="{Binding Precio, StringFormat='${0:F2}'}"
+                                                    TextColor="#ffffff"
+                                                    HorizontalTextAlignment="Center" />
+                                            </Frame>
+                                        </StackLayout>
+
+                                        <!-- Cantidad con badge -->
+                                        <StackLayout Grid.Column="2" VerticalOptions="Center" HorizontalOptions="Center">
+                                            <Frame
+                                                Padding="8,4"
+                                                BackgroundColor="#FF9800"
+                                                BorderColor="#F57C00"
+                                                CornerRadius="15"
+                                                HasShadow="False">
+                                                <Label
+                                                    FontAttributes="Bold"
+                                                    FontSize="14"
+                                                    Text="{Binding Cantidad}"
+                                                    TextColor="#ffffff"
+                                                    HorizontalTextAlignment="Center" />
+                                            </Frame>
+                                        </StackLayout>
+
+                                        <!-- Fecha formateada -->
+                                        <StackLayout Grid.Column="3" VerticalOptions="Center" HorizontalOptions="Center">
+                                            <StackLayout Spacing="2">
+                                                <Label
+                                                    FontSize="13"
+                                                    FontAttributes="Bold"
+                                                    Text="{Binding Fecha, StringFormat='{0:dd/MM}'}"
+                                                    TextColor="#9C27B0"
+                                                    HorizontalTextAlignment="Center" />
+                                                <Label
+                                                    FontSize="11"
+                                                    Text="{Binding Fecha, StringFormat='{0:yyyy}'}"
+                                                    TextColor="#666666"
+                                                    HorizontalTextAlignment="Center" />
+                                            </StackLayout>
+                                        </StackLayout>
+                                    </Grid>
+                                </Frame>
+                            </SwipeView>
+                        </DataTemplate>
+                    </CollectionView.ItemTemplate>
+
+                    <!-- Mensaje cuando no hay ventas -->
+                    <CollectionView.EmptyView>
+                        <StackLayout
+                            Padding="20"
+                            VerticalOptions="Center"
+                            HorizontalOptions="Center"
+                            Spacing="15">
+
+                            <Label
+                                FontSize="48"
+                                Text="📊"
+                                HorizontalTextAlignment="Center" />
+
+                            <Label
+                                FontAttributes="Bold"
+                                FontSize="18"
+                                Text="No hay ventas registradas"
+                                TextColor="#cccccc"
+                                HorizontalTextAlignment="Center" />
+
+                            <Label
+                                FontSize="14"
+                                Text="Las ventas aparecerán aquí cuando se registren"
+                                TextColor="#888888"
+                                HorizontalTextAlignment="Center" />
+                        </StackLayout>
+                    </CollectionView.EmptyView>
+                </CollectionView>
+
+                <!-- Espaciado al final -->
+                <BoxView HeightRequest="20" BackgroundColor="Transparent" />
+            </StackLayout>
+        </ScrollView>
+    </Grid>
 </ContentPage>

@@ -1,107 +1,277 @@
-namespace Mercader;
+﻿using Microsoft.Maui.Controls;
+using System;
+using System.Threading.Tasks;
 
-public partial class Venta : ContentPage
+namespace Mercader
 {
-    public Venta()
+    public partial class Venta : ContentPage
     {
-        InitializeComponent();
-    }
+        private bool _isLoading = false;
 
-    protected override void OnAppearing()
-    {
-        base.OnAppearing();
-        CargarVentas();
-    }
-
-    private async void CargarVentas()
-    {
-        try
+        public Venta()
         {
-            var ventas = await App.DataRepo.GetVentasAsync();
-            VentasCollectionView.ItemsSource = ventas;
+            InitializeComponent();
+            ConfigurarPagina();
         }
-        catch (Exception ex)
+
+        /// <summary>
+        /// Configuración inicial de la página
+        /// </summary>
+        private void ConfigurarPagina()
         {
-            Console.WriteLine($"Error al cargar las ventas: {ex.Message}");
+            // Configurar el título de la página
+            Title = "📊 Ventas";
+
+            // Aplicar animación de entrada suave
+            this.Opacity = 0;
+            this.FadeTo(1, 300);
         }
-    }
 
-    protected override bool OnBackButtonPressed()
-    {
-        // Devolver true previene la acci�n del bot�n atr�s
-        return true;
-    }
-
-    // M�todo para manejar el tap y navegar a DetalleVenta
-    private async void OnItemTapped(object sender, EventArgs e)
-    {
-        var frame = sender as Frame;
-        var venta = frame?.BindingContext as Ventas;
-        if (venta != null)
+        protected override async void OnAppearing()
         {
+            base.OnAppearing();
+            await CargarVentasConAnimacion();
+        }
+
+        /// <summary>
+        /// Carga las ventas con animación visual
+        /// </summary>
+        private async Task CargarVentasConAnimacion()
+        {
+            if (_isLoading) return;
+
+            _isLoading = true;
+
             try
             {
-                await Navigation.PushAsync(new DetalleVenta(venta));
+                // Mostrar indicador de carga visual
+                await MostrarIndicadorCarga(true);
+
+                // Cargar datos
+                await CargarVentas();
+
+                // Animar la aparición de la lista
+                VentasCollectionView.Opacity = 0;
+                await VentasCollectionView.FadeTo(1, 500);
             }
             catch (Exception ex)
             {
-                await DisplayAlert("Error", $"Error al abrir los detalles de la venta: {ex.Message}", "OK");
+                await MostrarError("Error al cargar ventas", ex.Message);
+            }
+            finally
+            {
+                await MostrarIndicadorCarga(false);
+                _isLoading = false;
             }
         }
-    }
 
-    // M�todos para los SwipeItems
-    private async void OnEditSwipeItemInvoked(object sender, EventArgs e)
-    {
-        var swipeItem = sender as SwipeItem;
-        var item = swipeItem?.BindingContext;
-        if (item is Ventas venta)
-        {
-            await EditarVenta(venta);
-        }
-    }
-
-    private async void OnDeleteSwipeItemInvoked(object sender, EventArgs e)
-    {
-        var swipeItem = sender as SwipeItem;
-        var item = swipeItem?.BindingContext;
-        if (item is Ventas venta)
-        {
-            await EliminarVenta(venta);
-        }
-    }
-
-    // M�todos auxiliares
-    private async Task EditarVenta(Ventas venta)
-    {
-        try
-        {
-            await Navigation.PushAsync(new EditarVentaPage(venta));
-        }
-        catch (Exception ex)
-        {
-            await DisplayAlert("Error", $"Error al abrir la p�gina de edici�n: {ex.Message}", "OK");
-        }
-    }
-
-    private async Task EliminarVenta(Ventas venta)
-    {
-        bool confirm = await DisplayAlert("Confirmaci�n",
-            $"�Est�s seguro de eliminar la venta \"{venta.Descripcion}\" del d�a {venta.Fecha:dd/MM/yyyy}?",
-            "S�", "No");
-
-        if (confirm)
+        /// <summary>
+        /// Carga las ventas desde la base de datos
+        /// </summary>
+        private async Task CargarVentas()
         {
             try
             {
-                await App.DataRepo.DeleteVentaAsync(venta);
-                await DisplayAlert("�xito", "Venta eliminada correctamente", "OK");
-                CargarVentas();
+                var ventas = await App.DataRepo.GetVentasAsync();
+
+                // Verificar si hay datos
+                if (ventas?.Count > 0)
+                {
+                    VentasCollectionView.ItemsSource = ventas;
+                    Console.WriteLine($"✅ Se cargaron {ventas.Count} ventas correctamente");
+                }
+                else
+                {
+                    Console.WriteLine("ℹ️ No se encontraron ventas en la base de datos");
+                }
             }
             catch (Exception ex)
             {
-                await DisplayAlert("Error", $"Error al eliminar la venta: {ex.Message}", "OK");
+                Console.WriteLine($"❌ Error al cargar las ventas: {ex.Message}");
+                throw; // Re-lanzar para manejo en nivel superior
             }
         }
+
+        /// <summary>
+        /// Muestra u oculta un indicador de carga
+        /// </summary>
+        private async Task MostrarIndicadorCarga(bool mostrar)
+        {
+            // Aquí podrías agregar un ActivityIndicator si lo deseas
+            await Task.Delay(mostrar ? 100 : 200);
+        }
+
+        protected override bool OnBackButtonPressed()
+        {
+            // Prevenir navegación hacia atrás
+            return true;
+        }
+
+        /// <summary>
+        /// Maneja el tap en un item para navegar a los detalles
+        /// </summary>
+        private async void OnItemTapped(object sender, EventArgs e)
+        {
+            if (_isLoading) return;
+
+            try
+            {
+                var frame = sender as Frame;
+
+                // Verificar que el frame no sea nulo antes de usarlo
+                if (frame != null)
+                {
+                    var venta = frame.BindingContext as Ventas;
+
+                    if (venta != null)
+                    {
+                        // Efecto visual de selección
+                        await frame.ScaleTo(0.95, 100);
+                        await frame.ScaleTo(1, 100);
+
+                        // Navegar a detalles
+                        await Navigation.PushAsync(new DetalleVenta(venta));
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                await MostrarError("Error de navegación",
+                    $"No se pudo abrir los detalles de la venta: {ex.Message}");
+            }
+        }
+
+        /// <summary>
+        /// Maneja la acción de editar desde el swipe
+        /// </summary>
+        private async void OnEditSwipeItemInvoked(object sender, EventArgs e)
+        {
+            if (_isLoading) return;
+
+            try
+            {
+                var swipeItem = sender as SwipeItem;
+                var venta = swipeItem?.BindingContext as Ventas;
+
+                if (venta != null)
+                {
+                    await EditarVenta(venta);
+                }
+            }
+            catch (Exception ex)
+            {
+                await MostrarError("Error de edición", ex.Message);
+            }
+        }
+
+        /// <summary>
+        /// Maneja la acción de eliminar desde el swipe
+        /// </summary>
+        private async void OnDeleteSwipeItemInvoked(object sender, EventArgs e)
+        {
+            if (_isLoading) return;
+
+            try
+            {
+                var swipeItem = sender as SwipeItem;
+                var venta = swipeItem?.BindingContext as Ventas;
+
+                if (venta != null)
+                {
+                    await EliminarVenta(venta);
+                }
+            }
+            catch (Exception ex)
+            {
+                await MostrarError("Error de eliminación", ex.Message);
+            }
+        }
+
+       
+
+        #region Métodos de Negocio
+
+        /// <summary>
+        /// Navega a la página de edición de venta
+        /// </summary>
+        private async Task EditarVenta(Ventas venta)
+        {
+            try
+            {
+                await Navigation.PushAsync(new EditarVentaPage(venta));
+            }
+            catch (Exception ex)
+            {
+                await MostrarError("Error al editar",
+                    $"No se pudo abrir la página de edición: {ex.Message}");
+            }
+        }
+
+        /// <summary>
+        /// Elimina una venta con confirmación del usuario
+        /// </summary>
+        private async Task EliminarVenta(Ventas venta)
+        {
+            try
+            {
+                // Confirmación mejorada con más información
+                string mensaje = $"¿Estás seguro de eliminar esta venta?\n\n" +
+                               $"📋 Producto: {venta.Descripcion}\n" +
+                               $"💰 Precio: ${venta.Precio:F2}\n" +
+                               $"📦 Cantidad: {venta.Cantidad}\n" +
+                               $"📅 Fecha: {venta.Fecha:dd/MM/yyyy}\n\n" +
+                               $"⚠️ Esta acción no se puede deshacer.";
+
+                bool confirmar = await DisplayAlert("🗑️ Eliminar Venta",
+                    mensaje, "Sí, eliminar", "Cancelar");
+
+                if (confirmar)
+                {
+                    _isLoading = true;
+
+                    // Eliminar de la base de datos
+                    await App.DataRepo.DeleteVentaAsync(venta);
+
+                    // Mostrar mensaje de éxito
+                    await DisplayAlert("✅ Éxito",
+                        "La venta se eliminó correctamente", "OK");
+
+                    // Recargar la lista
+                    await CargarVentas();
+                }
+            }
+            catch (Exception ex)
+            {
+                await MostrarError("Error al eliminar",
+                    $"No se pudo eliminar la venta: {ex.Message}");
+            }
+            finally
+            {
+                _isLoading = false;
+            }
+        }
+
+        #endregion
+
+        #region Métodos de Utilidad
+
+        /// <summary>
+        /// Muestra un mensaje de error consistente
+        /// </summary>
+        private async Task MostrarError(string titulo, string mensaje)
+        {
+            await DisplayAlert($"❌ {titulo}", mensaje, "OK");
+            Console.WriteLine($"❌ {titulo}: {mensaje}");
+        }
+
+        /// <summary>
+        /// Refresca la lista de ventas (método público para uso externo)
+        /// </summary>
+        public async Task RefrescarVentas()
+        {
+            await CargarVentasConAnimacion();
+        }
+
+        #endregion
     }
 }
