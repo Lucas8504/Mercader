@@ -1,107 +1,275 @@
-namespace Mercader;
+﻿using Microsoft.Maui.Controls;
+using System;
+using System.Threading.Tasks;
 
-public partial class Gastos : ContentPage
+namespace Mercader
 {
-    public Gastos()
+    public partial class Gastos : ContentPage
     {
-        InitializeComponent();
-    }
+        private bool _isLoading = false;
 
-    protected override void OnAppearing()
-    {
-        base.OnAppearing();
-        CargarGastos();
-    }
-
-    private async void CargarGastos()
-    {
-        try
+        public Gastos()
         {
-            var gastos = await App.DataRepo.GetGastosAsync();
-            GastosCollectionView.ItemsSource = gastos;
+            InitializeComponent();
+            ConfigurarPagina();
         }
-        catch (Exception ex)
+
+        /// <summary>
+        /// Configuración inicial de la página
+        /// </summary>
+        private void ConfigurarPagina()
         {
-            Console.WriteLine($"Error al cargar los gastos: {ex.Message}");
+            // Configurar el título de la página
+            Title = "💸 Gastos";
+
+            // Aplicar animación de entrada suave
+            this.Opacity = 0;
+            this.FadeTo(1, 300);
         }
-    }
 
-    protected override bool OnBackButtonPressed()
-    {
-        // Devolver true previene la acci�n del bot�n atr�s
-        return true;
-    }
-
-    // M�todo actualizado para manejar el tap y navegar a DetalleGasto
-    private async void OnItemTapped(object sender, EventArgs e)
-    {
-        var frame = sender as Frame;
-        var gasto = frame?.BindingContext as Gasto;
-        if (gasto != null)
+        protected override async void OnAppearing()
         {
+            base.OnAppearing();
+            await CargarGastosConAnimacion();
+        }
+
+        /// <summary>
+        /// Carga los gastos con animación visual
+        /// </summary>
+        private async Task CargarGastosConAnimacion()
+        {
+            if (_isLoading) return;
+
+            _isLoading = true;
+
             try
             {
-                await Navigation.PushAsync(new DetalleGasto(gasto));
+                // Mostrar indicador de carga visual
+                await MostrarIndicadorCarga(true);
+
+                // Cargar datos
+                await CargarGastos();
+
+                // Animar la aparición de la lista
+                GastosCollectionView.Opacity = 0;
+                await GastosCollectionView.FadeTo(1, 500);
             }
             catch (Exception ex)
             {
-                await DisplayAlert("Error", $"Error al abrir los detalles del gasto: {ex.Message}", "OK");
+                await MostrarError("Error al cargar gastos", ex.Message);
+            }
+            finally
+            {
+                await MostrarIndicadorCarga(false);
+                _isLoading = false;
             }
         }
-    }
 
-    // M�todos para los SwipeItems
-    private async void OnEditSwipeItemInvoked(object sender, EventArgs e)
-    {
-        var swipeItem = sender as SwipeItem;
-        var item = swipeItem?.BindingContext;
-        if (item is Gasto gasto)
-        {
-            await EditarGasto(gasto);
-        }
-    }
-
-    private async void OnDeleteSwipeItemInvoked(object sender, EventArgs e)
-    {
-        var swipeItem = sender as SwipeItem;
-        var item = swipeItem?.BindingContext;
-        if (item is Gasto gasto)
-        {
-            await EliminarGasto(gasto);
-        }
-    }
-
-    // M�todos auxiliares
-    private async Task EditarGasto(Gasto gasto)
-    {
-        try
-        {
-            await Navigation.PushAsync(new EditarGastoPage(gasto));
-        }
-        catch (Exception ex)
-        {
-            await DisplayAlert("Error", $"Error al abrir la p�gina de edici�n: {ex.Message}", "OK");
-        }
-    }
-
-    private async Task EliminarGasto(Gasto gasto)
-    {
-        bool confirm = await DisplayAlert("Confirmaci�n",
-            $"�Est�s seguro de eliminar el gasto \"{gasto.Descripcion}\" del d�a {gasto.Fecha:dd/MM/yyyy}?",
-            "S�", "No");
-
-        if (confirm)
+        /// <summary>
+        /// Carga los gastos desde la base de datos
+        /// </summary>
+        private async Task CargarGastos()
         {
             try
             {
-                await App.DataRepo.DeleteGastoAsync(gasto);
-                await DisplayAlert("�xito", "Gasto eliminado correctamente", "OK");
-                CargarGastos();
+                var gastos = await App.DataRepo.GetGastosAsync();
+
+                // Verificar si hay datos
+                if (gastos?.Count > 0)
+                {
+                    GastosCollectionView.ItemsSource = gastos;
+                    Console.WriteLine($"✅ Se cargaron {gastos.Count} gastos correctamente");
+                }
+                else
+                {
+                    Console.WriteLine("ℹ️ No se encontraron gastos en la base de datos");
+                }
             }
             catch (Exception ex)
             {
-                await DisplayAlert("Error", $"Error al eliminar el gasto: {ex.Message}", "OK");
+                Console.WriteLine($"❌ Error al cargar los gastos: {ex.Message}");
+                throw; // Re-lanzar para manejo en nivel superior
             }
         }
+
+        /// <summary>
+        /// Muestra u oculta un indicador de carga
+        /// </summary>
+        private async Task MostrarIndicadorCarga(bool mostrar)
+        {
+            // Aquí podrías agregar un ActivityIndicator si lo deseas
+            await Task.Delay(mostrar ? 100 : 200);
+        }
+
+        protected override bool OnBackButtonPressed()
+        {
+            // Prevenir navegación hacia atrás
+            return true;
+        }
+
+        /// <summary>
+        /// Maneja el tap en un item para navegar a los detalles
+        /// </summary>
+        private async void OnItemTapped(object sender, EventArgs e)
+        {
+            if (_isLoading) return;
+
+            try
+            {
+                var frame = sender as Frame;
+
+                // Verificar que el frame no sea nulo antes de usarlo
+                if (frame != null)
+                {
+                    var gasto = frame.BindingContext as Gasto;
+
+                    if (gasto != null)
+                    {
+                        // Efecto visual de selección
+                        await frame.ScaleTo(0.95, 100);
+                        await frame.ScaleTo(1, 100);
+
+                        // Navegar a detalles
+                        await Navigation.PushAsync(new DetalleGasto(gasto));
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                await MostrarError("Error de navegación",
+                    $"No se pudo abrir los detalles del gasto: {ex.Message}");
+            }
+        }
+
+        /// <summary>
+        /// Maneja la acción de editar desde el swipe
+        /// </summary>
+        private async void OnEditSwipeItemInvoked(object sender, EventArgs e)
+        {
+            if (_isLoading) return;
+
+            try
+            {
+                var swipeItem = sender as SwipeItem;
+                var gasto = swipeItem?.BindingContext as Gasto;
+
+                if (gasto != null)
+                {
+                    await EditarGasto(gasto);
+                }
+            }
+            catch (Exception ex)
+            {
+                await MostrarError("Error de edición", ex.Message);
+            }
+        }
+
+        /// <summary>
+        /// Maneja la acción de eliminar desde el swipe
+        /// </summary>
+        private async void OnDeleteSwipeItemInvoked(object sender, EventArgs e)
+        {
+            if (_isLoading) return;
+
+            try
+            {
+                var swipeItem = sender as SwipeItem;
+                var gasto = swipeItem?.BindingContext as Gasto;
+
+                if (gasto != null)
+                {
+                    await EliminarGasto(gasto);
+                }
+            }
+            catch (Exception ex)
+            {
+                await MostrarError("Error de eliminación", ex.Message);
+            }
+        }
+
+        #region Métodos de Negocio
+
+        /// <summary>
+        /// Navega a la página de edición de gasto
+        /// </summary>
+        private async Task EditarGasto(Gasto gasto)
+        {
+            try
+            {
+                await Navigation.PushAsync(new EditarGastoPage(gasto));
+            }
+            catch (Exception ex)
+            {
+                await MostrarError("Error al editar",
+                    $"No se pudo abrir la página de edición: {ex.Message}");
+            }
+        }
+
+        /// <summary>
+        /// Elimina un gasto con confirmación del usuario
+        /// </summary>
+        private async Task EliminarGasto(Gasto gasto)
+        {
+            try
+            {
+                // Confirmación mejorada con más información
+                string mensaje = $"¿Estás seguro de eliminar este gasto?\n\n" +
+                               $"💸 Descripción: {gasto.Descripcion}\n" +
+                               $"💰 Monto: ${gasto.Monto:F2}\n" +
+                               $"📦 Cantidad: {gasto.Cantidad}\n" +
+                               $"📅 Fecha: {gasto.Fecha:dd/MM/yyyy}\n\n" +
+                               $"⚠️ Esta acción no se puede deshacer.";
+
+                bool confirmar = await DisplayAlert("🗑️ Eliminar Gasto",
+                    mensaje, "Sí, eliminar", "Cancelar");
+
+                if (confirmar)
+                {
+                    _isLoading = true;
+
+                    // Eliminar de la base de datos
+                    await App.DataRepo.DeleteGastoAsync(gasto);
+
+                    // Mostrar mensaje de éxito
+                    await DisplayAlert("✅ Éxito",
+                        "El gasto se eliminó correctamente", "OK");
+
+                    // Recargar la lista
+                    await CargarGastos();
+                }
+            }
+            catch (Exception ex)
+            {
+                await MostrarError("Error al eliminar",
+                    $"No se pudo eliminar el gasto: {ex.Message}");
+            }
+            finally
+            {
+                _isLoading = false;
+            }
+        }
+
+        #endregion
+
+        #region Métodos de Utilidad
+
+        /// <summary>
+        /// Muestra un mensaje de error consistente
+        /// </summary>
+        private async Task MostrarError(string titulo, string mensaje)
+        {
+            await DisplayAlert($"❌ {titulo}", mensaje, "OK");
+            Console.WriteLine($"❌ {titulo}: {mensaje}");
+        }
+
+        /// <summary>
+        /// Refresca la lista de gastos (método público para uso externo)
+        /// </summary>
+        public async Task RefrescarGastos()
+        {
+            await CargarGastosConAnimacion();
+        }
+
+        #endregion
     }
 }

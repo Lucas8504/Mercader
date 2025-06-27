@@ -1,150 +1,369 @@
-namespace Mercader;
+﻿using Microsoft.Maui.Controls;
+using System;
+using System.Threading.Tasks;
 
-public partial class Encargos : ContentPage
+namespace Mercader
 {
-    public Encargos()
+    public partial class Encargos : ContentPage
     {
-        InitializeComponent();
-    }
+        private bool _isLoading = false;
 
-    protected override void OnAppearing()
-    {
-        base.OnAppearing();
-        CargarEncargos();
-    }
-
-    private async void CargarEncargos()
-    {
-        try
+        public Encargos()
         {
-            var encargos = await App.DataRepo.GetEncargosAsync();
-            EncargosCollectionView.ItemsSource = encargos;
+            InitializeComponent();
+            ConfigurarPagina();
         }
-        catch (Exception ex)
+
+        /// <summary>
+        /// Configuración inicial de la página
+        /// </summary>
+        private void ConfigurarPagina()
         {
-            Console.WriteLine($"Error al cargar los encargos: {ex.Message}");
+            // Configurar el título de la página
+            Title = "📋 Encargos";
+
+            // Aplicar animación de entrada suave
+            this.Opacity = 0;
+            this.FadeTo(1, 300);
         }
-    }
 
-    protected override bool OnBackButtonPressed()
-    {
-        // Devolver true previene la acci�n del bot�n atr�s
-        return true;
-    }
-
-
-    // M�todo para manejar el tap en lugar de selecci�n
-    private async void OnItemTapped(object sender, EventArgs e)
-    {
-        var frame = sender as Frame;
-        var encargo = frame?.BindingContext as Encargo;
-
-        if (encargo != null)
+        protected override async void OnAppearing()
         {
-            // Navegar a la p�gina de detalles
-            await Navigation.PushAsync(new DetalleEncargo(encargo));
+            base.OnAppearing();
+            await CargarEncargosConAnimacion();
         }
-    }
 
-    // M�todos para los SwipeItems
-    private async void OnEditSwipeItemInvoked(object sender, EventArgs e)
-    {
-        var swipeItem = sender as SwipeItem;
-        var item = swipeItem?.BindingContext;
-        if (item is Encargo encargo)
+        /// <summary>
+        /// Carga los encargos con animación visual
+        /// </summary>
+        private async Task CargarEncargosConAnimacion()
         {
-            await EditarEncargo(encargo);
-        }
-    }
+            if (_isLoading) return;
 
-    private async void OnDeleteSwipeItemInvoked(object sender, EventArgs e)
-    {
-        var swipeItem = sender as SwipeItem;
-        var item = swipeItem?.BindingContext;
-        if (item is Encargo encargo)
-        {
-            await EliminarEncargo(encargo);
-        }
-    }
+            _isLoading = true;
 
-    private async void OnDetallesSwipeItemInvoked(object sender, EventArgs e)
-    {
-        var swipeItem = sender as SwipeItem;
-        var item = swipeItem?.BindingContext;
-        if (item is Encargo encargo)
-        {
-            await MostrarDetalles(encargo);
-        }
-    }
-
-    // M�todos auxiliares
-    private async Task EditarEncargo(Encargo encargo)
-    {
-        try
-        {
-            await Navigation.PushAsync(new EditarEncargoPage(encargo));
-        }
-        catch (Exception ex)
-        {
-            await DisplayAlert("Error", $"Error al abrir la p�gina de edici�n: {ex.Message}", "OK");
-        }
-    }
-
-    private async Task EliminarEncargo(Encargo encargo)
-    {
-        bool confirm = await DisplayAlert("Confirmaci�n", $"�Realmente deseas eliminar el encargo de \"{encargo.Nombre}\" hecho el d�a: {encargo.Fecha}?", "S�", "No");
-        if (confirm)
-        {
             try
             {
-                await App.DataRepo.DeleteEncargoAsync(encargo);
-                await DisplayAlert("�xito", "Encargo eliminado correctamente", "OK");
-                CargarEncargos();
+                // Mostrar indicador de carga visual
+                await MostrarIndicadorCarga(true);
+
+                // Cargar datos
+                await CargarEncargos();
+
+                // Animar la aparición de la lista
+                EncargosCollectionView.Opacity = 0;
+                await EncargosCollectionView.FadeTo(1, 500);
             }
             catch (Exception ex)
             {
-                await DisplayAlert("Error", $"Error al eliminar el encargo: {ex.Message}", "OK");
+                await MostrarError("Error al cargar encargos", ex.Message);
+            }
+            finally
+            {
+                await MostrarIndicadorCarga(false);
+                _isLoading = false;
             }
         }
-    }
 
-    // M�todo para mostrar detalles
-    private async Task MostrarDetalles(Encargo encargo)
-    {
-        try
-        {
-            await Navigation.PushAsync(new DetalleEncargo(encargo));
-        }
-        catch (Exception ex)
-        {
-            await DisplayAlert("Error", $"Error al abrir la p�gina de detalles: {ex.Message}", "OK");
-        }
-    }
-
-    private async Task ConcretarVenta(Encargo encargo)
-    {
-        bool confirm = await DisplayAlert("Confirmaci�n", $"�Realmente deseas concretar la venta de {encargo.Descripcion} para \"{encargo.Nombre}\" pedido el d�a: {encargo.Fecha}?", "S�", "No");
-        if (confirm)
+        /// <summary>
+        /// Carga los encargos desde la base de datos
+        /// </summary>
+        private async Task CargarEncargos()
         {
             try
             {
-                var venta = new Ventas
+                var encargos = await App.DataRepo.GetEncargosAsync();
+
+                // Verificar si hay datos
+                if (encargos?.Count > 0)
                 {
-                    Descripcion = encargo.Descripcion,
-                    Precio = encargo.Precio,
-                    Cantidad = encargo.Cantidad,
-                    Fecha = DateTime.Now
-                };
-
-                await App.DataRepo.SaveVentasAsync(venta);
-                await App.DataRepo.DeleteEncargoAsync(encargo);
-                await DisplayAlert("�xito", "Venta concretada correctamente", "OK");
-                CargarEncargos();
+                    EncargosCollectionView.ItemsSource = encargos;
+                    Console.WriteLine($"✅ Se cargaron {encargos.Count} encargos correctamente");
+                }
+                else
+                {
+                    Console.WriteLine("ℹ️ No se encontraron encargos en la base de datos");
+                }
             }
             catch (Exception ex)
             {
-                await DisplayAlert("Error", $"Error al concretar la venta: {ex.Message}", "OK");
+                Console.WriteLine($"❌ Error al cargar los encargos: {ex.Message}");
+                throw; // Re-lanzar para manejo en nivel superior
             }
         }
+
+        /// <summary>
+        /// Muestra u oculta un indicador de carga
+        /// </summary>
+        private async Task MostrarIndicadorCarga(bool mostrar)
+        {
+            // Aquí podrías agregar un ActivityIndicator si lo deseas
+            await Task.Delay(mostrar ? 100 : 200);
+        }
+
+        protected override bool OnBackButtonPressed()
+        {
+            // Prevenir navegación hacia atrás
+            return true;
+        }
+
+        /// <summary>
+        /// Maneja el tap en un item para navegar a los detalles
+        /// </summary>
+        private async void OnItemTapped(object sender, EventArgs e)
+        {
+            if (_isLoading) return;
+
+            try
+            {
+                var frame = sender as Frame;
+
+                // Verificar que el frame no sea nulo antes de usarlo
+                if (frame != null)
+                {
+                    var encargo = frame.BindingContext as Encargo;
+
+                    if (encargo != null)
+                    {
+                        // Efecto visual de selección
+                        await frame.ScaleTo(0.95, 100);
+                        await frame.ScaleTo(1, 100);
+
+                        // Navegar a detalles
+                        await Navigation.PushAsync(new DetalleEncargo(encargo));
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                await MostrarError("Error de navegación",
+                    $"No se pudo abrir los detalles del encargo: {ex.Message}");
+            }
+        }
+
+        /// <summary>
+        /// Maneja la acción de editar desde el swipe
+        /// </summary>
+        private async void OnEditSwipeItemInvoked(object sender, EventArgs e)
+        {
+            if (_isLoading) return;
+
+            try
+            {
+                var swipeItem = sender as SwipeItem;
+                var encargo = swipeItem?.BindingContext as Encargo;
+
+                if (encargo != null)
+                {
+                    await EditarEncargo(encargo);
+                }
+            }
+            catch (Exception ex)
+            {
+                await MostrarError("Error de edición", ex.Message);
+            }
+        }
+
+        /// <summary>
+        /// Maneja la acción de eliminar desde el swipe
+        /// </summary>
+        private async void OnDeleteSwipeItemInvoked(object sender, EventArgs e)
+        {
+            if (_isLoading) return;
+
+            try
+            {
+                var swipeItem = sender as SwipeItem;
+                var encargo = swipeItem?.BindingContext as Encargo;
+
+                if (encargo != null)
+                {
+                    await EliminarEncargo(encargo);
+                }
+            }
+            catch (Exception ex)
+            {
+                await MostrarError("Error de eliminación", ex.Message);
+            }
+        }
+
+        /// <summary>
+        /// Maneja la acción de ver detalles desde el swipe
+        /// </summary>
+        private async void OnDetallesSwipeItemInvoked(object sender, EventArgs e)
+        {
+            if (_isLoading) return;
+
+            try
+            {
+                var swipeItem = sender as SwipeItem;
+                var encargo = swipeItem?.BindingContext as Encargo;
+
+                if (encargo != null)
+                {
+                    await MostrarDetalles(encargo);
+                }
+            }
+            catch (Exception ex)
+            {
+                await MostrarError("Error al mostrar detalles", ex.Message);
+            }
+        }
+
+        #region Métodos de Negocio
+
+        /// <summary>
+        /// Navega a la página de edición de encargo
+        /// </summary>
+        private async Task EditarEncargo(Encargo encargo)
+        {
+            try
+            {
+                await Navigation.PushAsync(new EditarEncargoPage(encargo));
+            }
+            catch (Exception ex)
+            {
+                await MostrarError("Error al editar",
+                    $"No se pudo abrir la página de edición: {ex.Message}");
+            }
+        }
+
+        /// <summary>
+        /// Elimina un encargo con confirmación del usuario
+        /// </summary>
+        private async Task EliminarEncargo(Encargo encargo)
+        {
+            try
+            {
+                // Confirmación mejorada con más información
+                string mensaje = $"¿Estás seguro de eliminar este encargo?\n\n" +
+                               $"👤 Cliente: {encargo.Nombre}\n" +
+                               $"💰 Precio: ${encargo.Precio:F2}\n" +
+                               $"📦 Cantidad: {encargo.Cantidad}\n" +
+                               $"📅 Fecha de pedido: {encargo.Fecha:dd/MM/yyyy}\n" +
+                               $"🚚 Fecha de entrega: {encargo.FechaEntrega:dd/MM/yyyy}\n\n" +
+                               $"⚠️ Esta acción no se puede deshacer.";
+
+                bool confirmar = await DisplayAlert("🗑️ Eliminar Encargo",
+                    mensaje, "Sí, eliminar", "Cancelar");
+
+                if (confirmar)
+                {
+                    _isLoading = true;
+
+                    // Eliminar de la base de datos
+                    await App.DataRepo.DeleteEncargoAsync(encargo);
+
+                    // Mostrar mensaje de éxito
+                    await DisplayAlert("✅ Éxito",
+                        "El encargo se eliminó correctamente", "OK");
+
+                    // Recargar la lista
+                    await CargarEncargos();
+                }
+            }
+            catch (Exception ex)
+            {
+                await MostrarError("Error al eliminar",
+                    $"No se pudo eliminar el encargo: {ex.Message}");
+            }
+            finally
+            {
+                _isLoading = false;
+            }
+        }
+
+        /// <summary>
+        /// Muestra los detalles del encargo
+        /// </summary>
+        private async Task MostrarDetalles(Encargo encargo)
+        {
+            try
+            {
+                await Navigation.PushAsync(new DetalleEncargo(encargo));
+            }
+            catch (Exception ex)
+            {
+                await MostrarError("Error al mostrar detalles",
+                    $"No se pudo abrir la página de detalles: {ex.Message}");
+            }
+        }
+
+        /// <summary>
+        /// Concreta una venta a partir de un encargo
+        /// </summary>
+        private async Task ConcretarVenta(Encargo encargo)
+        {
+            try
+            {
+                // Confirmación mejorada
+                string mensaje = $"¿Confirmar la venta de este encargo?\n\n" +
+                               $"👤 Cliente: {encargo.Nombre}\n" +
+                               $"📋 Descripción: {encargo.Descripcion}\n" +
+                               $"💰 Precio: ${encargo.Precio:F2}\n" +
+                               $"📦 Cantidad: {encargo.Cantidad}\n\n" +
+                               $"El encargo se eliminará y se registrará como venta.";
+
+                bool confirmar = await DisplayAlert("✅ Concretar Venta",
+                    mensaje, "Sí, concretar", "Cancelar");
+
+                if (confirmar)
+                {
+                    _isLoading = true;
+
+                    // Crear la venta
+                    var venta = new Ventas
+                    {
+                        Descripcion = encargo.Descripcion,
+                        Precio = encargo.Precio,
+                        Cantidad = encargo.Cantidad,
+                        Fecha = DateTime.Now
+                    };
+
+                    // Guardar la venta y eliminar el encargo
+                    await App.DataRepo.SaveVentasAsync(venta);
+                    await App.DataRepo.DeleteEncargoAsync(encargo);
+
+                    // Mostrar mensaje de éxito
+                    await DisplayAlert("✅ Venta Concretada",
+                        "La venta se registró correctamente y el encargo fue eliminado", "OK");
+
+                    // Recargar la lista
+                    await CargarEncargos();
+                }
+            }
+            catch (Exception ex)
+            {
+                await MostrarError("Error al concretar venta",
+                    $"No se pudo concretar la venta: {ex.Message}");
+            }
+            finally
+            {
+                _isLoading = false;
+            }
+        }
+
+        #endregion
+
+        #region Métodos de Utilidad
+
+        /// <summary>
+        /// Muestra un mensaje de error consistente
+        /// </summary>
+        private async Task MostrarError(string titulo, string mensaje)
+        {
+            await DisplayAlert($"❌ {titulo}", mensaje, "OK");
+            Console.WriteLine($"❌ {titulo}: {mensaje}");
+        }
+
+        /// <summary>
+        /// Refresca la lista de encargos (método público para uso externo)
+        /// </summary>
+        public async Task RefrescarEncargos()
+        {
+            await CargarEncargosConAnimacion();
+        }
+
+        #endregion
     }
 }

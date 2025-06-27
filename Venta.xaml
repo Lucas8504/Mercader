@@ -20,7 +20,7 @@
             Padding="20"
             BackgroundColor="#1a1a1a"
             BorderColor="#333333"
-            CornerRadius="12"
+            CornerRadius="6"
             HasShadow="True">
 
             <StackLayout Spacing="15">
