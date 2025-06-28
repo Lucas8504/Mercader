@@ -29,7 +29,7 @@
                 HasShadow="False">
                 <Entry
                     x:Name="EncargoEntry"
-                    Placeholder="Nombre del encargo"
+                    Placeholder="Nombre del cliente"
                     PlaceholderColor="#7d7c7c"
                     TextColor="#cccccc"
                     BackgroundColor="Transparent" />
