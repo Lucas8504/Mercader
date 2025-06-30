@@ -44,15 +44,12 @@ namespace Mercader
 
             try
             {
-                // Mostrar indicador de carga visual
-                await MostrarIndicadorCarga(true);
+                
 
                 // Cargar datos
                 await CargarEncargos();
 
-                // Animar la aparición de la lista
-                EncargosCollectionView.Opacity = 0;
-                await EncargosCollectionView.FadeTo(1, 500);
+                
             }
             catch (Exception ex)
             {
