@@ -30,39 +30,7 @@ namespace Mercader
         protected override async void OnAppearing()
         {
             base.OnAppearing();
-            await CargarGastosConAnimacion();
-        }
-
-        /// <summary>
-        /// Carga los gastos con animación visual
-        /// </summary>
-        private async Task CargarGastosConAnimacion()
-        {
-            if (_isLoading) return;
-
-            _isLoading = true;
-
-            try
-            {
-                // Mostrar indicador de carga visual
-                await MostrarIndicadorCarga(true);
-
-                // Cargar datos
-                await CargarGastos();
-
-                // Animar la aparición de la lista
-                GastosCollectionView.Opacity = 0;
-                await GastosCollectionView.FadeTo(1, 500);
-            }
-            catch (Exception ex)
-            {
-                await MostrarError("Error al cargar gastos", ex.Message);
-            }
-            finally
-            {
-                await MostrarIndicadorCarga(false);
-                _isLoading = false;
-            }
+            await CargarGastos();
         }
 
         /// <summary>
@@ -92,15 +60,7 @@ namespace Mercader
             }
         }
 
-        /// <summary>
-        /// Muestra u oculta un indicador de carga
-        /// </summary>
-        private async Task MostrarIndicadorCarga(bool mostrar)
-        {
-            // Aquí podrías agregar un ActivityIndicator si lo deseas
-            await Task.Delay(mostrar ? 100 : 200);
-        }
-
+       
         protected override bool OnBackButtonPressed()
         {
             // Prevenir navegación hacia atrás
@@ -267,7 +227,7 @@ namespace Mercader
         /// </summary>
         public async Task RefrescarGastos()
         {
-            await CargarGastosConAnimacion();
+            await CargarGastos();
         }
 
         #endregion

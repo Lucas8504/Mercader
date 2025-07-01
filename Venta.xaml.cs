@@ -30,39 +30,7 @@ namespace Mercader
         protected override async void OnAppearing()
         {
             base.OnAppearing();
-            await CargarVentasConAnimacion();
-        }
-
-        /// <summary>
-        /// Carga las ventas con animación visual
-        /// </summary>
-        private async Task CargarVentasConAnimacion()
-        {
-            if (_isLoading) return;
-
-            _isLoading = true;
-
-            try
-            {
-                // Mostrar indicador de carga visual
-                await MostrarIndicadorCarga(true);
-
-                // Cargar datos
-                await CargarVentas();
-
-                // Animar la aparición de la lista
-                VentasCollectionView.Opacity = 0;
-                await VentasCollectionView.FadeTo(1, 500);
-            }
-            catch (Exception ex)
-            {
-                await MostrarError("Error al cargar ventas", ex.Message);
-            }
-            finally
-            {
-                await MostrarIndicadorCarga(false);
-                _isLoading = false;
-            }
+            await CargarVentas();
         }
 
         /// <summary>
@@ -90,15 +58,6 @@ namespace Mercader
                 Console.WriteLine($"❌ Error al cargar las ventas: {ex.Message}");
                 throw; // Re-lanzar para manejo en nivel superior
             }
-        }
-
-        /// <summary>
-        /// Muestra u oculta un indicador de carga
-        /// </summary>
-        private async Task MostrarIndicadorCarga(bool mostrar)
-        {
-            // Aquí podrías agregar un ActivityIndicator si lo deseas
-            await Task.Delay(mostrar ? 100 : 200);
         }
 
         protected override bool OnBackButtonPressed()
@@ -269,7 +228,7 @@ namespace Mercader
         /// </summary>
         public async Task RefrescarVentas()
         {
-            await CargarVentasConAnimacion();
+            await CargarVentas();
         }
 
         #endregion

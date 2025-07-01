@@ -30,37 +30,10 @@ namespace Mercader
         protected override async void OnAppearing()
         {
             base.OnAppearing();
-            await CargarEncargosConAnimacion();
+            await CargarEncargos();
         }
 
-        /// <summary>
-        /// Carga los encargos con animación visual
-        /// </summary>
-        private async Task CargarEncargosConAnimacion()
-        {
-            if (_isLoading) return;
-
-            _isLoading = true;
-
-            try
-            {
-                
-
-                // Cargar datos
-                await CargarEncargos();
-
-                
-            }
-            catch (Exception ex)
-            {
-                await MostrarError("Error al cargar encargos", ex.Message);
-            }
-            finally
-            {
-                await MostrarIndicadorCarga(false);
-                _isLoading = false;
-            }
-        }
+        
 
         /// <summary>
         /// Carga los encargos desde la base de datos
@@ -89,14 +62,7 @@ namespace Mercader
             }
         }
 
-        /// <summary>
-        /// Muestra u oculta un indicador de carga
-        /// </summary>
-        private async Task MostrarIndicadorCarga(bool mostrar)
-        {
-            // Aquí podrías agregar un ActivityIndicator si lo deseas
-            await Task.Delay(mostrar ? 100 : 200);
-        }
+        
 
         protected override bool OnBackButtonPressed()
         {
@@ -358,7 +324,7 @@ namespace Mercader
         /// </summary>
         public async Task RefrescarEncargos()
         {
-            await CargarEncargosConAnimacion();
+            await CargarEncargos();
         }
 
         #endregion
