@@ -79,7 +79,7 @@
                                     </SwipeItems>
                                 </SwipeView.RightItems>
 
-                                <!-- Tarjeta de encargo mejorada con 3 filas -->
+                                <!-- Tarjeta de encargo mejorada con 4 filas -->
                                 <Frame
                                     Padding="18"
                                     BackgroundColor="#1e1e1e"
@@ -103,6 +103,7 @@
                                             <RowDefinition Height="Auto" />
                                             <RowDefinition Height="Auto" />
                                             <RowDefinition Height="Auto" />
+                                            <RowDefinition Height="Auto" />
                                         </Grid.RowDefinitions>
 
                                         <!-- PRIMERA FILA: Nombre del cliente (destacado) -->
@@ -122,8 +123,35 @@
                                                 Margin="0,0,0,8" />
                                         </StackLayout>
 
-                                        <!-- SEGUNDA FILA: Detalles (Precio y Cantidad) -->
-                                        <Grid Grid.Row="1" ColumnSpacing="40">
+                                        <!-- SEGUNDA FILA: Número de contacto (clickeable) -->
+                                        <StackLayout Grid.Row="1" Spacing="5">
+                                            <Label
+                                                Text="📞 CONTACTO"
+                                                FontSize="12"
+                                                FontAttributes="Bold"
+                                                TextColor="#00BCD4"
+                                                Margin="0,0,0,2" />
+                                            <Frame
+                                                Padding="12,8"
+                                                BackgroundColor="#2A222D"
+
+                                                CornerRadius="8"
+                                                HasShadow="False"
+                                                HorizontalOptions="Start">
+                                                <Frame.GestureRecognizers>
+                                                    <TapGestureRecognizer Tapped="OnContactTapped" />
+                                                </Frame.GestureRecognizers>
+                                                <Label
+                                                    FontAttributes="None"
+                                                    FontSize="14"
+                                                    Text="{Binding Contacto}"
+                                                    TextColor="#00BCD4"
+                                                    HorizontalTextAlignment="Center" />
+                                            </Frame>
+                                        </StackLayout>
+
+                                        <!-- TERCERA FILA: Detalles (Precio y Cantidad) -->
+                                        <Grid Grid.Row="2" ColumnSpacing="40">
                                             <Grid.ColumnDefinitions>
                                                 <ColumnDefinition Width="140" />
                                                 <ColumnDefinition Width="Auto" />
@@ -178,8 +206,8 @@
                                             </StackLayout>
                                         </Grid>
 
-                                        <!-- TERCERA FILA: Fechas (Pedido y Entrega) -->
-                                        <Grid Grid.Row="2" ColumnSpacing="15">
+                                        <!-- CUARTA FILA: Fechas (Pedido y Entrega) -->
+                                        <Grid Grid.Row="3" ColumnSpacing="15">
                                             <Grid.ColumnDefinitions>
                                                 <ColumnDefinition Width="*" />
                                                 <ColumnDefinition Width="*" />

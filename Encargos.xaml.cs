@@ -1,4 +1,5 @@
 ﻿using Microsoft.Maui.Controls;
+using Microsoft.Maui;
 using System;
 using System.Threading.Tasks;
 
@@ -33,8 +34,6 @@ namespace Mercader
             await CargarEncargos();
         }
 
-        
-
         /// <summary>
         /// Carga los encargos desde la base de datos
         /// </summary>
@@ -62,12 +61,201 @@ namespace Mercader
             }
         }
 
-        
-
         protected override bool OnBackButtonPressed()
         {
             // Prevenir navegación hacia atrás
             return true;
+        }
+
+        /// <summary>
+        /// Maneja el tap en el número de contacto para abrir aplicación externa
+        /// </summary>
+        private async void OnContactTapped(object sender, EventArgs e)
+        {
+            if (_isLoading) return;
+
+            try
+            {
+                var frame = sender as Frame;
+                if (frame?.BindingContext is Encargo encargo)
+                {
+                    // Efecto visual de tap
+                    await frame.ScaleTo(0.9, 50);
+                    await frame.ScaleTo(1, 50);
+
+                    // Validar que el número de teléfono existe
+                    if (string.IsNullOrWhiteSpace(encargo.Contacto))
+                    {
+                        await DisplayAlert("⚠️ Sin número",
+                            "No hay número de contacto registrado para este encargo.", "OK");
+                        return;
+                    }
+
+                    // Validar que el nombre del cliente no sea nulo
+                    string nombreCliente = encargo.Nombre ?? "Cliente desconocido";
+
+                    // Mostrar opciones para contactar
+                    await MostrarOpcionesContacto(encargo.Contacto, nombreCliente);
+                }
+            }
+            catch (Exception ex)
+            {
+                await MostrarError("Error de contacto",
+                    $"No se pudo abrir la aplicación de contacto: {ex.Message}");
+            }
+        }
+
+        /// <summary>
+        /// Muestra las opciones disponibles para contactar
+        /// </summary>
+        private async Task MostrarOpcionesContacto(string telefono, string nombreCliente)
+        {
+            try
+            {
+                // Limpiar el número de teléfono (quitar espacios, guiones, etc.)
+                string telefonoLimpio = LimpiarNumeroTelefono(telefono);
+
+                string accion = await DisplayActionSheet(
+                    $"📞 Contactar a {nombreCliente}",
+                    "Cancelar",
+                    null,
+                    "📞 Llamar",
+                    "💬 Enviar SMS",
+                    "📱 Abrir WhatsApp",
+                    "📋 Copiar número"
+                );
+
+                switch (accion)
+                {
+                    case "📞 Llamar":
+                        await RealizarLlamada(telefonoLimpio);
+                        break;
+                    case "💬 Enviar SMS":
+                        await EnviarSMS(telefonoLimpio);
+                        break;
+                    case "📱 Abrir WhatsApp":
+                        await AbrirWhatsApp(telefonoLimpio);
+                        break;
+                    case "📋 Copiar número":
+                        await CopiarNumero(telefono);
+                        break;
+                }
+            }
+            catch (Exception ex)
+            {
+                await MostrarError("Error de contacto", ex.Message);
+            }
+        }
+
+        /// <summary>
+        /// Realiza una llamada telefónica
+        /// </summary>
+        private async Task RealizarLlamada(string telefono)
+        {
+            try
+            {
+                PhoneDialer.Open(telefono);
+            }
+            catch (ArgumentNullException)
+            {
+                await DisplayAlert("❌ Error", "Número de teléfono inválido", "OK");
+            }
+            catch (Exception ex)
+            {
+                await MostrarError("Error al llamar",
+                    $"No se pudo realizar la llamada: {ex.Message}");
+            }
+        }
+
+        /// <summary>
+        /// Envía un SMS
+        /// </summary>
+        private async Task EnviarSMS(string telefono)
+        {
+            try
+            {
+                var message = new SmsMessage("Hola! Te contacto por tu encargo.", telefono);
+                await Sms.ComposeAsync(message);
+            }
+            catch (FeatureNotSupportedException)
+            {
+                await DisplayAlert("❌ No compatible",
+                    "El envío de SMS no está disponible en este dispositivo", "OK");
+            }
+            catch (Exception ex)
+            {
+                await MostrarError("Error al enviar SMS", ex.Message);
+            }
+        }
+
+        /// <summary>
+        /// Abre WhatsApp con el número especificado
+        /// </summary>
+        private async Task AbrirWhatsApp(string telefono)
+        {
+            try
+            {
+                // Formato internacional para WhatsApp (agregar código de país si es necesario)
+                string telefonoWhatsApp = telefono.StartsWith("+") ? telefono.Substring(1) : telefono;
+
+                // Remover cualquier carácter no numérico
+                telefonoWhatsApp = System.Text.RegularExpressions.Regex.Replace(telefonoWhatsApp, @"[^\d]", "");
+
+                // URL de WhatsApp
+                string whatsappUrl = $"https://wa.me/{telefonoWhatsApp}";
+
+                // Intentar abrir WhatsApp
+                bool opened = await Launcher.TryOpenAsync(whatsappUrl);
+
+                if (!opened)
+                {
+                    await DisplayAlert("❌ WhatsApp no disponible",
+                        "No se pudo abrir WhatsApp. Verifica que esté instalado.", "OK");
+                }
+            }
+            catch (Exception ex)
+            {
+                await MostrarError("Error al abrir WhatsApp", ex.Message);
+            }
+        }
+
+        /// <summary>
+        /// Copia el número al portapapeles
+        /// </summary>
+        private async Task CopiarNumero(string telefono)
+        {
+            try
+            {
+                await Clipboard.SetTextAsync(telefono);
+                await DisplayAlert("✅ Copiado",
+                    $"El número {telefono} se copió al portapapeles", "OK");
+            }
+            catch (Exception ex)
+            {
+                await MostrarError("Error al copiar", ex.Message);
+            }
+        }
+
+        /// <summary>
+        /// Limpia el número de teléfono removiendo caracteres no deseados
+        /// </summary>
+        private string LimpiarNumeroTelefono(string telefono)
+        {
+            if (string.IsNullOrWhiteSpace(telefono))
+                return string.Empty;
+
+            // Conservar el + inicial si existe, pero remover otros caracteres especiales
+            string limpio = telefono.Trim();
+            if (limpio.StartsWith("+"))
+            {
+                limpio = "+" + System.Text.RegularExpressions.Regex.Replace(limpio.Substring(1), @"[^\d]", "");
+            }
+            else
+            {
+                limpio = System.Text.RegularExpressions.Regex.Replace(limpio, @"[^\d]", "");
+            }
+
+            return limpio;
         }
 
         /// <summary>
@@ -201,6 +389,7 @@ namespace Mercader
                 // Confirmación mejorada con más información
                 string mensaje = $"¿Estás seguro de eliminar este encargo?\n\n" +
                                $"👤 Cliente: {encargo.Nombre}\n" +
+                               $"📞 Teléfono: {encargo.Contacto}\n" +
                                $"💰 Precio: ${encargo.Precio:F2}\n" +
                                $"📦 Cantidad: {encargo.Cantidad}\n" +
                                $"📅 Fecha de pedido: {encargo.Fecha:dd/MM/yyyy}\n" +

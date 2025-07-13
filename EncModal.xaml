@@ -35,6 +35,33 @@
                     BackgroundColor="Transparent" />
             </Frame>
 
+            <!-- Campo de Teléfono mejorado -->
+            <Frame
+                BackgroundColor="#2a2a2a"
+                CornerRadius="8"
+                Padding="10"
+                HasShadow="False">
+                <Grid ColumnDefinitions="Auto, *" VerticalOptions="Center">
+                    <Label
+                        Text="📞"
+                        TextColor="#7d7c7c"
+                        FontSize="16"
+                        VerticalOptions="Center"
+                        Grid.Column="0"
+                        Margin="0,0,10,0" />
+                    <Entry
+                        x:Name="ContactoEntry"
+                        Keyboard="Telephone"
+                        Placeholder="Teléfono (ej: 11 1234-5678)"
+                        PlaceholderColor="#7d7c7c"
+                        TextColor="#cccccc"
+                        BackgroundColor="Transparent"
+                        MaxLength="20"
+                        Grid.Column="1"
+                        TextChanged="OnContactoTextChanged" />
+                </Grid>
+            </Frame>
+
             <!-- Campo de Descripción -->
             <Frame
                 BackgroundColor="#2a2a2a"
@@ -58,7 +85,7 @@
                 <Entry
                     x:Name="PrecioEntry"
                     Keyboard="Numeric"
-                    Placeholder="Precio"
+                    Placeholder="Precio ($)"
                     PlaceholderColor="#7d7c7c"
                     TextColor="#cccccc"
                     BackgroundColor="Transparent" />

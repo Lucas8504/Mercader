@@ -11,6 +11,9 @@ namespace Mercader
         [Column("Nombre"), MaxLength(360)]
         public string? Nombre { get; set; }
 
+        [Column("Contacto"), MaxLength(360)]
+        public string Contacto { get; set; } = string.Empty;
+
         [Column("Precio")]
         public decimal Precio { get; set; }
 
