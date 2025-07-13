@@ -121,21 +121,18 @@ namespace Mercader
                     null,
                     "📞 Llamar",
                     "💬 Enviar SMS",
-                    "📱 Abrir WhatsApp",
                     "📋 Copiar número"
                 );
 
                 switch (accion)
                 {
                     case "📞 Llamar":
-                        await RealizarLlamada(telefonoLimpio);
+                        await RealizarLlamada(telefono);
                         break;
                     case "💬 Enviar SMS":
-                        await EnviarSMS(telefonoLimpio);
+                        await EnviarSMS(telefono);
                         break;
-                    case "📱 Abrir WhatsApp":
-                        await AbrirWhatsApp(telefonoLimpio);
-                        break;
+                    
                     case "📋 Copiar número":
                         await CopiarNumero(telefono);
                         break;

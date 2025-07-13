@@ -171,7 +171,7 @@
                                                     BorderColor="#1976D2"
                                                     CornerRadius="8"
                                                     HasShadow="False"
-                                                    HorizontalOptions="Fill">
+                                                    HorizontalOptions="Center">
                                                     <Label
                                                         FontAttributes="Bold"
                                                         FontSize="14"
@@ -193,7 +193,7 @@
                                                     Padding="10,6"
                                                     BackgroundColor="#FF9800"
                                                     BorderColor="#F57C00"
-                                                    CornerRadius="20"
+                                                    CornerRadius="6"
                                                     HasShadow="False"
                                                     HorizontalOptions="Fill">
                                                     <Label

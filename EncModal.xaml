@@ -58,7 +58,7 @@
                         BackgroundColor="Transparent"
                         MaxLength="20"
                         Grid.Column="1"
-                        TextChanged="OnContactoTextChanged" />
+                        />
                 </Grid>
             </Frame>
 

@@ -27,7 +27,7 @@ public partial class EncModal : ContentPage
             Encargo = new Encargo
             {
                 Nombre = EncargoEntry!.Text,
-                Contacto = FormatPhoneNumber(ContactoEntry!.Text), // Formatear el teléfono
+                Contacto = CleanPhoneNumber(ContactoEntry!.Text), // Solo limpiar el número
                 Cantidad = decimal.Parse(CantidadEntry!.Text!),
                 Precio = decimal.Parse(PrecioEntry!.Text!),
                 Descripcion = DescripcionEntry.Text,
@@ -135,103 +135,17 @@ public partial class EncModal : ContentPage
     }
 
     /// <summary>
-    /// Formatea el número de teléfono según patrones comunes argentinos
+    /// Limpia el número de teléfono removiendo caracteres especiales
     /// </summary>
-    /// <param name="phoneNumber">Número de teléfono sin formatear</param>
-    /// <returns>Número de teléfono formateado</returns>
-    private string FormatPhoneNumber(string phoneNumber)
+    /// <param name="phoneNumber">Número de teléfono a limpiar</param>
+    /// <returns>Número de teléfono solo con dígitos</returns>
+    private string CleanPhoneNumber(string phoneNumber)
     {
         if (string.IsNullOrWhiteSpace(phoneNumber))
             return phoneNumber;
 
-        // Limpiar el número de caracteres especiales
-        string cleanedNumber = phoneNumber.Replace(" ", "")
-                                        .Replace("-", "")
-                                        .Replace("(", "")
-                                        .Replace(")", "")
-                                        .Replace("+", "");
-
-        // Formateo para números argentinos comunes
-        if (cleanedNumber.Length == 10)
-        {
-            // Formato para celulares de Buenos Aires: 11 1234-5678
-            if (cleanedNumber.StartsWith("11"))
-            {
-                return $"{cleanedNumber.Substring(0, 2)} {cleanedNumber.Substring(2, 4)}-{cleanedNumber.Substring(6)}";
-            }
-            // Formato para otros códigos de área: (0XXX) XXX-XXXX
-            else if (cleanedNumber.StartsWith("0"))
-            {
-                return $"({cleanedNumber.Substring(0, 4)}) {cleanedNumber.Substring(4, 3)}-{cleanedNumber.Substring(7)}";
-            }
-        }
-
-        // Formato para números con código de país argentino
-        if (cleanedNumber.Length == 12 && cleanedNumber.StartsWith("54"))
-        {
-            return $"+54 {cleanedNumber.Substring(2, 2)} {cleanedNumber.Substring(4, 4)}-{cleanedNumber.Substring(8)}";
-        }
-
-        // Si no coincide con ningún patrón conocido, devolver el número limpio
-        return cleanedNumber;
-    }
-
-    /// <summary>
-    /// Evento para formatear el teléfono mientras el usuario escribe
-    /// </summary>
-    /// <param name="sender">Control que disparó el evento</param>
-    /// <param name="e">Argumentos del evento</param>
-    private void OnContactoTextChanged(object? sender, TextChangedEventArgs e)
-    {
-        if (sender is Entry entry)
-        {
-            string oldText = e.OldTextValue ?? "";
-            string newText = e.NewTextValue ?? "";
-
-            // Solo formatear si el usuario está agregando texto (no borrando)
-            if (newText.Length > oldText.Length)
-            {
-                // Remover el evento temporalmente para evitar loops infinitos
-                entry.TextChanged -= OnContactoTextChanged;
-
-                // Aplicar formato básico en tiempo real
-                string formatted = ApplyBasicFormatting(newText);
-                if (formatted != newText)
-                {
-                    entry.Text = formatted;
-                    entry.CursorPosition = formatted.Length;
-                }
-
-                // Volver a agregar el evento
-                entry.TextChanged += OnContactoTextChanged;
-            }
-        }
-    }
-
-    /// <summary>
-    /// Aplica formato básico mientras el usuario escribe
-    /// </summary>
-    /// <param name="input">Texto ingresado por el usuario</param>
-    /// <returns>Texto con formato básico aplicado</returns>
-    private string ApplyBasicFormatting(string input)
-    {
-        if (string.IsNullOrWhiteSpace(input))
-            return input;
-
-        // Remover todo excepto números
-        string numbersOnly = new string(input.Where(char.IsDigit).ToArray());
-
-        // Aplicar formato básico según la longitud
-        return numbersOnly.Length switch
-        {
-            >= 11 when numbersOnly.StartsWith("11") =>
-                $"{numbersOnly.Substring(0, 2)} {numbersOnly.Substring(2, Math.Min(4, numbersOnly.Length - 2))}" +
-                (numbersOnly.Length > 6 ? $"-{numbersOnly.Substring(6)}" : ""),
-            >= 8 =>
-                $"{numbersOnly.Substring(0, Math.Min(4, numbersOnly.Length))} " +
-                (numbersOnly.Length > 4 ? numbersOnly.Substring(4) : ""),
-            _ => numbersOnly
-        };
+        // Remover todos los caracteres que no sean números
+        return new string(phoneNumber.Where(char.IsDigit).ToArray());
     }
 
     private async void Cancelar(object sender, EventArgs e)
