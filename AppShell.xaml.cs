@@ -7,7 +7,7 @@
             InitializeComponent();
             // Configurar MainPage como página principal
             Routing.RegisterRoute("MainPage", typeof(MainPage));
-            Routing.RegisterRoute("Encargos", typeof(Encargos));
+            
 
             // Establecer MainPage como la página raíz
             
