@@ -39,8 +39,7 @@ namespace Mercader
         /// </summary>
         private async Task CargarEncargos()
         {
-            try
-            {
+            
                 var encargos = await App.DataRepo.GetEncargosAsync();
 
                 // Verificar si hay datos
@@ -53,12 +52,7 @@ namespace Mercader
                 {
                     Console.WriteLine("ℹ️ No se encontraron encargos en la base de datos");
                 }
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"❌ Error al cargar los encargos: {ex.Message}");
-                throw; // Re-lanzar para manejo en nivel superior
-            }
+                       
         }
 
         protected override bool OnBackButtonPressed()
