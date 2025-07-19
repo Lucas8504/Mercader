@@ -179,36 +179,7 @@ namespace Mercader
             }
         }
 
-        /// <summary>
-        /// Abre WhatsApp con el número especificado
-        /// </summary>
-        private async Task AbrirWhatsApp(string telefono)
-        {
-            try
-            {
-                // Formato internacional para WhatsApp (agregar código de país si es necesario)
-                string telefonoWhatsApp = telefono.StartsWith("+") ? telefono.Substring(1) : telefono;
-
-                // Remover cualquier carácter no numérico
-                telefonoWhatsApp = System.Text.RegularExpressions.Regex.Replace(telefonoWhatsApp, @"[^\d]", "");
-
-                // URL de WhatsApp
-                string whatsappUrl = $"https://wa.me/{telefonoWhatsApp}";
-
-                // Intentar abrir WhatsApp
-                bool opened = await Launcher.TryOpenAsync(whatsappUrl);
-
-                if (!opened)
-                {
-                    await DisplayAlert("❌ WhatsApp no disponible",
-                        "No se pudo abrir WhatsApp. Verifica que esté instalado.", "OK");
-                }
-            }
-            catch (Exception ex)
-            {
-                await MostrarError("Error al abrir WhatsApp", ex.Message);
-            }
-        }
+       
 
         /// <summary>
         /// Copia el número al portapapeles
