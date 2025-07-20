@@ -13,43 +13,6 @@
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
 
-        <!-- Header con título y estadísticas -->
-        <Frame
-            Grid.Row="0"
-            Margin="15,10,15,5"
-            Padding="20"
-            BackgroundColor="#1a1a1a"
-            BorderColor="#333333"
-            CornerRadius="6"
-            HasShadow="True">
-
-            <StackLayout Spacing="15">
-                <!-- Título principal -->
-                <Label
-                    FontAttributes="Bold"
-                    FontSize="24"
-                    HorizontalTextAlignment="Center"
-                    Text="Historial de Gastos"
-                    TextColor="#ffffff" />
-
-                <!-- Línea separadora -->
-                <BoxView
-                    HeightRequest="1"
-                    BackgroundColor="#333333"
-                    HorizontalOptions="Fill" />
-
-                <!-- Encabezados de columnas simplificados -->
-                <Grid Margin="0,5">
-                    <Label
-                        FontAttributes="Bold"
-                        FontSize="16"
-                        Text="📋 Desliza ← para editar o eliminar"
-                        TextColor="#888888"
-                        HorizontalTextAlignment="Center"
-                        Margin="0,5" />
-                </Grid>
-            </StackLayout>
-        </Frame>
 
         <!-- Lista de gastos -->
         <ScrollView Grid.Row="1" Margin="10,0">

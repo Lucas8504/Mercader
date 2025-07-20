@@ -38,8 +38,7 @@ namespace Mercader
         /// </summary>
         private async Task CargarGastos()
         {
-            try
-            {
+            
                 var gastos = await App.DataRepo.GetGastosAsync();
 
                 // Verificar si hay datos
@@ -52,12 +51,7 @@ namespace Mercader
                 {
                     Console.WriteLine("ℹ️ No se encontraron gastos en la base de datos");
                 }
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"❌ Error al cargar los gastos: {ex.Message}");
-                throw; // Re-lanzar para manejo en nivel superior
-            }
+          
         }
 
        
