@@ -65,6 +65,7 @@
                             HasShadow="False">
                             <Entry
                                 x:Name="ContactoEntry"
+                                Keyboard="Telephone"
                                 BackgroundColor="Transparent"
                                 FontSize="16"
                                 Placeholder="Ingrese el nombre del cliente"

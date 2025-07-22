@@ -14,7 +14,7 @@ public partial class EditarEncargoPage : ContentPage
 
     private void CargarDatos()
     {
-        // Cargar los datos del encargo en los campos
+        // Carga los datos actuales del encargo en los campos
         NombreEntry.Text = _encargo.Nombre;
         ContactoEntry.Text = CleanPhoneNumber(_encargo.Contacto);
         DescripcionEntry.Text = _encargo.Descripcion;
@@ -22,7 +22,7 @@ public partial class EditarEncargoPage : ContentPage
         PrecioEntry.Text = _encargo.Precio.ToString("F2");
         CantidadEntry.Text = _encargo.Cantidad.ToString();
 
-        // Calcular y mostrar el total inicial
+        // Calcular y mostrar el total actual
         CalcularTotal();
     }
 
@@ -69,6 +69,19 @@ public partial class EditarEncargoPage : ContentPage
         if (string.IsNullOrWhiteSpace(NombreEntry.Text))
         {
             await DisplayAlert("Error", "El nombre del cliente es obligatorio", "OK");
+            return;
+        }
+
+        if (string.IsNullOrWhiteSpace(ContactoEntry.Text))
+        {
+            await DisplayAlert("Error", "Por favor, ingrese un número de teléfono", "OK");
+            return;
+        }
+
+        // Validación básica de formato de teléfono
+        if (!IsValidPhoneNumber(ContactoEntry.Text))
+        {
+            await DisplayAlert("Error", "Por favor, ingrese un número de teléfono válido", "OK");
             return;
         }
 
