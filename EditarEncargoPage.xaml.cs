@@ -96,6 +96,7 @@ public partial class EditarEncargoPage : ContentPage
 
             // Actualizar el encargo con los nuevos datos
             _encargo.Nombre = NombreEntry.Text.Trim();
+            _encargo.Contacto = ContactoEntry.Text.Trim();
             _encargo.Descripcion = DescripcionEntry.Text.Trim();
             _encargo.FechaEntrega = FechaEntregaDatePicker.Date;
             _encargo.Precio = precio;
