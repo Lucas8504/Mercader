@@ -50,6 +50,30 @@
                         </Frame>
                     </VerticalStackLayout>
 
+
+                    <!-- Campo de Contacto -->
+                    <VerticalStackLayout Spacing="8">
+                        <Label
+                            FontAttributes="Bold"
+                            FontSize="16"
+                            Text="Nombre del Cliente:"
+                            TextColor="#4CAF50" />
+                        <Frame
+                            Padding="0"
+                            BackgroundColor="#3a3a3a"
+                            CornerRadius="8"
+                            HasShadow="False">
+                            <Entry
+                                x:Name="ContactoEntry"
+                                BackgroundColor="Transparent"
+                                FontSize="16"
+                                Placeholder="Ingrese el nombre del cliente"
+                                PlaceholderColor="#888888"
+                                TextColor="#ffffff" />
+                        </Frame>
+                    </VerticalStackLayout>
+
+
                     <!-- Campo Descripción -->
                     <VerticalStackLayout Spacing="8">
                         <Label

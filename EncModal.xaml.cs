@@ -27,7 +27,7 @@ public partial class EncModal : ContentPage
             Encargo = new Encargo
             {
                 Nombre = EncargoEntry!.Text,
-                Contacto = CleanPhoneNumber(ContactoEntry!.Text), // Solo limpiar el número
+                Contacto = CleanPhoneNumber(ContactoEntry!.Text),
                 Cantidad = decimal.Parse(CantidadEntry!.Text!),
                 Precio = decimal.Parse(PrecioEntry!.Text!),
                 Descripcion = DescripcionEntry.Text,

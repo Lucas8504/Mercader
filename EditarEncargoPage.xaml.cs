@@ -16,6 +16,7 @@ public partial class EditarEncargoPage : ContentPage
     {
         // Cargar los datos del encargo en los campos
         NombreEntry.Text = _encargo.Nombre;
+        ContactoEntry.Text = CleanPhoneNumber(_encargo.Contacto);
         DescripcionEntry.Text = _encargo.Descripcion;
         FechaEntregaDatePicker.Date = _encargo.FechaEntrega;
         PrecioEntry.Text = _encargo.Precio.ToString("F2");
@@ -113,6 +114,33 @@ public partial class EditarEncargoPage : ContentPage
         {
             await DisplayAlert("Error", $"Error al guardar el encargo: {ex.Message}", "OK");
         }
+    }
+
+    private bool IsValidPhoneNumber(string phoneNumber)
+    {
+        if (string.IsNullOrWhiteSpace(phoneNumber))
+            return false;
+
+        // Remover espacios, guiones, paréntesis y el signo +
+        string cleanedNumber = phoneNumber.Replace(" ", "")
+                                        .Replace("-", "")
+                                        .Replace("(", "")
+                                        .Replace(")", "")
+                                        .Replace("+", "");
+
+        // Verificar que solo contenga números y tenga entre 7 y 15 dígitos
+        return cleanedNumber.All(char.IsDigit) &&
+               cleanedNumber.Length >= 7 &&
+               cleanedNumber.Length <= 15;
+    }
+
+    private string CleanPhoneNumber(string phoneNumber)
+    {
+        if (string.IsNullOrWhiteSpace(phoneNumber))
+            return phoneNumber;
+
+        // Remover todos los caracteres que no sean números
+        return new string(phoneNumber.Where(char.IsDigit).ToArray());
     }
 
     private async void OnCancelarClicked(object sender, EventArgs e)
