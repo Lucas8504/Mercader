@@ -13,44 +13,6 @@
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
 
-        <!-- Header con título y estadísticas -->
-        <Frame
-            Grid.Row="0"
-            Margin="15,10,15,5"
-            Padding="20"
-            BackgroundColor="#1a1a1a"
-            BorderColor="#333333"
-            CornerRadius="6"
-            HasShadow="True">
-
-            <StackLayout Spacing="15">
-                <!-- Título principal -->
-                <Label
-                    FontAttributes="Bold"
-                    FontSize="24"
-                    HorizontalTextAlignment="Center"
-                    Text="Historial de Ventas"
-                    TextColor="#ffffff" />
-
-                <!-- Línea separadora -->
-                <BoxView
-                    HeightRequest="1"
-                    BackgroundColor="#333333"
-                    HorizontalOptions="Fill" />
-
-                <!-- Encabezados de columnas simplificados -->
-                <Grid Margin="0,5">
-                    <Label
-                        FontAttributes="Bold"
-                        FontSize="16"
-                        Text="📋 Desliza ← para editar o eliminar"
-                        TextColor="#888888"
-                        HorizontalTextAlignment="Center"
-                        Margin="0,5" />
-                </Grid>
-            </StackLayout>
-        </Frame>
-
         <!-- Lista de ventas -->
         <ScrollView Grid.Row="1" Margin="10,0">
             <StackLayout Spacing="12">
@@ -98,13 +60,14 @@
                                         <Grid.RowDefinitions>
                                             <RowDefinition Height="Auto" />
                                             <RowDefinition Height="Auto" />
+                                            <RowDefinition Height="Auto" />
                                         </Grid.RowDefinitions>
 
                                         <!-- PRIMERA FILA: Descripción del producto (destacada) -->
                                         <StackLayout Grid.Row="0" Spacing="5">
                                             <Label
-                                                Text="📋 PRODUCTO"
-                                                FontSize="12"
+                                                Text="📋PRODUCTO"
+                                                FontSize="14"
                                                 FontAttributes="Bold"
                                                 TextColor="#4CAF50"
                                                 Margin="0,0,0,2" />
@@ -114,11 +77,19 @@
                                                 LineBreakMode="WordWrap"
                                                 Text="{Binding Descripcion}"
                                                 TextColor="#ffffff"
-                                                Margin="0,0,0,8" />
+                                                Margin="0,0,0,8" 
+                                                />
                                         </StackLayout>
 
+                                        <!-- Línea separadora -->
+                                        <BoxView Grid.Row="1"
+                                                 HeightRequest="1"
+                                                 BackgroundColor="#333333"
+                                                 HorizontalOptions="Fill" />
+
+
                                         <!-- SEGUNDA FILA: Detalles (Precio, Cantidad, Fecha) -->
-                                        <Grid Grid.Row="1" ColumnSpacing="15">
+                                        <Grid Grid.Row="2" ColumnSpacing="15">
                                             <Grid.ColumnDefinitions>
                                                 <ColumnDefinition Width="*" />
                                                 <ColumnDefinition Width="*" />

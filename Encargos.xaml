@@ -180,6 +180,7 @@
                                                         TextColor="#ffffff"
                                                         HorizontalTextAlignment="Start" />
                                                 </Frame>
+
                                             </StackLayout>
                                         </Grid>
 
@@ -212,6 +213,11 @@
                                                             TextColor="#ffffff"
                                                             HorizontalTextAlignment="Start" />
                                                     </Frame>
+                                                    <Label
+                                                        FontSize="10"
+                                                        Text="{Binding Fecha, StringFormat='{0:dddd}'}"
+                                                        TextColor="#888888"
+                                                        HorizontalTextAlignment="Center" />
                                                 </StackLayout>
                                             </StackLayout>
 
@@ -237,6 +243,11 @@
                                                             TextColor="#ffffff"
                                                             HorizontalTextAlignment="Center" />
                                                     </Frame>
+                                                    <Label
+                                                        FontSize="10"
+                                                        Text="{Binding FechaEntrega, StringFormat='{0:dddd}'}"
+                                                        TextColor="#888888"
+                                                        HorizontalTextAlignment="Center" />
                                                 </StackLayout>
                                             </StackLayout>
                                         </Grid>
