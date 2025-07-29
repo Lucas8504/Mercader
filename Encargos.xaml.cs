@@ -62,7 +62,7 @@ namespace Mercader
         }
 
         /// <summary>
-        /// Maneja el tap en el número de contacto para abrir aplicación externa
+        /// Maneja el tap en el número de contacto para abrir en aplicación externa
         /// </summary>
         private async void OnContactTapped(object sender, EventArgs e)
         {
