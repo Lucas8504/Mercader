@@ -74,7 +74,7 @@
                 HorizontalOptions="Fill" />
 
             <!--  SECCIÓN GASTOS COMPLETA  -->
-            <Frame Padding="15" BackgroundColor="#2a2a2a" CornerRadius="12" HasShadow="True">
+            <Frame Padding="20" BackgroundColor="#2a2a2a" CornerRadius="12" HasShadow="True">
 
                 <Grid RowDefinitions="Auto, *" RowSpacing="15">
 
@@ -83,8 +83,7 @@
                         <VerticalStackLayout Grid.Column="0" VerticalOptions="Center" Spacing="2">
                             <Label Text="💸 ANÁLISIS DE GASTOS"
                                    FontAttributes="Bold" FontSize="16" TextColor="#d63384" />
-                            <BoxView HeightRequest="2" Color="#d63384" Opacity="0.6"
-                                     WidthRequest="190" HorizontalOptions="Start" />
+
                         </VerticalStackLayout>
 
                         <VerticalStackLayout Grid.Column="1" VerticalOptions="Center" HorizontalOptions="End" Spacing="0">
@@ -101,8 +100,8 @@
                         <microcharts:ChartView
                             x:Name="GastosChart"
                             BackgroundColor="Transparent"
-                            HeightRequest="220"
-                            WidthRequest="600" />
+                            HeightRequest="240"
+                            WidthRequest="550" />
                     </ScrollView>
 
                 </Grid>

@@ -540,13 +540,13 @@ namespace Mercader
                 GastosChart.Chart = new LineChart
                 {
                     Entries = entries,
-                    LabelTextSize = 14,
-                    ValueLabelTextSize = 12,
+                    LabelTextSize = 20,
+                    ValueLabelTextSize = 22,
                     BackgroundColor = SKColor.Parse("#2a2a2a"),
                     LineSize = 3,
                     PointSize = 8,
                     IsAnimated = true,
-                    AnimationDuration = TimeSpan.FromMilliseconds(600),
+                    AnimationDuration = TimeSpan.FromMilliseconds(500),
                     LabelOrientation = Orientation.Horizontal,
                     ValueLabelOrientation = Orientation.Horizontal,
                     Margin = 20,
@@ -576,8 +576,8 @@ namespace Mercader
                 EncargosChart.Chart = new LineChart
                 {
                     Entries = entries,
-                    LabelTextSize = 14,
-                    ValueLabelTextSize = 12,
+                    LabelTextSize = 20,
+                    ValueLabelTextSize = 22,
                     BackgroundColor = SKColor.Parse("#2a2a2a"),
                     LineSize = 3,
                     PointSize = 8,
