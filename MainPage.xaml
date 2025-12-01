@@ -81,28 +81,28 @@
                     <Grid Grid.Row="0" ColumnDefinitions="*, Auto">
 
                         <VerticalStackLayout Grid.Column="0" VerticalOptions="Center" Spacing="2">
-                            <Label Text="💸 ANÁLISIS DE GASTOS" 
-                       FontAttributes="Bold" FontSize="16" TextColor="#d63384" />
-                            <BoxView HeightRequest="2" Color="#d63384" Opacity="0.6" 
-                         WidthRequest="100" HorizontalOptions="Start" />
+                            <Label Text="💸 ANÁLISIS DE GASTOS"
+                                   FontAttributes="Bold" FontSize="16" TextColor="#d63384" />
+                            <BoxView HeightRequest="2" Color="#d63384" Opacity="0.6"
+                                     WidthRequest="190" HorizontalOptions="Start" />
                         </VerticalStackLayout>
 
                         <VerticalStackLayout Grid.Column="1" VerticalOptions="Center" HorizontalOptions="End" Spacing="0">
                             <Label Text="TOTAL PERÍODO" FontSize="10" TextColor="#7d7c7c" HorizontalOptions="End" />
-                            <Label x:Name="GastosPeriodoLabel" 
-                       Text="$ 0.00" 
-                       FontAttributes="Bold" FontSize="18" TextColor="#d63384" HorizontalOptions="End" />
+                            <Label x:Name="GastosPeriodoLabel"
+                                   Text="$ 0.00"
+                                   FontAttributes="Bold" FontSize="18" TextColor="#d63384" HorizontalOptions="End" />
                         </VerticalStackLayout>
                     </Grid>
 
-                    <ScrollView Grid.Row="1" 
-                    Orientation="Horizontal" 
-                    HorizontalScrollBarVisibility="Never">
+                    <ScrollView Grid.Row="1"
+                                Orientation="Horizontal"
+                                HorizontalScrollBarVisibility="Never">
                         <microcharts:ChartView
-                x:Name="GastosChart"
-                BackgroundColor="Transparent"
-                HeightRequest="220"
-                WidthRequest="600" />
+                            x:Name="GastosChart"
+                            BackgroundColor="Transparent"
+                            HeightRequest="220"
+                            WidthRequest="600" />
                     </ScrollView>
 
                 </Grid>
