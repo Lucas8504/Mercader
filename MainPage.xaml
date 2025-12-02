@@ -109,7 +109,7 @@
 
             <!--  SECCIÓN ENCARGOS COMPLETA  -->
             <Frame
-                Padding="20"
+                Padding="15"
                 BackgroundColor="#2a2a2a"
                 CornerRadius="12"
                 HasShadow="True">
@@ -118,18 +118,16 @@
 
                     <Grid Grid.Row="0" ColumnDefinitions="*, Auto">
 
-
-
                         <!-- Encabezado de Encargos -->
-                        <VerticalStackLayout Grid.Column="0" VerticalOptions="Center" Spacing="8">
+                        <VerticalStackLayout Grid.Column="0" VerticalOptions="Center" Spacing="2">
                             <Label
                                 FontAttributes="Bold"
-                                FontSize="18"
-                                HorizontalOptions="Center"
+                                FontSize="16"
                                 Text="📦 ANÁLISIS DE ENCARGOS"
                                 TextColor="#ff6b35" />
                             <BoxView
                                 HeightRequest="2"
+                                WidthRequest="100"
                                 BackgroundColor="#ff6b35"
                                 HorizontalOptions="Start"
                                 Opacity="0.6" />
@@ -137,26 +135,27 @@
 
                         <!-- Resumen de Encargos -->
 
-                        <VerticalStackLayout Spacing="3">
+                        <VerticalStackLayout Grid.Column="1" VerticalOptions="Center" HorizontalOptions="End" Spacing="0">
                             <Label
                                 Text="TOTAL PERÍODO"
-                                FontSize="12"
+                                FontSize="10"
                                 TextColor="#7d7c7c"
-                                HorizontalOptions="Center" />
+                                HorizontalOptions="End"/>
                             <Label
                                 x:Name="EncargosPeriodoLabel"
                                 FontAttributes="Bold"
-                                FontSize="16"
+                                FontSize="16 "
                                 TextColor="#ff6b35"
-                                HorizontalOptions="Center" />
+                                HorizontalOptions="End" />
                         </VerticalStackLayout>
                     </Grid>
 
                     <!-- Gráfico de Encargos -->
-                    <microcharts:ChartView
-                        x:Name="EncargosChart"
-                        BackgroundColor="#2a2a2a"
-                        HeightRequest="220" />
+                    <ScrollView Grid.Row="1" HorizontalScrollBarVisibility="Never" Orientation="Horizontal">
+                        <microcharts:ChartView
+                            x:Name="EncargosChart"
+                            BackgroundColor="#2a2a2a"
+                        HeightRequest="220" WidthRequest="600" /> </ScrollView>
 
                 </Grid>
             </Frame>
