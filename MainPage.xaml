@@ -125,12 +125,7 @@
                                 FontSize="16"
                                 Text="📦 ANÁLISIS DE ENCARGOS"
                                 TextColor="#ff6b35" />
-                            <BoxView
-                                HeightRequest="2"
-                                WidthRequest="100"
-                                BackgroundColor="#ff6b35"
-                                HorizontalOptions="Start"
-                                Opacity="0.6" />
+
                         </VerticalStackLayout>
 
                         <!-- Resumen de Encargos -->
@@ -177,15 +172,10 @@
                             <Label
                                 FontAttributes="Bold"
                                 FontSize="16"
-                                HorizontalOptions="Center"
+                                HorizontalOptions="Start"
                                 Text="💵​ ANÁLISIS DE VENTAS"
                                 TextColor="#2e9449" />
-                            <BoxView
-                                HeightRequest="2"
-                                WidthRequest="100"
-                                BackgroundColor="#2e9449"
-                                HorizontalOptions="Start"
-                                Opacity="0.6" />
+
                         </VerticalStackLayout>
 
                         <!-- Resumen de Ventas -->
@@ -235,16 +225,12 @@
                         <!-- Encabezado de Ganancias -->
                         <VerticalStackLayout Grid.Column="0" VerticalOptions="Center" Spacing="2">
                             <Label
+
                                 FontAttributes="Bold"
-                                FontSize="18"
+                                FontSize="15"
                                 Text="💰 ANÁLISIS DE GANANCIAS"
                                 TextColor="#1f6bc2" />
-                            <BoxView
-                                HeightRequest="2"
-                                WidthRequest="100"
-                                BackgroundColor="#1f6bc2"
-                                HorizontalOptions="Start"
-                                Opacity="0.6" />
+
                         </VerticalStackLayout>
 
                         <!-- Resumen de Ganancias -->
@@ -255,8 +241,8 @@
                             Spacing="0">
 
                             <Label
-                                Text="GANANCIA PERÍODO"
-                                FontSize="12"
+                                Text="TOTAL PERÍODO"
+                                FontSize="11"
                                 TextColor="#7d7c7c"
                                 HorizontalOptions="Center" />
                             <Label
@@ -283,11 +269,12 @@
                     </Grid>
 
                     <!-- Gráfico de Ganancias -->
-                    <ScrollView Grid.Row="1">
+                    <ScrollView Grid.Row="1" Orientation="Horizontal" HorizontalScrollBarVisibility="Always">
                         <microcharts:ChartView
                             x:Name="GananciasChart"
                             BackgroundColor="#2a2a2a"
-                            HeightRequest="220" />
+                            HeightRequest="220"
+                            WidthRequest="600"/>
 
                     </ScrollView>
                 </Grid>
