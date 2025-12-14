@@ -504,10 +504,10 @@ namespace Mercader
                 VentasChart.Chart = new LineChart
                 {
                     Entries = entries,
-                    LabelTextSize = 14,
-                    ValueLabelTextSize = 12,
+                    LabelTextSize = 24,
+                    ValueLabelTextSize = 26,
                     BackgroundColor = SKColor.Parse("#2a2a2a"),
-                    LineSize = 3,
+                    LineSize = 4,
                     PointSize = 8,
                     IsAnimated = true,
                     AnimationDuration = TimeSpan.FromMilliseconds(600),
@@ -540,10 +540,10 @@ namespace Mercader
                 GastosChart.Chart = new LineChart
                 {
                     Entries = entries,
-                    LabelTextSize = 20,
-                    ValueLabelTextSize = 22,
+                    LabelTextSize = 24,
+                    ValueLabelTextSize = 26,
                     BackgroundColor = SKColor.Parse("#2a2a2a"),
-                    LineSize = 3,
+                    LineSize = 4,
                     PointSize = 8,
                     IsAnimated = true,
                     AnimationDuration = TimeSpan.FromMilliseconds(500),
@@ -576,10 +576,10 @@ namespace Mercader
                 EncargosChart.Chart = new LineChart
                 {
                     Entries = entries,
-                    LabelTextSize = 20,
-                    ValueLabelTextSize = 22,
+                    LabelTextSize = 24,
+                    ValueLabelTextSize = 26,
                     BackgroundColor = SKColor.Parse("#2a2a2a"),
-                    LineSize = 3,
+                    LineSize = 4,
                     PointSize = 8,
                     IsAnimated = true,
                     AnimationDuration = TimeSpan.FromMilliseconds(600),
@@ -621,10 +621,10 @@ namespace Mercader
                 GananciasChart.Chart = new LineChart
                 {
                     Entries = entries,
-                    LabelTextSize = 14,
-                    ValueLabelTextSize = 12,
+                    LabelTextSize = 24,
+                    ValueLabelTextSize = 26,
                     BackgroundColor = SKColor.Parse("#2a2a2a"),
-                    LineSize = 3,
+                    LineSize = 4,
                     PointSize = 8,
                     IsAnimated = true,
                     AnimationDuration = TimeSpan.FromMilliseconds(600),
