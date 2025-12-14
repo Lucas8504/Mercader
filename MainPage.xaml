@@ -96,7 +96,7 @@
 
                     <ScrollView Grid.Row="1"
                                 Orientation="Horizontal"
-                                HorizontalScrollBarVisibility="Never">
+                                HorizontalScrollBarVisibility="Always">
                         <microcharts:ChartView
                             x:Name="GastosChart"
                             BackgroundColor="Transparent"
@@ -146,7 +146,7 @@
                     </Grid>
 
                     <!-- Gráfico de Encargos -->
-                    <ScrollView Grid.Row="1" HorizontalScrollBarVisibility="Never" Orientation="Horizontal">
+                    <ScrollView Grid.Row="1" HorizontalScrollBarVisibility="Always" Orientation="Horizontal">
                         <microcharts:ChartView
                             x:Name="EncargosChart"
                             BackgroundColor="#2a2a2a"
@@ -199,7 +199,7 @@
 
                     <!-- Gráfico de Ventas -->
 
-                    <ScrollView Grid.Row="1" HorizontalScrollBarVisibility="Never" Orientation="Horizontal">
+                    <ScrollView Grid.Row="1" HorizontalScrollBarVisibility="Always" Orientation="Horizontal">
                         <microcharts:ChartView
                             x:Name="VentasChart"
                             BackgroundColor="#2a2a2a"
