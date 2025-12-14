@@ -82,7 +82,7 @@
 
                         <VerticalStackLayout Grid.Column="0" VerticalOptions="Center" Spacing="2">
                             <Label Text="💸 ANÁLISIS DE GASTOS"
-                                   FontAttributes="Bold" FontSize="16" TextColor="#d63384" />
+                                   FontAttributes="Bold" FontSize="16" TextColor="#6e0a24" />
 
                         </VerticalStackLayout>
 
@@ -90,7 +90,7 @@
                             <Label Text="TOTAL PERÍODO" FontSize="10" TextColor="#7d7c7c" HorizontalOptions="End" />
                             <Label x:Name="GastosPeriodoLabel"
                                    Text="$ 0.00"
-                                   FontAttributes="Bold" FontSize="18" TextColor="#d63384" HorizontalOptions="End" />
+                                   FontAttributes="Bold" FontSize="18" TextColor="#6e0a24" HorizontalOptions="End" />
                         </VerticalStackLayout>
                     </Grid>
 

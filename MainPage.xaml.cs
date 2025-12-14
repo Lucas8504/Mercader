@@ -532,7 +532,7 @@ namespace Mercader
                 {
                     Label = d.Periodo,
                     ValueLabel = FormatearValorEntero(d.Total),
-                    Color = SKColor.Parse("#d63384"),
+                    Color = SKColor.Parse("#6e0a24"),
                     TextColor = SKColor.Parse("#E0E0E0"),
                     ValueLabelColor = SKColor.Parse("#FFFFFF")
                 }).ToArray();
