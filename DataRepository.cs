@@ -7,10 +7,12 @@ namespace Mercader
         private readonly string _dbPath;
         private readonly SemaphoreSlim _semaphore = new(1, 1);
 
-        public DataRepository(string dbPath)
+        public DataRepository()
         {
-            ArgumentException.ThrowIfNullOrEmpty(dbPath);
-            _dbPath = dbPath;
+            _dbPath = Path.Combine(
+                FileSystem.AppDataDirectory,
+                "MercaderDB.db3"
+            );
         }
 
         public async Task InitializeDatabaseAsync()
