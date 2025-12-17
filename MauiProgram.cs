@@ -19,6 +19,7 @@ namespace Mercader
             string dbPath = Path.Combine(FileSystem.AppDataDirectory, "MercaderDB.db3");
             builder.Services.AddSingleton<DataRepository>();
             builder.Services.AddSingleton<MainPage>();
+            builder.Services.AddSingleton<AppShell>();
 
 
 #if DEBUG

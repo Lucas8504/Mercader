@@ -9,13 +9,13 @@ namespace Mercader
     public partial class MainPage : ContentPage
     {
         public Balance balance;
-        private readonly DataRepository _dataRepo;
+        private readonly DataRepository _repo;
 
-        public MainPage(DataRepository dataRepo)
+        public MainPage(DataRepository repo)
         {
             InitializeComponent();
             balance = new Balance();
-            this._dataRepo = dataRepo;
+            this._repo = repo;
 
             // Configurar el selector de período con el valor por defecto
             PeriodSelector.SelectedIndex = 2; // "Meses" por defecto

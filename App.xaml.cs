@@ -8,21 +8,19 @@ namespace Mercader
         public static DataRepository DataRepo =>
             _dataRepo ?? throw new InvalidOperationException("DataRepo no está inicializado.");
 
-        public App()
+        public App(AppShell shell, DataRepository repo)
         {
             InitializeComponent();
 
-            // Inicializar SQLite primero
             SQLitePCL.Batteries_V2.Init();
 
-            // Obtener el servicio DataRepository del contenedor de servicios
-            _dataRepo = MauiProgram.CreateMauiApp().Services.GetRequiredService<DataRepository>();
+            // Inicializás la DB UNA SOLA VEZ
+            Task.Run(async () =>
+            {
+                await repo.InitializeDatabaseAsync();
+            });
 
-            // Establecer MainPage antes de la inicialización de la base de datos
-            MainPage = new AppShell(new MainPage(_dataRepo));
-
-            // Inicializar la base de datos después de establecer MainPage
-            InitializeDatabaseAsync().ConfigureAwait(false);
+            MainPage = shell;
         }
 
         private async Task InitializeDatabaseAsync()
