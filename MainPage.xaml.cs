@@ -162,28 +162,17 @@ namespace Mercader
         {
             try
             {
-                var encargoModal = new EncModal(this);
-                await Navigation.PushModalAsync(encargoModal);
-                var nuevoEncargo = encargoModal.Encargo;
-
-                if (nuevoEncargo != null)
-                {
-                    await App.DataRepo.SaveEncargoAsync(nuevoEncargo);
-                    balance.Encargos.Add(nuevoEncargo);
-
-                    await MainThread.InvokeOnMainThreadAsync(() =>
-                    {
-                        ActualizarEtiquetaEncargos();
-                        ActualizarEtiquetaGanancias();
-                        ActualizarEtiquetasPeriodo();
-                    });
-
-                    await ActualizarGraficosAsync();
-                }
+                await Navigation.PushModalAsync(
+                    new EncModal(this, _repo)
+                );
             }
             catch (Exception ex)
             {
-                await DisplayAlert("Error", $"No se pudo agregar el encargo: {ex.Message}", "OK");
+                await DisplayAlert(
+                    "Error",
+                    $"No se pudo abrir el formulario de encargo: {ex.Message}",
+                    "OK"
+                );
             }
         }
 
