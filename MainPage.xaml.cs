@@ -3,6 +3,7 @@ using SkiaSharp;
 using Mercader.Helpers;
 using System.Globalization;
 using Microcharts;
+using System.Diagnostics;
 
 namespace Mercader
 {
@@ -295,17 +296,14 @@ namespace Mercader
                     _ => AgruparEncargosPorMes(encargos)
                 };
 
-                MainThread.BeginInvokeOnMainThread(() =>
-                {
-                    ConfigurarGraficoVentas(ventasAgrupadas, periodo);
-                    ConfigurarGraficoGastos(gastosAgrupados, periodo);
-                    ConfigurarGraficoEncargos(encargosAgrupados, periodo);
-                    ConfigurarGraficoGanancias(ventasAgrupadas, gastosAgrupados, periodo);
-                });
+                ConfigurarGraficoVentas(ventasAgrupadas, periodo);
+                ConfigurarGraficoGastos(gastosAgrupados, periodo);
+                ConfigurarGraficoEncargos(encargosAgrupados, periodo);
+                ConfigurarGraficoGanancias(ventasAgrupadas, gastosAgrupados, periodo);
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Error al actualizar gráficos: {ex}");
+                Debug.WriteLine($"Error al actualizar gráficos: {ex}");
             }
 
             return Task.CompletedTask;
