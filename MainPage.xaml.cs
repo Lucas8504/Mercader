@@ -21,33 +21,31 @@ namespace Mercader
             PeriodSelector.SelectedIndex = 2; // "Meses" por defecto
         }
 
-        protected override void OnAppearing()
+        protected override async void OnAppearing()
         {
             base.OnAppearing();
-            CargarDatosAsync().ConfigureAwait(false);
+
+            await CargarDatosAsync();
         }
 
         private async Task CargarDatosAsync()
         {
             try
             {
-                var encargos = await App.DataRepo.GetEncargosAsync();
-                var gastos = await App.DataRepo.GetGastosAsync();
-                var ventas = await App.DataRepo.GetVentasAsync();
+                var encargos = await _repo.GetEncargosAsync();
+                var gastos = await _repo.GetGastosAsync();
+                var ventas = await _repo.GetVentasAsync();
 
                 balance.Encargos = encargos;
                 balance.Gastos = gastos;
                 balance.Ventas = ventas;
 
                 // Actualizar todas las etiquetas en el hilo principal
-                await MainThread.InvokeOnMainThreadAsync(() =>
-                {
-                    ActualizarEtiquetaEncargos();
-                    ActualizarEtiquetaGastos();
-                    ActualizarEtiquetaVentas();
-                    ActualizarEtiquetaGanancias();
-                    ActualizarEtiquetasPeriodo();
-                });
+                ActualizarEtiquetaEncargos();
+                ActualizarEtiquetaGastos();
+                ActualizarEtiquetaVentas();
+                ActualizarEtiquetaGanancias();
+                ActualizarEtiquetasPeriodo();
 
                 await ActualizarGraficosAsync();
             }
