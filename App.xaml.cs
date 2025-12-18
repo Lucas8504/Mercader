@@ -14,7 +14,6 @@ namespace Mercader
 
             SQLitePCL.Batteries_V2.Init();
 
-            // Inicializás la DB UNA SOLA VEZ
             Task.Run(async () =>
             {
                 await repo.InitializeDatabaseAsync();

@@ -2,24 +2,20 @@
 {
     public partial class AppShell : Shell
     {
-        public AppShell(ShellItem mainPage)
+        public AppShell()
         {
             InitializeComponent();
-            // Configurar MainPage como página principal
-            Routing.RegisterRoute("MainPage", typeof(MainPage));
+
             
-
-            // Establecer MainPage como la página raíz
-            
-
-
+            Routing.RegisterRoute(nameof(MainPage), typeof(MainPage));
+            Routing.RegisterRoute(nameof(Gastos), typeof(Gastos));
+            Routing.RegisterRoute(nameof(Encargos), typeof(Encargos));
+            Routing.RegisterRoute(nameof(Venta), typeof(Venta));
         }
 
         protected override bool OnBackButtonPressed()
         {
-            // Devolver true previene la acción del botón atrás
             return true;
         }
-
     }
 }
