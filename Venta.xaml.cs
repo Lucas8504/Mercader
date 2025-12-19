@@ -6,10 +6,12 @@ namespace Mercader
 {
     public partial class Venta : ContentPage
     {
+        private readonly DataRepository _repo;
         private bool _isLoading = false;
 
-        public Venta()
+        public Venta(DataRepository repo)
         {
+            _repo = repo ?? throw new ArgumentNullException(nameof(repo));
             InitializeComponent();
             ConfigurarPagina();
         }
@@ -40,7 +42,7 @@ namespace Mercader
         {
             try
             {
-                var ventas = await App.DataRepo.GetVentasAsync();
+                var ventas = await _repo.GetVentasAsync();
 
                 // Verificar si hay datos
                 if (ventas?.Count > 0)
@@ -189,7 +191,7 @@ namespace Mercader
                     _isLoading = true;
 
                     // Eliminar de la base de datos
-                    await App.DataRepo.DeleteVentaAsync(venta);
+                    await _repo.DeleteVentaAsync(venta);
 
                     // Mostrar mensaje de éxito
                     await DisplayAlert("✅ Éxito",
