@@ -6,10 +6,12 @@ namespace Mercader
 {
     public partial class Gastos : ContentPage
     {
+        private readonly DataRepository _repo;
         private bool _isLoading = false;
 
-        public Gastos()
+        public Gastos(DataRepository repo)
         {
+            _repo = repo ?? throw new ArgumentNullException(nameof(repo));
             InitializeComponent();
             ConfigurarPagina();
         }
@@ -38,11 +40,12 @@ namespace Mercader
         /// </summary>
         private async Task CargarGastos()
         {
-            
-                var gastos = await App.DataRepo.GetGastosAsync();
 
-                // Verificar si hay datos
-                if (gastos?.Count > 0)
+            var gastos = await _repo.GetGastosAsync();
+           
+
+            // Verificar si hay datos
+            if (gastos?.Count > 0)
                 {
                     GastosCollectionView.ItemsSource = gastos;
                     Console.WriteLine($"✅ Se cargaron {gastos.Count} gastos correctamente");
@@ -182,7 +185,7 @@ namespace Mercader
                     _isLoading = true;
 
                     // Eliminar de la base de datos
-                    await App.DataRepo.DeleteGastoAsync(gasto);
+                    await _repo.DeleteGastoAsync(gasto);
 
                     // Mostrar mensaje de éxito
                     await DisplayAlert("✅ Éxito",

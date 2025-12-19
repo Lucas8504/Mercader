@@ -14,13 +14,15 @@ namespace Mercader
         /// <summary>
         /// Indica si hay una operación en curso para evitar ejecuciones simultáneas.
         /// </summary>
+        private readonly DataRepository _repo;
         private bool _isLoading = false;
 
         /// <summary>
         /// Constructor principal. Inicializa los componentes y configura la interfaz.
         /// </summary>
-        public Encargos()
+        public Encargos(DataRepository repo)
         {
+            _repo = repo ?? throw new ArgumentNullException(nameof(repo));
             InitializeComponent();
             ConfigurarPagina();
         }
@@ -47,7 +49,7 @@ namespace Mercader
         /// </summary>
         private async Task CargarEncargos()
         {
-            var encargos = await App.DataRepo.GetEncargosAsync();
+            var encargos = await _repo.GetEncargosAsync();
 
             if (encargos?.Count > 0)
             {
@@ -330,7 +332,7 @@ namespace Mercader
                 if (confirmar)
                 {
                     _isLoading = true;
-                    await App.DataRepo.DeleteEncargoAsync(encargo);
+                    await _repo.DeleteEncargoAsync(encargo);
                     await DisplayAlert("✅ Éxito", "El encargo se eliminó correctamente", "OK");
                     await CargarEncargos();
                 }
@@ -389,8 +391,8 @@ namespace Mercader
                         Fecha = DateTime.Now
                     };
 
-                    await App.DataRepo.SaveVentasAsync(venta);
-                    await App.DataRepo.DeleteEncargoAsync(encargo);
+                    await _repo.SaveVentasAsync(venta);
+                    await _repo.DeleteEncargoAsync(encargo);
 
                     await DisplayAlert("✅ Venta Concretada",
                         "La venta se registró correctamente y el encargo fue eliminado", "OK");
