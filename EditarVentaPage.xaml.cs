@@ -2,16 +2,19 @@ namespace Mercader;
 
 public partial class EditarVentaPage : ContentPage
 {
-    private Ventas _venta;
+    private readonly DataRepository _repo;
+    private readonly Ventas _venta;
 
-    public EditarVentaPage(Ventas venta)
+    public EditarVentaPage(Ventas venta, DataRepository repo)
     {
+        _repo = repo ?? throw new ArgumentNullException(nameof(repo));
+        _venta = venta ?? throw new ArgumentNullException(nameof(venta));
+
         InitializeComponent();
-        _venta = venta;
+
         DescripcionEntry.Text = _venta.Descripcion;
         PrecioEntry.Text = _venta.Precio.ToString();
         CantidadEntry.Text = _venta.Cantidad.ToString();
-        
     }
 
     private async void OnGuardarClicked(object sender, EventArgs e)
@@ -20,7 +23,7 @@ public partial class EditarVentaPage : ContentPage
         _venta.Precio = decimal.Parse(PrecioEntry.Text);
         _venta.Cantidad = decimal.Parse(CantidadEntry.Text);
 
-        await App.DataRepo.SaveVentasAsync(_venta);
+        await _repo.SaveVentasAsync(_venta);
         await DisplayAlert("Éxito", "Venta actualizada correctamente", "OK");
         await Navigation.PopAsync();
     }
