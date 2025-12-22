@@ -159,7 +159,7 @@ namespace Mercader
         {
             try
             {
-                await Navigation.PushAsync(new EditarVentaPage(venta));
+                await Navigation.PushAsync(new EditarVentaPage(venta,_repo));
             }
             catch (Exception ex)
             {

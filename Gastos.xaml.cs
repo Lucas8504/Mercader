@@ -153,7 +153,7 @@ namespace Mercader
         {
             try
             {
-                await Navigation.PushAsync(new EditarGastoPage(gasto));
+                await Navigation.PushAsync(new EditarGastoPage(gasto, _repo));
             }
             catch (Exception ex)
             {
