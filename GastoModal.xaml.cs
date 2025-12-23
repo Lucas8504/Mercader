@@ -6,16 +6,18 @@ namespace Mercader;
 public partial class GastoModal : ContentPage
 {
     private readonly MainPage _mainPage;
+    private readonly DataRepository _repo;
     public Gasto Gasto { get; private set; } = null!; // Null forgiving operator
 
-    public GastoModal(MainPage mainPage)
+    public GastoModal(MainPage mainPage, DataRepository repo)
     {
         ArgumentNullException.ThrowIfNull(mainPage);
-
+        ArgumentNullException.ThrowIfNull(repo);
 
         InitializeComponent();
-        _mainPage = mainPage;
 
+        _mainPage = mainPage;
+        _repo = repo;
     }
 
     private async void OnAgregarGastoClicked(object sender, EventArgs e)
@@ -48,7 +50,7 @@ public partial class GastoModal : ContentPage
     private async Task SaveGastoAsync()
     {
         _mainPage.balance.Gastos.Add(Gasto);
-        await App.DataRepo.SaveGastoAsync(Gasto);
+        await _repo.SaveGastoAsync(Gasto);
         _mainPage.ActualizarEtiquetaGastos();
         await Navigation.PopModalAsync();
     }
