@@ -55,7 +55,7 @@ public partial class DetalleGasto : ContentPage
         try
         {
             // Navega a la página de edición pasando el gasto actual
-            await Navigation.PushAsync(new EditarGastoPage(_gasto));
+            await Navigation.PushAsync(new EditarGastoPage(_gasto, _repo));
         }
         catch (Exception ex)
         {

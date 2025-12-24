@@ -2,14 +2,16 @@ namespace Mercader;
 
 public partial class DetalleVenta : ContentPage
 {
+    private readonly DataRepository _repo;
     private Ventas _venta;
 
-    public DetalleVenta(Ventas venta)
+    public DetalleVenta(Ventas venta, DataRepository repo)
     {
         InitializeComponent();
         _venta = venta;
         BindingContext = venta;
         CalcularYMostrarTotal();
+        _repo = repo;
     }
 
     private void CalcularYMostrarTotal()
@@ -25,7 +27,7 @@ public partial class DetalleVenta : ContentPage
     {
         try
         {
-            await Navigation.PushAsync(new EditarVentaPage(_venta));
+            await Navigation.PushAsync(new EditarVentaPage(_venta, _repo));
         }
         catch (Exception ex)
         {
@@ -43,7 +45,7 @@ public partial class DetalleVenta : ContentPage
         {
             try
             {
-                await App.DataRepo.DeleteVentaAsync(_venta);
+                await _repo.DeleteVentaAsync(_venta);
                 await DisplayAlert("Éxito", "Venta eliminada correctamente", "OK");
 
                 // Volver a la página anterior

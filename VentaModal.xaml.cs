@@ -5,17 +5,20 @@ namespace Mercader;
 public partial class VentaModal : ContentPage
 {
     private readonly MainPage _mainPage;
+    private readonly DataRepository _repo;
     public Ventas Venta { get; private set; } = null!; // Null forgiving operator
 
 
-    public VentaModal(MainPage mainPage)
+    public VentaModal(MainPage mainPage, DataRepository repo)
     {
         ArgumentNullException.ThrowIfNull(mainPage);
+        ArgumentNullException.ThrowIfNull(repo);
 
         InitializeComponent();
         _mainPage = mainPage;
+        _repo = repo;
 
-        
+
     }
 
 
@@ -50,7 +53,7 @@ public partial class VentaModal : ContentPage
     private async Task SaveVentaAsync()
     {
         _mainPage.balance.Ventas.Add(Venta);
-        await App.DataRepo.SaveVentasAsync(Venta);
+        await _repo.SaveVentasAsync(Venta);
         _mainPage.ActualizarEtiquetaVentas();
         await Navigation.PopModalAsync();
     }

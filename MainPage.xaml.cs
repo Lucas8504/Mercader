@@ -186,7 +186,7 @@ namespace Mercader
 
                 if (nuevaVenta != null)
                 {
-                    await App.DataRepo.SaveVentasAsync(nuevaVenta);
+                    await _repo.SaveVentasAsync(nuevaVenta);
                     balance.Ventas.Add(nuevaVenta);
 
                     await MainThread.InvokeOnMainThreadAsync(() =>

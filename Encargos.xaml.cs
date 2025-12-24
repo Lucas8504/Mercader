@@ -22,8 +22,8 @@ namespace Mercader
         /// </summary>
         public Encargos(DataRepository repo)
         {
-            _repo = repo ?? throw new ArgumentNullException(nameof(repo));
             InitializeComponent();
+            _repo = repo;
             ConfigurarPagina();
         }
 
@@ -229,7 +229,7 @@ namespace Mercader
                 {
                     await frame.ScaleTo(0.95, 100);
                     await frame.ScaleTo(1, 100);
-                    await Navigation.PushAsync(new DetalleEncargo(encargo));
+                    await Navigation.PushAsync(new DetalleEncargo(encargo, _repo));
                 }
             }
             catch (Exception ex)
@@ -302,7 +302,7 @@ namespace Mercader
         {
             try
             {
-                await Navigation.PushAsync(new EditarEncargoPage(encargo));
+                await Navigation.PushAsync(new EditarEncargoPage(encargo, _repo));
             }
             catch (Exception ex)
             {
@@ -354,7 +354,7 @@ namespace Mercader
         {
             try
             {
-                await Navigation.PushAsync(new DetalleEncargo(encargo));
+                await Navigation.PushAsync(new DetalleEncargo(encargo, _repo));
             }
             catch (Exception ex)
             {
