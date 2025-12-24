@@ -2,14 +2,16 @@ namespace Mercader;
 
 public partial class EditarEncargoPage : ContentPage
 {
+    private readonly DataRepository _repo;
     private Encargo _encargo;
 
-    public EditarEncargoPage(Encargo encargo)
+    public EditarEncargoPage(Encargo encargo, DataRepository repo)
     {
         InitializeComponent();
         _encargo = encargo;
         CargarDatos();
         SuscribirEventos();
+        _repo = repo;
     }
 
     private void CargarDatos()
@@ -116,7 +118,7 @@ public partial class EditarEncargoPage : ContentPage
             _encargo.Cantidad = cantidad;
 
             // Guardar en la base de datos
-            await App.DataRepo.SaveEncargoAsync(_encargo);
+            await _repo.SaveEncargoAsync(_encargo);
 
             // Mostrar mensaje de éxito
             await DisplayAlert("Éxito", "Encargo actualizado correctamente", "OK");

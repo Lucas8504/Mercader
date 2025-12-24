@@ -2,14 +2,16 @@ namespace Mercader;
 
 public partial class DetalleEncargo : ContentPage
 {
+    private readonly DataRepository _repo;
     private Encargo _encargo;
 
-    public DetalleEncargo(Encargo encargo)
+    public DetalleEncargo(Encargo encargo, DataRepository repo)
     {
         InitializeComponent();
         _encargo = encargo;
         BindingContext = _encargo;
         CalcularTotal();
+        _repo = repo;
     }
 
     private void CalcularTotal()
@@ -41,8 +43,8 @@ public partial class DetalleEncargo : ContentPage
                     Fecha = DateTime.Now
                 };
 
-                await App.DataRepo.SaveVentasAsync(venta);
-                await App.DataRepo.DeleteEncargoAsync(_encargo);
+                await _repo.SaveVentasAsync(venta);
+                await _repo.DeleteEncargoAsync(_encargo);
 
                 await DisplayAlert("Éxito", "Venta concretada correctamente", "OK");
                 await Navigation.PopAsync(); // Volver a la página anterior
@@ -77,7 +79,7 @@ public partial class DetalleEncargo : ContentPage
         try
         {
             // Recargar el encargo desde la base de datos para obtener los datos más recientes
-            var encargosActualizados = await App.DataRepo.GetEncargosAsync();
+            var encargosActualizados = await _repo.GetEncargosAsync();
             if (encargosActualizados != null && encargosActualizados.Any())
             {
                 // Asumimos que queremos el encargo correspondiente al ID actual
@@ -108,7 +110,7 @@ public partial class DetalleEncargo : ContentPage
         {
             try
             {
-                await App.DataRepo.DeleteEncargoAsync(_encargo);
+                await _repo.DeleteEncargoAsync(_encargo);
                 await DisplayAlert("Éxito", "Encargo eliminado correctamente", "OK");
                 await Navigation.PopAsync(); // Volver a la página anterior
             }
