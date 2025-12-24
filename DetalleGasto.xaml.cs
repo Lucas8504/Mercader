@@ -9,13 +9,14 @@ public partial class DetalleGasto : ContentPage
     /// <summary>
     /// Instancia del gasto que se está visualizando en esta página.
     /// </summary>
+    private readonly DataRepository _repo;
     private Gasto _gasto;
 
     /// <summary>
     /// Constructor de la página DetalleGasto.
     /// </summary>
     /// <param name="gasto">El objeto Gasto que se desea visualizar y gestionar.</param>
-    public DetalleGasto(Gasto gasto)
+    public DetalleGasto(Gasto gasto, DataRepository repo)
     {
         InitializeComponent();
         _gasto = gasto;
@@ -25,6 +26,7 @@ public partial class DetalleGasto : ContentPage
 
         // Calcula y muestra el total inicial
         CalcularYMostrarTotal();
+        _repo = repo;
     }
 
     /// <summary>
@@ -80,7 +82,7 @@ public partial class DetalleGasto : ContentPage
             try
             {
                 // Elimina el gasto del repositorio de datos
-                await App.DataRepo.DeleteGastoAsync(_gasto);
+                await _repo.DeleteGastoAsync(_gasto);
 
                 // Muestra mensaje de éxito
                 await DisplayAlert("Éxito", "Gasto eliminado correctamente", "OK");
