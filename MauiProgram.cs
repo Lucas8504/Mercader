@@ -1,4 +1,5 @@
-﻿using Microcharts.Maui;
+﻿using Mercader.ViewModels;
+using Microcharts.Maui;
 using Microsoft.Extensions.Logging;
 
 namespace Mercader
@@ -25,8 +26,9 @@ namespace Mercader
             builder.Services.AddTransient<DetalleEncargo>();
             builder.Services.AddTransient<EditarEncargoPage>();
             builder.Services.AddTransient<Venta>();
-
             builder.Services.AddSingleton<DataRepository>();
+            builder.Services.AddTransient<MainViewModel>();
+
 
 
 #if DEBUG

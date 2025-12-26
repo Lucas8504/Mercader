@@ -4,17 +4,22 @@ using Mercader.Helpers;
 using System.Globalization;
 using Microcharts;
 using System.Diagnostics;
+using Mercader.ViewModels;
 
 namespace Mercader
 {
     public partial class MainPage : ContentPage
     {
+        private readonly MainViewModel _vm;
+
         public Balance balance;
         private readonly DataRepository _repo;
 
-        public MainPage(DataRepository repo)
+        public MainPage(DataRepository repo, MainViewModel vm)
         {
             InitializeComponent();
+            _vm = vm;
+            BindingContext = _vm;
             balance = new Balance();
             this._repo = repo;
 
