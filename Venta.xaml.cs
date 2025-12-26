@@ -91,7 +91,7 @@ namespace Mercader
                         await frame.ScaleTo(1, 100);
 
                         // Navegar a detalles
-                        await Navigation.PushAsync(new DetalleVenta(venta));
+                        await Navigation.PushAsync(new DetalleVenta(venta,_repo));
                     }
                 }
             }

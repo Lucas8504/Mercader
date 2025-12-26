@@ -87,7 +87,7 @@ namespace Mercader
                         await frame.ScaleTo(1, 100);
 
                         // Navegar a detalles
-                        await Navigation.PushAsync(new DetalleGasto(gasto));
+                        await Navigation.PushAsync(new DetalleGasto(gasto, _repo));
                     }
                 }
             }
