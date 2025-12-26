@@ -60,7 +60,7 @@ public partial class DetalleEncargo : ContentPage
     {
         try
         {
-            await Navigation.PushAsync(new EditarEncargoPage(_encargo));
+            await Navigation.PushAsync(new EditarEncargoPage(_encargo, _repo));
         }
         catch (Exception ex)
         {

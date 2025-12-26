@@ -180,24 +180,9 @@ namespace Mercader
         {
             try
             {
-                var ventaModal = new VentaModal(this);
-                await Navigation.PushModalAsync(ventaModal);
-                var nuevaVenta = ventaModal.Venta;
-
-                if (nuevaVenta != null)
-                {
-                    await _repo.SaveVentasAsync(nuevaVenta);
-                    balance.Ventas.Add(nuevaVenta);
-
-                    await MainThread.InvokeOnMainThreadAsync(() =>
-                    {
-                        ActualizarEtiquetaVentas();
-                        ActualizarEtiquetaGanancias();
-                        ActualizarEtiquetasPeriodo();
-                    });
-
-                    await ActualizarGraficosAsync();
-                }
+                var modal = new VentaModal(this, _repo);
+                await Navigation.PushModalAsync(modal);
+                
             }
             catch (Exception ex)
             {
@@ -209,30 +194,15 @@ namespace Mercader
         {
             try
             {
-                var gastoModal = new GastoModal(this);
-                await Navigation.PushModalAsync(gastoModal);
-                var nuevoGasto = gastoModal.Gasto;
-
-                if (nuevoGasto != null)
-                {
-                    await App.DataRepo.SaveGastoAsync(nuevoGasto);
-                    balance.Gastos.Add(nuevoGasto);
-
-                    await MainThread.InvokeOnMainThreadAsync(() =>
-                    {
-                        ActualizarEtiquetaGastos();
-                        ActualizarEtiquetaGanancias();
-                        ActualizarEtiquetasPeriodo();
-                    });
-
-                    await ActualizarGraficosAsync();
-                }
+                var modal = new GastoModal(this, _repo);
+                await Navigation.PushModalAsync(modal);
             }
             catch (Exception ex)
             {
-                await DisplayAlert("Error", $"No se pudo agregar el gasto: {ex.Message}", "OK");
+                await DisplayAlert("Error", $"No se pudo abrir el modal: {ex.Message}", "OK");
             }
         }
+
 
         #endregion
 
