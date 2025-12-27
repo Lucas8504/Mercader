@@ -88,8 +88,7 @@
 
                         <VerticalStackLayout Grid.Column="1" VerticalOptions="Center" HorizontalOptions="End" Spacing="0">
                             <Label Text="TOTAL PERÍODO" FontSize="10" TextColor="#7d7c7c" HorizontalOptions="End" />
-                            <Label x:Name="GastosPeriodoLabel"
-                                   Text="$ 0.00"
+                            <Label Text="{Binding TotalGastos}"
                                    FontAttributes="Bold" FontSize="18" TextColor="#6e0a24" HorizontalOptions="End" />
                         </VerticalStackLayout>
                     </Grid>
@@ -137,7 +136,7 @@
                                 TextColor="#7d7c7c"
                                 HorizontalOptions="End"/>
                             <Label
-                                x:Name="EncargosPeriodoLabel"
+                                Text="{Binding TotalEncargos}"
                                 FontAttributes="Bold"
                                 FontSize="16 "
                                 TextColor="#ff6b35"
@@ -246,7 +245,7 @@
                                 TextColor="#7d7c7c"
                                 HorizontalOptions="Center" />
                             <Label
-                                x:Name="GananciasPeriodoLabel"
+                                Text="{Binding Ganancias}"
                                 FontAttributes="Bold"
                                 FontSize="16"
                                 TextColor="#1f6bc2"

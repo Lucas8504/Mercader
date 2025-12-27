@@ -10,16 +10,17 @@ namespace Mercader
 {
     public partial class MainPage : ContentPage
     {
-        private readonly MainViewModel _vm;
-
+        public MainViewModel VM { get; private set; }
+        
         public Balance balance;
         private readonly DataRepository _repo;
 
         public MainPage(DataRepository repo, MainViewModel vm)
         {
             InitializeComponent();
-            _vm = vm;
-            BindingContext = _vm;
+            VM = vm;
+            BindingContext = VM;
+            
             balance = new Balance();
             this._repo = repo;
 
@@ -111,9 +112,9 @@ namespace Mercader
 
             // Actualizar las etiquetas en el XAML
             VentasPeriodoLabel.Text = $"{ventasPeriodo:C}";
-            GastosPeriodoLabel.Text = $"{gastosPeriodo:C}";
-            EncargosPeriodoLabel.Text = $"{encargosPeriodo:C}";
-            GananciasPeriodoLabel.Text = $"{gananciasPeriodo:C}";
+            VM.TotalGastos = $"{gastosPeriodo:C}";
+            VM.TotalEncargos = $"{encargosPeriodo:C}";
+            VM.Ganancias = $"{gananciasPeriodo:C}";
             MargenLabel.Text = $"{margenPorcentaje:F1}%";
         }
 
