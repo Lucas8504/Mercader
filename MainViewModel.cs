@@ -12,6 +12,17 @@ namespace Mercader
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
         }
 
+        private string _totalVentas = "$0";
+        public string TotalVentas
+        {
+            get => _totalVentas;
+            set
+            {
+                _totalVentas = value;
+                OnPropertyChanged();
+            }
+        }
+
         private string _totalGastos = "$0";
         public string TotalGastos
         {

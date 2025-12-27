@@ -186,7 +186,7 @@
                                 TextColor="#7d7c7c"
                                 HorizontalOptions="End" />
                             <Label
-                                x:Name="VentasPeriodoLabel"
+                                Text="{Binding TotalVentas}"
                                 FontAttributes="Bold"
                                 FontSize="18"
                                 TextColor="#2e9449"

@@ -111,11 +111,10 @@ namespace Mercader
             var margenPorcentaje = ventasPeriodo > 0 ? (gananciasPeriodo / ventasPeriodo) * 100 : 0;
 
             // Actualizar las etiquetas en el XAML
-            VentasPeriodoLabel.Text = $"{ventasPeriodo:C}";
-            VM.TotalGastos = $"{gastosPeriodo:C}";
-            VM.TotalEncargos = $"{encargosPeriodo:C}";
-            VM.Ganancias = $"{gananciasPeriodo:C}";
-            MargenLabel.Text = $"{margenPorcentaje:F1}%";
+            VM.TotalVentas = ventasPeriodo.ToString("C");
+            VM.TotalGastos = gastosPeriodo.ToString("C");
+            VM.TotalEncargos = encargosPeriodo.ToString("C");
+            VM.Ganancias = gananciasPeriodo.ToString("C");
         }
 
         private decimal CalcularTotalPeriodo(List<Ventas> ventas, string periodo)
