@@ -55,5 +55,12 @@ namespace Mercader
                 OnPropertyChanged();
             }
         }
+
+        private string? _margen;
+        public string? Margen
+        {
+            get => _margen;
+            set { _margen = value; OnPropertyChanged(); }
+        }
     }
 }

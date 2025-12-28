@@ -10,19 +10,22 @@ namespace Mercader
 {
     public partial class MainPage : ContentPage
     {
-        public MainViewModel VM { get; private set; }
+        public MainViewModel VM { get; }
         
         public Balance balance;
         private readonly DataRepository _repo;
 
         public MainPage(DataRepository repo, MainViewModel vm)
         {
+
             InitializeComponent();
+
+            _repo = repo;
             VM = vm;
             BindingContext = VM;
             
             balance = new Balance();
-            this._repo = repo;
+            
 
             // Configurar el selector de período con el valor por defecto
             PeriodSelector.SelectedIndex = 2; // "Meses" por defecto
@@ -115,6 +118,7 @@ namespace Mercader
             VM.TotalGastos = gastosPeriodo.ToString("C");
             VM.TotalEncargos = encargosPeriodo.ToString("C");
             VM.Ganancias = gananciasPeriodo.ToString("C");
+            VM.Margen = $"{margenPorcentaje:F1}%";
         }
 
         private decimal CalcularTotalPeriodo(List<Ventas> ventas, string periodo)

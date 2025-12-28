@@ -258,7 +258,7 @@
                                     TextColor="#7d7c7c"
                                     HorizontalOptions="Center" />
                                 <Label
-                                    x:Name="MargenLabel"
+                                    Text="{Binding Margen}" 
                                     FontAttributes="Bold"
                                     FontSize="16"
                                     TextColor="#17a2b8"
