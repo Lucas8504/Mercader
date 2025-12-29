@@ -53,9 +53,9 @@
                 CornerRadius="17"
                 HasShadow="True">
                 <Picker
-                    x:Name="PeriodSelector"
+                    ItemsSource="{Binding Periodos}"
                     Title="Seleccionar período de análisis"
-                    SelectedIndexChanged="PeriodSelector_OnSelectedIndexChanged"
+                    SelectedItem="{Binding PeriodoSeleccionado, Mode=TwoWay}"
                     TextColor="#FFFFFF"
                     TitleColor="#7c7c7c"
                     FontSize="16">
@@ -258,7 +258,7 @@
                                     TextColor="#7d7c7c"
                                     HorizontalOptions="Center" />
                                 <Label
-                                    Text="{Binding Margen}" 
+                                    Text="{Binding Margen}"
                                     FontAttributes="Bold"
                                     FontSize="16"
                                     TextColor="#17a2b8"

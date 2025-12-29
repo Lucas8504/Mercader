@@ -1,4 +1,5 @@
-﻿using System.ComponentModel;
+﻿using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.Runtime.CompilerServices;
 
 namespace Mercader
@@ -6,6 +7,12 @@ namespace Mercader
     public class MainViewModel : INotifyPropertyChanged
     {
         public event PropertyChangedEventHandler? PropertyChanged;
+
+        public ObservableCollection<string> Periodos { get; } =
+        new() { "Días", "Semanas", "Meses" };
+
+        public Action<string>? OnPeriodoChanged;
+
 
         protected void OnPropertyChanged([CallerMemberName] string? name = null)
         {
@@ -62,5 +69,22 @@ namespace Mercader
             get => _margen;
             set { _margen = value; OnPropertyChanged(); }
         }
+
+        private string _periodoSeleccionado = "Meses";
+        public string PeriodoSeleccionado
+        {
+            get => _periodoSeleccionado;
+            set
+            {
+                if (_periodoSeleccionado == value)
+                    return;
+
+                _periodoSeleccionado = value;
+                OnPropertyChanged();
+
+                OnPeriodoChanged?.Invoke(value);
+            }
+        }
+
     }
 }

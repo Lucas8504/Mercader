@@ -25,10 +25,13 @@ namespace Mercader
             BindingContext = VM;
             
             balance = new Balance();
-            
 
-            // Configurar el selector de período con el valor por defecto
-            PeriodSelector.SelectedIndex = 2; // "Meses" por defecto
+
+            VM.OnPeriodoChanged += async (_) =>
+            {
+                ActualizarEtiquetasPeriodo();
+                await ActualizarGraficosAsync();
+            };
         }
 
         protected override async void OnAppearing()
@@ -98,7 +101,7 @@ namespace Mercader
 
         private void ActualizarEtiquetasPeriodo()
         {
-            var periodo = PeriodSelector.SelectedItem?.ToString() ?? "Meses";
+            var periodo = VM.PeriodoSeleccionado;
 
             // Calcular totales del período seleccionado para ventas
             var ventasPeriodo = CalcularTotalPeriodo(balance.Ventas, periodo);
@@ -217,28 +220,11 @@ namespace Mercader
 
         #region Gestión de Gráficos
 
-        private async void PeriodSelector_OnSelectedIndexChanged(object sender, EventArgs e)
-        {
-            try
-            {
-                await MainThread.InvokeOnMainThreadAsync(() =>
-                {
-                    ActualizarEtiquetasPeriodo();
-                });
-
-                await ActualizarGraficosAsync();
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"Error al cambiar período: {ex.Message}");
-            }
-        }
-
         private Task ActualizarGraficosAsync()
         {
             try
             {
-                var periodo = PeriodSelector.SelectedItem?.ToString() ?? "Meses";
+                var periodo = VM.PeriodoSeleccionado;
                 var ventas = balance.Ventas ?? new List<Ventas>();
                 var gastos = balance.Gastos ?? new List<Gasto>();
                 var encargos = balance.Encargos ?? new List<Encargo>();
