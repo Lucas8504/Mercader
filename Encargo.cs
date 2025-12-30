@@ -1,9 +1,10 @@
 ﻿using SQLite;
+using static MainViewModel;
 
 namespace Mercader
 {
     [Table("Encargo")]
-    public class Encargo
+    public class Encargo : IFecha
     {
         [PrimaryKey, AutoIncrement, Unique]
         public int Id { get; set; }
