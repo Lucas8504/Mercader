@@ -1,5 +1,6 @@
 ﻿using Mercader.ViewModels;
 using Microcharts.Maui;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 
 namespace Mercader
@@ -28,7 +29,7 @@ namespace Mercader
             builder.Services.AddTransient<Venta>();
             builder.Services.AddSingleton<DataRepository>();
             builder.Services.AddTransient<MainViewModel>();
-
+            builder.Services.AddSingleton< ViewModels.MainViewModel >();
 
 
 #if DEBUG
