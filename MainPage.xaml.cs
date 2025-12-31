@@ -10,12 +10,12 @@ namespace Mercader
 {
     public partial class MainPage : ContentPage
     {
-        public MainViewModel VM { get; }
+        public ViewModels.MainViewModel VM { get; }
         
         public Balance balance;
         private readonly DataRepository _repo;
 
-        public MainPage(DataRepository repo, MainViewModel vm)
+        public MainPage(DataRepository repo, ViewModels.MainViewModel vm)
         {
 
             InitializeComponent();
@@ -23,13 +23,13 @@ namespace Mercader
             _repo = repo;
             VM = vm;
             BindingContext = VM;
-            
+            VM.Recalcular();
             balance = new Balance();
 
 
-            VM.OnPeriodoChanged += async (_) =>
+            VM.OnPeriodoChanged += async () =>
             {
-                ActualizarEtiquetasPeriodo();
+                VM.Recalcular();
                 await ActualizarGraficosAsync();
             };
         }
@@ -37,7 +37,7 @@ namespace Mercader
         protected override async void OnAppearing()
         {
             base.OnAppearing();
-
+            
             await CargarDatosAsync();
         }
 
@@ -54,11 +54,7 @@ namespace Mercader
                 balance.Ventas = ventas;
 
                 // Actualizar todas las etiquetas en el hilo principal
-                ActualizarEtiquetaEncargos();
-                ActualizarEtiquetaGastos();
-                ActualizarEtiquetaVentas();
-                ActualizarEtiquetaGanancias();
-                ActualizarEtiquetasPeriodo();
+                
 
                 await ActualizarGraficosAsync();
             }
@@ -99,72 +95,8 @@ namespace Mercader
             // Si necesitas mostrar el total de encargos, agrega la lógica aquí
         }
 
-        private void ActualizarEtiquetasPeriodo()
-        {
-            var periodo = VM.PeriodoSeleccionado;
 
-            // Calcular totales del período seleccionado para ventas
-            var ventasPeriodo = CalcularTotalPeriodo(balance.Ventas, periodo);
-
-            // Calcular totales del período seleccionado para gastos
-            var gastosPeriodo = CalcularTotalPeriodo(balance.Gastos, periodo);
-
-            // Calcular totales del período seleccionado para encargos
-            var encargosPeriodo = CalcularTotalPeriodoEncargos(balance.Encargos, periodo);
-
-            // Calcular ganancias (ventas - gastos) y margen
-            var gananciasPeriodo = ventasPeriodo - gastosPeriodo;
-            var margenPorcentaje = ventasPeriodo > 0 ? (gananciasPeriodo / ventasPeriodo) * 100 : 0;
-
-            // Actualizar las etiquetas en el XAML
-            VM.TotalVentas = ventasPeriodo.ToString("C");
-            VM.TotalGastos = gastosPeriodo.ToString("C");
-            VM.TotalEncargos = encargosPeriodo.ToString("C");
-            VM.Ganancias = gananciasPeriodo.ToString("C");
-            VM.Margen = $"{margenPorcentaje:F1}%";
-        }
-
-        private decimal CalcularTotalPeriodo(List<Ventas> ventas, string periodo)
-        {
-            var fechaLimite = periodo switch
-            {
-                "Días" => DateTime.Today.AddDays(-7),
-                "Semanas" => DateTime.Today.AddDays(-42), // 6 semanas
-                "Meses" => DateTime.Today.AddMonths(-6),
-                _ => DateTime.Today.AddMonths(-6)
-            };
-
-            return ventas.Where(v => v.Fecha >= fechaLimite)
-                        .Sum(v => v.Precio * v.Cantidad);
-        }
-
-        private decimal CalcularTotalPeriodo(List<Gasto> gastos, string periodo)
-        {
-            var fechaLimite = periodo switch
-            {
-                "Días" => DateTime.Today.AddDays(-7),
-                "Semanas" => DateTime.Today.AddDays(-42),
-                "Meses" => DateTime.Today.AddMonths(-6),
-                _ => DateTime.Today.AddMonths(-6)
-            };
-
-            return gastos.Where(g => g.Fecha >= fechaLimite)
-                        .Sum(g => g.Monto * g.Cantidad);
-        }
-
-        private decimal CalcularTotalPeriodoEncargos(List<Encargo> encargos, string periodo)
-        {
-            var fechaLimite = periodo switch
-            {
-                "Días" => DateTime.Today.AddDays(-7),
-                "Semanas" => DateTime.Today.AddDays(-42),
-                "Meses" => DateTime.Today.AddMonths(-6),
-                _ => DateTime.Today.AddMonths(-6)
-            };
-
-            return encargos.Where(e => e.Fecha >= fechaLimite)
-                          .Sum(e => e.Precio * e.Cantidad);
-        }
+      
 
         #endregion
 

@@ -1,5 +1,5 @@
 ﻿using SQLite;
-using static MainViewModel;
+using static Mercader.ViewModels.MainViewModel;
 
 namespace Mercader
 {
