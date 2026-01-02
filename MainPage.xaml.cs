@@ -6,6 +6,8 @@ using Microcharts;
 using System.Diagnostics;
 using Mercader.ViewModels;
 
+
+
 namespace Mercader
 {
     public partial class MainPage : ContentPage
@@ -15,15 +17,16 @@ namespace Mercader
         public Balance balance;
         private readonly DataRepository _repo;
 
-        public MainPage(DataRepository repo, ViewModels.MainViewModel vm)
+        public MainPage(DataRepository repo, MainViewModel vm)
         {
 
             InitializeComponent();
 
-            _repo = repo;
+            
             VM = vm;
             BindingContext = VM;
-            VM.Recalcular();
+            _repo = repo;
+            
             balance = new Balance();
 
 
@@ -37,7 +40,12 @@ namespace Mercader
         protected override async void OnAppearing()
         {
             base.OnAppearing();
-            
+
+            VM.Gastos = await _repo.GetGastosAsync();
+            VM.Ventas = await _repo.GetVentasAsync();
+            VM.Encargos = await _repo.GetEncargosAsync();
+
+            VM.Recalcular();
             await CargarDatosAsync();
         }
 
