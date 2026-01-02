@@ -7,26 +7,34 @@ namespace Mercader.ViewModels
 { 
         public class MainViewModel : BaseViewModel
         {
-            // ===== Datos crudos =====
-            public List<Ventas> Ventas { get; set; } = new();
-            public List<Gasto> Gastos { get; set; } = new();
-            public List<Encargo> Encargos { get; set; } = new();
+                // ===== Datos crudos =====
+                public ObservableCollection<Ventas> Ventas { get; } = new();
+                public ObservableCollection<Gasto> Gastos { get; } = new();
+                public ObservableCollection<Encargo> Encargos { get; } = new();
 
-            
 
-            // ===== Picker =====
-            public List<string> Periodos { get; } = new()
+
+                public MainViewModel()
+                {
+                    Ventas.CollectionChanged += (_, __) => Recalcular();
+                    Gastos.CollectionChanged += (_, __) => Recalcular();
+                    Encargos.CollectionChanged += (_, __) => Recalcular();
+                }
+
+
+        // ===== Picker =====
+                 public List<string> Periodos { get; } = new()
             {
                 "Días",
                 "Semanas",
                 "Meses"
             };
 
-            private string _periodoSeleccionado = "Meses";
-            public string PeriodoSeleccionado
+                 private string _periodoSeleccionado = "Meses";
+                 public string PeriodoSeleccionado
             {
-                get => _periodoSeleccionado;
-                set
+                    get => _periodoSeleccionado;
+                    set
                 {
                     if (_periodoSeleccionado == value) return;
                     _periodoSeleccionado = value;
@@ -34,16 +42,17 @@ namespace Mercader.ViewModels
 
                     Recalcular();
                     OnPeriodoChanged?.Invoke();
-                }
-            }
+                    
+                    }
+                 }
 
-            // ===== Totales =====
-            private string? _totalVentas;
-            public string? TotalVentas
-            {
-                get => _totalVentas;
-                set { _totalVentas = value; OnPropertyChanged(); }
-            }
+                    // ===== Totales =====
+                    private string? _totalVentas;
+                    public string? TotalVentas
+                    {
+                        get => _totalVentas;
+                        set { _totalVentas = value; OnPropertyChanged(); }
+                    }
 
             private string? _totalGastos;
             public string? TotalGastos
