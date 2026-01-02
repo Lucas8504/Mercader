@@ -41,11 +41,6 @@ namespace Mercader
         {
             base.OnAppearing();
 
-            VM.Gastos = await _repo.GetGastosAsync();
-            VM.Ventas = await _repo.GetVentasAsync();
-            VM.Encargos = await _repo.GetEncargosAsync();
-
-            VM.Recalcular();
             await CargarDatosAsync();
         }
 
@@ -61,9 +56,20 @@ namespace Mercader
                 balance.Gastos = gastos;
                 balance.Ventas = ventas;
 
-                // Actualizar todas las etiquetas en el hilo principal
-                
+                // ===== 🔥 PUENTE MVVM 🔥 =====
+                VM.Encargos.Clear();
+                foreach (var e in encargos) VM.Encargos.Add(e);
 
+                VM.Gastos.Clear();
+                foreach (var g in gastos) VM.Gastos.Add(g);
+
+                VM.Ventas.Clear();
+                foreach (var v in ventas) VM.Ventas.Add(v);
+
+                // Recalcular labels
+                VM.Recalcular();
+
+                // Recalcular graficos
                 await ActualizarGraficosAsync();
             }
             catch (Exception ex)
