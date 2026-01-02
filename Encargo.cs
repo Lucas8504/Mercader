@@ -1,10 +1,11 @@
 ﻿using SQLite;
+using Mercader.Models;
 using static Mercader.ViewModels.MainViewModel;
 
 namespace Mercader
 {
     [Table("Encargo")]
-    public class Encargo : IFecha
+    public class Encargo : Models.IFecha
     {
         [PrimaryKey, AutoIncrement, Unique]
         public int Id { get; set; }

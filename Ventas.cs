@@ -1,10 +1,11 @@
 ﻿using SQLite;
+using Mercader.Models;
 using static Mercader.ViewModels.MainViewModel;
 
 namespace Mercader
 {
     [Table("Ventas")]
-    public class Ventas: IFecha
+    public class Ventas: Models.IFecha
     {
 
         [PrimaryKey, AutoIncrement, Unique]

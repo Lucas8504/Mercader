@@ -1,4 +1,5 @@
 ﻿using Mercader;
+using Mercader.Models;
 using Mercader.ViewModels;
 using System.Collections.ObjectModel;
 
@@ -11,10 +12,7 @@ namespace Mercader.ViewModels
             public List<Gasto> Gastos { get; set; } = new();
             public List<Encargo> Encargos { get; set; } = new();
 
-            public interface IFecha
-            {
-                DateTime Fecha { get; }
-            }
+            
 
             // ===== Picker =====
             public List<string> Periodos { get; } = new()
@@ -93,7 +91,12 @@ namespace Mercader.ViewModels
                 TotalEncargos = encargosPeriodo.ToString("C");
                 Ganancias = ganancias.ToString("C");
                 Margen = $"{margen:F1}%";
-            }
+
+                Console.WriteLine($"Recalculo → ===========Ventas: {TotalVentas}========");
+                Console.WriteLine($"Recalculo → ===========Gastos: {TotalGastos}=======");
+                Console.WriteLine($"Recalculo → ===========Encagos: {TotalEncargos}======");
+                Console.WriteLine($"Recalculo → ===========Ganancias: {Ganancias}=======");
+        }
 
             private IEnumerable<T> FiltrarPorPeriodo<T>(IEnumerable<T> lista) where T : IFecha
             {
