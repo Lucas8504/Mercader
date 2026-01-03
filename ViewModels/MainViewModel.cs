@@ -12,9 +12,17 @@ namespace Mercader.ViewModels
                 public ObservableCollection<Gasto> Gastos { get; } = new();
                 public ObservableCollection<Encargo> Encargos { get; } = new();
 
+                public IEnumerable<Ventas> VentasPeriodo =>
+                        FiltrarPorPeriodo(Ventas);
+
+                public IEnumerable<Gasto> GastosPeriodo =>
+                        FiltrarPorPeriodo(Gastos);
+
+                public IEnumerable<Encargo> EncargosPeriodo =>
+                        FiltrarPorPeriodo(Encargos);
 
 
-                public MainViewModel()
+        public MainViewModel()
                 {
                     Ventas.CollectionChanged += (_, __) => Recalcular();
                     Gastos.CollectionChanged += (_, __) => Recalcular();
@@ -101,10 +109,6 @@ namespace Mercader.ViewModels
                 Ganancias = ganancias.ToString("C");
                 Margen = $"{margen:F1}%";
 
-                Console.WriteLine($"Recalculo → ===========Ventas: {TotalVentas}========");
-                Console.WriteLine($"Recalculo → ===========Gastos: {TotalGastos}=======");
-                Console.WriteLine($"Recalculo → ===========Encagos: {TotalEncargos}======");
-                Console.WriteLine($"Recalculo → ===========Ganancias: {Ganancias}=======");
         }
 
             private IEnumerable<T> FiltrarPorPeriodo<T>(IEnumerable<T> lista) where T : IFecha
@@ -118,7 +122,26 @@ namespace Mercader.ViewModels
                     _ => lista.Where(x => x.Fecha >= hoy.AddMonths(-1))
                 };
             }
-        }
+
+            public BalanceExportDto CrearExportDto()
+            {
+                    return new BalanceExportDto
+                    {
+                        Ventas = VentasPeriodo.ToList(),
+                        Gastos = GastosPeriodo.ToList(),
+                        Encargos = EncargosPeriodo.ToList(),
+
+                        TotalVentas = TotalVentas ?? "",
+                        TotalGastos = TotalGastos ?? "",
+                        TotalEncargos = TotalEncargos ?? "",
+                        Ganancias = Ganancias ?? "",
+                        Margen = Margen ?? "",
+                        Periodo = PeriodoSeleccionado
+                    };
+
+            }
+
+    }
 
 }
 

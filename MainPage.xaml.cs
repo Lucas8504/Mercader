@@ -5,6 +5,7 @@ using System.Globalization;
 using Microcharts;
 using System.Diagnostics;
 using Mercader.ViewModels;
+using Mercader.Models;
 
 
 
@@ -13,8 +14,10 @@ namespace Mercader
     public partial class MainPage : ContentPage
     {
         public ViewModels.MainViewModel VM { get; }
-        
-        public Balance balance;
+
+
+       
+
         private readonly DataRepository _repo;
 
         public MainPage(DataRepository repo, MainViewModel vm)
@@ -26,9 +29,9 @@ namespace Mercader
             VM = vm;
             BindingContext = VM;
             _repo = repo;
-            
-            balance = new Balance();
 
+
+           
 
             VM.OnPeriodoChanged += async () =>
             {
@@ -52,10 +55,7 @@ namespace Mercader
                 var gastos = await _repo.GetGastosAsync();
                 var ventas = await _repo.GetVentasAsync();
 
-                balance.Encargos = encargos;
-                balance.Gastos = gastos;
-                balance.Ventas = ventas;
-
+               
                 // ===== 🔥 PUENTE MVVM 🔥 =====
                 VM.Encargos.Clear();
                 foreach (var e in encargos) VM.Encargos.Add(e);
@@ -81,36 +81,6 @@ namespace Mercader
 
         #region Actualización de Etiquetas
 
-        public void ActualizarEtiquetaGanancias()
-        {
-            var ganancias = balance.CalcularGanancias();
-            // Esta etiqueta se actualiza en ActualizarEtiquetasPeriodo()
-            // No necesita actualización individual aquí ya que depende del período seleccionado
-        }
-
-        public void ActualizarEtiquetaVentas()
-        {
-            decimal ventas = balance.CalcularVentas();
-            // Esta etiqueta se actualiza en ActualizarEtiquetasPeriodo()
-            // No necesita actualización individual aquí ya que depende del período seleccionado
-        }
-
-        public void ActualizarEtiquetaGastos()
-        {
-            decimal gastos = balance.CalcularGastos();
-            // Esta etiqueta se actualiza en ActualizarEtiquetasPeriodo()
-            // No necesita actualización individual aquí ya que depende del período seleccionado
-        }
-
-        public void ActualizarEtiquetaEncargos()
-        {
-            decimal encargo = balance.CalcularEncargos();
-            // Los encargos no tienen etiqueta de período en el XAML actual
-            // Si necesitas mostrar el total de encargos, agrega la lógica aquí
-        }
-
-
-      
 
         #endregion
 
@@ -170,10 +140,11 @@ namespace Mercader
         {
             try
             {
-                var periodo = VM.PeriodoSeleccionado;
-                var ventas = balance.Ventas ?? new List<Ventas>();
-                var gastos = balance.Gastos ?? new List<Gasto>();
-                var encargos = balance.Encargos ?? new List<Encargo>();
+                string periodo = VM.PeriodoSeleccionado;
+                var ventas = VM.VentasPeriodo.ToList();
+                var gastos = VM.GastosPeriodo.ToList();
+                var encargos = VM.EncargosPeriodo.ToList();
+
 
                 var ventasAgrupadas = periodo switch
                 {
@@ -562,6 +533,7 @@ namespace Mercader
             try
             {
                 // Deshabilitar el botón temporalmente para evitar múltiples clicks
+                var exportData = VM.CrearExportDto();
                 var botonExportar = sender as Button;
                 if (botonExportar != null)
                 {
@@ -583,7 +555,7 @@ namespace Mercader
                 await CargarDatosAsync();
 
                 // Exportar con el nuevo formato
-                await ExportExcel.ExportarBalanceAExcelAsync(balance, rutaArchivo);
+                await ExportExcel.ExportarBalanceAExcelAsync(exportData, rutaArchivo);
 
                 var mensaje = $"📊 ¡Reporte generado exitosamente!\n\n" +
                              $"📁 Archivo: {nombreArchivo}\n" +
