@@ -4,23 +4,25 @@ using System.Drawing;
 using System.Globalization;
 using OfficeOpenXml.Drawing.Chart;
 using Color = System.Drawing.Color;
+using Mercader.Models;
+using Mercader.ViewModels;
 
 namespace Mercader
 {
     public static class ExportExcel
     {
-        public static async Task ExportarBalanceAExcelAsync(Balance balance, string rutaArchivo)
+        public static async Task ExportarBalanceAExcelAsync(BalanceExportDto data, string rutaArchivo)
         {
             ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
 
             using (ExcelPackage package = new ExcelPackage())
             {
                 // Crear todas las hojas
-                CrearHojaResumen(package, balance);
-                CrearHojaVentas(package, balance.Ventas);
-                CrearHojaGastos(package, balance.Gastos);
-                CrearHojaEncargos(package, balance.Encargos);
-                CrearHojaGrafico(package, balance);
+                CrearHojaResumen(package, data);
+                CrearHojaVentas(package, data.Ventas.ToList());
+                CrearHojaGastos(package, data.Gastos.ToList());
+                CrearHojaEncargos(package, data.Encargos.ToList());
+                CrearHojaGrafico(package, data);
 
                 // Guardar el archivo
                 FileInfo fileInfo = new FileInfo(rutaArchivo);
@@ -28,7 +30,7 @@ namespace Mercader
             }
         }
 
-        private static void CrearHojaResumen(ExcelPackage package, Balance balance)
+        private static void CrearHojaResumen(ExcelPackage package, BalanceExportDto data)
         {
             var worksheet = package.Workbook.Worksheets.Add("📊 Resumen Ejecutivo");
 
@@ -77,10 +79,10 @@ namespace Mercader
             filaActual++;
 
             // Calcular métricas
-            var ganancias = balance.CalcularGanancias();
-            var ventas = balance.CalcularVentas();
-            var gastos = balance.CalcularGastos();
-            var encargos = balance.CalcularEncargos();
+            var ganancias = data.Ganancias;
+            var ventas = data.TotalVentas;
+            var gastos = data.TotalGastos;
+            var encargos = data.TotalEncargos;
             var totalOperaciones = ventas + Math.Abs(gastos) + Math.Abs(encargos);
 
             // Datos de métricas
@@ -125,10 +127,10 @@ namespace Mercader
             filaActual += 6;
 
             // ANÁLISIS POR PERÍODO
-            CrearSeccionAnalisisPeriodo(worksheet, balance, filaActual);
+            CrearSeccionAnalisisPeriodo(worksheet, data, filaActual);
         }
 
-        private static void CrearSeccionAnalisisPeriodo(ExcelWorksheet worksheet, Balance balance, int filaInicio)
+        private static void CrearSeccionAnalisisPeriodo(ExcelWorksheet worksheet, BalanceExportDto data, int filaInicio)
         {
             // Título de sección
             worksheet.Cells[filaInicio, 1, filaInicio, 4].Merge = true;
@@ -139,7 +141,7 @@ namespace Mercader
             filaInicio += 2;
 
             // Generar datos por mes
-            var datosMensuales = GenerarDatosMensuales(balance);
+            var datosMensuales = GenerarDatosMensuales(data);
 
             // Encabezados
             worksheet.Cells[filaInicio, 1].Value = "MES";
@@ -258,7 +260,7 @@ namespace Mercader
                 Color.FromArgb(255, 193, 7)); // Amarillo
         }
 
-        private static void CrearHojaGrafico(ExcelPackage package, Balance balance)
+        private static void CrearHojaGrafico(ExcelPackage package, BalanceExportDto data)
         {
             var worksheet = package.Workbook.Worksheets.Add("📈 Gráfico Financiero");
 
@@ -270,7 +272,7 @@ namespace Mercader
             worksheet.Row(1).Height = 30;
 
             // Generar datos mensuales
-            var datosMensuales = GenerarDatosMensuales(balance);
+            var datosMensuales = GenerarDatosMensuales(data);
 
             // Encabezados de datos
             worksheet.Cells["A3"].Value = "MES";
@@ -426,7 +428,7 @@ namespace Mercader
             range.Style.Border.BorderAround(ExcelBorderStyle.Medium);
         }
 
-        private static List<DatoMensual> GenerarDatosMensuales(Balance balance)
+        private static List<DatoMensual> GenerarDatosMensuales(BalanceExportDto data)
         {
             var hoy = DateTime.Today;
             var ultimosMeses = Enumerable.Range(0, 6)
@@ -436,8 +438,8 @@ namespace Mercader
 
             return ultimosMeses.Select(mes =>
             {
-                var ventasMes = balance.Ventas.Where(v => v.Fecha.Year == mes.Year && v.Fecha.Month == mes.Month);
-                var gastosMes = balance.Gastos.Where(g => g.Fecha.Year == mes.Year && g.Fecha.Month == mes.Month);
+                var ventasMes = data.Ventas.Where(v => v.Fecha.Year == mes.Year && v.Fecha.Month == mes.Month);
+                var gastosMes = data.Gastos.Where(g => g.Fecha.Year == mes.Year && g.Fecha.Month == mes.Month);
 
                 var totalVentas = ventasMes.Sum(v => v.Precio * v.Cantidad);
                 var totalGastos = gastosMes.Sum(g => g.Monto * g.Cantidad);
