@@ -88,11 +88,17 @@ namespace Mercader
 
         private async void InAgregarEncargo(object sender, EventArgs e)
         {
+            
             try
             {
-                await Navigation.PushModalAsync(
-                    new EncModal(this, _repo)
-                );
+
+                var modal = new EncModal(_repo);
+                await Navigation.PushModalAsync(modal);
+
+                // 🔁 cuando vuelve del modal
+                await CargarDatosAsync();   // trae DB → VM
+                VM.Recalcular();            // actualiza totales
+                await ActualizarGraficosAsync();
             }
             catch (Exception ex)
             {

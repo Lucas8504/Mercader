@@ -8,19 +8,17 @@ namespace Mercader;
 
 public partial class EncModal : ContentPage
 {
-    private readonly MainPage _mainPage;
+    
     public Encargo Encargo { get; private set; } = null!; // Null forgiving operator
 
     private readonly DataRepository _repo;
 
-    public EncModal(MainPage mainPage, DataRepository repo)
+    public EncModal(DataRepository repo)
     {
-        ArgumentNullException.ThrowIfNull(mainPage);
+        
         ArgumentNullException.ThrowIfNull(repo);
 
         InitializeComponent();
-
-        _mainPage = mainPage;
         _repo = repo;
     }
 
@@ -58,9 +56,9 @@ public partial class EncModal : ContentPage
 
     private async Task SaveEncargoAsync()
     {
-        _mainPage.balance.Encargos.Add(Encargo);
+        
         await _repo.SaveEncargoAsync(Encargo);
-        _mainPage.ActualizarEtiquetaEncargos();
+        
         await Navigation.PopModalAsync();
     }
 
