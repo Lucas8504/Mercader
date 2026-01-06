@@ -114,7 +114,7 @@ namespace Mercader
         {
             try
             {
-                var modal = new VentaModal(this, _repo);
+                var modal = new VentaModal(_repo);
                 await Navigation.PushModalAsync(modal);
                 
             }
@@ -128,8 +128,13 @@ namespace Mercader
         {
             try
             {
-                var modal = new GastoModal(this, _repo);
+                var modal = new GastoModal(_repo);
                 await Navigation.PushModalAsync(modal);
+
+                // 🔁 cuando vuelve del modal
+                await CargarDatosAsync();   // trae DB → VM
+                VM.Recalcular();            // actualiza totales
+                await ActualizarGraficosAsync();
             }
             catch (Exception ex)
             {
