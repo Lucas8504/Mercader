@@ -1,4 +1,4 @@
-namespace Mercader;
+ï»¿namespace Mercader;
 
 public partial class DetalleEncargo : ContentPage
 {
@@ -26,33 +26,31 @@ public partial class DetalleEncargo : ContentPage
     private async void OnConcretarVentaClicked(object sender, EventArgs e)
     {
         bool confirm = await DisplayAlert(
-            "Confirmación",
-            $"¿Realmente deseas concretar la venta de {_encargo.Descripcion} para \"{_encargo.Nombre}\" pedido el día: {_encargo.Fecha:dd/MM/yyyy}?",
-            "Sí",
+            "ConfirmaciÃ³n",
+            $"Â¿Realmente deseas concretar la venta de {_encargo.Descripcion} para \"{_encargo.Nombre}\" pedido el dÃ­a: {_encargo.Fecha:dd/MM/yyyy}?",
+            "SÃ­",
             "No");
 
-        if (confirm)
+        if (!confirm) return;
+
+        try
         {
-            try
+            var venta = new Ventas
             {
-                var venta = new Ventas
-                {
-                    Descripcion = _encargo.Descripcion,
-                    Precio = _encargo.Precio,
-                    Cantidad = _encargo.Cantidad,
-                    Fecha = DateTime.Now
-                };
+                Descripcion = _encargo.Descripcion,
+                Precio = _encargo.Precio,
+                Cantidad = _encargo.Cantidad,
+                Fecha = DateTime.Now
+            };
 
-                await _repo.SaveVentasAsync(venta);
-                await _repo.DeleteEncargoAsync(_encargo);
+            await _repo.SaveVentasAsync(venta);
+            await _repo.DeleteEncargoAsync(_encargo);
 
-                await DisplayAlert("Éxito", "Venta concretada correctamente", "OK");
-                await Navigation.PopAsync(); // Volver a la página anterior
-            }
-            catch (Exception ex)
-            {
-                await DisplayAlert("Error", $"Error al concretar la venta: {ex.Message}", "OK");
-            }
+            await Navigation.PopAsync(); // ðŸ‘ˆ volver
+        }
+        catch (Exception ex)
+        {
+            await DisplayAlert("Error", ex.Message, "OK");
         }
     }
 
@@ -64,7 +62,7 @@ public partial class DetalleEncargo : ContentPage
         }
         catch (Exception ex)
         {
-            await DisplayAlert("Error", $"Error al abrir la página de edición: {ex.Message}", "OK");
+            await DisplayAlert("Error", $"Error al abrir la pÃ¡gina de ediciÃ³n: {ex.Message}", "OK");
         }
     }
 
@@ -78,7 +76,7 @@ public partial class DetalleEncargo : ContentPage
     {
         try
         {
-            // Recargar el encargo desde la base de datos para obtener los datos más recientes
+            // Recargar el encargo desde la base de datos para obtener los datos mÃ¡s recientes
             var encargosActualizados = await _repo.GetEncargosAsync();
             if (encargosActualizados != null && encargosActualizados.Any())
             {
@@ -86,7 +84,7 @@ public partial class DetalleEncargo : ContentPage
                 var encargoActualizado = encargosActualizados.FirstOrDefault(e => e.Id == _encargo.Id);
                 if (encargoActualizado != null)
                 {
-                    _encargo = encargoActualizado; // Asignación segura
+                    _encargo = encargoActualizado; // AsignaciÃ³n segura
                     BindingContext = _encargo;
                     CalcularTotal();
                 }
@@ -101,9 +99,9 @@ public partial class DetalleEncargo : ContentPage
     private async void OnEliminarClicked(object sender, EventArgs e)
     {
         bool confirm = await DisplayAlert(
-            "Confirmación",
-            $"¿Realmente deseas eliminar el encargo de \"{_encargo.Nombre}\" hecho el día: {_encargo.Fecha:dd/MM/yyyy}?",
-            "Sí",
+            "ConfirmaciÃ³n",
+            $"Â¿Realmente deseas eliminar el encargo de \"{_encargo.Nombre}\" hecho el dÃ­a: {_encargo.Fecha:dd/MM/yyyy}?",
+            "SÃ­",
             "No");
 
         if (confirm)
@@ -111,8 +109,8 @@ public partial class DetalleEncargo : ContentPage
             try
             {
                 await _repo.DeleteEncargoAsync(_encargo);
-                await DisplayAlert("Éxito", "Encargo eliminado correctamente", "OK");
-                await Navigation.PopAsync(); // Volver a la página anterior
+                await DisplayAlert("Ã‰xito", "Encargo eliminado correctamente", "OK");
+                await Navigation.PopAsync(); // Volver a la pÃ¡gina anterior
             }
             catch (Exception ex)
             {
