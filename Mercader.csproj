@@ -43,7 +43,7 @@
 	  <AndroidPackageFormat>apk</AndroidPackageFormat>
 	  <AndroidUseAapt2>True</AndroidUseAapt2>
 	  <AndroidKeyStore>False</AndroidKeyStore>
-	  <AndroidCreatePackagePerAbi>True</AndroidCreatePackagePerAbi>
+	  <AndroidCreatePackagePerAbi>False</AndroidCreatePackagePerAbi>
 	  <AndroidLinkTool>r8</AndroidLinkTool>
 	  <DebugSymbols>True</DebugSymbols>
 	</PropertyGroup>
@@ -52,8 +52,9 @@
 	  <AndroidUseAapt2>False</AndroidUseAapt2>
 	  <AndroidCreatePackagePerAbi>False</AndroidCreatePackagePerAbi>
 	  <AndroidPackageFormat>aab</AndroidPackageFormat>
-	  <EmbedAssembliesIntoApk>True</EmbedAssembliesIntoApk>
 	  <AndroidKeyStore>False</AndroidKeyStore>
+	  <EmbedAssembliesIntoApk>True</EmbedAssembliesIntoApk>
+	  <AndroidEnableProfiledAot>True</AndroidEnableProfiledAot>
 	</PropertyGroup>
 
 	
