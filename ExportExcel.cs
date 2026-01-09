@@ -131,6 +131,53 @@ namespace Mercader
 
             // ANÁLISIS POR PERÍODO
             CrearSeccionAnalisisPeriodo(worksheet, data, filaActual);
+
+            int filaGrafico = filaActual + 2;
+
+            // Datos para gráfico
+            worksheet.Cells[filaGrafico, 6].Value = "Concepto";
+            worksheet.Cells[filaGrafico, 7].Value = "Monto";
+
+            worksheet.Cells[filaGrafico + 1, 6].Value = "Ventas";
+            worksheet.Cells[filaGrafico + 1, 7].Value = data.TotalVentas;
+
+            worksheet.Cells[filaGrafico + 2, 6].Value = "Gastos";
+            worksheet.Cells[filaGrafico + 2, 7].Value = Math.Abs(data.TotalGastos);
+
+            worksheet.Cells[filaGrafico + 3, 6].Value = "Encargos";
+            worksheet.Cells[filaGrafico + 3, 7].Value = Math.Abs(data.TotalEncargos);
+
+            var chart = worksheet.Drawings.AddChart("DistribucionBalance", eChartType.Doughnut);
+
+            chart.Title.Text = "Distribución del Balance";
+            chart.Title.Font.Size = 14;
+            chart.Title.Font.Bold = true;
+
+            chart.SetPosition(4, 0, 4, 0);   // fila, offset, columna, offset
+            chart.SetSize(420, 320);
+
+            // Serie
+            var serie = chart.Series.Add(
+                worksheet.Cells[filaGrafico + 1, 7, filaGrafico + 3, 7],
+                worksheet.Cells[filaGrafico + 1, 6, filaGrafico + 3, 6]
+            );
+
+            serie.Header = "Distribución";
+
+
+            var doughnut = chart.PlotArea.ChartTypes[0] as ExcelDoughnutChart;
+
+            doughnut!.DataLabel.ShowPercent = true;
+            doughnut.DataLabel.ShowCategory = true;
+            doughnut.DataLabel.Position = eLabelPosition.BestFit;
+
+            // Colores
+            doughnut.Series[0].DataPoints[0].Fill.Color = Color.FromArgb(40, 167, 69);  // Ventas (verde)
+            doughnut.Series[0].DataPoints[1].Fill.Color = Color.FromArgb(220, 53, 69);  // Gastos (rojo)
+            doughnut.Series[0].DataPoints[2].Fill.Color = Color.FromArgb(255, 193, 7);  // Encargos (amarillo)
+
+
+
         }
 
         private static void CrearSeccionAnalisisPeriodo(ExcelWorksheet worksheet, BalanceExportDto data, int filaInicio)
