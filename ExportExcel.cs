@@ -83,7 +83,10 @@ namespace Mercader
             var ventas = data.TotalVentas;
             var gastos = data.TotalGastos;
             var encargos = data.TotalEncargos;
-            var totalOperaciones = ventas + Math.Abs(gastos) + Math.Abs(encargos);
+            var totalOperaciones =
+                data.TotalVentas +
+                Math.Abs(data.TotalGastos) +
+                Math.Abs(data.TotalEncargos);
 
             // Datos de métricas
             var datosMetricas = new object[,]
@@ -290,9 +293,10 @@ namespace Mercader
                 var fila = 4 + i;
 
                 worksheet.Cells[fila, 1].Value = dato.Mes;
-                worksheet.Cells[fila, 2].Value = (double)dato.Ventas;
-                worksheet.Cells[fila, 3].Value = (double)Math.Abs(dato.Gastos);
-                worksheet.Cells[fila, 4].Value = (double)dato.Ganancia;
+                worksheet.Cells[fila, 2].Value = dato.Ventas;
+                worksheet.Cells[fila, 3].Value = Math.Abs(dato.Gastos);
+                worksheet.Cells[fila, 4].Value = dato.Ganancia;
+
 
                 // Formato alternado
                 var filaRange = worksheet.Cells[fila, 1, fila, 4];
