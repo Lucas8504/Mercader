@@ -41,20 +41,21 @@
 
 	<PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|net8.0-android|AnyCPU'">
 	  <AndroidPackageFormat>apk</AndroidPackageFormat>
-	  <AndroidUseAapt2>True</AndroidUseAapt2>
-	  <AndroidKeyStore>False</AndroidKeyStore>
-	  <AndroidCreatePackagePerAbi>False</AndroidCreatePackagePerAbi>
+	  <AndroidUseAapt2>true</AndroidUseAapt2>
+	  <AndroidKeyStore>false</AndroidKeyStore>
+	  <AndroidCreatePackagePerAbi>true</AndroidCreatePackagePerAbi>
 	  <AndroidLinkTool>r8</AndroidLinkTool>
-	  <DebugSymbols>True</DebugSymbols>
+	  <DebugSymbols>true</DebugSymbols>
 	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|net8.0-android|AnyCPU'">
-	  <AndroidUseAapt2>False</AndroidUseAapt2>
-	  <AndroidCreatePackagePerAbi>False</AndroidCreatePackagePerAbi>
+	  <AndroidUninstallBeforeDeploy>false</AndroidUninstallBeforeDeploy>
+	  <AndroidUseAapt2>true</AndroidUseAapt2>
+	  <AndroidCreatePackagePerAbi>false</AndroidCreatePackagePerAbi>
 	  <AndroidPackageFormat>aab</AndroidPackageFormat>
-	  <AndroidKeyStore>False</AndroidKeyStore>
+	  <AndroidKeyStore>false</AndroidKeyStore>
 	  <EmbedAssembliesIntoApk>True</EmbedAssembliesIntoApk>
-	  <AndroidEnableProfiledAot>True</AndroidEnableProfiledAot>
+	  
 	</PropertyGroup>
 
 	
