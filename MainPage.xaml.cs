@@ -6,6 +6,11 @@ using Microcharts;
 using System.Diagnostics;
 using Mercader.ViewModels;
 using Mercader.Models;
+using Microsoft.Maui.Platform;
+
+
+
+
 
 
 
@@ -45,7 +50,20 @@ namespace Mercader
             base.OnAppearing();
 
             await CargarDatosAsync();
+            CerrarTeclado();
+
         }
+
+        void CerrarTeclado()
+        {
+            if (Shell.Current?.CurrentPage is Page page)
+            {
+                page.Unfocus();
+            }
+        }
+
+
+
 
         private async Task CargarDatosAsync()
         {
