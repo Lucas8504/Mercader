@@ -55,7 +55,7 @@
                 <Picker
                     ItemsSource="{Binding Periodos}"
                     Title="Seleccionar período de análisis"
-                    SelectedItem="{Binding PeriodoSeleccionado, Mode=TwoWay}"
+                    SelectedItem="{Binding PeriodoSeleccionado, Mode=Default}"
                     TextColor="#FFFFFF"
                     TitleColor="#7c7c7c"
                     FontSize="16">

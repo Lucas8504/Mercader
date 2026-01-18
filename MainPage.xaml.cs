@@ -59,6 +59,8 @@ namespace Mercader
             if (Shell.Current?.CurrentPage is Page page)
             {
                 page.Unfocus();
+                
+
             }
         }
 

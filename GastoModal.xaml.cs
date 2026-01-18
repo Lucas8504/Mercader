@@ -1,22 +1,24 @@
 using System.Globalization;
-using static Microsoft.IO.RecyclableMemoryStreamManager;
+#if ANDROID
+using Mercader.Platforms.Android;
+#endif
+
+
+
 
 namespace Mercader;
 
 public partial class GastoModal : ContentPage
 {
-    
     private readonly DataRepository _repo;
-    public Gasto Gasto { get; private set; } = null!; // Null forgiving operator
+    public Gasto Gasto { get; private set; } = null!; // Null forgiving operator  
 
-    public GastoModal( DataRepository repo)
+    public GastoModal(DataRepository repo)
     {
-        
         ArgumentNullException.ThrowIfNull(repo);
 
         InitializeComponent();
 
-        
         _repo = repo;
     }
 
@@ -34,7 +36,6 @@ public partial class GastoModal : ContentPage
                 Monto = decimal.Parse(MontoGastoEntry!.Text!, CultureInfo.InvariantCulture),
                 Fecha = DateTime.Now
             };
-            
         }
         catch (FormatException)
         {
@@ -49,15 +50,15 @@ public partial class GastoModal : ContentPage
 
     private async Task SaveGastoAsync()
     {
-        
         await _repo.SaveGastoAsync(Gasto);
-        
+#if ANDROID
+        KeyboardHelper.Close();
+#endif
         await Navigation.PopModalAsync();
     }
 
     private bool ValidateG_Entries()
     {
-
         if (string.IsNullOrWhiteSpace(DescripcionGastoEntry.Text))
         {
             DisplayAlert("Error", "Por favor, ingrese una descripción", "OK");
@@ -77,11 +78,11 @@ public partial class GastoModal : ContentPage
         return true;
     }
 
-
     private async void Cancelar(object sender, EventArgs e)
     {
-
+#if ANDROID
+        KeyboardHelper.Close();
+#endif
         await Navigation.PopModalAsync();
-
     }
 }
