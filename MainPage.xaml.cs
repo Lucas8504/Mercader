@@ -50,20 +50,9 @@ namespace Mercader
             base.OnAppearing();
 
             await CargarDatosAsync();
-            CerrarTeclado();
+            
 
         }
-
-        void CerrarTeclado()
-        {
-            if (Shell.Current?.CurrentPage is Page page)
-            {
-                page.Unfocus();
-                
-
-            }
-        }
-
 
 
 
