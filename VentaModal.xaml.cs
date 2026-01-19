@@ -1,4 +1,8 @@
 using System.Globalization;
+#if ANDROID
+using Mercader.Platforms.Android;
+#endif
+
 
 namespace Mercader;
 
@@ -54,7 +58,11 @@ public partial class VentaModal : ContentPage
     {
         
         await _repo.SaveVentasAsync(Venta);
-        
+
+#if ANDROID
+        KeyboardHelper.Close();
+#endif
+
         await Navigation.PopModalAsync();
     }
 
@@ -84,6 +92,10 @@ public partial class VentaModal : ContentPage
 
     private async void Cancelar(object sender, EventArgs e)
     {
+
+#if ANDROID
+        KeyboardHelper.Close();
+#endif
 
         await Navigation.PopModalAsync();
 

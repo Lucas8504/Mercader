@@ -1,8 +1,7 @@
-using System;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.Maui.Controls;
-using Mercader.ViewModels;
+using System.Globalization;
+#if ANDROID
+using Mercader.Platforms.Android;
+#endif
 
 namespace Mercader;
 
@@ -58,7 +57,11 @@ public partial class EncModal : ContentPage
     {
         
         await _repo.SaveEncargoAsync(Encargo);
-        
+
+#if ANDROID
+        KeyboardHelper.Close();
+#endif
+
         await Navigation.PopModalAsync();
     }
 
@@ -155,6 +158,10 @@ public partial class EncModal : ContentPage
 
     private async void Cancelar(object sender, EventArgs e)
     {
+#if ANDROID
+        KeyboardHelper.Close();
+#endif
+
         await Navigation.PopModalAsync();
     }
 }
