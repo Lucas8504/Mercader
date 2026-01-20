@@ -404,6 +404,15 @@ namespace Mercader
                     ShowYAxisLines = true,
                     YAxisLinesPaint = new SKPaint { Color = SKColor.Parse("#3C3C3C"), StrokeWidth = 1 }
                 };
+
+                MainThread.BeginInvokeOnMainThread(async () =>
+                {
+                    await VentasScroll.ScrollToAsync(
+                          VentasScroll.Content,
+                        ScrollToPosition.End,
+                        animated: false
+                    );
+                });
             }
             catch (Exception ex)
             {
@@ -440,6 +449,15 @@ namespace Mercader
                     ShowYAxisLines = true,
                     YAxisLinesPaint = new SKPaint { Color = SKColor.Parse("#3C3C3C"), StrokeWidth = 1 }
                 };
+
+                MainThread.BeginInvokeOnMainThread(async () =>
+                {
+                    await GastosScroll.ScrollToAsync(
+                          GastosScroll.Content,
+                        ScrollToPosition.End,
+                        animated: false
+                    );
+                });
             }
             catch (Exception ex)
             {
@@ -476,6 +494,15 @@ namespace Mercader
                     ShowYAxisLines = true,
                     YAxisLinesPaint = new SKPaint { Color = SKColor.Parse("#3C3C3C"), StrokeWidth = 1 }
                 };
+
+                MainThread.BeginInvokeOnMainThread(async () =>
+                {
+                    await EncargosScroll.ScrollToAsync(
+                          EncargosScroll.Content,
+                        ScrollToPosition.End,
+                        animated: false
+                    );
+                });
             }
             catch (Exception ex)
             {
@@ -521,6 +548,15 @@ namespace Mercader
                     ShowYAxisLines = true,
                     YAxisLinesPaint = new SKPaint { Color = SKColor.Parse("#3C3C3C"), StrokeWidth = 1 }
                 };
+
+                MainThread.BeginInvokeOnMainThread(async () =>
+                {
+                    await GananciasScroll.ScrollToAsync(
+                          GananciasScroll.Content,
+                        ScrollToPosition.End,
+                        animated: false
+                    );
+                });
             }
             catch (Exception ex)
             {
