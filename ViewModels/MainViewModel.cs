@@ -117,7 +117,7 @@ namespace Mercader.ViewModels
 
             return PeriodoSeleccionado switch
             {
-                "Días" => lista.Where(x => x.Fecha.Date == hoy.Date),
+                "Días" => lista.Where(x => x.Fecha >= hoy.AddDays(-366)),
                 "Semanas" => lista.Where(x => x.Fecha >= hoy.AddDays(-7)),
                 _ => lista.Where(x => x.Fecha >= hoy.AddMonths(-1))
             };
