@@ -188,7 +188,7 @@
                             <Label
                                 Text="{Binding TotalVentas}"
                                 FontAttributes="Bold"
-                                FontSize="18"
+                                FontSize="16"
                                 TextColor="#2e9449"
                                 HorizontalOptions="End" />
                         </VerticalStackLayout>
@@ -216,69 +216,77 @@
                 CornerRadius="12"
                 HasShadow="True">
 
-
                 <Grid RowDefinitions="Auto, *" RowSpacing="15">
 
-                    <Grid Grid.Row="0" ColumnDefinitions="*, Auto">
+                    <!-- ===== ENCABEZADO ===== -->
+                    <Grid Grid.Row="0"
+                          ColumnDefinitions="*, Auto"
+                          ColumnSpacing="20">
 
-                        <!-- Encabezado de Ganancias -->
-                        <VerticalStackLayout Grid.Column="0" VerticalOptions="Center" Spacing="2">
+                        <!-- Título -->
+                        <VerticalStackLayout Grid.Column="0" Spacing="2">
                             <Label
-
-                                FontAttributes="Bold"
-                                FontSize="15"
                                 Text="💰 ANÁLISIS DE GANANCIAS"
-                                TextColor="#1f6bc2" />
-
-                        </VerticalStackLayout>
-
-                        <!-- Resumen de Ganancias -->
-                        <VerticalStackLayout
-                            Grid.Column="1"
-                            VerticalOptions="Center"
-                            HorizontalOptions="End"
-                            Spacing="0">
-
-                            <Label
-                                Text="TOTAL PERÍODO"
-                                FontSize="11"
-                                TextColor="#7d7c7c"
-                                HorizontalOptions="Center" />
-                            <Label
-                                Text="{Binding Ganancias}"
+                                VerticalTextAlignment="Center"
                                 FontAttributes="Bold"
                                 FontSize="16"
-                                TextColor="#1f6bc2"
-                                HorizontalOptions="Center" />
+                                TextColor="#1f6bc2" />
+                        </VerticalStackLayout>
 
-                            <VerticalStackLayout Grid.Column="2" Spacing="3">
+                        <!-- Totales -->
+                        <VerticalStackLayout Grid.Column="1"
+                                             Spacing="6"
+                                             HorizontalOptions="End">
+
+                            <VerticalStackLayout Spacing="2">
                                 <Label
-                                    Text="MARGEN %"
-                                    FontSize="12"
+                                    Text="TOTAL PERÍODO"
+                                    FontSize="9"
                                     TextColor="#7d7c7c"
-                                    HorizontalOptions="Center" />
+                                    HorizontalTextAlignment="End" />
+                                <Label
+                                    Text="{Binding Ganancias}"
+                                    FontAttributes="Bold"
+                                    FontSize="16"
+                                    TextColor="#1f6bc2"
+                                    HorizontalTextAlignment="End" />
+                            </VerticalStackLayout>
+
+                            <VerticalStackLayout Spacing="2">
+                                <Label
+                                    Text="MARGEN"
+                                    FontSize="11"
+                                    TextColor="#7d7c7c"
+                                    HorizontalTextAlignment="End" />
                                 <Label
                                     Text="{Binding Margen}"
                                     FontAttributes="Bold"
-                                    FontSize="16"
+                                    FontSize="14"
                                     TextColor="#17a2b8"
-                                    HorizontalOptions="Center" />
+                                    HorizontalTextAlignment="End" />
                             </VerticalStackLayout>
+
                         </VerticalStackLayout>
+
                     </Grid>
 
-                    <!-- Gráfico de Ganancias -->
-                    <ScrollView x:Name="GananciasScroll" Orientation="Horizontal" HorizontalScrollBarVisibility="Always">
+                    <!-- ===== GRÁFICO ===== -->
+                    <ScrollView Grid.Row="1"
+                                x:Name="GananciasScroll"
+                                Orientation="Horizontal"
+                                HorizontalScrollBarVisibility="Always">
+
                         <microcharts:ChartView
                             x:Name="GananciasChart"
                             BackgroundColor="#2a2a2a"
                             HeightRequest="220"
-                            WidthRequest="600"/>
+                            WidthRequest="600" />
 
                     </ScrollView>
-                </Grid>
 
+                </Grid>
             </Frame>
+
 
             <!-- Línea separadora -->
             <BoxView
