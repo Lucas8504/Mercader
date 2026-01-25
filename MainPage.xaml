@@ -99,8 +99,8 @@
                         <microcharts:ChartView
                             x:Name="GastosChart"
                             BackgroundColor="Transparent"
-                            HeightRequest="240"
-                            WidthRequest="550" />
+                            HeightRequest="290"
+                            WidthRequest="5950" />
                     </ScrollView>
 
                 </Grid>

@@ -264,7 +264,7 @@ namespace Mercader
         private List<(string Periodo, decimal Total)> AgruparGastosPorDia(List<Gasto> gastos)
         {
             var hoy = DateTime.Today;
-            var ultimosDias = Enumerable.Range(0, 7)
+            var ultimosDias = Enumerable.Range(0, 133)
                 .Select(i => hoy.AddDays(-i))
                 .Reverse()
                 .ToList();
@@ -273,7 +273,7 @@ namespace Mercader
             {
                 var gastosDia = gastos.Where(g => g.Fecha.Date == fecha.Date);
                 var total = gastosDia.Sum(g => g.Monto * g.Cantidad);
-                return (fecha.ToString("dd/MM"), total);
+                return (fecha.ToString("dd/MM/yy"), total);
             }).ToList();
         }
 
