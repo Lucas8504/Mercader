@@ -385,9 +385,9 @@ namespace Mercader
                 var entries = datos.Select(d =>
                 {
                     var color = d.Total == max
-                        ? "#4CAF50"   // 🟢 pico de ventas
+                        ? "#06B025"   // pico
                         : d.Total == min
-                            ? "#FFC107" // 🟡 valor más bajo
+                            ? "#0F420C" //  alerta
                             : "#2e9449"; // verde normal
 
                     return new ChartEntry((float)d.Total)
@@ -457,30 +457,54 @@ namespace Mercader
         {
             try
             {
-                var entries = datos.Select(d => new ChartEntry((float)d.Total)
+                var max = datos.Max(d => d.Total);
+                var min = datos.Min(d => d.Total);
+
+                var entries = datos.Select(d =>
                 {
-                    Label = d.Periodo,
-                    ValueLabel = FormatearValorEntero(d.Total),
-                    Color = SKColor.Parse("#6e0a24"),
-                    TextColor = SKColor.Parse("#E0E0E0"),
-                    ValueLabelColor = SKColor.Parse("#FFFFFF")
+                    var color = d.Total == max
+                        ? "#CC0000"   // pico
+                        : d.Total == min
+                            ? "#67000F" // alerta
+                            : "#6E0A24";// color normal
+
+
+                    return new ChartEntry((float)d.Total)
+                    {
+                        Label = d.Periodo,
+                        ValueLabel = FormatearValorEntero(d.Total),
+                        Color = SKColor.Parse(color),
+                        TextColor = SKColor.Parse("#E0E0E0"),
+                        ValueLabelColor = SKColor.Parse("#FFFFFF")
+                    };
                 }).ToArray();
 
                 GastosChart.Chart = new LineChart
                 {
                     Entries = entries,
-                    LabelTextSize = 24,
-                    ValueLabelTextSize = 26,
+
+                    // 🎯 Texto
+                    LabelTextSize = 22,
+                    ValueLabelTextSize = 24,
+
+                    // 🎨 Estética
                     BackgroundColor = SKColor.Parse("#2a2a2a"),
-                    LineSize = 4,
-                    PointSize = 8,
+                    LineSize = 5,
+                    PointSize = 10,
+                    LineMode = LineMode.Straight,
                     IsAnimated = true,
                     AnimationDuration = TimeSpan.FromMilliseconds(500),
+
+                    // 📐 Orientación
                     LabelOrientation = Orientation.Horizontal,
                     ValueLabelOrientation = Orientation.Horizontal,
-                    Margin = 20,
+
+                    // 📊 Ejes
                     ShowYAxisLines = true,
-                    YAxisLinesPaint = new SKPaint { Color = SKColor.Parse("#3C3C3C"), StrokeWidth = 1 }
+                    YAxisLinesPaint = new SKPaint { Color = SKColor.Parse("#3C3C3C"), StrokeWidth = 1 },
+
+                    // 📦 Margen
+                    Margin = 20,
                 };
 
                 MainThread.BeginInvokeOnMainThread(async () =>

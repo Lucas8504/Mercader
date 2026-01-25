@@ -119,7 +119,7 @@ namespace Mercader.ViewModels
             {
                 "Días" => lista.Where(x => x.Fecha >= hoy.AddDays(-366)),
                 "Semanas" => lista.Where(x => x.Fecha >= hoy.AddDays(-7)),
-                _ => lista.Where(x => x.Fecha >= hoy.AddMonths(-1))
+                _ => lista.Where(x => x.Fecha >= hoy.AddMonths(-12))
             };
         }
 
