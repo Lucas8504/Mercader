@@ -149,7 +149,7 @@
                         <microcharts:ChartView
                             x:Name="EncargosChart"
                             BackgroundColor="#2a2a2a"
-                        HeightRequest="220" WidthRequest="600" /> </ScrollView>
+                        HeightRequest="290" WidthRequest="5950" /> </ScrollView>
 
                 </Grid>
             </Frame>
@@ -202,8 +202,8 @@
                         <microcharts:ChartView
                             x:Name="VentasChart"
                             BackgroundColor="#2a2a2a"
-                            HeightRequest="220"
-                            WidthRequest="600"/>
+                            HeightRequest="290"
+                            WidthRequest="5950"/>
                     </ScrollView>
 
                 </Grid>
@@ -279,8 +279,8 @@
                         <microcharts:ChartView
                             x:Name="GananciasChart"
                             BackgroundColor="#2a2a2a"
-                            HeightRequest="220"
-                            WidthRequest="600" />
+                            HeightRequest="290"
+                            WidthRequest="5950" />
 
                     </ScrollView>
 

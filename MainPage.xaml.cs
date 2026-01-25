@@ -207,7 +207,7 @@ namespace Mercader
         private List<(string Periodo, decimal Total)> AgruparVentasPorDia(List<Ventas> ventas)
         {
             var hoy = DateTime.Today;
-            var ultimosDias = Enumerable.Range(0, 7)
+            var ultimosDias = Enumerable.Range(0, 133)
                 .Select(i => hoy.AddDays(-i))
                 .Reverse()
                 .ToList();
@@ -223,7 +223,7 @@ namespace Mercader
         private List<(string Periodo, decimal Total)> AgruparVentasPorSemana(List<Ventas> ventas)
         {
             var hoy = DateTime.Today;
-            var ultimasSemanas = Enumerable.Range(0, 6)
+            var ultimasSemanas = Enumerable.Range(0, 130)
                 .Select(i =>
                 {
                     var inicioSemana = hoy.AddDays(-7 * i).AddDays(-(int)hoy.AddDays(-7 * i).DayOfWeek);
@@ -244,7 +244,7 @@ namespace Mercader
         private List<(string Periodo, decimal Total)> AgruparVentasPorMes(List<Ventas> ventas)
         {
             var hoy = DateTime.Today;
-            var ultimosMeses = Enumerable.Range(0, 6)
+            var ultimosMeses = Enumerable.Range(0, 130)
                 .Select(i => hoy.AddMonths(-i))
                 .Reverse()
                 .ToList();
@@ -280,7 +280,7 @@ namespace Mercader
         private List<(string Periodo, decimal Total)> AgruparGastosPorSemana(List<Gasto> gastos)
         {
             var hoy = DateTime.Today;
-            var ultimasSemanas = Enumerable.Range(0, 6)
+            var ultimasSemanas = Enumerable.Range(0, 130)
                 .Select(i =>
                 {
                     var inicioSemana = hoy.AddDays(-7 * i).AddDays(-(int)hoy.AddDays(-7 * i).DayOfWeek);
@@ -301,7 +301,7 @@ namespace Mercader
         private List<(string Periodo, decimal Total)> AgruparGastosPorMes(List<Gasto> gastos)
         {
             var hoy = DateTime.Today;
-            var ultimosMeses = Enumerable.Range(0, 6)
+            var ultimosMeses = Enumerable.Range(0, 130)
                 .Select(i => hoy.AddMonths(-i))
                 .Reverse()
                 .ToList();
@@ -321,7 +321,7 @@ namespace Mercader
         private List<(string Periodo, decimal Total)> AgruparEncargosPorDia(List<Encargo> encargos)
         {
             var hoy = DateTime.Today;
-            var ultimosDias = Enumerable.Range(0, 7)
+            var ultimosDias = Enumerable.Range(0, 133)
                 .Select(i => hoy.AddDays(-i))
                 .Reverse()
                 .ToList();
@@ -337,7 +337,7 @@ namespace Mercader
         private List<(string Periodo, decimal Total)> AgruparEncargosPorSemana(List<Encargo> encargos)
         {
             var hoy = DateTime.Today;
-            var ultimasSemanas = Enumerable.Range(0, 6)
+            var ultimasSemanas = Enumerable.Range(0, 130)
                 .Select(i =>
                 {
                     var inicioSemana = hoy.AddDays(-7 * i).AddDays(-(int)hoy.AddDays(-7 * i).DayOfWeek);
@@ -358,7 +358,7 @@ namespace Mercader
         private List<(string Periodo, decimal Total)> AgruparEncargosPorMes(List<Encargo> encargos)
         {
             var hoy = DateTime.Today;
-            var ultimosMeses = Enumerable.Range(0, 6)
+            var ultimosMeses = Enumerable.Range(0, 130)
                 .Select(i => hoy.AddMonths(-i))
                 .Reverse()
                 .ToList();
