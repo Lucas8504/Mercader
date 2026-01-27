@@ -526,14 +526,27 @@ namespace Mercader
         {
             try
             {
-                var entries = datos.Select(d => new ChartEntry((float)d.Total)
+                var max = datos.Max(d => d.Total);
+                var min = datos.Min(d => d.Total);
+
+                var entries = datos.Select(d =>
                 {
-                    Label = d.Periodo,
-                    ValueLabel = FormatearValorEntero(d.Total),
-                    Color = SKColor.Parse("#ff6b35"),
-                    TextColor = SKColor.Parse("#E0E0E0"),
-                    ValueLabelColor = SKColor.Parse("#FFFFFF")
+                    var color = d.Total == max
+                        ? "#FF9016"   // pico
+                        : d.Total == min
+                            ? "#C84C0F" // alerta
+                            : "#ff6b35";
+
+                    return new ChartEntry((float)d.Total)
+                    {
+                        Label = d.Periodo,
+                        ValueLabel = FormatearValorEntero(d.Total),
+                        Color = SKColor.Parse(color),
+                        TextColor = SKColor.Parse("#B0B0B0"),
+                        ValueLabelColor = SKColor.Parse("#FFFFFF")
+                    };
                 }).ToArray();
+
 
                 EncargosChart.Chart = new LineChart
                 {
