@@ -537,17 +537,25 @@ namespace Mercader
 
                 EncargosChart.Chart = new LineChart
                 {
+                    // 🎯 Texto
                     Entries = entries,
                     LabelTextSize = 24,
                     ValueLabelTextSize = 26,
+
+                    // 🎨 Estética
                     BackgroundColor = SKColor.Parse("#2a2a2a"),
                     LineSize = 4,
                     PointSize = 8,
+                    LineMode = LineMode.Straight,
                     IsAnimated = true,
                     AnimationDuration = TimeSpan.FromMilliseconds(600),
+
+                    // 📐 Orientación
                     LabelOrientation = Orientation.Horizontal,
                     ValueLabelOrientation = Orientation.Horizontal,
                     Margin = 20,
+
+                    // 📊 Ejes
                     ShowYAxisLines = true,
                     YAxisLinesPaint = new SKPaint { Color = SKColor.Parse("#3C3C3C"), StrokeWidth = 1 }
                 };
@@ -597,6 +605,7 @@ namespace Mercader
                     BackgroundColor = SKColor.Parse("#2a2a2a"),
                     LineSize = 4,
                     PointSize = 8,
+                    LineMode = LineMode.Straight,
                     IsAnimated = true,
                     AnimationDuration = TimeSpan.FromMilliseconds(600),
                     LabelOrientation = Orientation.Horizontal,
