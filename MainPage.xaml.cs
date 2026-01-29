@@ -601,29 +601,52 @@ namespace Mercader
                     return new { Periodo = v.Periodo, Ganancia = ganancia };
                 }).ToList();
 
-                var entries = datosCompletos.Select(d => new ChartEntry((float)d.Ganancia)
+                var max = datosCompletos.Max(d => d.Ganancia);
+                var min = datosCompletos.Min(d => d.Ganancia);
+
+
+                var entries = datosCompletos.Select(d =>
                 {
-                    Label = d.Periodo,
-                    ValueLabel = FormatearValorEntero(d.Ganancia),
-                    Color = d.Ganancia >= 0 ? SKColor.Parse("#1f6bc2") : SKColor.Parse("#dc3545"),
-                    TextColor = SKColor.Parse("#E0E0E0"),
-                    ValueLabelColor = SKColor.Parse("#FFFFFF")
+                    var color =
+                        d.Ganancia == max ? "#0099FF" :   // pico
+                        d.Ganancia == min ? "#0A34A4" :   // alerta
+                                            "#1f6bc2";
+
+                    return new ChartEntry((float)d.Ganancia)
+                    {
+                        Label = d.Periodo,
+                        ValueLabel = FormatearValorEntero(d.Ganancia),
+                        Color = d.Ganancia >= 0
+                            ? SKColor.Parse(color)
+                            : SKColor.Parse("#dc3545"), // pérdidas
+                        TextColor = SKColor.Parse("#E0E0E0"),
+                        ValueLabelColor = SKColor.Parse("#FFFFFF")
+                    };
                 }).ToArray();
+
 
                 GananciasChart.Chart = new LineChart
                 {
                     Entries = entries,
+
+                    // 🎯 Texto
                     LabelTextSize = 24,
                     ValueLabelTextSize = 26,
+
+                    // 🎨 Estética
                     BackgroundColor = SKColor.Parse("#2a2a2a"),
                     LineSize = 4,
                     PointSize = 8,
                     LineMode = LineMode.Straight,
                     IsAnimated = true,
                     AnimationDuration = TimeSpan.FromMilliseconds(600),
+
+                    // 📐 Orientación
                     LabelOrientation = Orientation.Horizontal,
                     ValueLabelOrientation = Orientation.Horizontal,
                     Margin = 20,
+
+                    // 📊 Ejes
                     ShowYAxisLines = true,
                     YAxisLinesPaint = new SKPaint { Color = SKColor.Parse("#3C3C3C"), StrokeWidth = 1 }
                 };
