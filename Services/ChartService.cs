@@ -5,16 +5,38 @@ public class ChartService : IChartService
 {
     public Chart CrearGraficoVentas(List<(string Periodo, decimal Total)> datos)
     {
-        var entries = datos.Select(d => new ChartEntry((float)d.Total)
-        {
-            Label = d.Periodo,
-            ValueLabel = d.Total.ToString("N0"),
-            Color = SKColor.Parse("#2e9449"),
-            TextColor = SKColor.Parse("#E0E0E0"),
-            ValueLabelColor = SKColor.Parse("#FFFFFF")
-        }).ToArray();
+        var max = datos.Max(d => d.Total);
+        var min = datos.Min(d => d.Total);
 
-        return CrearLineChartBase(entries);
+
+        var entries = datos.Select(d =>
+        {
+            var color = d.Total == max
+                ? "#06B025"
+                : d.Total == min
+                    ? "#0F420C"
+                    : "#2e9449";
+
+            return new ChartEntry((float)d.Total)
+            {
+                Label = d.Periodo,
+                ValueLabel = d.Total.ToString("N0"),
+                Color = SKColor.Parse(color),
+                TextColor = SKColor.Parse("#B0B0B0"),
+                ValueLabelColor = SKColor.Parse("#FFFFFF")
+            };
+        });
+        return new LineChart
+        {
+            Entries = entries.ToList(),
+            BackgroundColor = SKColor.Parse("#2a2a2a"),
+            LineSize = 5,
+            PointSize = 10,
+            LabelTextSize = 22,
+            ValueLabelTextSize = 24,
+            Margin = 25,
+            IsAnimated = true
+        };
     }
 
     public Chart CrearGraficoGastos(List<(string Periodo, decimal Total)> datos)
