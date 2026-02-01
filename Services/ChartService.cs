@@ -12,10 +12,10 @@ public class ChartService : IChartService
         var entries = datos.Select(d =>
         {
             var color = d.Total == max
-                ? "#06B025"
+                ? "#06B025"         // pico
                 : d.Total == min
-                    ? "#0F420C"
-                    : "#2e9449";
+                    ? "#0F420C"     // alerta
+                    : "#2e9449";    // verde normal
 
             return new ChartEntry((float)d.Total)
             {
@@ -29,13 +29,38 @@ public class ChartService : IChartService
         return new LineChart
         {
             Entries = entries.ToList(),
+            
+            // 🎯 Texto
+            LabelTextSize = 22,
+            ValueLabelTextSize = 24,
+
+            // 🎨 Estética
             BackgroundColor = SKColor.Parse("#2a2a2a"),
             LineSize = 5,
             PointSize = 10,
-            LabelTextSize = 22,
-            ValueLabelTextSize = 24,
+            IsAnimated = true,
+            LineMode = LineMode.Straight,
+            AnimationDuration = TimeSpan.FromMilliseconds(800),
+
+            // 📐 Orientación
+            LabelOrientation = Orientation.Horizontal,
+            ValueLabelOrientation = Orientation.Horizontal,
+
+            // 📊 Ejes
+            ShowYAxisLines = true,
+            YAxisLinesPaint = new SKPaint
+            {
+                Color = SKColor.Parse("#404040"),
+                StrokeWidth = 1,
+                IsAntialias = true
+            },
+
+            // 📦 Margen
             Margin = 25,
-            IsAnimated = true
+
+            // 💡 Extras
+            EnableYFadeOutGradient = true
+
         };
     }
 
