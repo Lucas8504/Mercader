@@ -1,4 +1,5 @@
 ﻿using Mercader.Models;
+using Microcharts;
 using System.Collections.ObjectModel;
 
 namespace Mercader.ViewModels
@@ -13,6 +14,21 @@ namespace Mercader.ViewModels
         public IEnumerable<Ventas> VentasPeriodo => FiltrarPorPeriodo(Ventas);
         public IEnumerable<Gasto> GastosPeriodo => FiltrarPorPeriodo(Gastos);
         public IEnumerable<Encargo> EncargosPeriodo => FiltrarPorPeriodo(Encargos);
+
+        public List<(string Periodo, decimal Total)> VentasPorPeriodo { get; private set; } = new();
+        public List<(string Periodo, decimal Total)> GastosPorPeriodo { get; private set; } = new();
+        public List<(string Periodo, decimal Total)> EncargosPorPeriodo { get; private set; } = new();
+
+
+
+
+
+        private readonly IChartService _chartService;
+
+        public Chart? VentasChart { get; private set; }
+        public Chart? GastosChart { get; private set; }
+        public Chart? GananciasChart { get; private set; }
+
 
         // ===== Valores internos =====
         private decimal _totalVentasValue;
@@ -83,12 +99,36 @@ namespace Mercader.ViewModels
         // ===== Comunicación =====
         public Action? OnPeriodoChanged;
 
-        public MainViewModel()
+        public MainViewModel(IChartService chartService)
         {
             Ventas.CollectionChanged += (_, __) => Recalcular();
             Gastos.CollectionChanged += (_, __) => Recalcular();
             Encargos.CollectionChanged += (_, __) => Recalcular();
+
+            _chartService = chartService;
         }
+
+        public void ActualizarGraficos()
+        {
+            VentasChart = _chartService.CrearGraficoVentas(VentasPorPeriodo);
+            GastosChart = _chartService.CrearGraficoGastos(GastosPorPeriodo);
+            GananciasChart = _chartService.CrearGraficoGanancias(
+                VentasPorPeriodo,
+                GastosPorPeriodo);
+
+            OnPropertyChanged(nameof(VentasChart));
+            OnPropertyChanged(nameof(GastosChart));
+            OnPropertyChanged(nameof(GananciasChart));
+        }
+
+        public async Task CalcularPorPeriodoAsync()
+        {
+            // cálculos
+            await Task.Run(() => Recalcular());
+        }
+
+
+
 
         // ===== Lógica central =====
         public void Recalcular()

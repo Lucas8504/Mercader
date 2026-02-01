@@ -30,6 +30,8 @@ namespace Mercader
             builder.Services.AddSingleton<DataRepository>();
             builder.Services.AddTransient<MainViewModel>();
             builder.Services.AddSingleton< ViewModels.MainViewModel >();
+            builder.Services.AddSingleton<IChartService, ChartService>();
+
 
 
 #if DEBUG
