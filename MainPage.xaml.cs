@@ -42,15 +42,16 @@ namespace Mercader
             {
                 VM.Recalcular();
                 await ActualizarGraficosAsync();
+                
             };
         }
 
         protected override async void OnAppearing()
         {
             base.OnAppearing();
-
+            VM.Recalcular();
             await CargarDatosAsync();
-            
+      
 
         }
 
@@ -401,41 +402,41 @@ namespace Mercader
                 }).ToArray();
 
 
-                VentasChart.Chart = new LineChart
-                {
-                    Entries = entries,
+                //VentasChart.Chart = new LineChart
+                //{
+                //    Entries = entries,
 
-                    // 🎯 Texto
-                    LabelTextSize = 22,
-                    ValueLabelTextSize = 24,
+                //    // 🎯 Texto
+                //    LabelTextSize = 22,
+                //    ValueLabelTextSize = 24,
 
-                    // 🎨 Estética
-                    BackgroundColor = SKColor.Parse("#2a2a2a"),
-                    LineSize = 5,
-                    PointSize = 10,
-                    LineMode = LineMode.Straight, // Microcharts no soporta curvas reales
-                    IsAnimated = true,
-                    AnimationDuration = TimeSpan.FromMilliseconds(800),
+                //    // 🎨 Estética
+                //    BackgroundColor = SKColor.Parse("#2a2a2a"),
+                //    LineSize = 5,
+                //    PointSize = 10,
+                //    LineMode = LineMode.Straight, // Microcharts no soporta curvas reales
+                //    IsAnimated = true,
+                //    AnimationDuration = TimeSpan.FromMilliseconds(800),
 
-                    // 📐 Orientación
-                    LabelOrientation = Orientation.Horizontal,
-                    ValueLabelOrientation = Orientation.Horizontal,
+                //    // 📐 Orientación
+                //    LabelOrientation = Orientation.Horizontal,
+                //    ValueLabelOrientation = Orientation.Horizontal,
 
-                    // 📊 Ejes
-                    ShowYAxisLines = true,
-                    YAxisLinesPaint = new SKPaint
-                    {
-                        Color = SKColor.Parse("#404040"),
-                        StrokeWidth = 1,
-                        IsAntialias = true
-                    },
+                //    // 📊 Ejes
+                //    ShowYAxisLines = true,
+                //    YAxisLinesPaint = new SKPaint
+                //    {
+                //        Color = SKColor.Parse("#404040"),
+                //        StrokeWidth = 1,
+                //        IsAntialias = true
+                //    },
 
-                    // 📦 Margen
-                    Margin = 25,
+                //    // 📦 Margen
+                //    Margin = 25,
 
-                    // 💡 Extras
-                    EnableYFadeOutGradient = true
-                };
+                //    // 💡 Extras
+                //    EnableYFadeOutGradient = true
+                //};
 
 
                 MainThread.BeginInvokeOnMainThread(async () =>

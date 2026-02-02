@@ -25,6 +25,7 @@ namespace Mercader.ViewModels
 
         private readonly IChartService _chartService;
 
+        public Chart? EncargosChart { get; private set; }
         public Chart? VentasChart { get; private set; }
         public Chart? GastosChart { get; private set; }
         public Chart? GananciasChart { get; private set; }
@@ -110,12 +111,14 @@ namespace Mercader.ViewModels
 
         public void ActualizarGraficos()
         {
+            EncargosChart = _chartService.CrearGraficoEncargos(EncargosPorPeriodo);
             VentasChart = _chartService.CrearGraficoVentas(VentasPorPeriodo);
             GastosChart = _chartService.CrearGraficoGastos(GastosPorPeriodo);
             GananciasChart = _chartService.CrearGraficoGanancias(
                 VentasPorPeriodo,
                 GastosPorPeriodo);
 
+            OnPropertyChanged(nameof(EncargosChart));
             OnPropertyChanged(nameof(VentasChart));
             OnPropertyChanged(nameof(GastosChart));
             OnPropertyChanged(nameof(GananciasChart));

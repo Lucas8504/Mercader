@@ -3,6 +3,33 @@ using SkiaSharp;
 
 public class ChartService : IChartService
 {
+
+    public Chart CrearGraficoEncargos(List<(string Periodo, decimal Total)> datos)
+    {
+        var max = datos.Max(d => d.Total);
+        var min = datos.Min(d => d.Total);
+
+
+        var entries = datos.Select(d =>
+        {
+            var color = d.Total == max
+                ? "#FF9016"         // pico
+                : d.Total == min
+                    ? "#C84C0F"     // alerta
+                    : "#ff6b35";    // normal
+
+            return new ChartEntry((float)d.Total)
+            {
+                Label = d.Periodo,
+                ValueLabel = d.Total.ToString("N0"),
+                Color = SKColor.Parse(color),
+                TextColor = SKColor.Parse("#B0B0B0"),
+                ValueLabelColor = SKColor.Parse("#FFFFFF")
+            };
+        }).ToArray();
+        return CrearLineChartBase(entries);
+    }
+
     public Chart CrearGraficoVentas(List<(string Periodo, decimal Total)> datos)
     {
         var max = datos.Max(d => d.Total);
@@ -15,7 +42,7 @@ public class ChartService : IChartService
                 ? "#06B025"         // pico
                 : d.Total == min
                     ? "#0F420C"     // alerta
-                    : "#2e9449";    // verde normal
+                    : "#2e9449";    // normal
 
             return new ChartEntry((float)d.Total)
             {
@@ -25,47 +52,15 @@ public class ChartService : IChartService
                 TextColor = SKColor.Parse("#B0B0B0"),
                 ValueLabelColor = SKColor.Parse("#FFFFFF")
             };
-        });
-        return new LineChart
-        {
-            Entries = entries.ToList(),
-            
-            // 🎯 Texto
-            LabelTextSize = 22,
-            ValueLabelTextSize = 24,
-
-            // 🎨 Estética
-            BackgroundColor = SKColor.Parse("#2a2a2a"),
-            LineSize = 5,
-            PointSize = 10,
-            IsAnimated = true,
-            LineMode = LineMode.Straight,
-            AnimationDuration = TimeSpan.FromMilliseconds(800),
-
-            // 📐 Orientación
-            LabelOrientation = Orientation.Horizontal,
-            ValueLabelOrientation = Orientation.Horizontal,
-
-            // 📊 Ejes
-            ShowYAxisLines = true,
-            YAxisLinesPaint = new SKPaint
-            {
-                Color = SKColor.Parse("#404040"),
-                StrokeWidth = 1,
-                IsAntialias = true
-            },
-
-            // 📦 Margen
-            Margin = 25,
-
-            // 💡 Extras
-            EnableYFadeOutGradient = true
-
-        };
+        }).ToArray();
+        return CrearLineChartBase(entries);
     }
 
     public Chart CrearGraficoGastos(List<(string Periodo, decimal Total)> datos)
     {
+        var max = datos.Max(d => d.Total);
+        var min = datos.Min(d => d.Total);
+
         var entries = datos.Select(d => new ChartEntry((float)d.Total)
         {
             Label = d.Periodo,
@@ -121,23 +116,39 @@ public class ChartService : IChartService
     {
         return new LineChart
         {
-            Entries = entries,
-            LabelTextSize = 24,
-            ValueLabelTextSize = 26,
+            Entries = entries.ToList(),
+
+            // 🎯 Texto
+            LabelTextSize = 22,
+            ValueLabelTextSize = 24,
+
+            // 🎨 Estética
             BackgroundColor = SKColor.Parse("#2a2a2a"),
-            LineSize = 4,
-            PointSize = 8,
+            LineSize = 5,
+            PointSize = 10,
             IsAnimated = true,
-            AnimationDuration = TimeSpan.FromMilliseconds(600),
+            LineMode = LineMode.Straight,
+            AnimationDuration = TimeSpan.FromMilliseconds(800),
+
+            // 📐 Orientación
             LabelOrientation = Orientation.Horizontal,
             ValueLabelOrientation = Orientation.Horizontal,
-            Margin = 20,
+
+            // 📊 Ejes
             ShowYAxisLines = true,
             YAxisLinesPaint = new SKPaint
             {
-                Color = SKColor.Parse("#3C3C3C"),
-                StrokeWidth = 1
-            }
+                Color = SKColor.Parse("#404040"),
+                StrokeWidth = 1,
+                IsAntialias = true
+            },
+
+            // 📦 Margen
+            Margin = 25,
+
+            // 💡 Extras
+            EnableYFadeOutGradient = true
+
         };
     }
 }
