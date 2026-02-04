@@ -201,9 +201,9 @@
                     <ScrollView x:Name="VentasScroll" Grid.Row="1" HorizontalScrollBarVisibility="Always" Orientation="Horizontal">
                         <microcharts:ChartView
                             Chart="{Binding VentasChart}"
-                            HeightRequest="220"
-                            WidthRequest="600"
-                            BackgroundColor="#2a2a2a" />
+                            BackgroundColor="#2a2a2a"
+                            HeightRequest="290"
+                            WidthRequest="5950"/>
                     </ScrollView>
 
                 </Grid>

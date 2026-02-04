@@ -42,7 +42,9 @@ namespace Mercader
             {
                 VM.Recalcular();
                 await ActualizarGraficosAsync();
-                
+                await VM.ActualizarGraficosAsync();
+
+
             };
         }
 
@@ -51,7 +53,9 @@ namespace Mercader
             base.OnAppearing();
             VM.Recalcular();
             await CargarDatosAsync();
-      
+            await VM.ActualizarGraficosAsync();
+
+
 
         }
 

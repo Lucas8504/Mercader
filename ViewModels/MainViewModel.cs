@@ -109,28 +109,34 @@ namespace Mercader.ViewModels
             _chartService = chartService;
         }
 
-        public void ActualizarGraficos()
+        public async Task ActualizarGraficosAsync()
         {
-            EncargosChart = _chartService.CrearGraficoEncargos(EncargosPorPeriodo);
-            VentasChart = _chartService.CrearGraficoVentas(VentasPorPeriodo);
-            GastosChart = _chartService.CrearGraficoGastos(GastosPorPeriodo);
-            GananciasChart = _chartService.CrearGraficoGanancias(
-                VentasPorPeriodo,
-                GastosPorPeriodo);
+            await Task.Run(() =>
+            {
+                EncargosChart = _chartService.CrearGraficoEncargos(EncargosPorPeriodo);
+                VentasChart = _chartService.CrearGraficoVentas(VentasPorPeriodo);
+                GastosChart = _chartService.CrearGraficoGastos(GastosPorPeriodo);
+                GananciasChart = _chartService.CrearGraficoGanancias(VentasPorPeriodo, GastosPorPeriodo);
+            });
 
-            OnPropertyChanged(nameof(EncargosChart));
-            OnPropertyChanged(nameof(VentasChart));
-            OnPropertyChanged(nameof(GastosChart));
-            OnPropertyChanged(nameof(GananciasChart));
+            MainThread.BeginInvokeOnMainThread(() =>
+            {
+                OnPropertyChanged(nameof(EncargosChart));
+                OnPropertyChanged(nameof(VentasChart));
+                OnPropertyChanged(nameof(GastosChart));
+                OnPropertyChanged(nameof(GananciasChart));
+            });
         }
+
 
         public async Task CalcularPorPeriodoAsync()
         {
             // cálculos
             await Task.Run(() => Recalcular());
+
         }
 
-
+       
 
 
         // ===== Lógica central =====
