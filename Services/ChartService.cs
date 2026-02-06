@@ -1,4 +1,6 @@
-﻿using Microcharts;
+using System.Collections.Generic;
+using System.Linq;
+using Microcharts;
 using SkiaSharp;
 
 public class ChartService : IChartService
@@ -6,15 +8,15 @@ public class ChartService : IChartService
 
     public Chart CrearGraficoEncargos(List<(string Periodo, decimal Total)> datos)
     {
-        var max = datos.Max(d => d.Total);
-        var min = datos.Min(d => d.Total);
+        var maxTotal = datos.Max(d => d.Total);
+        var minTotal = datos.Min(d => d.Total);
 
 
         var entries = datos.Select(d =>
         {
-            var color = d.Total == max
+            var color = d.Total == maxTotal
                 ? "#FF9016"         // pico
-                : d.Total == min
+                : d.Total == minTotal
                     ? "#C84C0F"     // alerta
                     : "#ff6b35";    // normal
 
@@ -32,15 +34,15 @@ public class ChartService : IChartService
 
     public Chart CrearGraficoVentas(List<(string Periodo, decimal Total)> datos)
     {
-        var max = datos.Max(d => d.Total);
-        var min = datos.Min(d => d.Total);
+        var maxTotal = datos.Max(d => d.Total);
+        var minTotal = datos.Min(d => d.Total);
 
 
         var entries = datos.Select(d =>
         {
-            var color = d.Total == max
+            var color = d.Total == maxTotal
                 ? "#06B025"         // pico
-                : d.Total == min
+                : d.Total == minTotal
                     ? "#0F420C"     // alerta
                     : "#2e9449";    // normal
 
@@ -58,8 +60,8 @@ public class ChartService : IChartService
 
     public Chart CrearGraficoGastos(List<(string Periodo, decimal Total)> datos)
     {
-        var max = datos.Max(d => d.Total);
-        var min = datos.Min(d => d.Total);
+        var maxTotal = datos.Max(d => d.Total);
+        var minTotal = datos.Min(d => d.Total);
 
         var entries = datos.Select(d => new ChartEntry((float)d.Total)
         {
@@ -74,38 +76,43 @@ public class ChartService : IChartService
     }
 
     public Chart CrearGraficoGanancias(
-        List<(string Periodo, decimal Total)> ventas,
-        List<(string Periodo, decimal Total)> gastos)
+    List<(string Periodo, decimal Total)> ventas,
+    List<(string Periodo, decimal Total)> gastos)
     {
-        var datos = ventas.Select(v =>
+        if (ventas == null || ventas.Count == 0)
+            return new LineChart { Entries = new List<ChartEntry>() };
+
+        var datosCompletos = ventas.Select(v =>
         {
-            var gasto = gastos.FirstOrDefault(g => g.Periodo == v.Periodo);
-            return new
-            {
-                v.Periodo,
-                Ganancia = v.Total - gasto.Total
-            };
+            var gastoCorrespondiente = gastos.FirstOrDefault(g => g.Periodo == v.Periodo);
+
+            decimal gasto = gastoCorrespondiente.Total;
+            decimal ganancia = v.Total - gasto;
+
+            return (Periodo: v.Periodo, Total: ganancia);
         }).ToList();
 
-        var max = datos.Max(d => d.Ganancia);
-        var min = datos.Min(d => d.Ganancia);
+        if (datosCompletos.Count == 0)
+            return new LineChart { Entries = new List<ChartEntry>() };
 
-        var entries = datos.Select(d =>
+        var maxTotal = datosCompletos.Max(d => d.Total);
+        var minTotal = datosCompletos.Min(d => d.Total);
+
+        var entries = datosCompletos.Select(d =>
         {
-            var color =
-                d.Ganancia == max ? "#4CAF50" :
-                d.Ganancia == min ? "#FFC107" :
-                                    "#1f6bc2";
+            var color = d.Total == maxTotal
+                ? "#4CAF50"
+                : d.Total == minTotal
+                    ? "#FFC107"
+                    : "#1f6bc2";
 
-            return new ChartEntry((float)d.Ganancia)
+            return new ChartEntry((float)d.Total)
             {
                 Label = d.Periodo,
-                ValueLabel = d.Ganancia.ToString("N0"),
-                Color = d.Ganancia >= 0
-                    ? SKColor.Parse(color)
-                    : SKColor.Parse("#dc3545"),
-                TextColor = SKColor.Parse("#E0E0E0"),
-                ValueLabelColor = SKColor.Parse("#FFFFFF")
+                ValueLabel = d.Total.ToString("0"),
+                Color = SKColor.Parse(color),
+                TextColor = SKColors.White,
+                ValueLabelColor = SKColors.White
             };
         }).ToArray();
 
