@@ -1,4 +1,4 @@
-﻿using Microcharts.Maui;
+using Microcharts.Maui;
 using SkiaSharp;
 using Mercader.Helpers;
 using System.Globalization;
@@ -42,7 +42,7 @@ namespace Mercader
             {
                 VM.Recalcular();
                 await ActualizarGraficosAsync();
-                await VM.ActualizarGraficosAsync();
+                // await VM.ActualizarGraficosAsync(); // Ya no - ahora se actualiza desde el code-behind
 
 
             };
@@ -53,7 +53,7 @@ namespace Mercader
             base.OnAppearing();
             VM.Recalcular();
             await CargarDatosAsync();
-            await VM.ActualizarGraficosAsync();
+            // await VM.ActualizarGraficosAsync(); // Ya no - ahora se actualiza desde el code-behind
 
 
 
@@ -161,7 +161,7 @@ namespace Mercader
 
         #region Gestión de Gráficos
 
-        private Task ActualizarGraficosAsync()
+        private async Task ActualizarGraficosAsync()
         {
             try
             {
@@ -192,7 +192,16 @@ namespace Mercader
                     _ => AgruparEncargosPorMes(encargos)
                 };
 
-                ConfigurarGraficoVentas(ventasAgrupadas, periodo);
+                // === MIGRACIÓN MVVM: Pasar datos al ViewModel ===
+                VM.VentasPorPeriodo = ventasAgrupadas;
+                VM.GastosPorPeriodo = gastosAgrupados;
+                VM.EncargosPorPeriodo = encargosAgrupados;
+
+                // === GRÁFICO VENTAS - MVVM (via ChartService) ===
+                await VM.ActualizarGraficoVentasAsync();
+
+                // === GRÁFICOS LEGACY - Code-behind (hasta migrar) ===
+                // ConfigurarGraficoVentas(ventasAgrupadas, periodo); // YA NO - ahora va por MVVM
                 ConfigurarGraficoGastos(gastosAgrupados, periodo);
                 ConfigurarGraficoEncargos(encargosAgrupados, periodo);
                 ConfigurarGraficoGanancias(ventasAgrupadas, gastosAgrupados, periodo);
@@ -201,8 +210,6 @@ namespace Mercader
             {
                 Debug.WriteLine($"Error al actualizar gráficos: {ex}");
             }
-
-            return Task.CompletedTask;
         }
 
         #endregion
@@ -380,88 +387,19 @@ namespace Mercader
 
         #region Configuración de Gráficos
 
-        private void ConfigurarGraficoVentas(List<(string Periodo, decimal Total)> datos, string periodo)
-        {
-            try
-            {
-                var max = datos.Max(d => d.Total);
-                var min = datos.Min(d => d.Total);
-
-                var entries = datos.Select(d =>
-                {
-                    var color = d.Total == max
-                        ? "#06B025"   // pico
-                        : d.Total == min
-                            ? "#0F420C" //  alerta
-                            : "#2e9449"; // verde normal
-
-                    return new ChartEntry((float)d.Total)
-                    {
-                        Label = d.Periodo,
-                        ValueLabel = FormatearValorEntero(d.Total),
-                        Color = SKColor.Parse(color),
-                        TextColor = SKColor.Parse("#B0B0B0"),
-                        ValueLabelColor = SKColor.Parse("#FFFFFF")
-                    };
-                }).ToArray();
-
-
-                //VentasChart.Chart = new LineChart
-                //{
-                //    Entries = entries,
-
-                //    // 🎯 Texto
-                //    LabelTextSize = 22,
-                //    ValueLabelTextSize = 24,
-
-                //    // 🎨 Estética
-                //    BackgroundColor = SKColor.Parse("#2a2a2a"),
-                //    LineSize = 5,
-                //    PointSize = 10,
-                //    LineMode = LineMode.Straight, // Microcharts no soporta curvas reales
-                //    IsAnimated = true,
-                //    AnimationDuration = TimeSpan.FromMilliseconds(800),
-
-                //    // 📐 Orientación
-                //    LabelOrientation = Orientation.Horizontal,
-                //    ValueLabelOrientation = Orientation.Horizontal,
-
-                //    // 📊 Ejes
-                //    ShowYAxisLines = true,
-                //    YAxisLinesPaint = new SKPaint
-                //    {
-                //        Color = SKColor.Parse("#404040"),
-                //        StrokeWidth = 1,
-                //        IsAntialias = true
-                //    },
-
-                //    // 📦 Margen
-                //    Margin = 25,
-
-                //    // 💡 Extras
-                //    EnableYFadeOutGradient = true
-                //};
-
-
-                MainThread.BeginInvokeOnMainThread(async () =>
-                {
-                    await VentasScroll.ScrollToAsync(
-                          VentasScroll.Content,
-                        ScrollToPosition.End,
-                        animated: false
-                    );
-                });
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"Error configurando gráfico de ventas: {ex.Message}");
-            }
-        }
+        // ELIMINADO: ConfigurarGraficoVentas - Ahora usa MVVM via VM.ActualizarGraficoVentasAsync()
+        // private void ConfigurarGraficoVentas(List<(string Periodo, decimal Total)> datos, string periodo) { }
 
         private void ConfigurarGraficoGastos(List<(string Periodo, decimal Total)> datos, string periodo)
         {
             try
             {
+                if (datos == null || datos.Count == 0)
+                {
+                    GastosChart.Chart = new LineChart { Entries = new List<ChartEntry>() };
+                    return;
+                }
+
                 var max = datos.Max(d => d.Total);
                 var min = datos.Min(d => d.Total);
 
@@ -531,6 +469,12 @@ namespace Mercader
         {
             try
             {
+                if (datos == null || datos.Count == 0)
+                {
+                    EncargosChart.Chart = new LineChart { Entries = new List<ChartEntry>() };
+                    return;
+                }
+
                 var max = datos.Max(d => d.Total);
                 var min = datos.Min(d => d.Total);
 
@@ -599,12 +543,24 @@ namespace Mercader
         {
             try
             {
+                if (ventas == null || ventas.Count == 0 || gastos == null)
+                {
+                    GananciasChart.Chart = new LineChart { Entries = new List<ChartEntry>() };
+                    return;
+                }
+
                 var datosCompletos = ventas.Select(v =>
                 {
                     var gastoCorrespondiente = gastos.FirstOrDefault(g => g.Periodo == v.Periodo);
                     var ganancia = v.Total - gastoCorrespondiente.Total;
                     return new { Periodo = v.Periodo, Ganancia = ganancia };
                 }).ToList();
+
+                if (datosCompletos.Count == 0)
+                {
+                    GananciasChart.Chart = new LineChart { Entries = new List<ChartEntry>() };
+                    return;
+                }
 
                 var max = datosCompletos.Max(d => d.Ganancia);
                 var min = datosCompletos.Min(d => d.Ganancia);

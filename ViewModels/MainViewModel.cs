@@ -1,4 +1,4 @@
-﻿using Mercader.Models;
+using Mercader.Models;
 using Microcharts;
 using System.Collections.ObjectModel;
 
@@ -15,9 +15,9 @@ namespace Mercader.ViewModels
         public IEnumerable<Gasto> GastosPeriodo => FiltrarPorPeriodo(Gastos);
         public IEnumerable<Encargo> EncargosPeriodo => FiltrarPorPeriodo(Encargos);
 
-        public List<(string Periodo, decimal Total)> VentasPorPeriodo { get; private set; } = new();
-        public List<(string Periodo, decimal Total)> GastosPorPeriodo { get; private set; } = new();
-        public List<(string Periodo, decimal Total)> EncargosPorPeriodo { get; private set; } = new();
+        public List<(string Periodo, decimal Total)> VentasPorPeriodo { get; set; } = new();
+        public List<(string Periodo, decimal Total)> GastosPorPeriodo { get; set; } = new();
+        public List<(string Periodo, decimal Total)> EncargosPorPeriodo { get; set; } = new();
 
 
 
@@ -26,7 +26,7 @@ namespace Mercader.ViewModels
         private readonly IChartService _chartService;
 
         public Chart? EncargosChart { get; private set; }
-        public Chart? VentasChart { get; private set; }
+        public Chart? VentasChart { get; set; }
         public Chart? GastosChart { get; private set; }
         public Chart? GananciasChart { get; private set; }
 
@@ -109,6 +109,25 @@ namespace Mercader.ViewModels
             _chartService = chartService;
         }
 
+        /// <summary>
+        /// Actualiza SOLO el gráfico de ventas (migración MVVM paso a paso)
+        /// </summary>
+        public async Task ActualizarGraficoVentasAsync()
+        {
+            await Task.Run(() =>
+            {
+                VentasChart = _chartService.CrearGraficoVentas(VentasPorPeriodo);
+            });
+
+            MainThread.BeginInvokeOnMainThread(() =>
+            {
+                OnPropertyChanged(nameof(VentasChart));
+            });
+        }
+
+        /// <summary>
+        /// Actualiza todos los gráficos (para cuando termine la migración completa)
+        /// </summary>
         public async Task ActualizarGraficosAsync()
         {
             await Task.Run(() =>

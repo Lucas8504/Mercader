@@ -8,6 +8,9 @@ public class ChartService : IChartService
 
     public Chart CrearGraficoEncargos(List<(string Periodo, decimal Total)> datos)
     {
+        if (datos == null || datos.Count == 0)
+            return new LineChart { Entries = new List<ChartEntry>() };
+
         var maxTotal = datos.Max(d => d.Total);
         var minTotal = datos.Min(d => d.Total);
 
@@ -34,6 +37,9 @@ public class ChartService : IChartService
 
     public Chart CrearGraficoVentas(List<(string Periodo, decimal Total)> datos)
     {
+        if (datos == null || datos.Count == 0)
+            return new LineChart { Entries = new List<ChartEntry>() };
+
         var maxTotal = datos.Max(d => d.Total);
         var minTotal = datos.Min(d => d.Total);
 
@@ -60,8 +66,8 @@ public class ChartService : IChartService
 
     public Chart CrearGraficoGastos(List<(string Periodo, decimal Total)> datos)
     {
-        var maxTotal = datos.Max(d => d.Total);
-        var minTotal = datos.Min(d => d.Total);
+        if (datos == null || datos.Count == 0)
+            return new LineChart { Entries = new List<ChartEntry>() };
 
         var entries = datos.Select(d => new ChartEntry((float)d.Total)
         {
@@ -79,7 +85,7 @@ public class ChartService : IChartService
     List<(string Periodo, decimal Total)> ventas,
     List<(string Periodo, decimal Total)> gastos)
     {
-        if (ventas == null || ventas.Count == 0)
+        if (ventas == null || ventas.Count == 0 || gastos == null)
             return new LineChart { Entries = new List<ChartEntry>() };
 
         var datosCompletos = ventas.Select(v =>
