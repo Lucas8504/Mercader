@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Microcharts;
@@ -26,7 +27,7 @@ public class ChartService : IChartService
             return new ChartEntry((float)d.Total)
             {
                 Label = d.Periodo,
-                ValueLabel = d.Total.ToString("N0"),
+                ValueLabel = FormatearValorEntero(d.Total),
                 Color = SKColor.Parse(color),
                 TextColor = SKColor.Parse("#B0B0B0"),
                 ValueLabelColor = SKColor.Parse("#FFFFFF")
@@ -35,7 +36,7 @@ public class ChartService : IChartService
         return CrearLineChartBase(entries);
     }
 
-    public Chart CrearGraficoVentas(List<(string Periodo, decimal Total)> datos)
+        public Chart CrearGraficoVentas(List<(string Periodo, decimal Total)> datos)
     {
         if (datos == null || datos.Count == 0)
             return new LineChart { Entries = new List<ChartEntry>() };
@@ -55,7 +56,7 @@ public class ChartService : IChartService
             return new ChartEntry((float)d.Total)
             {
                 Label = d.Periodo,
-                ValueLabel = d.Total.ToString("N0"),
+                ValueLabel = FormatearValorEntero(d.Total),
                 Color = SKColor.Parse(color),
                 TextColor = SKColor.Parse("#B0B0B0"),
                 ValueLabelColor = SKColor.Parse("#FFFFFF")
@@ -72,7 +73,7 @@ public class ChartService : IChartService
         var entries = datos.Select(d => new ChartEntry((float)d.Total)
         {
             Label = d.Periodo,
-            ValueLabel = d.Total.ToString("N0"),
+            ValueLabel = FormatearValorEntero(d.Total),
             Color = SKColor.Parse("#dc3545"),
             TextColor = SKColor.Parse("#E0E0E0"),
             ValueLabelColor = SKColor.Parse("#FFFFFF")
@@ -115,7 +116,7 @@ public class ChartService : IChartService
             return new ChartEntry((float)d.Total)
             {
                 Label = d.Periodo,
-                ValueLabel = d.Total.ToString("0"),
+                ValueLabel = FormatearValorEntero(d.Total),
                 Color = SKColor.Parse(color),
                 TextColor = SKColors.White,
                 ValueLabelColor = SKColors.White
@@ -163,5 +164,17 @@ public class ChartService : IChartService
             EnableYFadeOutGradient = true
 
         };
+    }
+
+    private string FormatearValorEntero(decimal valor)
+    {
+        if (Math.Abs(valor) >= 1000000)
+            return $"${Math.Round(valor / 1000000, 1)}M";
+        else if (Math.Abs(valor) >= 1000)
+            return $"${Math.Round(valor / 1000, 1)}K";
+        else if (valor == 0)
+            return "$0";
+        else
+            return $"${Math.Round(valor)}";
     }
 }
