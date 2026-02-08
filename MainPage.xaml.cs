@@ -210,11 +210,38 @@ namespace Mercader
                     );
                 });
 
-                // === GRÁFICOS LEGACY - Code-behind (hasta migrar) ===
-                // ConfigurarGraficoVentas(ventasAgrupadas, periodo); // YA NO - ahora va por MVVM
-                ConfigurarGraficoGastos(gastosAgrupados, periodo);
-                ConfigurarGraficoEncargos(encargosAgrupados, periodo);
-                ConfigurarGraficoGanancias(ventasAgrupadas, gastosAgrupados, periodo);
+                // === GRÁFICO GASTOS - MVVM ===
+                await VM.ActualizarGraficoGastosAsync();
+                MainThread.BeginInvokeOnMainThread(async () =>
+                {
+                    await GastosScroll.ScrollToAsync(
+                        GastosScroll.Content,
+                        ScrollToPosition.End,
+                        animated: false
+                    );
+                });
+
+                // === GRÁFICO ENCARGOS - MVVM ===
+                await VM.ActualizarGraficoEncargosAsync();
+                MainThread.BeginInvokeOnMainThread(async () =>
+                {
+                    await EncargosScroll.ScrollToAsync(
+                        EncargosScroll.Content,
+                        ScrollToPosition.End,
+                        animated: false
+                    );
+                });
+
+                // === GRÁFICO GANANCIAS - MVVM ===
+                await VM.ActualizarGraficoGananciasAsync();
+                MainThread.BeginInvokeOnMainThread(async () =>
+                {
+                    await GananciasScroll.ScrollToAsync(
+                        GananciasScroll.Content,
+                        ScrollToPosition.End,
+                        animated: false
+                    );
+                });
             }
             catch (Exception ex)
             {
@@ -400,242 +427,16 @@ namespace Mercader
         // ELIMINADO: ConfigurarGraficoVentas - Ahora usa MVVM via VM.ActualizarGraficoVentasAsync()
         // private void ConfigurarGraficoVentas(List<(string Periodo, decimal Total)> datos, string periodo) { }
 
-        private void ConfigurarGraficoGastos(List<(string Periodo, decimal Total)> datos, string periodo)
-        {
-            try
-            {
-                if (datos == null || datos.Count == 0)
-                {
-                    GastosChart.Chart = new LineChart { Entries = new List<ChartEntry>() };
-                    return;
-                }
+        // ELIMINADO: ConfigurarGraficoGastos - Ahora usa MVVM via VM.ActualizarGraficoGastosAsync()
+        private void ConfigurarGraficoGastos(List<(string Periodo, decimal Total)> datos, string periodo) { }
 
-                var max = datos.Max(d => d.Total);
-                var min = datos.Min(d => d.Total);
+        // ELIMINADO: ConfigurarGraficoEncargos - Ahora usa MVVM via VM.ActualizarGraficoEncargosAsync()
+        private void ConfigurarGraficoEncargos(List<(string Periodo, decimal Total)> datos, string periodo) { }
 
-                var entries = datos.Select(d =>
-                {
-                    var color = d.Total == max
-                        ? "#CC0000"   // pico
-                        : d.Total == min
-                            ? "#67000F" // alerta
-                            : "#6E0A24";// color normal
-
-
-                    return new ChartEntry((float)d.Total)
-                    {
-                        Label = d.Periodo,
-                        ValueLabel = FormatearValorEntero(d.Total),
-                        Color = SKColor.Parse(color),
-                        TextColor = SKColor.Parse("#E0E0E0"),
-                        ValueLabelColor = SKColor.Parse("#FFFFFF")
-                    };
-                }).ToArray();
-
-                GastosChart.Chart = new LineChart
-                {
-                    Entries = entries,
-
-                    // 🎯 Texto
-                    LabelTextSize = 22,
-                    ValueLabelTextSize = 24,
-
-                    // 🎨 Estética
-                    BackgroundColor = SKColor.Parse("#2a2a2a"),
-                    LineSize = 5,
-                    PointSize = 10,
-                    LineMode = LineMode.Straight,
-                    IsAnimated = true,
-                    AnimationDuration = TimeSpan.FromMilliseconds(500),
-
-                    // 📐 Orientación
-                    LabelOrientation = Orientation.Horizontal,
-                    ValueLabelOrientation = Orientation.Horizontal,
-
-                    // 📊 Ejes
-                    ShowYAxisLines = true,
-                    YAxisLinesPaint = new SKPaint { Color = SKColor.Parse("#3C3C3C"), StrokeWidth = 1 },
-
-                    // 📦 Margen
-                    Margin = 20,
-                };
-
-                MainThread.BeginInvokeOnMainThread(async () =>
-                {
-                    await GastosScroll.ScrollToAsync(
-                          GastosScroll.Content,
-                        ScrollToPosition.End,
-                        animated: false
-                    );
-                });
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"Error configurando gráfico de gastos: {ex.Message}");
-            }
-        }
-
-        private void ConfigurarGraficoEncargos(List<(string Periodo, decimal Total)> datos, string periodo)
-        {
-            try
-            {
-                if (datos == null || datos.Count == 0)
-                {
-                    EncargosChart.Chart = new LineChart { Entries = new List<ChartEntry>() };
-                    return;
-                }
-
-                var max = datos.Max(d => d.Total);
-                var min = datos.Min(d => d.Total);
-
-                var entries = datos.Select(d =>
-                {
-                    var color = d.Total == max
-                        ? "#FF9016"   // pico
-                        : d.Total == min
-                            ? "#C84C0F" // alerta
-                            : "#ff6b35";
-
-                    return new ChartEntry((float)d.Total)
-                    {
-                        Label = d.Periodo,
-                        ValueLabel = FormatearValorEntero(d.Total),
-                        Color = SKColor.Parse(color),
-                        TextColor = SKColor.Parse("#B0B0B0"),
-                        ValueLabelColor = SKColor.Parse("#FFFFFF")
-                    };
-                }).ToArray();
-
-
-                EncargosChart.Chart = new LineChart
-                {
-                    // 🎯 Texto
-                    Entries = entries,
-                    LabelTextSize = 24,
-                    ValueLabelTextSize = 26,
-
-                    // 🎨 Estética
-                    BackgroundColor = SKColor.Parse("#2a2a2a"),
-                    LineSize = 4,
-                    PointSize = 8,
-                    LineMode = LineMode.Straight,
-                    IsAnimated = true,
-                    AnimationDuration = TimeSpan.FromMilliseconds(600),
-
-                    // 📐 Orientación
-                    LabelOrientation = Orientation.Horizontal,
-                    ValueLabelOrientation = Orientation.Horizontal,
-                    Margin = 20,
-
-                    // 📊 Ejes
-                    ShowYAxisLines = true,
-                    YAxisLinesPaint = new SKPaint { Color = SKColor.Parse("#3C3C3C"), StrokeWidth = 1 }
-                };
-
-                MainThread.BeginInvokeOnMainThread(async () =>
-                {
-                    await EncargosScroll.ScrollToAsync(
-                          EncargosScroll.Content,
-                        ScrollToPosition.End,
-                        animated: false
-                    );
-                });
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"Error configurando gráfico de encargos: {ex.Message}");
-            }
-        }
-
+        // ELIMINADO: ConfigurarGraficoGanancias - Ahora usa MVVM via VM.ActualizarGraficoGananciasAsync()
         private void ConfigurarGraficoGanancias(List<(string Periodo, decimal Total)> ventas,
                                                List<(string Periodo, decimal Total)> gastos,
-                                               string periodo)
-        {
-            try
-            {
-                if (ventas == null || ventas.Count == 0 || gastos == null)
-                {
-                    GananciasChart.Chart = new LineChart { Entries = new List<ChartEntry>() };
-                    return;
-                }
-
-                var datosCompletos = ventas.Select(v =>
-                {
-                    var gastoCorrespondiente = gastos.FirstOrDefault(g => g.Periodo == v.Periodo);
-                    var ganancia = v.Total - gastoCorrespondiente.Total;
-                    return new { Periodo = v.Periodo, Ganancia = ganancia };
-                }).ToList();
-
-                if (datosCompletos.Count == 0)
-                {
-                    GananciasChart.Chart = new LineChart { Entries = new List<ChartEntry>() };
-                    return;
-                }
-
-                var max = datosCompletos.Max(d => d.Ganancia);
-                var min = datosCompletos.Min(d => d.Ganancia);
-
-
-                var entries = datosCompletos.Select(d =>
-                {
-                    var color =
-                        d.Ganancia == max ? "#0099FF" :   // pico
-                        d.Ganancia == min ? "#0A34A4" :   // alerta
-                                            "#1f6bc2";
-
-                    return new ChartEntry((float)d.Ganancia)
-                    {
-                        Label = d.Periodo,
-                        ValueLabel = FormatearValorEntero(d.Ganancia),
-                        Color = d.Ganancia >= 0
-                            ? SKColor.Parse(color)
-                            : SKColor.Parse("#dc3545"), // pérdidas
-                        TextColor = SKColor.Parse("#E0E0E0"),
-                        ValueLabelColor = SKColor.Parse("#FFFFFF")
-                    };
-                }).ToArray();
-
-
-                GananciasChart.Chart = new LineChart
-                {
-                    Entries = entries,
-
-                    // 🎯 Texto
-                    LabelTextSize = 24,
-                    ValueLabelTextSize = 26,
-
-                    // 🎨 Estética
-                    BackgroundColor = SKColor.Parse("#2a2a2a"),
-                    LineSize = 4,
-                    PointSize = 8,
-                    LineMode = LineMode.Straight,
-                    IsAnimated = true,
-                    AnimationDuration = TimeSpan.FromMilliseconds(600),
-
-                    // 📐 Orientación
-                    LabelOrientation = Orientation.Horizontal,
-                    ValueLabelOrientation = Orientation.Horizontal,
-                    Margin = 20,
-
-                    // 📊 Ejes
-                    ShowYAxisLines = true,
-                    YAxisLinesPaint = new SKPaint { Color = SKColor.Parse("#3C3C3C"), StrokeWidth = 1 }
-                };
-
-                MainThread.BeginInvokeOnMainThread(async () =>
-                {
-                    await GananciasScroll.ScrollToAsync(
-                          GananciasScroll.Content,
-                        ScrollToPosition.End,
-                        animated: false
-                    );
-                });
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"Error configurando gráfico de ganancias: {ex.Message}");
-            }
-        }
+                                               string periodo) { }
 
         #endregion
 

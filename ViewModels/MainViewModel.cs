@@ -25,10 +25,10 @@ namespace Mercader.ViewModels
 
         private readonly IChartService _chartService;
 
-        public Chart? EncargosChart { get; private set; }
+        public Chart? EncargosChart { get; set; }
         public Chart? VentasChart { get; set; }
-        public Chart? GastosChart { get; private set; }
-        public Chart? GananciasChart { get; private set; }
+        public Chart? GastosChart { get; set; }
+        public Chart? GananciasChart { get; set; }
 
 
         // ===== Valores internos =====
@@ -122,6 +122,54 @@ namespace Mercader.ViewModels
             MainThread.BeginInvokeOnMainThread(() =>
             {
                 OnPropertyChanged(nameof(VentasChart));
+            });
+        }
+
+        /// <summary>
+        /// Actualiza SOLO el gráfico de gastos (migración MVVM paso a paso)
+        /// </summary>
+        public async Task ActualizarGraficoGastosAsync()
+        {
+            await Task.Run(() =>
+            {
+                GastosChart = _chartService.CrearGraficoGastos(GastosPorPeriodo);
+            });
+
+            MainThread.BeginInvokeOnMainThread(() =>
+            {
+                OnPropertyChanged(nameof(GastosChart));
+            });
+        }
+
+        /// <summary>
+        /// Actualiza SOLO el gráfico de encargos (migración MVVM paso a paso)
+        /// </summary>
+        public async Task ActualizarGraficoEncargosAsync()
+        {
+            await Task.Run(() =>
+            {
+                EncargosChart = _chartService.CrearGraficoEncargos(EncargosPorPeriodo);
+            });
+
+            MainThread.BeginInvokeOnMainThread(() =>
+            {
+                OnPropertyChanged(nameof(EncargosChart));
+            });
+        }
+
+        /// <summary>
+        /// Actualiza SOLO el gráfico de ganancias (migración MVVM paso a paso)
+        /// </summary>
+        public async Task ActualizarGraficoGananciasAsync()
+        {
+            await Task.Run(() =>
+            {
+                GananciasChart = _chartService.CrearGraficoGanancias(VentasPorPeriodo, GastosPorPeriodo);
+            });
+
+            MainThread.BeginInvokeOnMainThread(() =>
+            {
+                OnPropertyChanged(nameof(GananciasChart));
             });
         }
 

@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8" ?>
+<?xml version="1.0" encoding="utf-8" ?>
 <ContentPage
     x:Class="Mercader.MainPage"
     xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
@@ -97,7 +97,7 @@
                                 Orientation="Horizontal"
                                 HorizontalScrollBarVisibility="Always">
                         <microcharts:ChartView
-                            x:Name="GastosChart"
+                            Chart="{Binding GastosChart}"
                             BackgroundColor="Transparent"
                             HeightRequest="290"
                             WidthRequest="5950" />
@@ -145,11 +145,13 @@
                     </Grid>
 
                     <!-- Gráfico de Encargos -->
-                    <ScrollView x:Name=" EncargosScroll" Grid.Row="1" HorizontalScrollBarVisibility="Always" Orientation="Horizontal">
+                    <ScrollView x:Name="EncargosScroll" Grid.Row="1" HorizontalScrollBarVisibility="Always" Orientation="Horizontal">
                         <microcharts:ChartView
-                            x:Name="EncargosChart"
+                            Chart="{Binding EncargosChart}"
                             BackgroundColor="#2a2a2a"
-                        HeightRequest="290" WidthRequest="5950" /> </ScrollView>
+                            HeightRequest="290"
+                            WidthRequest="5950" />
+                    </ScrollView>
 
                 </Grid>
             </Frame>
@@ -277,7 +279,7 @@
                                 HorizontalScrollBarVisibility="Always">
 
                         <microcharts:ChartView
-                            x:Name="GananciasChart"
+                            Chart="{Binding GananciasChart}"
                             BackgroundColor="#2a2a2a"
                             HeightRequest="290"
                             WidthRequest="5950" />
