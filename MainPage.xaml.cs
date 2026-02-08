@@ -200,6 +200,16 @@ namespace Mercader
                 // === GRÁFICO VENTAS - MVVM (via ChartService) ===
                 await VM.ActualizarGraficoVentasAsync();
 
+                // Scroll al final para mostrar datos más recientes (igual que otros gráficos)
+                MainThread.BeginInvokeOnMainThread(async () =>
+                {
+                    await VentasScroll.ScrollToAsync(
+                        VentasScroll.Content,
+                        ScrollToPosition.End,
+                        animated: false
+                    );
+                });
+
                 // === GRÁFICOS LEGACY - Code-behind (hasta migrar) ===
                 // ConfigurarGraficoVentas(ventasAgrupadas, periodo); // YA NO - ahora va por MVVM
                 ConfigurarGraficoGastos(gastosAgrupados, periodo);
