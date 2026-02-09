@@ -22,7 +22,7 @@ public class ChartService : IChartService
                 ? "#FF9016"         // pico
                 : d.Total == minTotal
                     ? "#C84C0F"     // alerta
-                    : "#ff6b35";    // normal
+                    : "#FF4F0F";    // normal
 
             return new ChartEntry((float)d.Total)
             {
@@ -70,13 +70,24 @@ public class ChartService : IChartService
         if (datos == null || datos.Count == 0)
             return new LineChart { Entries = new List<ChartEntry>() };
 
-        var entries = datos.Select(d => new ChartEntry((float)d.Total)
+        var maxTotal = datos.Max(d => d.Total);
+        var minTotal = datos.Min(d => d.Total);
+
+        var entries = datos.Select(d => 
         {
-            Label = d.Periodo,
-            ValueLabel = FormatearValorEntero(d.Total),
-            Color = SKColor.Parse("#dc3545"),
-            TextColor = SKColor.Parse("#E0E0E0"),
-            ValueLabelColor = SKColor.Parse("#FFFFFF")
+            var color = d.Total == maxTotal
+               ? "#BE2740"         // pico
+               : d.Total == minTotal
+                   ? "#6E0022"     // alerta
+                   : "#981F33";    // normal
+            return new ChartEntry((float)d.Total)
+            {
+                Label = d.Periodo,
+                ValueLabel = FormatearValorEntero(d.Total),
+                Color = SKColor.Parse(color),
+                TextColor = SKColor.Parse("#E0E0E0"),
+                ValueLabelColor = SKColor.Parse("#FFFFFF")
+            };
         }).ToArray();
 
         return CrearLineChartBase(entries);
@@ -108,10 +119,10 @@ public class ChartService : IChartService
         var entries = datosCompletos.Select(d =>
         {
             var color = d.Total == maxTotal
-                ? "#4CAF50"
+                ? "#267CDF"
                 : d.Total == minTotal
-                    ? "#FFC107"
-                    : "#1f6bc2";
+                    ? "#2249D3"
+                    : "#1D69BE";
 
             return new ChartEntry((float)d.Total)
             {
