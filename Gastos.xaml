@@ -38,135 +38,118 @@
                                     </SwipeItems>
                                 </SwipeView.RightItems>
 
-                                <!-- Tarjeta de gasto mejorada con 2 filas -->
+                                <!-- Tarjeta de gasto minimalista moderna -->
                                 <Frame
-                                    Padding="18"
-                                    BackgroundColor="#1e1e1e"
-                                    BorderColor="#333333"
-                                    CornerRadius="12"
-                                    HasShadow="True">
+                                    Padding="16"
+                                    BackgroundColor="#252525"
+                                    BorderColor="Transparent"
+                                    CornerRadius="16"
+                                    HasShadow="False">
 
                                     <Frame.GestureRecognizers>
                                         <TapGestureRecognizer Tapped="OnItemTapped" />
                                     </Frame.GestureRecognizers>
 
-                                    <!-- Efecto visual al tocar -->
-                                    <Frame.Triggers>
-                                        <Trigger TargetType="Frame" Property="IsEnabled" Value="True">
-                                            <Setter Property="Opacity" Value="1" />
-                                        </Trigger>
-                                    </Frame.Triggers>
+                                    <VerticalStackLayout Spacing="12">
+                                        <!-- Fila 1: Descripción del gasto -->
+                                        <Label
+                                            FontAttributes="Bold"
+                                            FontSize="17"
+                                            LineBreakMode="WordWrap"
+                                            Text="{Binding Descripcion}"
+                                            TextColor="#E8E8E8" />
 
-                                    <Grid RowSpacing="12">
-                                        <Grid.RowDefinitions>
-                                            <RowDefinition Height="Auto" />
-                                            <RowDefinition Height="Auto" />
-                                        </Grid.RowDefinitions>
-
-                                        <!-- PRIMERA FILA: Descripción del gasto (destacada) -->
-                                        <StackLayout Grid.Row="0" Spacing="5">
-                                            <Label
-                                                Text="💸 GASTO"
-                                                FontSize="12"
-                                                FontAttributes="Bold"
-                                                TextColor="#FF5722"
-                                                Margin="0,0,0,2" />
-                                            <Label
-                                                FontAttributes="Bold"
-                                                FontSize="16"
-                                                LineBreakMode="WordWrap"
-                                                Text="{Binding Descripcion}"
-                                                TextColor="#ffffff"
-                                                Margin="0,0,0,8" />
-                                        </StackLayout>
-
-                                        <!-- SEGUNDA FILA: Detalles (Monto, Cantidad, Fecha) -->
-                                        <Grid Grid.Row="1" ColumnSpacing="15">
+                                        <!-- Fila 2: Total y Precio Unitario en una fila -->
+                                        <Grid ColumnSpacing="12">
                                             <Grid.ColumnDefinitions>
-                                                <ColumnDefinition Width="*" />
                                                 <ColumnDefinition Width="*" />
                                                 <ColumnDefinition Width="*" />
                                             </Grid.ColumnDefinitions>
 
-                                            <!-- Monto -->
-                                            <StackLayout Grid.Column="0" Spacing="5">
-                                                <Label
-                                                    Text="💰 MONTO"
-                                                    FontSize="11"
-                                                    FontAttributes="Bold"
-                                                    TextColor="#F44336"
-                                                    HorizontalTextAlignment="Center" />
-                                                <Frame
-                                                    Padding="10,6"
-                                                    BackgroundColor="#F44336"
-                                                    BorderColor="#D32F2F"
-                                                    CornerRadius="8"
-                                                    HasShadow="False"
-                                                    HorizontalOptions="Fill">
-                                                    <Label
-                                                        FontAttributes="Bold"
-                                                        FontSize="14"
-                                                        Text="{Binding Monto, StringFormat='${0:F2}'}"
-                                                        TextColor="#ffffff"
-                                                        HorizontalTextAlignment="Center" />
-                                                </Frame>
-                                            </StackLayout>
-
-                                            <!-- Cantidad -->
-                                            <StackLayout Grid.Column="1" Spacing="5">
-                                                <Label
-                                                    Text="📦 CANTIDAD"
-                                                    FontSize="11"
-                                                    FontAttributes="Bold"
-                                                    TextColor="#FF9800"
-                                                    HorizontalTextAlignment="Center" />
-                                                <Frame
-                                                    Padding="10,6"
-                                                    BackgroundColor="#FF9800"
-                                                    BorderColor="#F57C00"
-                                                    CornerRadius="20"
-                                                    HasShadow="False"
-                                                    HorizontalOptions="Fill">
-                                                    <Label
-                                                        FontAttributes="Bold"
-                                                        FontSize="14"
-                                                        Text="{Binding Cantidad}"
-                                                        TextColor="#ffffff"
-                                                        HorizontalTextAlignment="Center" />
-                                                </Frame>
-                                            </StackLayout>
-
-                                            <!-- Fecha -->
-                                            <StackLayout Grid.Column="2" Spacing="5">
-                                                <Label
-                                                    Text="📅 FECHA"
-                                                    FontSize="11"
-                                                    FontAttributes="Bold"
-                                                    TextColor="#9C27B0"
-                                                    HorizontalTextAlignment="Center" />
-                                                <StackLayout Spacing="3" HorizontalOptions="Center">
-                                                    <Frame
-                                                        Padding="8,4"
-                                                        BackgroundColor="#9C27B0"
-                                                        BorderColor="#7B1FA2"
-                                                        CornerRadius="6"
-                                                        HasShadow="False">
+                                            <!-- Total del Gasto -->
+                                            <Frame
+                                                Grid.Column="0"
+                                                BackgroundColor="#2D3D2D"
+                                                BorderColor="#3D5A3D"
+                                                CornerRadius="8"
+                                                Padding="10"
+                                                HasShadow="False">
+                                                <HorizontalStackLayout Spacing="8" VerticalOptions="Center">
+                                                    <Image
+                                                        Source="wallet.png"
+                                                        WidthRequest="18"
+                                                        HeightRequest="18"
+                                                        VerticalOptions="Center" />
+                                                    <VerticalStackLayout Spacing="2">
                                                         <Label
-                                                            FontSize="14"
+                                                            Text="Total"
+                                                            FontSize="10"
+                                                            TextColor="#9CAF88" />
+                                                        <Label
                                                             FontAttributes="Bold"
-                                                            Text="{Binding Fecha, StringFormat='{0:dd/MM/yy}'}"
-                                                            TextColor="#ffffff"
-                                                            HorizontalTextAlignment="Center" />
-                                                    </Frame>
-                                                    <Label
-                                                        FontSize="10"
-                                                        Text="{Binding Fecha, StringFormat='{0:dddd}'}"
-                                                        TextColor="#888888"
-                                                        HorizontalTextAlignment="Center" />
-                                                </StackLayout>
-                                            </StackLayout>
+                                                            FontSize="15"
+                                                            Text="{Binding TotalFormateado, StringFormat='${0:N0}'}"
+                                                            TextColor="#C8E6C9" />
+                                                    </VerticalStackLayout>
+                                                </HorizontalStackLayout>
+                                            </Frame>
+
+                                            <!-- Precio Unitario -->
+                                            <Frame
+                                                Grid.Column="1"
+                                                BackgroundColor="#2A2A3A"
+                                                BorderColor="#4A4A5A"
+                                                CornerRadius="8"
+                                                Padding="10"
+                                                HasShadow="False">
+                                                <HorizontalStackLayout Spacing="8" VerticalOptions="Center">
+                                                    <Image
+                                                        Source="tag.png"
+                                                        WidthRequest="18"
+                                                        HeightRequest="18"
+                                                        VerticalOptions="Center" />
+                                                    <VerticalStackLayout Spacing="2">
+                                                        <Label
+                                                            Text="x Unidad"
+                                                            FontSize="10"
+                                                            TextColor="#8A8A9A" />
+                                                        <Label
+                                                            FontAttributes="Bold"
+                                                            FontSize="15"
+                                                            Text="{Binding Monto, StringFormat='${0:N2}'}"
+                                                            TextColor="#D0D0E0" />
+                                                    </VerticalStackLayout>
+                                                </HorizontalStackLayout>
+                                            </Frame>
                                         </Grid>
-                                    </Grid>
+
+                                        <!-- Fila 3: Cantidad y Fecha -->
+                                        <HorizontalStackLayout Spacing="16" VerticalOptions="Center">
+                                            <HorizontalStackLayout Spacing="6" VerticalOptions="Center">
+                                                <Image
+                                                    Source="box.png"
+                                                    WidthRequest="14"
+                                                    HeightRequest="14"
+                                                    VerticalOptions="Center" />
+                                                <Label
+                                                    FontSize="12"
+                                                    Text="{Binding Cantidad, StringFormat='{0} unid.'}"
+                                                    TextColor="#888888" />
+                                            </HorizontalStackLayout>
+
+                                            <HorizontalStackLayout Spacing="4" VerticalOptions="Center">
+                                                <Image
+                                                    Source="calendar.png"
+                                                    WidthRequest="12"
+                                                    HeightRequest="12"
+                                                    VerticalOptions="Center" />
+                                                <Label
+                                                    FontSize="12"
+                                                    Text="{Binding Fecha, StringFormat='{0:dd MMM yyyy}'}"
+                                                    TextColor="#6A6A6A" />
+                                            </HorizontalStackLayout>
+                                        </HorizontalStackLayout>
+                                    </VerticalStackLayout>
                                 </Frame>
                             </SwipeView>
                         </DataTemplate>
