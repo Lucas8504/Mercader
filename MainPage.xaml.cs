@@ -175,6 +175,8 @@ namespace Mercader
                 {
                     "Días" => AgruparVentasPorDia(ventas),
                     "Semanas" => AgruparVentasPorSemana(ventas),
+                    "Meses" => AgruparVentasPorMes(ventas),
+                    "Años" => AgruparVentasPorAnio(ventas),
                     _ => AgruparVentasPorMes(ventas)
                 };
 
@@ -182,6 +184,8 @@ namespace Mercader
                 {
                     "Días" => AgruparGastosPorDia(gastos),
                     "Semanas" => AgruparGastosPorSemana(gastos),
+                    "Meses" => AgruparGastosPorMes(gastos),
+                    "Años" => AgruparGastosPorAnio(gastos),
                     _ => AgruparGastosPorMes(gastos)
                 };
 
@@ -189,6 +193,8 @@ namespace Mercader
                 {
                     "Días" => AgruparEncargosPorDia(encargos),
                     "Semanas" => AgruparEncargosPorSemana(encargos),
+                    "Meses" => AgruparEncargosPorMes(encargos),
+                    "Años" => AgruparEncargosPorAnio(encargos),
                     _ => AgruparEncargosPorMes(encargos)
                 };
 
@@ -306,6 +312,22 @@ namespace Mercader
             }).ToList();
         }
 
+        private List<(string Periodo, decimal Total)> AgruparVentasPorAnio(List<Ventas> ventas)
+        {
+            var hoy = DateTime.Today;
+            var ultimosAnios = Enumerable.Range(0, 10)
+                .Select(i => hoy.AddYears(-i))
+                .Reverse()
+                .ToList();
+
+            return ultimosAnios.Select(anio =>
+            {
+                var ventasAnio = ventas.Where(v => v.Fecha.Year == anio.Year);
+                var total = ventasAnio.Sum(v => v.Precio * v.Cantidad);
+                return (anio.Year.ToString(), total);
+            }).ToList();
+        }
+
         #endregion
 
         #region Métodos de Agrupación - Gastos
@@ -363,6 +385,22 @@ namespace Mercader
             }).ToList();
         }
 
+        private List<(string Periodo, decimal Total)> AgruparGastosPorAnio(List<Gasto> gastos)
+        {
+            var hoy = DateTime.Today;
+            var ultimosAnios = Enumerable.Range(0, 10)
+                .Select(i => hoy.AddYears(-i))
+                .Reverse()
+                .ToList();
+
+            return ultimosAnios.Select(anio =>
+            {
+                var gastosAnio = gastos.Where(g => g.Fecha.Year == anio.Year);
+                var total = gastosAnio.Sum(g => g.Monto * g.Cantidad);
+                return (anio.Year.ToString(), total);
+            }).ToList();
+        }
+
         #endregion
 
         #region Métodos de Agrupación - Encargos
@@ -417,6 +455,22 @@ namespace Mercader
                 var encargosMes = encargos.Where(e => e.Fecha.Year == mes.Year && e.Fecha.Month == mes.Month);
                 var total = encargosMes.Sum(e => e.Precio * e.Cantidad);
                 return (mes.ToString("MMM", new CultureInfo("es-ES")), total);
+            }).ToList();
+        }
+
+        private List<(string Periodo, decimal Total)> AgruparEncargosPorAnio(List<Encargo> encargos)
+        {
+            var hoy = DateTime.Today;
+            var ultimosAnios = Enumerable.Range(0, 10)
+                .Select(i => hoy.AddYears(-i))
+                .Reverse()
+                .ToList();
+
+            return ultimosAnios.Select(anio =>
+            {
+                var encargosAnio = encargos.Where(e => e.Fecha.Year == anio.Year);
+                var total = encargosAnio.Sum(e => e.Precio * e.Cantidad);
+                return (anio.Year.ToString(), total);
             }).ToList();
         }
 

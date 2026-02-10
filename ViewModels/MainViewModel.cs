@@ -79,7 +79,8 @@ namespace Mercader.ViewModels
         {
             "Días",
             "Semanas",
-            "Meses"
+            "Meses",
+            "Años"
         };
 
         private string _periodoSeleccionado = "Meses";
@@ -234,7 +235,9 @@ namespace Mercader.ViewModels
             return PeriodoSeleccionado switch
             {
                 "Días" => lista.Where(x => x.Fecha >= hoy.AddDays(-366)),
-                "Semanas" => lista.Where(x => x.Fecha >= hoy.AddDays(-7)),
+                "Semanas" => lista.Where(x => x.Fecha >= hoy.AddDays(-910)), // ~130 semanas
+                "Meses" => lista.Where(x => x.Fecha >= hoy.AddMonths(-12)),
+                "Años" => lista.Where(x => x.Fecha >= hoy.AddYears(-10)),
                 _ => lista.Where(x => x.Fecha >= hoy.AddMonths(-12))
             };
         }
