@@ -69,8 +69,8 @@
                                             <!-- Total del Gasto -->
                                             <Frame
                                                 Grid.Column="0"
-                                                BackgroundColor="#2D3D2D"
-                                                BorderColor="#3D5A3D"
+                                                BackgroundColor="#500023"
+                                                BorderColor="#750023"
                                                 CornerRadius="8"
                                                 Padding="10"
                                                 HasShadow="False">
