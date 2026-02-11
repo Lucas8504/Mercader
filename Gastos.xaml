@@ -13,7 +13,6 @@
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
 
-
         <!-- Lista de gastos -->
         <ScrollView Grid.Row="1" Margin="10,0">
             <StackLayout Spacing="12">
@@ -50,27 +49,56 @@
                                         <TapGestureRecognizer Tapped="OnItemTapped" />
                                     </Frame.GestureRecognizers>
 
-                                    <VerticalStackLayout Spacing="12">
-                                        <!-- Fila 1: Descripción del gasto -->
-                                        <Label
-                                            FontAttributes="Bold"
-                                            FontSize="17"
-                                            LineBreakMode="WordWrap"
-                                            Text="{Binding Descripcion}"
-                                            TextColor="#E8E8E8" />
+                                    <Grid RowSpacing="12">
+                                        <Grid.RowDefinitions>
+                                            <RowDefinition Height="Auto" />
+                                            <RowDefinition Height="Auto" />
+                                            <RowDefinition Height="Auto" />
+                                        </Grid.RowDefinitions>
 
-                                        <!-- Fila 2: Total y Precio Unitario en una fila -->
-                                        <Grid ColumnSpacing="12">
+                                        <!-- Fila 1: Descripción y Cantidad -->
+                                        <Grid Grid.Row="0" ColumnSpacing="12">
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="*" />
+                                                <ColumnDefinition Width="Auto" />
+                                            </Grid.ColumnDefinitions>
+
+                                            <!-- Descripción -->
+                                            <Label
+                                                Grid.Column="0"
+                                                FontAttributes="Bold"
+                                                FontSize="17"
+                                                LineBreakMode="WordWrap"
+                                                Text="{Binding Descripcion}"
+                                                TextColor="#E8E8E8"
+                                                VerticalOptions="Center" />
+
+                                            <!-- Cantidad -->
+                                            <HorizontalStackLayout Grid.Column="1" Spacing="4" VerticalOptions="Center">
+                                                <Image
+                                                    Source="box.png"
+                                                    WidthRequest="14"
+                                                    HeightRequest="14"
+                                                    VerticalOptions="Center" />
+                                                <Label
+                                                    FontSize="12"
+                                                    Text="{Binding Cantidad, StringFormat='{0} unid.'}"
+                                                    TextColor="#888888" />
+                                            </HorizontalStackLayout>
+                                        </Grid>
+
+                                        <!-- Fila 2: Total y Precio Unitario -->
+                                        <Grid Grid.Row="1" ColumnSpacing="12">
                                             <Grid.ColumnDefinitions>
                                                 <ColumnDefinition Width="*" />
                                                 <ColumnDefinition Width="*" />
                                             </Grid.ColumnDefinitions>
 
-                                            <!-- Total del Gasto -->
+                                            <!-- Total -->
                                             <Frame
                                                 Grid.Column="0"
-                                                BackgroundColor="#500023"
-                                                BorderColor="#750023"
+                                                BackgroundColor="#3D2D2D"
+                                                BorderColor="#5A4A4A"
                                                 CornerRadius="8"
                                                 Padding="10"
                                                 HasShadow="False">
@@ -84,12 +112,12 @@
                                                         <Label
                                                             Text="Total"
                                                             FontSize="10"
-                                                            TextColor="#9CAF88" />
+                                                            TextColor="#D4A5A5" />
                                                         <Label
                                                             FontAttributes="Bold"
                                                             FontSize="15"
-                                                            Text="{Binding TotalFormateado, StringFormat='${0:N0}'}"
-                                                            TextColor="#C8E6C9" />
+                                                            Text="{Binding TotalFormateado}"
+                                                            TextColor="#E8C8C8" />
                                                     </VerticalStackLayout>
                                                 </HorizontalStackLayout>
                                             </Frame>
@@ -123,33 +151,19 @@
                                             </Frame>
                                         </Grid>
 
-                                        <!-- Fila 3: Cantidad y Fecha -->
-                                        <HorizontalStackLayout Spacing="16" VerticalOptions="Center">
-                                            <HorizontalStackLayout Spacing="6" VerticalOptions="Center">
-                                                <Image
-                                                    Source="box.png"
-                                                    WidthRequest="14"
-                                                    HeightRequest="14"
-                                                    VerticalOptions="Center" />
-                                                <Label
-                                                    FontSize="12"
-                                                    Text="{Binding Cantidad, StringFormat='{0} unid.'}"
-                                                    TextColor="#888888" />
-                                            </HorizontalStackLayout>
-
-                                            <HorizontalStackLayout Spacing="4" VerticalOptions="Center">
-                                                <Image
-                                                    Source="calendar.png"
-                                                    WidthRequest="12"
-                                                    HeightRequest="12"
-                                                    VerticalOptions="Center" />
-                                                <Label
-                                                    FontSize="12"
-                                                    Text="{Binding Fecha, StringFormat='{0:dd MMM yyyy}'}"
-                                                    TextColor="#6A6A6A" />
-                                            </HorizontalStackLayout>
+                                        <!-- Fila 3: Fecha -->
+                                        <HorizontalStackLayout Grid.Row="2" Spacing="4" VerticalOptions="Center">
+                                            <Image
+                                                Source="calendar.png"
+                                                WidthRequest="12"
+                                                HeightRequest="12"
+                                                VerticalOptions="Center" />
+                                            <Label
+                                                FontSize="12"
+                                                Text="{Binding Fecha, StringFormat='{0:dd MMM yyyy}'}"
+                                                TextColor="#6A6A6A" />
                                         </HorizontalStackLayout>
-                                    </VerticalStackLayout>
+                                    </Grid>
                                 </Frame>
                             </SwipeView>
                         </DataTemplate>

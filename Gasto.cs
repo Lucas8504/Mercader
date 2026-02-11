@@ -27,7 +27,14 @@ namespace Mercader
         // Propiedades calculadas (no se mapean a SQLite)
         public decimal Total => Monto * Cantidad;
 
-        public string TotalFormateado => Total.ToString("N0");
+        public string TotalFormateado
+        {
+            get
+            {
+                var total = Monto * Cantidad;
+                return total.ToString("N0");
+            }
+        }
 
         public event PropertyChangedEventHandler? PropertyChanged;
         protected void OnPropertyChanged([CallerMemberName] string? propertyName = null)
