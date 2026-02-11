@@ -1,6 +1,5 @@
 using Microcharts.Maui;
 using SkiaSharp;
-using Mercader.Helpers;
 using System.Globalization;
 using Microcharts;
 using System.Diagnostics;
