@@ -97,8 +97,8 @@
                                             <!-- Total -->
                                             <Frame
                                                 Grid.Column="0"
-                                                BackgroundColor="#3D2D2D"
-                                                BorderColor="#5A4A4A"
+                                                BackgroundColor="#750000"
+                                                BorderColor="#BD2C2A"
                                                 CornerRadius="8"
                                                 Padding="10"
                                                 HasShadow="False">
@@ -125,8 +125,8 @@
                                             <!-- Precio Unitario -->
                                             <Frame
                                                 Grid.Column="1"
-                                                BackgroundColor="#2A2A3A"
-                                                BorderColor="#4A4A5A"
+                                                BackgroundColor="#1E3A5F"
+                                                BorderColor="#2E5A8F"
                                                 CornerRadius="8"
                                                 Padding="10"
                                                 HasShadow="False">
