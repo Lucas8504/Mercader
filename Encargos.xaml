@@ -145,8 +145,8 @@
                                             <!-- Total del Encargo -->
                                             <Frame
                                                 Grid.Column="0"
-                                                BackgroundColor="#3D2E4A"
-                                                BorderColor="#5A4A6A"
+                                                BackgroundColor="#A54815"
+                                                BorderColor="#E16F1B"
                                                 CornerRadius="8"
                                                 Padding="10"
                                                 HasShadow="False">
@@ -173,8 +173,8 @@
                                             <!-- Precio Unitario -->
                                             <Frame
                                                 Grid.Column="1"
-                                                BackgroundColor="#2E3D4A"
-                                                BorderColor="#4A5A6A"
+                                                BackgroundColor="#1E3A5F"
+                                                BorderColor="#2E5A8F"
                                                 CornerRadius="8"
                                                 Padding="10"
                                                 HasShadow="False">
