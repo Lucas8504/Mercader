@@ -19,7 +19,7 @@
 
 
                 <Button
-                    BackgroundColor="#6e0a24"
+                    BackgroundColor="{StaticResource GastoColor}"
                     Clicked="InAgregarGasto"
                     CornerRadius="17"
                     Text="➕​ Gasto"
@@ -27,7 +27,7 @@
                     WidthRequest="106" />
 
                 <Button
-                    BackgroundColor="#ff6b35"
+                    BackgroundColor="{StaticResource EncargoColor}"
                     Clicked="InAgregarEncargo"
                     CornerRadius="17"
                     Text="➕ ​Encargo"
@@ -35,7 +35,7 @@
                     WidthRequest="106" />
 
                 <Button
-                    BackgroundColor="#2e9449"
+                    BackgroundColor="{StaticResource VentaColor}"
                     Clicked="InAgregarVenta"
                     CornerRadius="17"
                     Text="➕​ Venta"
@@ -299,7 +299,7 @@
             <!--  Botón Exportar  -->
             <Button
                 Margin="10,1,0,0"
-                BackgroundColor="#6490E9"
+                BackgroundColor="{StaticResource ExportarColor}"
                 Clicked="OnExportarAExcelClicked"
                 CornerRadius="17"
                 FontAttributes="Bold"
