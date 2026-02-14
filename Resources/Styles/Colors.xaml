@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="UTF-8" ?>
+<?xml version="1.0" encoding="UTF-8" ?>
 <?xaml-comp compile="true" ?>
 <ResourceDictionary xmlns="http://schemas.microsoft.com/dotnet/2021/maui" xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml">
 
@@ -40,4 +40,29 @@
     <SolidColorBrush x:Key="Gray600Brush" Color="{StaticResource Gray600}" />
     <SolidColorBrush x:Key="Gray900Brush" Color="{StaticResource Gray900}" />
     <SolidColorBrush x:Key="Gray950Brush" Color="{StaticResource Gray950}" />
+
+    <!-- MainPage Colors -->
+    <Color x:Key="MainPageBackground">#1C1C1C</Color>
+    <Color x:Key="CardBackground">#2a2a2a</Color>
+    <Color x:Key="SeparatorColor">#333333</Color>
+    <Color x:Key="SecondaryText">#7c7c7c</Color>
+
+    <Color x:Key="GastosColor">#6e0a24</Color>
+    <Color x:Key="EncargosColor">#ff6b35</Color>
+    <Color x:Key="VentasColor">#2e9449</Color>
+    <Color x:Key="GananciasColor">#1f6bc2</Color>
+    <Color x:Key="MargenColor">#17a2b8</Color>
+    <Color x:Key="ExportarColor">#6490E9</Color>
+
+    <SolidColorBrush x:Key="MainPageBackgroundBrush" Color="{StaticResource MainPageBackground}" />
+    <SolidColorBrush x:Key="CardBackgroundBrush" Color="{StaticResource CardBackground}" />
+    <SolidColorBrush x:Key="SeparatorBrush" Color="{StaticResource SeparatorColor}" />
+    <SolidColorBrush x:Key="SecondaryTextBrush" Color="{StaticResource SecondaryText}" />
+
+    <SolidColorBrush x:Key="GastosBrush" Color="{StaticResource GastosColor}" />
+    <SolidColorBrush x:Key="EncargosBrush" Color="{StaticResource EncargosColor}" />
+    <SolidColorBrush x:Key="VentasBrush" Color="{StaticResource VentasColor}" />
+    <SolidColorBrush x:Key="GananciasBrush" Color="{StaticResource GananciasColor}" />
+    <SolidColorBrush x:Key="MargenBrush" Color="{StaticResource MargenColor}" />
+    <SolidColorBrush x:Key="ExportarBrush" Color="{StaticResource ExportarColor}" />
 </ResourceDictionary>

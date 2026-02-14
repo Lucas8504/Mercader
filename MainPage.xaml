@@ -6,59 +6,57 @@
     xmlns:local="clr-namespace:Mercader"
     xmlns:microcharts="clr-namespace:Microcharts.Maui;assembly=Microcharts.Maui"
     Title="🏠 Inicio"
-    BackgroundColor="#1C1C1C">
+    BackgroundColor="{StaticResource MainPageBackground}">
 
+    <!-- Contenedor principal con scroll vertical -->
     <ScrollView>
         <VerticalStackLayout Padding="20" Spacing="25">
 
-            <!--  Sección Botones Principales  -->
+            <!-- ============================================
+            SECCIÓN 1: BOTONES DE ACCIÓN RÁPIDA
+            ============================================
+            Botones para agregar rápidamente:
+            - Gasto: Registrar un nuevo gasto
+            - Encargo: Registrar un nuevo encargo
+            - Venta: Registrar una nueva venta
+            -->
             <HorizontalStackLayout
                 Margin="-5,0,0,0"
                 HorizontalOptions="Center"
                 Spacing="7">
 
-
                 <Button
-                    BackgroundColor="#6e0a24"
+                    Style="{StaticResource GastoButtonStyle}"
                     Clicked="InAgregarGasto"
-                    CornerRadius="17"
-                    Text="➕​ Gasto"
-                    TextColor="White"
-                    WidthRequest="106" />
+                    Text="➕​ Gasto" />
 
                 <Button
-                    BackgroundColor="#ff6b35"
+                    Style="{StaticResource EncargoButtonStyle}"
                     Clicked="InAgregarEncargo"
-                    CornerRadius="17"
-                    Text="➕ ​Encargo"
-                    TextColor="White"
-                    WidthRequest="106" />
+                    Text="➕ ​Encargo" />
 
                 <Button
-                    BackgroundColor="#2e9449"
+                    Style="{StaticResource VentaButtonStyle}"
                     Clicked="InAgregarVenta"
-                    CornerRadius="17"
-                    Text="➕​ Venta"
-                    TextColor="White"
-                    WidthRequest="106" />
-
+                    Text="➕​ Venta" />
 
             </HorizontalStackLayout>
 
-
-            <!--  Selector de Período  -->
-            <Frame
-                Padding="4"
-                BackgroundColor="#2a2a2a"
-                CornerRadius="17"
-                HasShadow="True">
+            <!-- ============================================
+            SECCIÓN 2: SELECTOR DE PERÍODO
+            ============================================
+            Permite filtrar los datos mostrados en los
+            gráficos por:
+            - Días: Últimos 7-30 días
+            - Semanas: Últimas 4-12 semanas
+            - Meses: Últimos 6-12 meses
+            -->
+            <Frame Style="{StaticResource PickerFrameStyle}">
                 <Picker
+                    Style="{StaticResource PeriodPickerStyle}"
                     ItemsSource="{Binding Periodos}"
                     Title="Seleccionar período de análisis"
-                    SelectedItem="{Binding PeriodoSeleccionado, Mode=Default}"
-                    TextColor="#FFFFFF"
-                    TitleColor="#7c7c7c"
-                    FontSize="16">
+                    SelectedItem="{Binding PeriodoSeleccionado, Mode=Default}">
                     <Picker.Items>
                         <x:String>Días</x:String>
                         <x:String>Semanas</x:String>
@@ -67,245 +65,150 @@
                 </Picker>
             </Frame>
 
-            <!-- Línea separadora -->
-            <BoxView
-                HeightRequest="1"
-                BackgroundColor="#333333"
-                HorizontalOptions="Fill" />
+            <!-- Línea separadora visual -->
+            <BoxView Style="{StaticResource SeparatorStyle}" />
 
-            <!--  SECCIÓN GASTOS COMPLETA  -->
-            <Frame Padding="20" BackgroundColor="#2a2a2a" CornerRadius="12" HasShadow="True">
+            <!-- ============================================
+            SECCIÓN 3: ANÁLISIS DE GASTOS
+            ============================================
+            Muestra:
+            - Título: "ANÁLISIS DE GASTOS"
+            - Total de gastos en el período seleccionado
+            - Gráfico visual de gastos (scrollable)
 
+            Binding: TotalGastos, GastosChart
+            -->
+            <Frame Style="{StaticResource CardFrameStyle}" Padding="20">
                 <Grid RowDefinitions="Auto, *" RowSpacing="15">
-
+                    <!-- Encabezado: Título + Total -->
                     <Grid Grid.Row="0" ColumnDefinitions="*, Auto">
-
                         <VerticalStackLayout Grid.Column="0" VerticalOptions="Center" Spacing="2">
-                            <Label Text="💸 ANÁLISIS DE GASTOS"
-                                   FontAttributes="Bold" FontSize="16" TextColor="#6e0a24" />
-
+                            <Label Style="{StaticResource SectionTitleStyle}" TextColor="{StaticResource GastosColor}" Text="💸 ANÁLISIS DE GASTOS" />
                         </VerticalStackLayout>
-
                         <VerticalStackLayout Grid.Column="1" VerticalOptions="Center" HorizontalOptions="End" Spacing="0">
-                            <Label Text="TOTAL PERÍODO" FontSize="10" TextColor="#7d7c7c" HorizontalOptions="End" />
-                            <Label Text="{Binding TotalGastos}"
-                                   FontAttributes="Bold" FontSize="18" TextColor="#6e0a24" HorizontalOptions="End" />
+                            <Label Style="{StaticResource TotalLabelStyle}" Text="TOTAL PERÍODO" />
+                            <Label Style="{StaticResource LargeTotalValueStyle}" TextColor="{StaticResource GastosColor}" Text="{Binding TotalGastos}" />
                         </VerticalStackLayout>
                     </Grid>
-
-                    <ScrollView x:Name="GastosScroll" Grid.Row="1"
-                                Orientation="Horizontal"
-                                HorizontalScrollBarVisibility="Always">
-                        <microcharts:ChartView
-                            Chart="{Binding GastosChart}"
-                            BackgroundColor="Transparent"
-                            HeightRequest="290"
-                            WidthRequest="5950" />
+                    <!-- Gráfico de gastos (scroll horizontal para muchos datos) -->
+                    <ScrollView x:Name="GastosScroll" Grid.Row="1" Orientation="Horizontal" HorizontalScrollBarVisibility="Always">
+                        <microcharts:ChartView Chart="{Binding GastosChart}" BackgroundColor="Transparent" HeightRequest="290" WidthRequest="5950" />
                     </ScrollView>
-
                 </Grid>
             </Frame>
 
-            <!--  SECCIÓN ENCARGOS COMPLETA  -->
-            <Frame
-                Padding="15"
-                BackgroundColor="#2a2a2a"
-                CornerRadius="12"
-                HasShadow="True">
+            <!-- ============================================
+            SECCIÓN 4: ANÁLISIS DE ENCARGOS
+            ============================================
+            Muestra:
+            - Título: "ANÁLISIS DE ENCARGOS"
+            - Total de encargos en el período seleccionado
+            - Gráfico visual de encargos (scrollable)
 
+            Binding: TotalEncargos, EncargosChart
+            -->
+            <Frame Style="{StaticResource CardFrameStyle}" Padding="15">
                 <Grid RowDefinitions="Auto, *" RowSpacing="15">
-
+                    <!-- Encabezado: Título + Total -->
                     <Grid Grid.Row="0" ColumnDefinitions="*, Auto">
-
-                        <!-- Encabezado de Encargos -->
                         <VerticalStackLayout Grid.Column="0" VerticalOptions="Center" Spacing="2">
-                            <Label
-                                FontAttributes="Bold"
-                                FontSize="16"
-                                Text="📦 ANÁLISIS DE ENCARGOS"
-                                TextColor="#ff6b35" />
-
+                            <Label Style="{StaticResource SectionTitleStyle}" TextColor="{StaticResource EncargosColor}" Text="📦 ANÁLISIS DE ENCARGOS" />
                         </VerticalStackLayout>
-
-                        <!-- Resumen de Encargos -->
-
                         <VerticalStackLayout Grid.Column="1" VerticalOptions="Center" HorizontalOptions="End" Spacing="0">
-                            <Label
-                                Text="TOTAL PERÍODO"
-                                FontSize="10"
-                                TextColor="#7d7c7c"
-                                HorizontalOptions="End"/>
-                            <Label
-                                Text="{Binding TotalEncargos}"
-                                FontAttributes="Bold"
-                                FontSize="16 "
-                                TextColor="#ff6b35"
-                                HorizontalOptions="End" />
+                            <Label Style="{StaticResource TotalLabelStyle}" Text="TOTAL PERÍODO" />
+                            <Label Style="{StaticResource MediumTotalValueStyle}" TextColor="{StaticResource EncargosColor}" Text="{Binding TotalEncargos}" />
                         </VerticalStackLayout>
                     </Grid>
-
-                    <!-- Gráfico de Encargos -->
+                    <!-- Gráfico de encargos (scroll horizontal para muchos datos) -->
                     <ScrollView x:Name="EncargosScroll" Grid.Row="1" HorizontalScrollBarVisibility="Always" Orientation="Horizontal">
-                        <microcharts:ChartView
-                            Chart="{Binding EncargosChart}"
-                            BackgroundColor="#2a2a2a"
-                            HeightRequest="290"
-                            WidthRequest="5950" />
+                        <microcharts:ChartView Chart="{Binding EncargosChart}" BackgroundColor="{StaticResource CardBackground}" HeightRequest="290" WidthRequest="5950" />
                     </ScrollView>
-
                 </Grid>
             </Frame>
 
-            <!--  SECCIÓN VENTAS COMPLETA  -->
-            <Frame
-                Padding="15"
-                BackgroundColor="#2a2a2a"
-                CornerRadius="12"
-                HasShadow="True">
+            <!-- ============================================
+            SECCIÓN 5: ANÁLISIS DE VENTAS
+            ============================================
+            Muestra:
+            - Título: "ANÁLISIS DE VENTAS"
+            - Total de ventas en el período seleccionado
+            - Gráfico visual de ventas (scrollable)
 
+            Binding: TotalVentas, VentasChart
+            -->
+            <Frame Style="{StaticResource CardFrameStyle}" Padding="15">
                 <Grid RowDefinitions="Auto, *" RowSpacing="15">
-
+                    <!-- Encabezado: Título + Total -->
                     <Grid Grid.Row="0" ColumnDefinitions="*, Auto">
-
-
-                        <!-- Encabezado de Ventas -->
-                        <VerticalStackLayout  Grid.Column="0" VerticalOptions="Center"  Spacing="2">
-                            <Label
-                                FontAttributes="Bold"
-                                FontSize="16"
-                                HorizontalOptions="Start"
-                                Text="💵​ ANÁLISIS DE VENTAS"
-                                TextColor="#2e9449" />
-
+                        <VerticalStackLayout Grid.Column="0" VerticalOptions="Center" Spacing="2">
+                            <Label Style="{StaticResource SectionTitleStyle}" TextColor="{StaticResource VentasColor}" Text="💵​ ANÁLISIS DE VENTAS" />
                         </VerticalStackLayout>
-
-                        <!-- Resumen de Ventas -->
-
                         <VerticalStackLayout Grid.Column="1" VerticalOptions="Center" HorizontalOptions="End" Spacing="0">
-                            <Label
-                                Text="TOTAL PERÍODO"
-                                FontSize="10"
-                                TextColor="#7d7c7c"
-                                HorizontalOptions="End" />
-                            <Label
-                                Text="{Binding TotalVentas}"
-                                FontAttributes="Bold"
-                                FontSize="16"
-                                TextColor="#2e9449"
-                                HorizontalOptions="End" />
+                            <Label Style="{StaticResource TotalLabelStyle}" Text="TOTAL PERÍODO" />
+                            <Label Style="{StaticResource MediumTotalValueStyle}" TextColor="{StaticResource VentasColor}" Text="{Binding TotalVentas}" />
                         </VerticalStackLayout>
-
-
                     </Grid>
-
-                    <!-- Gráfico de Ventas -->
-
+                    <!-- Gráfico de ventas (scroll horizontal para muchos datos) -->
                     <ScrollView x:Name="VentasScroll" Grid.Row="1" HorizontalScrollBarVisibility="Always" Orientation="Horizontal">
-                        <microcharts:ChartView
-                            Chart="{Binding VentasChart}"
-                            BackgroundColor="#2a2a2a"
-                            HeightRequest="290"
-                            WidthRequest="5950"/>
+                        <microcharts:ChartView Chart="{Binding VentasChart}" BackgroundColor="{StaticResource CardBackground}" HeightRequest="290" WidthRequest="5950" />
                     </ScrollView>
-
                 </Grid>
             </Frame>
 
-            <!--  SECCIÓN GANANCIAS COMPLETA  -->
-            <Frame
-                Padding="18"
-                BackgroundColor="#2a2a2a"
-                CornerRadius="12"
-                HasShadow="True">
+            <!-- ============================================
+            SECCIÓN 6: ANÁLISIS DE GANANCIAS
+            ============================================
+            Muestra:
+            - Título: "ANÁLISIS DE GANANCIAS"
+            - Total de ganancias (Ventas - Gastos)
+            - Margen de ganancias (porcentaje)
+            - Gráfico visual de ganancias (scrollable)
 
+            Binding: Ganancias, Margen, GananciasChart
+            -->
+            <Frame Style="{StaticResource CardFrameStyle}" Padding="18">
                 <Grid RowDefinitions="Auto, *" RowSpacing="15">
-
-                    <!-- ===== ENCABEZADO ===== -->
-                    <Grid Grid.Row="0"
-                          ColumnDefinitions="*, Auto"
-                          ColumnSpacing="15">
-
-                        <!-- Título -->
+                    <!-- Encabezado: Título + Totales -->
+                    <Grid Grid.Row="0" ColumnDefinitions="*, Auto" ColumnSpacing="15">
                         <VerticalStackLayout Grid.Column="0" Spacing="4">
-                            <Label
-                                Text="💰 ANÁLISIS DE GANANCIAS"
-                                VerticalTextAlignment="End"
-                                FontAttributes="Bold"
-                                FontSize="15"
-                                TextColor="#1f6bc2" />
+                            <Label Style="{StaticResource SectionTitleStyle}" FontSize="15" TextColor="{StaticResource GananciasColor}" Text="💰 ANÁLISIS DE GANANCIAS" VerticalTextAlignment="End" />
                         </VerticalStackLayout>
-
-                        <!-- Totales -->
-                        <VerticalStackLayout Grid.Column="1"
-                                             Spacing="2"
-                                             HorizontalOptions="End">
-
+                        <VerticalStackLayout Grid.Column="1" Spacing="2" HorizontalOptions="End">
+                            <!-- Total de ganancias -->
                             <VerticalStackLayout Spacing="1">
-                                <Label
-                                    Text="TOTAL PERÍODO"
-                                    FontSize="9"
-                                    TextColor="#7d7c7c"
-                                    HorizontalTextAlignment="End" />
-                                <Label
-                                    Text="{Binding Ganancias}"
-                                    FontAttributes="Bold"
-                                    FontSize="16"
-                                    TextColor="#1f6bc2"
-                                    HorizontalTextAlignment="End" />
+                                <Label Style="{StaticResource TotalLabelStyle}" Text="TOTAL PERÍODO" />
+                                <Label Style="{StaticResource MediumTotalValueStyle}" TextColor="{StaticResource GananciasColor}" Text="{Binding Ganancias}" />
                             </VerticalStackLayout>
-
+                            <!-- Margen de ganancias -->
                             <VerticalStackLayout Spacing="1">
-                                <Label
-                                    Text="MARGEN DE GANANCIAS"
-                                    FontSize="9"
-                                    TextColor="#7d7c7c"
-                                    HorizontalTextAlignment="End" />
-                                <Label
-                                    Text="{Binding Margen}"
-                                    FontAttributes="Bold"
-                                    FontSize="12"
-                                    TextColor="#17a2b8"
-                                    HorizontalTextAlignment="End" />
+                                <Label Style="{StaticResource TotalLabelStyle}" Text="MARGEN DE GANANCIAS" />
+                                <Label Style="{StaticResource SmallTotalValueStyle}" TextColor="{StaticResource MargenColor}" Text="{Binding Margen}" />
                             </VerticalStackLayout>
-
                         </VerticalStackLayout>
-
                     </Grid>
-
-                    <!-- ===== GRÁFICO ===== -->
-                    <ScrollView Grid.Row="1"
-                                x:Name="GananciasScroll"
-                                Orientation="Horizontal"
-                                HorizontalScrollBarVisibility="Always">
-
-                        <microcharts:ChartView
-                            Chart="{Binding GananciasChart}"
-                            BackgroundColor="#2a2a2a"
-                            HeightRequest="290"
-                            WidthRequest="5950" />
-
+                    <!-- Gráfico de ganancias (scroll horizontal para muchos datos) -->
+                    <ScrollView Grid.Row="1" x:Name="GananciasScroll" Orientation="Horizontal" HorizontalScrollBarVisibility="Always">
+                        <microcharts:ChartView Chart="{Binding GananciasChart}" BackgroundColor="{StaticResource CardBackground}" HeightRequest="290" WidthRequest="5950" />
                     </ScrollView>
-
                 </Grid>
             </Frame>
 
+            <!-- Línea separadora visual -->
+            <BoxView Style="{StaticResource SeparatorStyle}" />
 
-            <!-- Línea separadora -->
-            <BoxView
-                HeightRequest="1"
-                BackgroundColor="#333333"
-                HorizontalOptions="Fill" />
+            <!-- ============================================
+            SECCIÓN 7: BOTÓN EXPORTAR
+            ============================================
+            Genera y exporta un reporte completo en Excel
+            con todos los datos del período seleccionado.
 
-            <!--  Botón Exportar  -->
+            Evento: OnExportarAExcelClicked
+            -->
             <Button
+                Style="{StaticResource ExportarButtonStyle}"
                 Margin="10,1,0,0"
-                BackgroundColor="#6490E9"
                 Clicked="OnExportarAExcelClicked"
-                CornerRadius="17"
-                FontAttributes="Bold"
-                HeightRequest="50"
-                Text="📊 EXPORTAR REPORTE COMPLETO"
-                TextColor="White" />
+                Text="📊 EXPORTAR REPORTE COMPLETO" />
 
         </VerticalStackLayout>
     </ScrollView>
