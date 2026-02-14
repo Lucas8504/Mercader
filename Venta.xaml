@@ -74,17 +74,12 @@
                                                 VerticalOptions="Center" />
 
                                             <!-- Cantidad -->
-                                            <HorizontalStackLayout Grid.Column="1" Spacing="4" VerticalOptions="Center">
-                                                <Image
-                                                    Source="box.png"
-                                                    WidthRequest="14"
-                                                    HeightRequest="14"
-                                                    VerticalOptions="Center" />
-                                                <Label
-                                                    FontSize="12"
-                                                    Text="{Binding Cantidad, StringFormat='{0} unid.'}"
-                                                    TextColor="#888888" />
-                                            </HorizontalStackLayout>
+                                            <Label
+                                                Grid.Column="1"
+                                                FontSize="12"
+                                                Text="{Binding Cantidad, StringFormat='{0} unid.'}"
+                                                TextColor="#888888"
+                                                VerticalOptions="Center" />
                                         </Grid>
 
                                         <!-- Fila 2: Total y Precio Unitario -->
@@ -102,24 +97,17 @@
                                                 CornerRadius="8"
                                                 Padding="10"
                                                 HasShadow="False">
-                                                <HorizontalStackLayout Spacing="8" VerticalOptions="Center">
-                                                    <Image
-                                                        Source="chart.png"
-                                                        WidthRequest="18"
-                                                        HeightRequest="18"
-                                                        VerticalOptions="Center" />
-                                                    <VerticalStackLayout Spacing="2">
-                                                        <Label
-                                                            Text="Total"
-                                                            FontSize="10"
-                                                            TextColor="#6BB3E0" />
-                                                        <Label
-                                                            FontAttributes="Bold"
-                                                            FontSize="15"
-                                                            Text="{Binding TotalFormateado}"
-                                                            TextColor="#9FC5E8" />
-                                                    </VerticalStackLayout>
-                                                </HorizontalStackLayout>
+                                                <VerticalStackLayout Spacing="2" VerticalOptions="Center">
+                                                    <Label
+                                                        Text="Total"
+                                                        FontSize="10"
+                                                        TextColor="#6BB3E0" />
+                                                    <Label
+                                                        FontAttributes="Bold"
+                                                        FontSize="15"
+                                                        Text="{Binding TotalFormateado}"
+                                                        TextColor="#9FC5E8" />
+                                                </VerticalStackLayout>
                                             </Frame>
 
                                             <!-- Precio Unitario -->
@@ -130,39 +118,26 @@
                                                 CornerRadius="8"
                                                 Padding="10"
                                                 HasShadow="False">
-                                                <HorizontalStackLayout Spacing="8" VerticalOptions="Center">
-                                                    <Image
-                                                        Source="tag.png"
-                                                        WidthRequest="18"
-                                                        HeightRequest="18"
-                                                        VerticalOptions="Center" />
-                                                    <VerticalStackLayout Spacing="2">
-                                                        <Label
-                                                            Text="x Unidad"
-                                                            FontSize="10"
-                                                            TextColor="#8AB88A" />
-                                                        <Label
-                                                            FontAttributes="Bold"
-                                                            FontSize="15"
-                                                            Text="{Binding Precio, StringFormat='${0:N2}'}"
-                                                            TextColor="#A8D5A2" />
-                                                    </VerticalStackLayout>
-                                                </HorizontalStackLayout>
+                                                <VerticalStackLayout Spacing="2" VerticalOptions="Center">
+                                                    <Label
+                                                        Text="x Unidad"
+                                                        FontSize="10"
+                                                        TextColor="#8AB88A" />
+                                                    <Label
+                                                        FontAttributes="Bold"
+                                                        FontSize="15"
+                                                        Text="{Binding Precio, StringFormat='${0:N2}'}"
+                                                        TextColor="#A8D5A2" />
+                                                </VerticalStackLayout>
                                             </Frame>
                                         </Grid>
 
                                         <!-- Fila 3: Fecha -->
-                                        <HorizontalStackLayout Grid.Row="2" Spacing="4" VerticalOptions="Center">
-                                            <Image
-                                                Source="calendar.png"
-                                                WidthRequest="12"
-                                                HeightRequest="12"
-                                                VerticalOptions="Center" />
-                                            <Label
-                                                FontSize="12"
-                                                Text="{Binding Fecha, StringFormat='{0:dd MMM yyyy}'}"
-                                                TextColor="#6A6A6A" />
-                                        </HorizontalStackLayout>
+                                        <Label
+                                            Grid.Row="2"
+                                            FontSize="12"
+                                            Text="{Binding Fecha, StringFormat='{0:dd MMM yyyy}'}"
+                                            TextColor="#6A6A6A" />
                                     </Grid>
                                 </Frame>
                             </SwipeView>
