@@ -13,9 +13,9 @@ namespace Mercader.ViewModels
         public ObservableCollection<Gasto> Gastos { get; } = new();
         public ObservableCollection<Encargo> Encargos { get; } = new();
 
-        public IEnumerable<Ventas> VentasPeriodo => FiltrarPorPeriodo(Ventas);
-        public IEnumerable<Gasto> GastosPeriodo => FiltrarPorPeriodo(Gastos);
-        public IEnumerable<Encargo> EncargosPeriodo => FiltrarPorPeriodo(Encargos);
+        public IEnumerable<Ventas> VentasPeriodo => _balanceService.FiltrarPorPeriodo(Ventas, PeriodoSeleccionado);
+        public IEnumerable<Gasto> GastosPeriodo => _balanceService.FiltrarPorPeriodo(Gastos, PeriodoSeleccionado);
+        public IEnumerable<Encargo> EncargosPeriodo => _balanceService.FiltrarPorPeriodo(Encargos, PeriodoSeleccionado);
 
         public List<(string Periodo, decimal Total)> VentasPorPeriodo { get; set; } = new();
         public List<(string Periodo, decimal Total)> GastosPorPeriodo { get; set; } = new();
@@ -24,6 +24,7 @@ namespace Mercader.ViewModels
         // ===== Services =====
         private readonly IDataRepository _dataRepository;
         private readonly IChartService _chartService;
+        private readonly IBalanceCalculatorService _balanceService;
 
         public Chart? EncargosChart { get; set; }
         public Chart? VentasChart { get; set; }
@@ -101,10 +102,14 @@ namespace Mercader.ViewModels
         // ===== Comunicación =====
         public Action? OnPeriodoChanged;
 
-        public MainViewModel(IDataRepository dataRepository, IChartService chartService)
+        public MainViewModel(
+            IDataRepository dataRepository,
+            IChartService chartService,
+            IBalanceCalculatorService balanceService)
         {
             _dataRepository = dataRepository;
             _chartService = chartService;
+            _balanceService = balanceService;
 
             Ventas.CollectionChanged += (_, __) => Recalcular();
             Gastos.CollectionChanged += (_, __) => Recalcular();
@@ -112,7 +117,7 @@ namespace Mercader.ViewModels
         }
 
         /// <summary>
-        /// Actualiza SOLO el gráfico de ventas (migración MVVM paso a paso)
+        /// Actualiza SOLO el gráfico de ventas
         /// </summary>
         public async Task ActualizarGraficoVentasAsync()
         {
@@ -128,7 +133,7 @@ namespace Mercader.ViewModels
         }
 
         /// <summary>
-        /// Actualiza SOLO el gráfico de gastos (migración MVVM paso a paso)
+        /// Actualiza SOLO el gráfico de gastos
         /// </summary>
         public async Task ActualizarGraficoGastosAsync()
         {
@@ -144,7 +149,7 @@ namespace Mercader.ViewModels
         }
 
         /// <summary>
-        /// Actualiza SOLO el gráfico de encargos (migración MVVM paso a paso)
+        /// Actualiza SOLO el gráfico de encargos
         /// </summary>
         public async Task ActualizarGraficoEncargosAsync()
         {
@@ -160,7 +165,7 @@ namespace Mercader.ViewModels
         }
 
         /// <summary>
-        /// Actualiza SOLO el gráfico de ganancias (migración MVVM paso a paso)
+        /// Actualiza SOLO el gráfico de ganancias
         /// </summary>
         public async Task ActualizarGraficoGananciasAsync()
         {
@@ -176,7 +181,7 @@ namespace Mercader.ViewModels
         }
 
         /// <summary>
-        /// Actualiza todos los gráficos (para cuando termine la migración completa)
+        /// Actualiza todos los gráficos
         /// </summary>
         public async Task ActualizarGraficosAsync()
         {
@@ -197,28 +202,26 @@ namespace Mercader.ViewModels
             });
         }
 
-
         public async Task CalcularPorPeriodoAsync()
         {
-            // cálculos
             await Task.Run(() => Recalcular());
-
         }
 
-       
-
-
-        // ===== Lógica central =====
+        // ===== Lógica central - delegated to BalanceCalculatorService =====
         public void Recalcular()
         {
-            _totalVentasValue = VentasPeriodo.Sum(v => v.Precio * v.Cantidad);
-            _totalGastosValue = GastosPeriodo.Sum(g => g.Monto * g.Cantidad);
-            _totalEncargosValue = EncargosPeriodo.Sum(e => e.Precio * e.Cantidad);
+            // Delegar cálculos al servicio especializado
+            _totalVentasValue = _balanceService.CalcularTotalVentas(Ventas, PeriodoSeleccionado);
+            _totalGastosValue = _balanceService.CalcularTotalGastos(Gastos, PeriodoSeleccionado);
+            _totalEncargosValue = _balanceService.CalcularTotalEncargos(Encargos, PeriodoSeleccionado);
 
-            _gananciasValue = _totalVentasValue - _totalGastosValue;
-            _margenValue = _totalVentasValue == 0
-                ? 0
-                : (_gananciasValue / _totalVentasValue) * 100;
+            _gananciasValue = _balanceService.CalcularGanancias(_totalVentasValue, _totalGastosValue);
+            _margenValue = _balanceService.CalcularMargen(_totalVentasValue, _gananciasValue);
+
+            // Actualizar datos para gráficos
+            VentasPorPeriodo = _balanceService.AgruparVentasPorPeriodo(Ventas, PeriodoSeleccionado);
+            GastosPorPeriodo = _balanceService.AgruparGastosPorPeriodo(Gastos, PeriodoSeleccionado);
+            EncargosPorPeriodo = _balanceService.AgruparEncargosPorPeriodo(Encargos, PeriodoSeleccionado);
 
             // UI
             TotalVentas = _totalVentasValue.ToString("C");
@@ -226,21 +229,6 @@ namespace Mercader.ViewModels
             TotalEncargos = _totalEncargosValue.ToString("C");
             Ganancias = _gananciasValue.ToString("C");
             Margen = $"{_margenValue:F1}%";
-        }
-
-        // ===== Filtro por período =====
-        private IEnumerable<T> FiltrarPorPeriodo<T>(IEnumerable<T> lista) where T : IFecha
-        {
-            var hoy = DateTime.Now;
-
-            return PeriodoSeleccionado switch
-            {
-                "Días" => lista.Where(x => x.Fecha >= hoy.AddDays(-366)),
-                "Semanas" => lista.Where(x => x.Fecha >= hoy.AddDays(-910)), // ~130 semanas
-                "Meses" => lista.Where(x => x.Fecha >= hoy.AddMonths(-12)),
-                "Años" => lista.Where(x => x.Fecha >= hoy.AddYears(-10)),
-                _ => lista.Where(x => x.Fecha >= hoy.AddMonths(-12))
-            };
         }
 
         // ===== Export =====

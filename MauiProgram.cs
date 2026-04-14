@@ -25,6 +25,7 @@ namespace Mercader
             builder.Services.AddSingleton<DataRepository>();
             builder.Services.AddSingleton<IDataRepository>(sp => sp.GetRequiredService<DataRepository>());
             builder.Services.AddSingleton<IChartService, ChartService>();
+            builder.Services.AddSingleton<IBalanceCalculatorService, BalanceCalculatorService>();
 
             // Shell
             builder.Services.AddSingleton<AppShell>();
