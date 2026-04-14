@@ -1,31 +1,37 @@
 using System.Globalization;
 using Mercader.Models.Domain;
-using Mercader.ViewModels;
 #if ANDROID
 using Mercader.Platforms.Android;
 #endif
-using Microsoft.Maui.Controls;
+
 
 namespace Mercader;
 
 public partial class VentaModal : ContentPage
 {
-    public Ventas Venta { get; private set; } = null!;
+    
+    private readonly DataRepository _repo;
+    public Ventas Venta { get; private set; } = null!; // Null forgiving operator
 
-    private readonly MainViewModel _viewModel;
 
-    public VentaModal(MainViewModel viewModel)
+    public VentaModal( DataRepository repo)
     {
-        ArgumentNullException.ThrowIfNull(viewModel);
+        
+        ArgumentNullException.ThrowIfNull(repo);
 
         InitializeComponent();
-        _viewModel = viewModel;
+        
+        _repo = repo;
+
+
     }
+
 
     private async void OnAgregarVentaClicked(object sender, EventArgs e)
     {
-        if (!ValidateEntries())
+        if (!ValidateV_Entries())
             return;
+
 
         try
         {
@@ -36,31 +42,37 @@ public partial class VentaModal : ContentPage
                 Descripcion = DescripcionV_Entry!.Text!,
                 Fecha = DateTime.Now
             };
+            
         }
         catch (FormatException)
         {
-            await DisplayAlert("Error", "Por favor, ingrese valores numéricos válidos", "OK");
-            return;
+            await DisplayAlert("Error", "Por favor, ingrese valores num�ricos v�lidos", "OK");
         }
         catch (Exception ex)
         {
             await DisplayAlert("Error", $"Error al agregar venta: {ex.Message}", "OK");
-            return;
         }
+        await SaveVentaAsync();
+    }
 
-        await _viewModel.AddVentaAsync(Venta);
+    private async Task SaveVentaAsync()
+    {
+        
+        await _repo.SaveVentasAsync(Venta);
+
 #if ANDROID
         KeyboardHelper.Close();
 #endif
-        MessagingCenter.Send<object>(this, "DataChanged");
+
         await Navigation.PopModalAsync();
     }
 
-    private bool ValidateEntries()
+    private bool ValidateV_Entries()
     {
+        
         if (string.IsNullOrWhiteSpace(DescripcionV_Entry.Text))
         {
-            DisplayAlert("Error", "Por favor, ingrese una descripción", "OK");
+            DisplayAlert("Error", "Por favor, ingrese una descripci�n", "OK");
             return false;
         }
         if (string.IsNullOrWhiteSpace(PrecioEntry.Text))
@@ -77,11 +89,17 @@ public partial class VentaModal : ContentPage
         return true;
     }
 
+
+
     private async void Cancelar(object sender, EventArgs e)
     {
+
 #if ANDROID
         KeyboardHelper.Close();
 #endif
+
         await Navigation.PopModalAsync();
+
     }
+
 }
