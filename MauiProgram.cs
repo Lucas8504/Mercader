@@ -37,8 +37,13 @@ namespace Mercader
             builder.Services.AddTransient<EditarEncargoPage>();
             builder.Services.AddTransient<Venta>();
 
+            // Modals
+            builder.Services.AddTransient<EncModal>();
+            builder.Services.AddTransient<GastoModal>();
+            builder.Services.AddTransient<VentaModal>();
+
             // ViewModels
-            builder.Services.AddTransient<MainViewModel>();
+            builder.Services.AddSingleton<MainViewModel>();
 
 #if DEBUG
             builder.Logging.AddDebug();

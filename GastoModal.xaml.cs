@@ -1,31 +1,30 @@
 using System.Globalization;
 using Mercader.Models.Domain;
+using Mercader.ViewModels;
 #if ANDROID
 using Mercader.Platforms.Android;
 #endif
-
-
-
+using Microsoft.Maui.Controls;
 
 namespace Mercader;
 
 public partial class GastoModal : ContentPage
 {
-    private readonly DataRepository _repo;
-    public Gasto Gasto { get; private set; } = null!; // Null forgiving operator  
+    public Gasto Gasto { get; private set; } = null!;
 
-    public GastoModal(DataRepository repo)
+    private readonly MainViewModel _viewModel;
+
+    public GastoModal(MainViewModel viewModel)
     {
-        ArgumentNullException.ThrowIfNull(repo);
+        ArgumentNullException.ThrowIfNull(viewModel);
 
         InitializeComponent();
-
-        _repo = repo;
+        _viewModel = viewModel;
     }
 
     private async void OnAgregarGastoClicked(object sender, EventArgs e)
     {
-        if (!ValidateG_Entries())
+        if (!ValidateEntries())
             return;
 
         try
@@ -40,29 +39,28 @@ public partial class GastoModal : ContentPage
         }
         catch (FormatException)
         {
-            await DisplayAlert("Error", "Por favor, ingrese valores num�ricos v�lidos", "OK");
+            await DisplayAlert("Error", "Por favor, ingrese valores numéricos válidos", "OK");
+            return;
         }
         catch (Exception ex)
         {
             await DisplayAlert("Error", $"Error al agregar gasto: {ex.Message}", "OK");
+            return;
         }
-        await SaveGastoAsync();
-    }
 
-    private async Task SaveGastoAsync()
-    {
-        await _repo.SaveGastoAsync(Gasto);
+        await _viewModel.AddGastoAsync(Gasto);
 #if ANDROID
         KeyboardHelper.Close();
 #endif
+        MessagingCenter.Send<object>(this, "DataChanged");
         await Navigation.PopModalAsync();
     }
 
-    private bool ValidateG_Entries()
+    private bool ValidateEntries()
     {
         if (string.IsNullOrWhiteSpace(DescripcionGastoEntry.Text))
         {
-            DisplayAlert("Error", "Por favor, ingrese una descripci�n", "OK");
+            DisplayAlert("Error", "Por favor, ingrese una descripción", "OK");
             return false;
         }
         if (string.IsNullOrWhiteSpace(MontoGastoEntry.Text))
