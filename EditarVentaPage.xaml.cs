@@ -1,3 +1,5 @@
+using Mercader.Models.Domain;
+
 namespace Mercader;
 
 public partial class EditarVentaPage : ContentPage
@@ -24,15 +26,15 @@ public partial class EditarVentaPage : ContentPage
         _venta.Cantidad = decimal.Parse(CantidadEntry.Text);
 
         await _repo.SaveVentasAsync(_venta);
-        await DisplayAlert("Éxito", "Venta actualizada correctamente", "OK");
+        await DisplayAlert("ï¿½xito", "Venta actualizada correctamente", "OK");
         await Navigation.PopAsync();
     }
     private async void OnCancelarClicked(object sender, EventArgs e)
     {
         bool confirm = await DisplayAlert(
             "Confirmar",
-            "¿Estás seguro de que deseas cancelar? Se perderán los cambios no guardados.",
-            "Sí",
+            "ï¿½Estï¿½s seguro de que deseas cancelar? Se perderï¿½n los cambios no guardados.",
+            "Sï¿½",
             "No");
 
         if (confirm)

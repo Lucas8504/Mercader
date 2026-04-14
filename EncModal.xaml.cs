@@ -1,4 +1,5 @@
 using System.Globalization;
+using Mercader.Models.Domain;
 #if ANDROID
 using Mercader.Platforms.Android;
 #endif
@@ -41,7 +42,7 @@ public partial class EncModal : ContentPage
         }
         catch (FormatException)
         {
-            await DisplayAlert("Error", "Por favor, ingrese valores numéricos válidos", "OK");
+            await DisplayAlert("Error", "Por favor, ingrese valores numï¿½ricos vï¿½lidos", "OK");
             return;
         }
         catch (Exception ex)
@@ -75,20 +76,20 @@ public partial class EncModal : ContentPage
 
         if (string.IsNullOrWhiteSpace(ContactoEntry.Text))
         {
-            DisplayAlert("Error", "Por favor, ingrese un número de teléfono", "OK");
+            DisplayAlert("Error", "Por favor, ingrese un nï¿½mero de telï¿½fono", "OK");
             return false;
         }
 
-        // Validación básica de formato de teléfono
+        // Validaciï¿½n bï¿½sica de formato de telï¿½fono
         if (!IsValidPhoneNumber(ContactoEntry.Text))
         {
-            DisplayAlert("Error", "Por favor, ingrese un número de teléfono válido", "OK");
+            DisplayAlert("Error", "Por favor, ingrese un nï¿½mero de telï¿½fono vï¿½lido", "OK");
             return false;
         }
 
         if (string.IsNullOrWhiteSpace(DescripcionEntry.Text))
         {
-            DisplayAlert("Error", "Por favor, ingrese una descripción", "OK");
+            DisplayAlert("Error", "Por favor, ingrese una descripciï¿½n", "OK");
             return false;
         }
 
@@ -100,7 +101,7 @@ public partial class EncModal : ContentPage
 
         if (!decimal.TryParse(PrecioEntry.Text, out decimal precio) || precio <= 0)
         {
-            DisplayAlert("Error", "Por favor, ingrese un precio válido mayor a 0", "OK");
+            DisplayAlert("Error", "Por favor, ingrese un precio vï¿½lido mayor a 0", "OK");
             return false;
         }
 
@@ -112,7 +113,7 @@ public partial class EncModal : ContentPage
 
         if (!decimal.TryParse(CantidadEntry.Text, out decimal cantidad) || cantidad <= 0)
         {
-            DisplayAlert("Error", "Por favor, ingrese una cantidad válida mayor a 0", "OK");
+            DisplayAlert("Error", "Por favor, ingrese una cantidad vï¿½lida mayor a 0", "OK");
             return false;
         }
 
@@ -120,39 +121,39 @@ public partial class EncModal : ContentPage
     }
 
     /// <summary>
-    /// Valida que el número de teléfono tenga un formato básico válido
+    /// Valida que el nï¿½mero de telï¿½fono tenga un formato bï¿½sico vï¿½lido
     /// </summary>
-    /// <param name="phoneNumber">Número de teléfono a validar</param>
-    /// <returns>True si el formato es válido, False en caso contrario</returns>
+    /// <param name="phoneNumber">Nï¿½mero de telï¿½fono a validar</param>
+    /// <returns>True si el formato es vï¿½lido, False en caso contrario</returns>
     private bool IsValidPhoneNumber(string phoneNumber)
     {
         if (string.IsNullOrWhiteSpace(phoneNumber))
             return false;
 
-        // Remover espacios, guiones, paréntesis y el signo +
+        // Remover espacios, guiones, parï¿½ntesis y el signo +
         string cleanedNumber = phoneNumber.Replace(" ", "")
                                         .Replace("-", "")
                                         .Replace("(", "")
                                         .Replace(")", "")
                                         .Replace("+", "");
 
-        // Verificar que solo contenga números y tenga entre 7 y 15 dígitos
+        // Verificar que solo contenga nï¿½meros y tenga entre 7 y 15 dï¿½gitos
         return cleanedNumber.All(char.IsDigit) &&
                cleanedNumber.Length >= 7 &&
                cleanedNumber.Length <= 15;
     }
 
     /// <summary>
-    /// Limpia el número de teléfono removiendo caracteres especiales
+    /// Limpia el nï¿½mero de telï¿½fono removiendo caracteres especiales
     /// </summary>
-    /// <param name="phoneNumber">Número de teléfono a limpiar</param>
-    /// <returns>Número de teléfono solo con dígitos</returns>
+    /// <param name="phoneNumber">Nï¿½mero de telï¿½fono a limpiar</param>
+    /// <returns>Nï¿½mero de telï¿½fono solo con dï¿½gitos</returns>
     private string CleanPhoneNumber(string phoneNumber)
     {
         if (string.IsNullOrWhiteSpace(phoneNumber))
             return phoneNumber;
 
-        // Remover todos los caracteres que no sean números
+        // Remover todos los caracteres que no sean nï¿½meros
         return new string(phoneNumber.Where(char.IsDigit).ToArray());
     }
 

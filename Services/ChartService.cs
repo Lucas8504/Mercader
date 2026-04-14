@@ -3,9 +3,12 @@ using System.Collections.Generic;
 using System.Linq;
 using Microcharts;
 using SkiaSharp;
+using Mercader.Services.Interfaces;
 
-public class ChartService : IChartService
+namespace Mercader.Services
 {
+    public class ChartService : IChartService
+    {
 
     public Chart CrearGraficoEncargos(List<(string Periodo, decimal Total)> datos)
     {
@@ -177,7 +180,7 @@ public class ChartService : IChartService
         };
     }
 
-    private string FormatearValorEntero(decimal valor)
+        private string FormatearValorEntero(decimal valor)
     {
         if (Math.Abs(valor) >= 1000000)
             return $"${Math.Round(valor / 1000000, 1)}M";
@@ -188,4 +191,5 @@ public class ChartService : IChartService
         else
             return $"${Math.Round(valor)}";
     }
+}
 }

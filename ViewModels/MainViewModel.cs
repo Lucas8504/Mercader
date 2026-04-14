@@ -1,4 +1,6 @@
 using Mercader.Models;
+using Mercader.Models.Domain;
+using Mercader.Services.Interfaces;
 using Microcharts;
 using System.Collections.ObjectModel;
 
@@ -19,10 +21,8 @@ namespace Mercader.ViewModels
         public List<(string Periodo, decimal Total)> GastosPorPeriodo { get; set; } = new();
         public List<(string Periodo, decimal Total)> EncargosPorPeriodo { get; set; } = new();
 
-
-
-
-
+        // ===== Services =====
+        private readonly IDataRepository _dataRepository;
         private readonly IChartService _chartService;
 
         public Chart? EncargosChart { get; set; }
@@ -101,13 +101,14 @@ namespace Mercader.ViewModels
         // ===== Comunicación =====
         public Action? OnPeriodoChanged;
 
-        public MainViewModel(IChartService chartService)
+        public MainViewModel(IDataRepository dataRepository, IChartService chartService)
         {
+            _dataRepository = dataRepository;
+            _chartService = chartService;
+
             Ventas.CollectionChanged += (_, __) => Recalcular();
             Gastos.CollectionChanged += (_, __) => Recalcular();
             Encargos.CollectionChanged += (_, __) => Recalcular();
-
-            _chartService = chartService;
         }
 
         /// <summary>

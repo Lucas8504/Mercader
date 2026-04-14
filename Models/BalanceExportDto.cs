@@ -1,8 +1,5 @@
-﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using Mercader.Models.Domain;
 
 namespace Mercader.Models
 {
@@ -18,6 +15,5 @@ namespace Mercader.Models
         public decimal Ganancias { get; set; }
         public decimal Margen { get; set; }
         public string Periodo { get; init; } = "";
-
     }
 }

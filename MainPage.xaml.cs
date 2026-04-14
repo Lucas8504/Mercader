@@ -5,6 +5,7 @@ using Microcharts;
 using System.Diagnostics;
 using Mercader.ViewModels;
 using Mercader.Models;
+using Mercader.Models.Domain;
 using Microsoft.Maui.Platform;
 
 

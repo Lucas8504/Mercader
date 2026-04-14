@@ -1,4 +1,6 @@
-﻿namespace Mercader;
+﻿using Mercader.Models.Domain;
+
+namespace Mercader;
 
 public partial class DetalleEncargo : ContentPage
 {

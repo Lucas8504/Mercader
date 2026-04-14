@@ -1,10 +1,11 @@
 ﻿using System.Diagnostics;
+using Mercader.Services.Interfaces;
 
 namespace Mercader
 {
     public partial class App : Application
     {
-        public App(AppShell shell, DataRepository repo)
+        public App(AppShell shell, IDataRepository repo)
         {
             InitializeComponent();
 

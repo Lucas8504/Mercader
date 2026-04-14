@@ -1,19 +1,21 @@
+using Mercader.Models.Domain;
+
 namespace Mercader;
 
 /// <summary>
-/// Página de detalle que muestra la información completa de un gasto específico.
+/// Pï¿½gina de detalle que muestra la informaciï¿½n completa de un gasto especï¿½fico.
 /// Permite visualizar, editar y eliminar el gasto seleccionado.
 /// </summary>
 public partial class DetalleGasto : ContentPage
 {
     /// <summary>
-    /// Instancia del gasto que se está visualizando en esta página.
+    /// Instancia del gasto que se estï¿½ visualizando en esta pï¿½gina.
     /// </summary>
     private readonly DataRepository _repo;
     private Gasto _gasto;
 
     /// <summary>
-    /// Constructor de la página DetalleGasto.
+    /// Constructor de la pï¿½gina DetalleGasto.
     /// </summary>
     /// <param name="gasto">El objeto Gasto que se desea visualizar y gestionar.</param>
     public DetalleGasto(Gasto gasto, DataRepository repo)
@@ -30,7 +32,7 @@ public partial class DetalleGasto : ContentPage
     }
 
     /// <summary>
-    /// Calcula el total del gasto (Monto × Cantidad) y actualiza el label correspondiente en la UI.
+    /// Calcula el total del gasto (Monto ï¿½ Cantidad) y actualiza el label correspondiente en la UI.
     /// </summary>
     private void CalcularYMostrarTotal()
     {
@@ -39,43 +41,43 @@ public partial class DetalleGasto : ContentPage
             // Calcula el total multiplicando el monto unitario por la cantidad
             decimal total = _gasto.Monto * _gasto.Cantidad;
 
-            // Formatea el total con 2 decimales y símbolo de peso
+            // Formatea el total con 2 decimales y sï¿½mbolo de peso
             LabelTotal.Text = $"${total:F2}";
         }
     }
 
     /// <summary>
-    /// Manejador del evento Click del botón Editar.
-    /// Navega a la página de edición del gasto actual.
+    /// Manejador del evento Click del botï¿½n Editar.
+    /// Navega a la pï¿½gina de ediciï¿½n del gasto actual.
     /// </summary>
-    /// <param name="sender">El objeto que generó el evento.</param>
+    /// <param name="sender">El objeto que generï¿½ el evento.</param>
     /// <param name="e">Argumentos del evento.</param>
     private async void OnEditarClicked(object sender, EventArgs e)
     {
         try
         {
-            // Navega a la página de edición pasando el gasto actual
+            // Navega a la pï¿½gina de ediciï¿½n pasando el gasto actual
             await Navigation.PushAsync(new EditarGastoPage(_gasto, _repo));
         }
         catch (Exception ex)
         {
-            // Muestra un mensaje de error si falla la navegación
-            await DisplayAlert("Error", $"Error al abrir la página de edición: {ex.Message}", "OK");
+            // Muestra un mensaje de error si falla la navegaciï¿½n
+            await DisplayAlert("Error", $"Error al abrir la pï¿½gina de ediciï¿½n: {ex.Message}", "OK");
         }
     }
 
     /// <summary>
-    /// Manejador del evento Click del botón Eliminar.
-    /// Solicita confirmación y elimina el gasto de la base de datos.
+    /// Manejador del evento Click del botï¿½n Eliminar.
+    /// Solicita confirmaciï¿½n y elimina el gasto de la base de datos.
     /// </summary>
-    /// <param name="sender">El objeto que generó el evento.</param>
+    /// <param name="sender">El objeto que generï¿½ el evento.</param>
     /// <param name="e">Argumentos del evento.</param>
     private async void OnEliminarClicked(object sender, EventArgs e)
     {
-        // Solicita confirmación al usuario antes de eliminar
-        bool confirm = await DisplayAlert("Confirmación",
-            $"¿Estás seguro de eliminar el gasto \"{_gasto.Descripcion}\" del día {_gasto.Fecha:dd/MM/yyyy}?",
-            "Sí", "No");
+        // Solicita confirmaciï¿½n al usuario antes de eliminar
+        bool confirm = await DisplayAlert("Confirmaciï¿½n",
+            $"ï¿½Estï¿½s seguro de eliminar el gasto \"{_gasto.Descripcion}\" del dï¿½a {_gasto.Fecha:dd/MM/yyyy}?",
+            "Sï¿½", "No");
 
         if (confirm)
         {
@@ -84,34 +86,34 @@ public partial class DetalleGasto : ContentPage
                 // Elimina el gasto del repositorio de datos
                 await _repo.DeleteGastoAsync(_gasto);
 
-                // Muestra mensaje de éxito
-                await DisplayAlert("Éxito", "Gasto eliminado correctamente", "OK");
+                // Muestra mensaje de ï¿½xito
+                await DisplayAlert("ï¿½xito", "Gasto eliminado correctamente", "OK");
 
-                // Regresa a la página anterior después de eliminar
+                // Regresa a la pï¿½gina anterior despuï¿½s de eliminar
                 await Navigation.PopAsync();
             }
             catch (Exception ex)
             {
-                // Muestra mensaje de error si falla la eliminación
+                // Muestra mensaje de error si falla la eliminaciï¿½n
                 await DisplayAlert("Error", $"Error al eliminar el gasto: {ex.Message}", "OK");
             }
         }
     }
 
     /// <summary>
-    /// Manejador del evento Click del botón Volver.
-    /// Regresa a la página anterior en la pila de navegación.
+    /// Manejador del evento Click del botï¿½n Volver.
+    /// Regresa a la pï¿½gina anterior en la pila de navegaciï¿½n.
     /// </summary>
-    /// <param name="sender">El objeto que generó el evento.</param>
+    /// <param name="sender">El objeto que generï¿½ el evento.</param>
     /// <param name="e">Argumentos del evento.</param>
     private async void OnVolverClicked(object sender, EventArgs e)
     {
-        // Navega hacia atrás en la pila de navegación
+        // Navega hacia atrï¿½s en la pila de navegaciï¿½n
         await Navigation.PopAsync();
     }
 
     /// <summary>
-    /// Método del ciclo de vida que se ejecuta cuando la página aparece en pantalla.
+    /// Mï¿½todo del ciclo de vida que se ejecuta cuando la pï¿½gina aparece en pantalla.
     /// Actualiza los datos mostrados en caso de que el gasto haya sido modificado.
     /// </summary>
     protected override void OnAppearing()

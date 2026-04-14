@@ -1,3 +1,4 @@
+using Mercader.Models.Domain;
 using static Microsoft.IO.RecyclableMemoryStreamManager;
 
 namespace Mercader;
@@ -28,7 +29,7 @@ public partial class EditarGastoPage : ContentPage
         
 
         await _repo.SaveGastoAsync(_gasto);
-        await DisplayAlert("Éxito", "Gasto actualizado correctamente", "OK");
+        await DisplayAlert("ï¿½xito", "Gasto actualizado correctamente", "OK");
         await Navigation.PopAsync();
     }
 
@@ -36,8 +37,8 @@ public partial class EditarGastoPage : ContentPage
     {
         bool confirm = await DisplayAlert(
             "Confirmar",
-            "¿Estás seguro de que deseas cancelar? Se perderán los cambios no guardados.",
-            "Sí",
+            "ï¿½Estï¿½s seguro de que deseas cancelar? Se perderï¿½n los cambios no guardados.",
+            "Sï¿½",
             "No");
 
         if (confirm)

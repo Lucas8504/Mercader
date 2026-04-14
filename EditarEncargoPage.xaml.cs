@@ -1,3 +1,5 @@
+using Mercader.Models.Domain;
+
 namespace Mercader;
 
 public partial class EditarEncargoPage : ContentPage
@@ -76,20 +78,20 @@ public partial class EditarEncargoPage : ContentPage
 
         if (string.IsNullOrWhiteSpace(ContactoEntry.Text))
         {
-            await DisplayAlert("Error", "Por favor, ingrese un número de teléfono", "OK");
+            await DisplayAlert("Error", "Por favor, ingrese un nï¿½mero de telï¿½fono", "OK");
             return;
         }
 
-        // Validación básica de formato de teléfono
+        // Validaciï¿½n bï¿½sica de formato de telï¿½fono
         if (!IsValidPhoneNumber(ContactoEntry.Text))
         {
-            await DisplayAlert("Error", "Por favor, ingrese un número de teléfono válido", "OK");
+            await DisplayAlert("Error", "Por favor, ingrese un nï¿½mero de telï¿½fono vï¿½lido", "OK");
             return;
         }
 
         if (string.IsNullOrWhiteSpace(DescripcionEntry.Text))
         {
-            await DisplayAlert("Error", "La descripción del producto es obligatoria", "OK");
+            await DisplayAlert("Error", "La descripciï¿½n del producto es obligatoria", "OK");
             return;
         }
 
@@ -98,14 +100,14 @@ public partial class EditarEncargoPage : ContentPage
             // Validar y parsear precio
             if (!decimal.TryParse(PrecioEntry.Text, out decimal precio) || precio <= 0)
             {
-                await DisplayAlert("Error", "El precio debe ser un número válido mayor a 0", "OK");
+                await DisplayAlert("Error", "El precio debe ser un nï¿½mero vï¿½lido mayor a 0", "OK");
                 return;
             }
 
             // Validar y parsear cantidad
             if (!decimal.TryParse(CantidadEntry.Text, out decimal cantidad) || cantidad <= 0)
             {
-                await DisplayAlert("Error", "La cantidad debe ser un número válido mayor a 0", "OK");
+                await DisplayAlert("Error", "La cantidad debe ser un nï¿½mero vï¿½lido mayor a 0", "OK");
                 return;
             }
 
@@ -120,10 +122,10 @@ public partial class EditarEncargoPage : ContentPage
             // Guardar en la base de datos
             await _repo.SaveEncargoAsync(_encargo);
 
-            // Mostrar mensaje de éxito
-            await DisplayAlert("Éxito", "Encargo actualizado correctamente", "OK");
+            // Mostrar mensaje de ï¿½xito
+            await DisplayAlert("ï¿½xito", "Encargo actualizado correctamente", "OK");
 
-            // Volver a la página anterior
+            // Volver a la pï¿½gina anterior
             await Navigation.PopAsync();
         }
         catch (Exception ex)
@@ -137,14 +139,14 @@ public partial class EditarEncargoPage : ContentPage
         if (string.IsNullOrWhiteSpace(phoneNumber))
             return false;
 
-        // Remover espacios, guiones, paréntesis y el signo +
+        // Remover espacios, guiones, parï¿½ntesis y el signo +
         string cleanedNumber = phoneNumber.Replace(" ", "")
                                         .Replace("-", "")
                                         .Replace("(", "")
                                         .Replace(")", "")
                                         .Replace("+", "");
 
-        // Verificar que solo contenga números y tenga entre 7 y 15 dígitos
+        // Verificar que solo contenga nï¿½meros y tenga entre 7 y 15 dï¿½gitos
         return cleanedNumber.All(char.IsDigit) &&
                cleanedNumber.Length >= 7 &&
                cleanedNumber.Length <= 15;
@@ -155,7 +157,7 @@ public partial class EditarEncargoPage : ContentPage
         if (string.IsNullOrWhiteSpace(phoneNumber))
             return phoneNumber;
 
-        // Remover todos los caracteres que no sean números
+        // Remover todos los caracteres que no sean nï¿½meros
         return new string(phoneNumber.Where(char.IsDigit).ToArray());
     }
 
@@ -163,8 +165,8 @@ public partial class EditarEncargoPage : ContentPage
     {
         bool confirm = await DisplayAlert(
             "Confirmar",
-            "¿Estás seguro de que deseas cancelar? Se perderán los cambios no guardados.",
-            "Sí",
+            "ï¿½Estï¿½s seguro de que deseas cancelar? Se perderï¿½n los cambios no guardados.",
+            "Sï¿½",
             "No");
 
         if (confirm)

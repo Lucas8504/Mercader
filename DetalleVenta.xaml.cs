@@ -1,3 +1,5 @@
+using Mercader.Models.Domain;
+
 namespace Mercader;
 
 public partial class DetalleVenta : ContentPage
@@ -31,24 +33,24 @@ public partial class DetalleVenta : ContentPage
         }
         catch (Exception ex)
         {
-            await DisplayAlert("Error", $"Error al abrir la página de edición: {ex.Message}", "OK");
+            await DisplayAlert("Error", $"Error al abrir la pï¿½gina de ediciï¿½n: {ex.Message}", "OK");
         }
     }
 
     private async void OnEliminarClicked(object sender, EventArgs e)
     {
-        bool confirm = await DisplayAlert("Confirmación",
-            $"¿Estás seguro de eliminar la venta \"{_venta.Descripcion}\" del día {_venta.Fecha:dd/MM/yyyy}?",
-            "Sí", "No");
+        bool confirm = await DisplayAlert("Confirmaciï¿½n",
+            $"ï¿½Estï¿½s seguro de eliminar la venta \"{_venta.Descripcion}\" del dï¿½a {_venta.Fecha:dd/MM/yyyy}?",
+            "Sï¿½", "No");
 
         if (confirm)
         {
             try
             {
                 await _repo.DeleteVentaAsync(_venta);
-                await DisplayAlert("Éxito", "Venta eliminada correctamente", "OK");
+                await DisplayAlert("ï¿½xito", "Venta eliminada correctamente", "OK");
 
-                // Volver a la página anterior
+                // Volver a la pï¿½gina anterior
                 await Navigation.PopAsync();
             }
             catch (Exception ex)

@@ -1,12 +1,9 @@
 using SQLite;
-using Mercader.Models;
-using System.ComponentModel;
-using System.Runtime.CompilerServices;
 
-namespace Mercader
+namespace Mercader.Models.Domain
 {
     [Table("Encargo")]
-    public class Encargo : Models.IFecha, INotifyPropertyChanged
+    public class Encargo : IFecha
     {
         [PrimaryKey, AutoIncrement, Unique]
         public int Id { get; set; }
@@ -32,15 +29,8 @@ namespace Mercader
         [Column("FechaEntrega")]
         public DateTime FechaEntrega { get; set; }
 
-        // Propiedades calculadas (no se mapean a SQLite)
+        // Propiedades calculadas (para UI, no se mapean a SQLite)
         public decimal Total => Precio * Cantidad;
-
         public string TotalFormateado => Total.ToString("N0");
-
-        public event PropertyChangedEventHandler? PropertyChanged;
-        protected void OnPropertyChanged([CallerMemberName] string? propertyName = null)
-        {
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
-        }
     }
 }

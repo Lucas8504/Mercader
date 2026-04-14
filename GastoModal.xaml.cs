@@ -1,4 +1,5 @@
 using System.Globalization;
+using Mercader.Models.Domain;
 #if ANDROID
 using Mercader.Platforms.Android;
 #endif
@@ -39,7 +40,7 @@ public partial class GastoModal : ContentPage
         }
         catch (FormatException)
         {
-            await DisplayAlert("Error", "Por favor, ingrese valores numéricos válidos", "OK");
+            await DisplayAlert("Error", "Por favor, ingrese valores numï¿½ricos vï¿½lidos", "OK");
         }
         catch (Exception ex)
         {
@@ -61,7 +62,7 @@ public partial class GastoModal : ContentPage
     {
         if (string.IsNullOrWhiteSpace(DescripcionGastoEntry.Text))
         {
-            DisplayAlert("Error", "Por favor, ingrese una descripción", "OK");
+            DisplayAlert("Error", "Por favor, ingrese una descripciï¿½n", "OK");
             return false;
         }
         if (string.IsNullOrWhiteSpace(MontoGastoEntry.Text))

@@ -5,6 +5,7 @@ using System.Globalization;
 using OfficeOpenXml.Drawing.Chart;
 using Color = System.Drawing.Color;
 using Mercader.Models;
+using Mercader.Models.Domain;
 using Mercader.ViewModels;
 
 namespace Mercader

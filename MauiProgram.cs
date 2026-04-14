@@ -1,7 +1,9 @@
 ﻿using Mercader.ViewModels;
+using Mercader.Services.Interfaces;
 using Microcharts.Maui;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Mercader.Services;
 
 namespace Mercader
 {
@@ -19,20 +21,24 @@ namespace Mercader
                     fonts.AddFont("OpenSans-Semibold.ttf", "OpenSansSemibold");
                 });
             
+            // Services
+            builder.Services.AddSingleton<DataRepository>();
+            builder.Services.AddSingleton<IDataRepository>(sp => sp.GetRequiredService<DataRepository>());
+            builder.Services.AddSingleton<IChartService, ChartService>();
+
+            // Shell
             builder.Services.AddSingleton<AppShell>();
 
+            // Pages
             builder.Services.AddTransient<MainPage>();
             builder.Services.AddTransient<Gastos>();
             builder.Services.AddTransient<Encargos>();
             builder.Services.AddTransient<DetalleEncargo>();
             builder.Services.AddTransient<EditarEncargoPage>();
             builder.Services.AddTransient<Venta>();
-            builder.Services.AddSingleton<DataRepository>();
+
+            // ViewModels
             builder.Services.AddTransient<MainViewModel>();
-            builder.Services.AddSingleton< ViewModels.MainViewModel >();
-            builder.Services.AddSingleton<IChartService, ChartService>();
-
-
 
 #if DEBUG
             builder.Logging.AddDebug();

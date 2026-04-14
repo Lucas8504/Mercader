@@ -2,6 +2,7 @@
 using Microsoft.Maui;
 using System;
 using System.Threading.Tasks;
+using Mercader.Models.Domain;
 
 namespace Mercader
 {
