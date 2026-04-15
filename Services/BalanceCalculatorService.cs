@@ -1,3 +1,4 @@
+using System.Globalization;
 using Mercader.Models.Domain;
 using Mercader.Services.Interfaces;
 
@@ -75,47 +76,119 @@ namespace Mercader.Services
             Func<T, decimal> getMonto)
             where T : IFecha
         {
-            var filtradas = FiltrarPorPeriodo(lista, periodo).ToList();
+            var datos = FiltrarPorPeriodo(lista, periodo).ToList();
 
             return periodo switch
             {
-                "Días" => filtradas
-                    .GroupBy(x => getFecha(x).ToString("yyyy-MM-dd"))
-                    .Select(g => (g.Key, g.Sum(getMonto)))
-                    .OrderBy(x => x.Key)
-                    .ToList(),
-
-                "Semanas" => filtradas
-                    .GroupBy(x => GetWeekNumber(getFecha(x)))
-                    .Select(g => (g.Key, g.Sum(getMonto)))
-                    .OrderBy(x => x.Item1)
-                    .ToList(),
-
-                "Meses" => filtradas
-                    .GroupBy(x => getFecha(x).ToString("yyyy-MM"))
-                    .Select(g => (g.Key, g.Sum(getMonto)))
-                    .OrderBy(x => x.Key)
-                    .ToList(),
-
-                "Años" => filtradas
-                    .GroupBy(x => getFecha(x).ToString("yyyy"))
-                    .Select(g => (g.Key, g.Sum(getMonto)))
-                    .OrderBy(x => x.Key)
-                    .ToList(),
-
-                _ => filtradas
-                    .GroupBy(x => getFecha(x).ToString("yyyy-MM"))
-                    .Select(g => (g.Key, g.Sum(getMonto)))
-                    .OrderBy(x => x.Key)
-                    .ToList()
+                "Días" => GenerarDias(datos, getFecha, getMonto),
+                "Semanas" => GenerarSemanas(datos, getFecha, getMonto),
+                "Meses" => GenerarMeses(datos, getFecha, getMonto),
+                "Años" => GenerarAnios(datos, getFecha, getMonto),
+                _ => GenerarMeses(datos, getFecha, getMonto)
             };
         }
 
-        private string GetWeekNumber(DateTime date)
+        /// <summary>
+        /// Genera todos los días del rango, incluso los que no tienen datos.
+        /// </summary>
+        private List<(string Periodo, decimal Total)> GenerarDias<T>(
+            List<T> datos,
+            Func<T, DateTime> getFecha,
+            Func<T, decimal> getMonto) where T : IFecha
         {
-            var cal = System.Globalization.CultureInfo.CurrentCulture.Calendar;
-            int week = cal.GetWeekOfYear(date, System.Globalization.CalendarWeekRule.FirstDay, DayOfWeek.Monday);
-            return $"{date.Year}-W{week:D2}";
+            var hoy = DateTime.Today;
+            var dias = Enumerable.Range(0, 133)
+                .Select(i => hoy.AddDays(-i))
+                .Reverse()
+                .ToList();
+
+            return dias.Select(fecha =>
+            {
+                var total = datos
+                    .Where(x => getFecha(x).Date == fecha.Date)
+                    .Sum(getMonto);
+                return (fecha.ToString("dd/MM"), total);
+            }).ToList();
+        }
+
+        /// <summary>
+        /// Genera todas las semanas del rango, incluso las que no tienen datos.
+        /// </summary>
+        private List<(string Periodo, decimal Total)> GenerarSemanas<T>(
+            List<T> datos,
+            Func<T, DateTime> getFecha,
+            Func<T, decimal> getMonto) where T : IFecha
+        {
+            var hoy = DateTime.Today;
+            var semanas = Enumerable.Range(0, 130)
+                .Select(i =>
+                {
+                    var fecha = hoy.AddDays(-7 * i);
+                    var inicioSemana = fecha.AddDays(-(int)fecha.DayOfWeek);
+                    return inicioSemana;
+                })
+                .Reverse()
+                .Distinct()
+                .ToList();
+
+            return semanas.Select(inicioSemana =>
+            {
+                var finSemana = inicioSemana.AddDays(6);
+                var total = datos
+                    .Where(x =>
+                    {
+                        var fecha = getFecha(x).Date;
+                        return fecha >= inicioSemana && fecha <= finSemana;
+                    })
+                    .Sum(getMonto);
+                return (inicioSemana.ToString("dd/MM"), total);
+            }).ToList();
+        }
+
+        /// <summary>
+        /// Genera todos los meses del rango, incluso los que no tienen datos.
+        /// </summary>
+        private List<(string Periodo, decimal Total)> GenerarMeses<T>(
+            List<T> datos,
+            Func<T, DateTime> getFecha,
+            Func<T, decimal> getMonto) where T : IFecha
+        {
+            var hoy = DateTime.Today;
+            var meses = Enumerable.Range(0, 130)
+                .Select(i => hoy.AddMonths(-i))
+                .Reverse()
+                .ToList();
+
+            return meses.Select(mes =>
+            {
+                var total = datos
+                    .Where(x => getFecha(x).Year == mes.Year && getFecha(x).Month == mes.Month)
+                    .Sum(getMonto);
+                return (mes.ToString("MMM", new CultureInfo("es-ES")), total);
+            }).ToList();
+        }
+
+        /// <summary>
+        /// Genera todos los años del rango, incluso los que no tienen datos.
+        /// </summary>
+        private List<(string Periodo, decimal Total)> GenerarAnios<T>(
+            List<T> datos,
+            Func<T, DateTime> getFecha,
+            Func<T, decimal> getMonto) where T : IFecha
+        {
+            var hoy = DateTime.Today;
+            var anios = Enumerable.Range(0, 10)
+                .Select(i => hoy.AddYears(-i))
+                .Reverse()
+                .ToList();
+
+            return anios.Select(anio =>
+            {
+                var total = datos
+                    .Where(x => getFecha(x).Year == anio.Year)
+                    .Sum(getMonto);
+                return (anio.Year.ToString(), total);
+            }).ToList();
         }
     }
 }

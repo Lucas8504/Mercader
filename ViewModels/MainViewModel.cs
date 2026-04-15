@@ -1,3 +1,4 @@
+using System.Globalization;
 using Mercader.Models;
 using Mercader.Models.Domain;
 using Mercader.Services.Interfaces;
@@ -8,81 +9,83 @@ namespace Mercader.ViewModels
 {
     public class MainViewModel : BaseViewModel
     {
-        // ===== Datos =====
+        // ===== Colecciones de datos =====
         public ObservableCollection<Ventas> Ventas { get; } = new();
         public ObservableCollection<Gasto> Gastos { get; } = new();
         public ObservableCollection<Encargo> Encargos { get; } = new();
 
-        public IEnumerable<Ventas> VentasPeriodo => _balanceService.FiltrarPorPeriodo(Ventas, PeriodoSeleccionado);
-        public IEnumerable<Gasto> GastosPeriodo => _balanceService.FiltrarPorPeriodo(Gastos, PeriodoSeleccionado);
-        public IEnumerable<Encargo> EncargosPeriodo => _balanceService.FiltrarPorPeriodo(Encargos, PeriodoSeleccionado);
-
-        public List<(string Periodo, decimal Total)> VentasPorPeriodo { get; set; } = new();
-        public List<(string Periodo, decimal Total)> GastosPorPeriodo { get; set; } = new();
-        public List<(string Periodo, decimal Total)> EncargosPorPeriodo { get; set; } = new();
-
-        // ===== Services =====
+        // ===== Servicios =====
         private readonly IDataRepository _dataRepository;
         private readonly IChartService _chartService;
         private readonly IBalanceCalculatorService _balanceService;
 
-        public Chart? EncargosChart { get; set; }
-        public Chart? VentasChart { get; set; }
-        public Chart? GastosChart { get; set; }
-        public Chart? GananciasChart { get; set; }
+        // ===== Gráficos (bindeables) =====
+        private Chart? _encargosChart;
+        public Chart? EncargosChart
+        {
+            get => _encargosChart;
+            private set => SetProperty(ref _encargosChart, value);
+        }
 
+        private Chart? _ventasChart;
+        public Chart? VentasChart
+        {
+            get => _ventasChart;
+            private set => SetProperty(ref _ventasChart, value);
+        }
 
-        // ===== Valores internos =====
-        private decimal _totalVentasValue;
-        private decimal _totalGastosValue;
-        private decimal _totalEncargosValue;
-        private decimal _gananciasValue;
-        private decimal _margenValue;
+        private Chart? _gastosChart;
+        public Chart? GastosChart
+        {
+            get => _gastosChart;
+            private set => SetProperty(ref _gastosChart, value);
+        }
 
-        // ===== Propiedades para UI (Binding) =====
+        private Chart? _gananciasChart;
+        public Chart? GananciasChart
+        {
+            get => _gananciasChart;
+            private set => SetProperty(ref _gananciasChart, value);
+        }
+
+        // ===== Resumen financiero (bindeables) =====
         private string _totalVentas = "$0";
         public string TotalVentas
         {
             get => _totalVentas;
-            set => SetProperty(ref _totalVentas, value);
+            private set => SetProperty(ref _totalVentas, value);
         }
 
         private string _totalGastos = "$0";
         public string TotalGastos
         {
             get => _totalGastos;
-            set => SetProperty(ref _totalGastos, value);
+            private set => SetProperty(ref _totalGastos, value);
         }
 
         private string _totalEncargos = "$0";
         public string TotalEncargos
         {
             get => _totalEncargos;
-            set => SetProperty(ref _totalEncargos, value);
+            private set => SetProperty(ref _totalEncargos, value);
         }
 
         private string _ganancias = "$0";
         public string Ganancias
         {
             get => _ganancias;
-            set => SetProperty(ref _ganancias, value);
+            private set => SetProperty(ref _ganancias, value);
         }
 
         private string _margen = "0%";
         public string Margen
         {
             get => _margen;
-            set => SetProperty(ref _margen, value);
+            private set => SetProperty(ref _margen, value);
         }
 
-        // ===== Picker =====
-        public List<string> Periodos { get; } = new()
-        {
-            "Días",
-            "Semanas",
-            "Meses",
-            "Años"
-        };
+        // ===== Selector de período =====
+        public List<string> Periodos { get; } = new() { "Días", "Semanas", "Meses", "Años" };
 
         private string _periodoSeleccionado = "Meses";
         public string PeriodoSeleccionado
@@ -90,18 +93,14 @@ namespace Mercader.ViewModels
             get => _periodoSeleccionado;
             set
             {
-                if (_periodoSeleccionado == value) return;
-                _periodoSeleccionado = value;
-                OnPropertyChanged();
-
-                Recalcular();
-                OnPeriodoChanged?.Invoke();
+                if (SetProperty(ref _periodoSeleccionado, value))
+                {
+                    Recalcular();
+                }
             }
         }
 
-        // ===== Comunicación =====
-        public Action? OnPeriodoChanged;
-
+        // ===== Constructor =====
         public MainViewModel(
             IDataRepository dataRepository,
             IChartService chartService,
@@ -111,141 +110,63 @@ namespace Mercader.ViewModels
             _chartService = chartService;
             _balanceService = balanceService;
 
-            Ventas.CollectionChanged += (_, __) => Recalcular();
-            Gastos.CollectionChanged += (_, __) => Recalcular();
-            Encargos.CollectionChanged += (_, __) => Recalcular();
+            // Recalcular cuando cambian las colecciones
+            Ventas.CollectionChanged += (_, _) => Recalcular();
+            Gastos.CollectionChanged += (_, _) => Recalcular();
+            Encargos.CollectionChanged += (_, _) => Recalcular();
         }
 
         /// <summary>
-        /// Actualiza SOLO el gráfico de ventas
+        /// Recalcula todos los totales, datos por período y gráficos.
         /// </summary>
-        public async Task ActualizarGraficoVentasAsync()
-        {
-            await Task.Run(() =>
-            {
-                VentasChart = _chartService.CrearGraficoVentas(VentasPorPeriodo);
-            });
-
-            MainThread.BeginInvokeOnMainThread(() =>
-            {
-                OnPropertyChanged(nameof(VentasChart));
-            });
-        }
-
-        /// <summary>
-        /// Actualiza SOLO el gráfico de gastos
-        /// </summary>
-        public async Task ActualizarGraficoGastosAsync()
-        {
-            await Task.Run(() =>
-            {
-                GastosChart = _chartService.CrearGraficoGastos(GastosPorPeriodo);
-            });
-
-            MainThread.BeginInvokeOnMainThread(() =>
-            {
-                OnPropertyChanged(nameof(GastosChart));
-            });
-        }
-
-        /// <summary>
-        /// Actualiza SOLO el gráfico de encargos
-        /// </summary>
-        public async Task ActualizarGraficoEncargosAsync()
-        {
-            await Task.Run(() =>
-            {
-                EncargosChart = _chartService.CrearGraficoEncargos(EncargosPorPeriodo);
-            });
-
-            MainThread.BeginInvokeOnMainThread(() =>
-            {
-                OnPropertyChanged(nameof(EncargosChart));
-            });
-        }
-
-        /// <summary>
-        /// Actualiza SOLO el gráfico de ganancias
-        /// </summary>
-        public async Task ActualizarGraficoGananciasAsync()
-        {
-            await Task.Run(() =>
-            {
-                GananciasChart = _chartService.CrearGraficoGanancias(VentasPorPeriodo, GastosPorPeriodo);
-            });
-
-            MainThread.BeginInvokeOnMainThread(() =>
-            {
-                OnPropertyChanged(nameof(GananciasChart));
-            });
-        }
-
-        /// <summary>
-        /// Actualiza todos los gráficos
-        /// </summary>
-        public async Task ActualizarGraficosAsync()
-        {
-            await Task.Run(() =>
-            {
-                EncargosChart = _chartService.CrearGraficoEncargos(EncargosPorPeriodo);
-                VentasChart = _chartService.CrearGraficoVentas(VentasPorPeriodo);
-                GastosChart = _chartService.CrearGraficoGastos(GastosPorPeriodo);
-                GananciasChart = _chartService.CrearGraficoGanancias(VentasPorPeriodo, GastosPorPeriodo);
-            });
-
-            MainThread.BeginInvokeOnMainThread(() =>
-            {
-                OnPropertyChanged(nameof(EncargosChart));
-                OnPropertyChanged(nameof(VentasChart));
-                OnPropertyChanged(nameof(GastosChart));
-                OnPropertyChanged(nameof(GananciasChart));
-            });
-        }
-
-        public async Task CalcularPorPeriodoAsync()
-        {
-            await Task.Run(() => Recalcular());
-        }
-
-        // ===== Lógica central - delegated to BalanceCalculatorService =====
         public void Recalcular()
         {
-            // Delegar cálculos al servicio especializado
-            _totalVentasValue = _balanceService.CalcularTotalVentas(Ventas, PeriodoSeleccionado);
-            _totalGastosValue = _balanceService.CalcularTotalGastos(Gastos, PeriodoSeleccionado);
-            _totalEncargosValue = _balanceService.CalcularTotalEncargos(Encargos, PeriodoSeleccionado);
+            // Calcular totales usando BalanceCalculatorService
+            var totalVentas = _balanceService.CalcularTotalVentas(Ventas, PeriodoSeleccionado);
+            var totalGastos = _balanceService.CalcularTotalGastos(Gastos, PeriodoSeleccionado);
+            var totalEncargos = _balanceService.CalcularTotalEncargos(Encargos, PeriodoSeleccionado);
+            var ganancias = _balanceService.CalcularGanancias(totalVentas, totalGastos);
+            var margen = _balanceService.CalcularMargen(totalVentas, ganancias);
 
-            _gananciasValue = _balanceService.CalcularGanancias(_totalVentasValue, _totalGastosValue);
-            _margenValue = _balanceService.CalcularMargen(_totalVentasValue, _gananciasValue);
+            // Agrupar datos por período
+            var ventasPorPeriodo = _balanceService.AgruparVentasPorPeriodo(Ventas, PeriodoSeleccionado);
+            var gastosPorPeriodo = _balanceService.AgruparGastosPorPeriodo(Gastos, PeriodoSeleccionado);
+            var encargosPorPeriodo = _balanceService.AgruparEncargosPorPeriodo(Encargos, PeriodoSeleccionado);
 
-            // Actualizar datos para gráficos
-            VentasPorPeriodo = _balanceService.AgruparVentasPorPeriodo(Ventas, PeriodoSeleccionado);
-            GastosPorPeriodo = _balanceService.AgruparGastosPorPeriodo(Gastos, PeriodoSeleccionado);
-            EncargosPorPeriodo = _balanceService.AgruparEncargosPorPeriodo(Encargos, PeriodoSeleccionado);
+            // Actualizar UI
+            TotalVentas = totalVentas.ToString("C");
+            TotalGastos = totalGastos.ToString("C");
+            TotalEncargos = totalEncargos.ToString("C");
+            Ganancias = ganancias.ToString("C");
+            Margen = $"{margen:F1}%";
 
-            // UI
-            TotalVentas = _totalVentasValue.ToString("C");
-            TotalGastos = _totalGastosValue.ToString("C");
-            TotalEncargos = _totalEncargosValue.ToString("C");
-            Ganancias = _gananciasValue.ToString("C");
-            Margen = $"{_margenValue:F1}%";
+            // Generar gráficos
+            EncargosChart = _chartService.CrearGraficoEncargos(encargosPorPeriodo);
+            VentasChart = _chartService.CrearGraficoVentas(ventasPorPeriodo);
+            GastosChart = _chartService.CrearGraficoGastos(gastosPorPeriodo);
+            GananciasChart = _chartService.CrearGraficoGanancias(ventasPorPeriodo, gastosPorPeriodo);
         }
 
-        // ===== Export =====
+        /// <summary>
+        /// Actualiza los gráficos (método público para compatibilidad).
+        /// </summary>
+        public Task ActualizarGraficosAsync() => Task.CompletedTask;
+
+        /// <summary>
+        /// Crea el DTO para exportar a Excel.
+        /// </summary>
         public BalanceExportDto CrearExportDto()
         {
             return new BalanceExportDto
             {
-                Ventas = VentasPeriodo.ToList(),
-                Gastos = GastosPeriodo.ToList(),
-                Encargos = EncargosPeriodo.ToList(),
-
-                TotalVentas = _totalVentasValue,
-                TotalGastos = _totalGastosValue,
-                TotalEncargos = _totalEncargosValue,
-                Ganancias = _gananciasValue,
-                Margen = _margenValue,
-
+                Ventas = Ventas.ToList(),
+                Gastos = Gastos.ToList(),
+                Encargos = Encargos.ToList(),
+                TotalVentas = decimal.Parse(TotalVentas, NumberStyles.Currency),
+                TotalGastos = decimal.Parse(TotalGastos, NumberStyles.Currency),
+                TotalEncargos = decimal.Parse(TotalEncargos, NumberStyles.Currency),
+                Ganancias = decimal.Parse(Ganancias, NumberStyles.Currency),
+                Margen = decimal.Parse(Margen.TrimEnd('%')),
                 Periodo = PeriodoSeleccionado
             };
         }

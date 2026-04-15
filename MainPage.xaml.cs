@@ -1,65 +1,30 @@
 using Microcharts.Maui;
-using SkiaSharp;
-using System.Globalization;
-using Microcharts;
-using System.Diagnostics;
 using Mercader.ViewModels;
 using Mercader.Models;
 using Mercader.Models.Domain;
 using Microsoft.Maui.Platform;
-
-
-
-
-
-
+using System.Diagnostics;
 
 namespace Mercader
 {
     public partial class MainPage : ContentPage
     {
-        public ViewModels.MainViewModel VM { get; }
-
-
-       
-
+        private readonly MainViewModel _viewModel;
         private readonly DataRepository _repo;
 
         public MainPage(DataRepository repo, MainViewModel vm)
         {
-
             InitializeComponent();
-
-            
-            VM = vm;
-            BindingContext = VM;
             _repo = repo;
-
-
-           
-
-            VM.OnPeriodoChanged += async () =>
-            {
-                VM.Recalcular();
-                await ActualizarGraficosAsync();
-                // await VM.ActualizarGraficosAsync(); // Ya no - ahora se actualiza desde el code-behind
-
-
-            };
+            _viewModel = vm;
+            BindingContext = _viewModel;
         }
 
         protected override async void OnAppearing()
         {
             base.OnAppearing();
-            VM.Recalcular();
             await CargarDatosAsync();
-            // await VM.ActualizarGraficosAsync(); // Ya no - ahora se actualiza desde el code-behind
-
-
-
         }
-
-
 
         private async Task CargarDatosAsync()
         {
@@ -69,21 +34,20 @@ namespace Mercader
                 var gastos = await _repo.GetGastosAsync();
                 var ventas = await _repo.GetVentasAsync();
 
-               
-                // ===== 🔥 PUENTE MVVM 🔥 =====
-                VM.Encargos.Clear();
-                foreach (var e in encargos) VM.Encargos.Add(e);
+                // Cargar datos al ViewModel (MVVM puro)
+                _viewModel.Encargos.Clear();
+                foreach (var e in encargos) _viewModel.Encargos.Add(e);
 
-                VM.Gastos.Clear();
-                foreach (var g in gastos) VM.Gastos.Add(g);
+                _viewModel.Gastos.Clear();
+                foreach (var g in gastos) _viewModel.Gastos.Add(g);
 
-                VM.Ventas.Clear();
-                foreach (var v in ventas) VM.Ventas.Add(v);
+                _viewModel.Ventas.Clear();
+                foreach (var v in ventas) _viewModel.Ventas.Add(v);
 
-                // Recalcular labels
-                VM.Recalcular();
+                // El ViewModel usa BalanceCalculatorService internamente
+                _viewModel.Recalcular();
 
-                // Recalcular graficos
+                // Actualizar gráficos usando los datos ya calculados por el VM
                 await ActualizarGraficosAsync();
             }
             catch (Exception ex)
@@ -93,34 +57,19 @@ namespace Mercader
             }
         }
 
-        #region Actualización de Etiquetas
-
-
-        #endregion
-
         #region Eventos de Navegación
 
         private async void InAgregarEncargo(object sender, EventArgs e)
         {
-            
             try
             {
-
                 var modal = new EncModal(_repo);
                 await Navigation.PushModalAsync(modal);
-
-                // 🔁 cuando vuelve del modal
-                await CargarDatosAsync();   // trae DB → VM
-                VM.Recalcular();            // actualiza totales
-                await ActualizarGraficosAsync();
+                await CargarDatosAsync();
             }
             catch (Exception ex)
             {
-                await DisplayAlert(
-                    "Error",
-                    $"No se pudo abrir el formulario de encargo: {ex.Message}",
-                    "OK"
-                );
+                await DisplayAlert("Error", $"No se pudo abrir el formulario de encargo: {ex.Message}", "OK");
             }
         }
 
@@ -130,7 +79,7 @@ namespace Mercader
             {
                 var modal = new VentaModal(_repo);
                 await Navigation.PushModalAsync(modal);
-                
+                await CargarDatosAsync();
             }
             catch (Exception ex)
             {
@@ -144,18 +93,13 @@ namespace Mercader
             {
                 var modal = new GastoModal(_repo);
                 await Navigation.PushModalAsync(modal);
-
-                // 🔁 cuando vuelve del modal
-                await CargarDatosAsync();   // trae DB → VM
-                VM.Recalcular();            // actualiza totales
-                await ActualizarGraficosAsync();
+                await CargarDatosAsync();
             }
             catch (Exception ex)
             {
                 await DisplayAlert("Error", $"No se pudo abrir el modal: {ex.Message}", "OK");
             }
         }
-
 
         #endregion
 
@@ -165,89 +109,16 @@ namespace Mercader
         {
             try
             {
-                string periodo = VM.PeriodoSeleccionado;
-                var ventas = VM.VentasPeriodo.ToList();
-                var gastos = VM.GastosPeriodo.ToList();
-                var encargos = VM.EncargosPeriodo.ToList();
+                // Los datos ya están agrupados por el BalanceCalculatorService en VM.Recalcular()
+                await _viewModel.ActualizarGraficosAsync();
 
-
-                var ventasAgrupadas = periodo switch
-                {
-                    "Días" => AgruparVentasPorDia(ventas),
-                    "Semanas" => AgruparVentasPorSemana(ventas),
-                    "Meses" => AgruparVentasPorMes(ventas),
-                    "Años" => AgruparVentasPorAnio(ventas),
-                    _ => AgruparVentasPorMes(ventas)
-                };
-
-                var gastosAgrupados = periodo switch
-                {
-                    "Días" => AgruparGastosPorDia(gastos),
-                    "Semanas" => AgruparGastosPorSemana(gastos),
-                    "Meses" => AgruparGastosPorMes(gastos),
-                    "Años" => AgruparGastosPorAnio(gastos),
-                    _ => AgruparGastosPorMes(gastos)
-                };
-
-                var encargosAgrupados = periodo switch
-                {
-                    "Días" => AgruparEncargosPorDia(encargos),
-                    "Semanas" => AgruparEncargosPorSemana(encargos),
-                    "Meses" => AgruparEncargosPorMes(encargos),
-                    "Años" => AgruparEncargosPorAnio(encargos),
-                    _ => AgruparEncargosPorMes(encargos)
-                };
-
-                // === MIGRACIÓN MVVM: Pasar datos al ViewModel ===
-                VM.VentasPorPeriodo = ventasAgrupadas;
-                VM.GastosPorPeriodo = gastosAgrupados;
-                VM.EncargosPorPeriodo = encargosAgrupados;
-
-                // === GRÁFICO VENTAS - MVVM (via ChartService) ===
-                await VM.ActualizarGraficoVentasAsync();
-
-                // Scroll al final para mostrar datos más recientes (igual que otros gráficos)
-                MainThread.BeginInvokeOnMainThread(async () =>
-                {
-                    await VentasScroll.ScrollToAsync(
-                        VentasScroll.Content,
-                        ScrollToPosition.End,
-                        animated: false
-                    );
-                });
-
-                // === GRÁFICO GASTOS - MVVM ===
-                await VM.ActualizarGraficoGastosAsync();
-                MainThread.BeginInvokeOnMainThread(async () =>
-                {
-                    await GastosScroll.ScrollToAsync(
-                        GastosScroll.Content,
-                        ScrollToPosition.End,
-                        animated: false
-                    );
-                });
-
-                // === GRÁFICO ENCARGOS - MVVM ===
-                await VM.ActualizarGraficoEncargosAsync();
-                MainThread.BeginInvokeOnMainThread(async () =>
-                {
-                    await EncargosScroll.ScrollToAsync(
-                        EncargosScroll.Content,
-                        ScrollToPosition.End,
-                        animated: false
-                    );
-                });
-
-                // === GRÁFICO GANANCIAS - MVVM ===
-                await VM.ActualizarGraficoGananciasAsync();
-                MainThread.BeginInvokeOnMainThread(async () =>
-                {
-                    await GananciasScroll.ScrollToAsync(
-                        GananciasScroll.Content,
-                        ScrollToPosition.End,
-                        animated: false
-                    );
-                });
+                // Scroll a los gráficos
+                await Task.WhenAll(
+                    ScrollToEndAsync(VentasScroll),
+                    ScrollToEndAsync(GastosScroll),
+                    ScrollToEndAsync(EncargosScroll),
+                    ScrollToEndAsync(GananciasScroll)
+                );
             }
             catch (Exception ex)
             {
@@ -255,257 +126,12 @@ namespace Mercader
             }
         }
 
-        #endregion
-
-        #region Métodos de Agrupación - Ventas
-
-        private List<(string Periodo, decimal Total)> AgruparVentasPorDia(List<Ventas> ventas)
+        private async Task ScrollToEndAsync(ScrollView scrollView)
         {
-            var hoy = DateTime.Today;
-            var ultimosDias = Enumerable.Range(0, 133)
-                .Select(i => hoy.AddDays(-i))
-                .Reverse()
-                .ToList();
-
-            return ultimosDias.Select(fecha =>
+            if (scrollView?.Content != null)
             {
-                var ventasDia = ventas.Where(v => v.Fecha.Date == fecha.Date);
-                var total = ventasDia.Sum(v => v.Precio * v.Cantidad);
-                return (fecha.ToString("dd/MM"), total);
-            }).ToList();
-        }
-
-        private List<(string Periodo, decimal Total)> AgruparVentasPorSemana(List<Ventas> ventas)
-        {
-            var hoy = DateTime.Today;
-            var ultimasSemanas = Enumerable.Range(0, 130)
-                .Select(i =>
-                {
-                    var inicioSemana = hoy.AddDays(-7 * i).AddDays(-(int)hoy.AddDays(-7 * i).DayOfWeek);
-                    var finSemana = inicioSemana.AddDays(6);
-                    return new { Inicio = inicioSemana, Fin = finSemana };
-                })
-                .Reverse()
-                .ToList();
-
-            return ultimasSemanas.Select(semana =>
-            {
-                var ventasSemana = ventas.Where(v => v.Fecha.Date >= semana.Inicio && v.Fecha.Date <= semana.Fin);
-                var total = ventasSemana.Sum(v => v.Precio * v.Cantidad);
-                return ($"{semana.Inicio:dd/MM}", total);
-            }).ToList();
-        }
-
-        private List<(string Periodo, decimal Total)> AgruparVentasPorMes(List<Ventas> ventas)
-        {
-            var hoy = DateTime.Today;
-            var ultimosMeses = Enumerable.Range(0, 130)
-                .Select(i => hoy.AddMonths(-i))
-                .Reverse()
-                .ToList();
-
-            return ultimosMeses.Select(mes =>
-            {
-                var ventasMes = ventas.Where(v => v.Fecha.Year == mes.Year && v.Fecha.Month == mes.Month);
-                var total = ventasMes.Sum(v => v.Precio * v.Cantidad);
-                return (mes.ToString("MMM", new CultureInfo("es-ES")), total);
-            }).ToList();
-        }
-
-        private List<(string Periodo, decimal Total)> AgruparVentasPorAnio(List<Ventas> ventas)
-        {
-            var hoy = DateTime.Today;
-            var ultimosAnios = Enumerable.Range(0, 10)
-                .Select(i => hoy.AddYears(-i))
-                .Reverse()
-                .ToList();
-
-            return ultimosAnios.Select(anio =>
-            {
-                var ventasAnio = ventas.Where(v => v.Fecha.Year == anio.Year);
-                var total = ventasAnio.Sum(v => v.Precio * v.Cantidad);
-                return (anio.Year.ToString(), total);
-            }).ToList();
-        }
-
-        #endregion
-
-        #region Métodos de Agrupación - Gastos
-
-        private List<(string Periodo, decimal Total)> AgruparGastosPorDia(List<Gasto> gastos)
-        {
-            var hoy = DateTime.Today;
-            var ultimosDias = Enumerable.Range(0, 133)
-                .Select(i => hoy.AddDays(-i))
-                .Reverse()
-                .ToList();
-
-            return ultimosDias.Select(fecha =>
-            {
-                var gastosDia = gastos.Where(g => g.Fecha.Date == fecha.Date);
-                var total = gastosDia.Sum(g => g.Monto * g.Cantidad);
-                return (fecha.ToString("dd/MM/yy"), total);
-            }).ToList();
-        }
-
-        private List<(string Periodo, decimal Total)> AgruparGastosPorSemana(List<Gasto> gastos)
-        {
-            var hoy = DateTime.Today;
-            var ultimasSemanas = Enumerable.Range(0, 130)
-                .Select(i =>
-                {
-                    var inicioSemana = hoy.AddDays(-7 * i).AddDays(-(int)hoy.AddDays(-7 * i).DayOfWeek);
-                    var finSemana = inicioSemana.AddDays(6);
-                    return new { Inicio = inicioSemana, Fin = finSemana };
-                })
-                .Reverse()
-                .ToList();
-
-            return ultimasSemanas.Select(semana =>
-            {
-                var gastosSemana = gastos.Where(g => g.Fecha.Date >= semana.Inicio && g.Fecha.Date <= semana.Fin);
-                var total = gastosSemana.Sum(g => g.Monto * g.Cantidad);
-                return ($"{semana.Inicio:dd/MM}", total);
-            }).ToList();
-        }
-
-        private List<(string Periodo, decimal Total)> AgruparGastosPorMes(List<Gasto> gastos)
-        {
-            var hoy = DateTime.Today;
-            var ultimosMeses = Enumerable.Range(0, 130)
-                .Select(i => hoy.AddMonths(-i))
-                .Reverse()
-                .ToList();
-
-            return ultimosMeses.Select(mes =>
-            {
-                var gastosMes = gastos.Where(g => g.Fecha.Year == mes.Year && g.Fecha.Month == mes.Month);
-                var total = gastosMes.Sum(g => g.Monto * g.Cantidad);
-                return (mes.ToString("MMM", new CultureInfo("es-ES")), total);
-            }).ToList();
-        }
-
-        private List<(string Periodo, decimal Total)> AgruparGastosPorAnio(List<Gasto> gastos)
-        {
-            var hoy = DateTime.Today;
-            var ultimosAnios = Enumerable.Range(0, 10)
-                .Select(i => hoy.AddYears(-i))
-                .Reverse()
-                .ToList();
-
-            return ultimosAnios.Select(anio =>
-            {
-                var gastosAnio = gastos.Where(g => g.Fecha.Year == anio.Year);
-                var total = gastosAnio.Sum(g => g.Monto * g.Cantidad);
-                return (anio.Year.ToString(), total);
-            }).ToList();
-        }
-
-        #endregion
-
-        #region Métodos de Agrupación - Encargos
-
-        private List<(string Periodo, decimal Total)> AgruparEncargosPorDia(List<Encargo> encargos)
-        {
-            var hoy = DateTime.Today;
-            var ultimosDias = Enumerable.Range(0, 133)
-                .Select(i => hoy.AddDays(-i))
-                .Reverse()
-                .ToList();
-
-            return ultimosDias.Select(fecha =>
-            {
-                var encargosDia = encargos.Where(e => e.Fecha.Date == fecha.Date);
-                var total = encargosDia.Sum(e => e.Precio * e.Cantidad);
-                return (fecha.ToString("dd/MM"), total);
-            }).ToList();
-        }
-
-        private List<(string Periodo, decimal Total)> AgruparEncargosPorSemana(List<Encargo> encargos)
-        {
-            var hoy = DateTime.Today;
-            var ultimasSemanas = Enumerable.Range(0, 130)
-                .Select(i =>
-                {
-                    var inicioSemana = hoy.AddDays(-7 * i).AddDays(-(int)hoy.AddDays(-7 * i).DayOfWeek);
-                    var finSemana = inicioSemana.AddDays(6);
-                    return new { Inicio = inicioSemana, Fin = finSemana };
-                })
-                .Reverse()
-                .ToList();
-
-            return ultimasSemanas.Select(semana =>
-            {
-                var encargosSemana = encargos.Where(e => e.Fecha.Date >= semana.Inicio && e.Fecha.Date <= semana.Fin);
-                var total = encargosSemana.Sum(e => e.Precio * e.Cantidad);
-                return ($"{semana.Inicio:dd/MM}", total);
-            }).ToList();
-        }
-
-        private List<(string Periodo, decimal Total)> AgruparEncargosPorMes(List<Encargo> encargos)
-        {
-            var hoy = DateTime.Today;
-            var ultimosMeses = Enumerable.Range(0, 130)
-                .Select(i => hoy.AddMonths(-i))
-                .Reverse()
-                .ToList();
-
-            return ultimosMeses.Select(mes =>
-            {
-                var encargosMes = encargos.Where(e => e.Fecha.Year == mes.Year && e.Fecha.Month == mes.Month);
-                var total = encargosMes.Sum(e => e.Precio * e.Cantidad);
-                return (mes.ToString("MMM", new CultureInfo("es-ES")), total);
-            }).ToList();
-        }
-
-        private List<(string Periodo, decimal Total)> AgruparEncargosPorAnio(List<Encargo> encargos)
-        {
-            var hoy = DateTime.Today;
-            var ultimosAnios = Enumerable.Range(0, 10)
-                .Select(i => hoy.AddYears(-i))
-                .Reverse()
-                .ToList();
-
-            return ultimosAnios.Select(anio =>
-            {
-                var encargosAnio = encargos.Where(e => e.Fecha.Year == anio.Year);
-                var total = encargosAnio.Sum(e => e.Precio * e.Cantidad);
-                return (anio.Year.ToString(), total);
-            }).ToList();
-        }
-
-        #endregion
-
-        #region Configuración de Gráficos
-
-        // ELIMINADO: ConfigurarGraficoVentas - Ahora usa MVVM via VM.ActualizarGraficoVentasAsync()
-        // private void ConfigurarGraficoVentas(List<(string Periodo, decimal Total)> datos, string periodo) { }
-
-        // ELIMINADO: ConfigurarGraficoGastos - Ahora usa MVVM via VM.ActualizarGraficoGastosAsync()
-        private void ConfigurarGraficoGastos(List<(string Periodo, decimal Total)> datos, string periodo) { }
-
-        // ELIMINADO: ConfigurarGraficoEncargos - Ahora usa MVVM via VM.ActualizarGraficoEncargosAsync()
-        private void ConfigurarGraficoEncargos(List<(string Periodo, decimal Total)> datos, string periodo) { }
-
-        // ELIMINADO: ConfigurarGraficoGanancias - Ahora usa MVVM via VM.ActualizarGraficoGananciasAsync()
-        private void ConfigurarGraficoGanancias(List<(string Periodo, decimal Total)> ventas,
-                                               List<(string Periodo, decimal Total)> gastos,
-                                               string periodo) { }
-
-        #endregion
-
-        #region Métodos Auxiliares
-
-        private string FormatearValorEntero(decimal valor)
-        {
-            if (Math.Abs(valor) >= 1000000)
-                return $"${Math.Round(valor / 1000000, 1)}M";
-            else if (Math.Abs(valor) >= 1000)
-                return $"${Math.Round(valor / 1000, 1)}K";
-            else if (valor == 0)
-                return "$0";
-            else
-                return $"${Math.Round(valor)}";
+                await scrollView.ScrollToAsync(scrollView.Content, ScrollToPosition.End, animated: false);
+            }
         }
 
         #endregion
@@ -514,48 +140,31 @@ namespace Mercader
 
         private async void OnExportarAExcelClicked(object sender, EventArgs e)
         {
+            var botonExportar = sender as Button;
+            if (botonExportar != null)
+            {
+                botonExportar.IsEnabled = false;
+                botonExportar.Text = "⏳ Exportando...";
+            }
+
             try
             {
-                // Deshabilitar el botón temporalmente para evitar múltiples clicks
-                var exportData = VM.CrearExportDto();
-                var botonExportar = sender as Button;
-                if (botonExportar != null)
-                {
-                    botonExportar.IsEnabled = false;
-                    botonExportar.Text = "⏳ Exportando...";
-                }
+                await CargarDatosAsync();
 
                 string carpetaPersonalizada = Path.Combine(FileSystem.Current.AppDataDirectory, "Exportaciones");
-
-                if (!Directory.Exists(carpetaPersonalizada))
-                {
-                    Directory.CreateDirectory(carpetaPersonalizada);
-                }
+                Directory.CreateDirectory(carpetaPersonalizada);
 
                 string nombreArchivo = $"Balance_Financiero_{DateTime.Now:yyyyMMdd_HHmmss}.xlsx";
                 string rutaArchivo = Path.Combine(carpetaPersonalizada, nombreArchivo);
 
-                // Asegurar que los datos estén actualizados
-                await CargarDatosAsync();
-
-                // Exportar con el nuevo formato
+                var exportData = _viewModel.CrearExportDto();
                 await ExportExcel.ExportarBalanceAExcelAsync(exportData, rutaArchivo);
 
                 var mensaje = $"📊 ¡Reporte generado exitosamente!\n\n" +
                              $"📁 Archivo: {nombreArchivo}\n" +
-                             $"📍 Ubicación: {carpetaPersonalizada}\n\n" +
-                             $"✨ El reporte incluye:\n" +
-                             $"• Resumen ejecutivo con métricas clave\n" +
-                             $"• Análisis mensual detallado\n" +
-                             $"• Registros completos por categoría\n" +
-                             $"• Datos listos para gráficos";
+                             $"📍 Ubicación: {carpetaPersonalizada}";
 
-                var respuesta = await DisplayAlert(
-                    "✅ Exportación Completada",
-                    mensaje,
-                    "📂 Abrir archivo",
-                    "✋ Cerrar"
-                );
+                var respuesta = await DisplayAlert("✅ Exportación Completada", mensaje, "📂 Abrir archivo", "✋ Cerrar");
 
                 if (respuesta)
                 {
@@ -564,17 +173,11 @@ namespace Mercader
             }
             catch (Exception ex)
             {
-                await DisplayAlert(
-                    "❌ Error en la exportación",
-                    $"No se pudo generar el reporte Excel:\n\n{ex.Message}",
-                    "Entendido"
-                );
-                Console.WriteLine($"Error detallado en exportación: {ex}");
+                await DisplayAlert("❌ Error en la exportación", $"No se pudo generar el reporte Excel:\n\n{ex.Message}", "Entendido");
+                Debug.WriteLine($"Error detallado en exportación: {ex}");
             }
             finally
             {
-                // Rehabilitar el botón
-                var botonExportar = sender as Button;
                 if (botonExportar != null)
                 {
                     botonExportar.IsEnabled = true;
@@ -595,23 +198,15 @@ namespace Mercader
 
                 if (DeviceInfo.Platform == DevicePlatform.Android)
                 {
-                    await Launcher.OpenAsync(new OpenFileRequest
-                    {
-                        File = new ReadOnlyFile(rutaArchivo)
-                    });
+                    await Launcher.OpenAsync(new OpenFileRequest { File = new ReadOnlyFile(rutaArchivo) });
                 }
                 else if (DeviceInfo.Platform == DevicePlatform.iOS)
                 {
-                    await DisplayAlert("Información",
-                        $"El archivo ha sido guardado en:\n{rutaCarpeta}\n\nPuedes acceder a él mediante tu aplicación de archivos.",
-                        "OK");
+                    await DisplayAlert("Información", $"El archivo ha sido guardado en:\n{rutaCarpeta}", "OK");
                 }
                 else
                 {
-                    await Launcher.OpenAsync(new OpenFileRequest
-                    {
-                        File = new ReadOnlyFile(rutaCarpeta)
-                    });
+                    await Launcher.OpenAsync(new OpenFileRequest { File = new ReadOnlyFile(rutaCarpeta) });
                 }
             }
             catch (Exception ex)
