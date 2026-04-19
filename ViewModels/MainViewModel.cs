@@ -1,4 +1,6 @@
 using System.Globalization;
+using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
 using Mercader.Models;
 using Mercader.Models.Domain;
 using Mercader.Services.Interfaces;
@@ -7,12 +9,17 @@ using System.Collections.ObjectModel;
 
 namespace Mercader.ViewModels
 {
-    public class MainViewModel : BaseViewModel
+    public partial class MainViewModel : BaseViewModel
     {
         // ===== Colecciones de datos =====
-        public ObservableCollection<Ventas> Ventas { get; } = new();
-        public ObservableCollection<Gasto> Gastos { get; } = new();
-        public ObservableCollection<Encargo> Encargos { get; } = new();
+        [ObservableProperty]
+        private ObservableCollection<Ventas> _ventas = new();
+
+        [ObservableProperty]
+        private ObservableCollection<Gasto> _gastos = new();
+
+        [ObservableProperty]
+        private ObservableCollection<Encargo> _encargos = new();
 
         // ===== Servicios =====
         private readonly IDataRepository _dataRepository;
@@ -20,85 +27,42 @@ namespace Mercader.ViewModels
         private readonly IBalanceCalculatorService _balanceService;
 
         // ===== Gráficos (bindeables) =====
+        [ObservableProperty]
         private Chart? _encargosChart;
-        public Chart? EncargosChart
-        {
-            get => _encargosChart;
-            private set => SetProperty(ref _encargosChart, value);
-        }
 
+        [ObservableProperty]
         private Chart? _ventasChart;
-        public Chart? VentasChart
-        {
-            get => _ventasChart;
-            private set => SetProperty(ref _ventasChart, value);
-        }
 
+        [ObservableProperty]
         private Chart? _gastosChart;
-        public Chart? GastosChart
-        {
-            get => _gastosChart;
-            private set => SetProperty(ref _gastosChart, value);
-        }
 
+        [ObservableProperty]
         private Chart? _gananciasChart;
-        public Chart? GananciasChart
-        {
-            get => _gananciasChart;
-            private set => SetProperty(ref _gananciasChart, value);
-        }
 
         // ===== Resumen financiero (bindeables) =====
+        [ObservableProperty]
         private string _totalVentas = "$0";
-        public string TotalVentas
-        {
-            get => _totalVentas;
-            private set => SetProperty(ref _totalVentas, value);
-        }
 
+        [ObservableProperty]
         private string _totalGastos = "$0";
-        public string TotalGastos
-        {
-            get => _totalGastos;
-            private set => SetProperty(ref _totalGastos, value);
-        }
 
+        [ObservableProperty]
         private string _totalEncargos = "$0";
-        public string TotalEncargos
-        {
-            get => _totalEncargos;
-            private set => SetProperty(ref _totalEncargos, value);
-        }
 
+        [ObservableProperty]
         private string _ganancias = "$0";
-        public string Ganancias
-        {
-            get => _ganancias;
-            private set => SetProperty(ref _ganancias, value);
-        }
 
+        [ObservableProperty]
         private string _margen = "0%";
-        public string Margen
-        {
-            get => _margen;
-            private set => SetProperty(ref _margen, value);
-        }
 
         // ===== Selector de período =====
         public List<string> Periodos { get; } = new() { "Días", "Semanas", "Meses", "Años" };
 
+        [ObservableProperty]
         private string _periodoSeleccionado = "Meses";
-        public string PeriodoSeleccionado
-        {
-            get => _periodoSeleccionado;
-            set
-            {
-                if (SetProperty(ref _periodoSeleccionado, value))
-                {
-                    Recalcular();
-                }
-            }
-        }
+
+        [ObservableProperty]
+        private bool _isBusy;
 
         // ===== Constructor =====
         public MainViewModel(
@@ -110,16 +74,21 @@ namespace Mercader.ViewModels
             _chartService = chartService;
             _balanceService = balanceService;
 
-            // Recalcular cuando cambian las colecciones
+            // Recalcular cuando cambian las colecciones (usando evento del toolkit)
             Ventas.CollectionChanged += (_, _) => Recalcular();
             Gastos.CollectionChanged += (_, _) => Recalcular();
             Encargos.CollectionChanged += (_, _) => Recalcular();
         }
 
-        /// <summary>
-        /// Recalcula todos los totales, datos por período y gráficos.
-        /// </summary>
-        public void Recalcular()
+        partial void OnPeriodoSeleccionadoChanged(string value)
+        {
+            Recalcular();
+        }
+
+        // ===== Commands =====
+
+        [RelayCommand]
+        private void Recalcular()
         {
             // Calcular totales usando BalanceCalculatorService
             var totalVentas = _balanceService.CalcularTotalVentas(Ventas, PeriodoSeleccionado);
@@ -147,14 +116,124 @@ namespace Mercader.ViewModels
             GananciasChart = _chartService.CrearGraficoGanancias(ventasPorPeriodo, gastosPorPeriodo);
         }
 
-        /// <summary>
-        /// Actualiza los gráficos (método público para compatibilidad).
-        /// </summary>
-        public Task ActualizarGraficosAsync() => Task.CompletedTask;
+        // ===== CRUD Commands =====
 
-        /// <summary>
-        /// Crea el DTO para exportar a Excel.
-        /// </summary>
+        [RelayCommand]
+        private async Task GuardarVentaAsync(Ventas venta)
+        {
+            IsBusy = true;
+            try
+            {
+                await _dataRepository.SaveVentasAsync(venta);
+                await CargarDatosCommand.ExecuteAsync(null);
+            }
+            finally
+            {
+                IsBusy = false;
+            }
+        }
+
+        [RelayCommand]
+        private async Task EliminarVentaAsync(Ventas venta)
+        {
+            IsBusy = true;
+            try
+            {
+                await _dataRepository.DeleteVentaAsync(venta);
+                Ventas.Remove(venta);
+            }
+            finally
+            {
+                IsBusy = false;
+            }
+        }
+
+        [RelayCommand]
+        private async Task GuardarGastoAsync(Gasto gasto)
+        {
+            IsBusy = true;
+            try
+            {
+                await _dataRepository.SaveGastoAsync(gasto);
+                await CargarDatosCommand.ExecuteAsync(null);
+            }
+            finally
+            {
+                IsBusy = false;
+            }
+        }
+
+        [RelayCommand]
+        private async Task EliminarGastoAsync(Gasto gasto)
+        {
+            IsBusy = true;
+            try
+            {
+                await _dataRepository.DeleteGastoAsync(gasto);
+                Gastos.Remove(gasto);
+            }
+            finally
+            {
+                IsBusy = false;
+            }
+        }
+
+        [RelayCommand]
+        private async Task GuardarEncargoAsync(Encargo encargo)
+        {
+            IsBusy = true;
+            try
+            {
+                await _dataRepository.SaveEncargoAsync(encargo);
+                await CargarDatosCommand.ExecuteAsync(null);
+            }
+            finally
+            {
+                IsBusy = false;
+            }
+        }
+
+        [RelayCommand]
+        private async Task EliminarEncargoAsync(Encargo encargo)
+        {
+            IsBusy = true;
+            try
+            {
+                await _dataRepository.DeleteEncargoAsync(encargo);
+                Encargos.Remove(encargo);
+            }
+            finally
+            {
+                IsBusy = false;
+            }
+        }
+
+        // ===== Carga de datos =====
+        [RelayCommand]
+        private async Task CargarDatosAsync()
+        {
+            IsBusy = true;
+            try
+            {
+                var ventas = await _dataRepository.GetVentasAsync();
+                var gastos = await _dataRepository.GetGastosAsync();
+                var encargos = await _dataRepository.GetEncargosAsync();
+
+                Ventas = new ObservableCollection<Ventas>(ventas);
+                Gastos = new ObservableCollection<Gasto>(gastos);
+                Encargos = new ObservableCollection<Encargo>(encargos);
+
+                Recalcular();
+            }
+            finally
+            {
+                IsBusy = false;
+            }
+        }
+
+        // ===== Export =====
+        // No puede ser [RelayCommand] porque devuelve valor (no void/Task)
+        // El método público queda accesible para el code-behind
         public BalanceExportDto CrearExportDto()
         {
             return new BalanceExportDto

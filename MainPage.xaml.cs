@@ -30,25 +30,19 @@ namespace Mercader
         {
             try
             {
-                var encargos = await _repo.GetEncargosAsync();
-                var gastos = await _repo.GetGastosAsync();
-                var ventas = await _repo.GetVentasAsync();
+                // Usar el Command del ViewModel (CommunityToolkit.Mvvm)
+                if (_viewModel.CargarDatosCommand.CanExecute(null))
+                {
+                    await _viewModel.CargarDatosCommand.ExecuteAsync(null);
+                }
 
-                // Cargar datos al ViewModel (MVVM puro)
-                _viewModel.Encargos.Clear();
-                foreach (var e in encargos) _viewModel.Encargos.Add(e);
-
-                _viewModel.Gastos.Clear();
-                foreach (var g in gastos) _viewModel.Gastos.Add(g);
-
-                _viewModel.Ventas.Clear();
-                foreach (var v in ventas) _viewModel.Ventas.Add(v);
-
-                // El ViewModel usa BalanceCalculatorService internamente
-                _viewModel.Recalcular();
-
-                // Actualizar gráficos usando los datos ya calculados por el VM
-                await ActualizarGraficosAsync();
+                // Scroll a los gráficos después de cargar
+                await Task.WhenAll(
+                    ScrollToEndAsync(VentasScroll),
+                    ScrollToEndAsync(GastosScroll),
+                    ScrollToEndAsync(EncargosScroll),
+                    ScrollToEndAsync(GananciasScroll)
+                );
             }
             catch (Exception ex)
             {
@@ -104,27 +98,7 @@ namespace Mercader
         #endregion
 
         #region Gestión de Gráficos
-
-        private async Task ActualizarGraficosAsync()
-        {
-            try
-            {
-                // Los datos ya están agrupados por el BalanceCalculatorService en VM.Recalcular()
-                await _viewModel.ActualizarGraficosAsync();
-
-                // Scroll a los gráficos
-                await Task.WhenAll(
-                    ScrollToEndAsync(VentasScroll),
-                    ScrollToEndAsync(GastosScroll),
-                    ScrollToEndAsync(EncargosScroll),
-                    ScrollToEndAsync(GananciasScroll)
-                );
-            }
-            catch (Exception ex)
-            {
-                Debug.WriteLine($"Error al actualizar gráficos: {ex}");
-            }
-        }
+        // Los gráficos ahora se actualizan automáticamente en el ViewModel vía RecalcularCommand
 
         private async Task ScrollToEndAsync(ScrollView scrollView)
         {

@@ -1,28 +1,16 @@
-﻿using System.ComponentModel;
-using System.Runtime.CompilerServices;
+﻿using CommunityToolkit.Mvvm.ComponentModel;
 
 namespace Mercader.ViewModels
 {
-    public abstract class BaseViewModel : INotifyPropertyChanged
+    /// <summary>
+    /// BaseViewModel usando CommunityToolkit.Mvvm.
+    /// Provee INotifyPropertyChanged y [ObservableProperty] automaticamente.
+    /// </summary>
+    public abstract class BaseViewModel : ObservableObject
     {
-        public event PropertyChangedEventHandler? PropertyChanged;
-
-        protected void OnPropertyChanged([CallerMemberName] string? name = null)
-        {
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
-        }
-
-        protected bool SetProperty<T>(
-            ref T backingStore,
-            T value,
-            [CallerMemberName] string? propertyName = null)
-        {
-            if (EqualityComparer<T>.Default.Equals(backingStore, value))
-                return false;
-
-            backingStore = value;
-            OnPropertyChanged(propertyName);
-            return true;
-        }
+        // ObservableObject ya provee:
+        // - SetProperty<T>(ref T field, T value) heredado
+        // - OnPropertyChanged(string?) heredado
+        // - SetProperty<T>(T oldValue, T newValue, Action<T> callback)
     }
 }

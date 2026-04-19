@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
 	<PropertyGroup>
 		<TargetFrameworks>net8.0-android;net8.0-ios</TargetFrameworks>
@@ -87,6 +87,7 @@
 	</ItemGroup>
 
 	<ItemGroup>
+		<PackageReference Include="CommunityToolkit.Mvvm" Version="8.2.2" />
 		<PackageReference Include="EPPlus" Version="7.3.2" />
 		<PackageReference Include="Microcharts.Maui" Version="1.0.0" />
 		<PackageReference Include="Microsoft.Data.Sqlite.Core" Version="8.0.5" />
