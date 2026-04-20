@@ -2,8 +2,9 @@ using System.Globalization;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Mercader.Models;
-using Mercader.Models.Domain;
+using Mercader.Domain.Entities;
 using Mercader.Services.Interfaces;
+using Mercader.Data.Interfaces;
 using Microcharts;
 using System.Collections.ObjectModel;
 

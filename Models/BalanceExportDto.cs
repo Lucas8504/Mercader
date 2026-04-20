@@ -1,5 +1,5 @@
 using System.Collections.Generic;
-using Mercader.Models.Domain;
+using Mercader.Domain.Entities;
 
 namespace Mercader.Models
 {

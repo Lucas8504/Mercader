@@ -1,6 +1,6 @@
 using SQLite;
 
-namespace Mercader.Models.Domain
+namespace Mercader.Domain.Entities
 {
     [Table("Gastos")]
     public class Gasto : IFecha

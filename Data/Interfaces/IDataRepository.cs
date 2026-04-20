@@ -1,6 +1,6 @@
-using Mercader.Models.Domain;
+using Mercader.Domain.Entities;
 
-namespace Mercader.Services.Interfaces
+namespace Mercader.Data.Interfaces
 {
     /// <summary>
     /// Repositorio de datos para la base de datos SQLite.

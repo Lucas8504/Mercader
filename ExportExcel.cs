@@ -1,11 +1,11 @@
-﻿using OfficeOpenXml;
+using OfficeOpenXml;
 using OfficeOpenXml.Style;
 using System.Drawing;
 using System.Globalization;
 using OfficeOpenXml.Drawing.Chart;
 using Color = System.Drawing.Color;
 using Mercader.Models;
-using Mercader.Models.Domain;
+using Mercader.Domain.Entities;
 using Mercader.ViewModels;
 
 namespace Mercader

@@ -1,8 +1,8 @@
 using SQLite;
-using Mercader.Models.Domain;
-using Mercader.Services.Interfaces;
+using Mercader.Domain.Entities;
+using Mercader.Data.Interfaces;
 
-namespace Mercader
+namespace Mercader.Data
 {
     /// <summary>
     /// Implementación de IDataRepository usando SQLite.

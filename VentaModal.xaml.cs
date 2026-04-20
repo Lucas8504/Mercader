@@ -1,5 +1,5 @@
 using System.Globalization;
-using Mercader.Models.Domain;
+using Mercader.Domain.Entities;
 #if ANDROID
 using Mercader.Platforms.Android;
 #endif

@@ -1,9 +1,11 @@
-﻿using Mercader.ViewModels;
+using Mercader.ViewModels;
 using Mercader.Services.Interfaces;
+using Mercader.Data.Interfaces;
+using Mercader.Services.Calculators;
+using Mercader.Services.Charts;
 using Microcharts.Maui;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using Mercader.Services;
 
 namespace Mercader
 {
@@ -21,9 +23,11 @@ namespace Mercader
                     fonts.AddFont("OpenSans-Semibold.ttf", "OpenSansSemibold");
                 });
             
+            // Data
+            builder.Services.AddSingleton<Data.DataRepository>();
+            builder.Services.AddSingleton<IDataRepository>(sp => sp.GetRequiredService<Data.DataRepository>());
+
             // Services
-            builder.Services.AddSingleton<DataRepository>();
-            builder.Services.AddSingleton<IDataRepository>(sp => sp.GetRequiredService<DataRepository>());
             builder.Services.AddSingleton<IChartService, ChartService>();
             builder.Services.AddSingleton<IBalanceCalculatorService, BalanceCalculatorService>();
 

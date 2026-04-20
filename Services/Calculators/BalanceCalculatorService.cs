@@ -1,8 +1,8 @@
 using System.Globalization;
-using Mercader.Models.Domain;
-using Mercader.Services.Interfaces;
+using Mercader.Domain.Entities;
+using Mercader.Data.Interfaces;
 
-namespace Mercader.Services
+namespace Mercader.Services.Calculators
 {
     /// <summary>
     /// Implementación de IBalanceCalculatorService para cálculos de balance.

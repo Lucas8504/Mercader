@@ -1,4 +1,4 @@
-namespace Mercader.Models.Domain
+namespace Mercader.Domain.Entities
 {
     /// <summary>
     /// Interface para entidades que tienen fecha.

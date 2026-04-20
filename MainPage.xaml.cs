@@ -1,7 +1,7 @@
 using Microcharts.Maui;
 using Mercader.ViewModels;
 using Mercader.Models;
-using Mercader.Models.Domain;
+using Mercader.Domain.Entities;
 using Microsoft.Maui.Platform;
 using System.Diagnostics;
 

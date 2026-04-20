@@ -5,7 +5,7 @@ using Microcharts;
 using SkiaSharp;
 using Mercader.Services.Interfaces;
 
-namespace Mercader.Services
+namespace Mercader.Services.Charts
 {
     public class ChartService : IChartService
     {

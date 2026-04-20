@@ -1,5 +1,4 @@
-using Mercader.Models.Domain;
-using static Microsoft.IO.RecyclableMemoryStreamManager;
+using Mercader.Domain.Entities;
 
 namespace Mercader;
 

@@ -1,4 +1,4 @@
-﻿using Mercader.Models.Domain;
+using Mercader.Domain.Entities;
 
 namespace Mercader;
 
