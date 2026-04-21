@@ -1,6 +1,7 @@
 using Microsoft.Maui.Controls;
 using Microsoft.Maui;
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Mercader.Domain.Entities;
 
@@ -46,11 +47,15 @@ namespace Mercader
         }
 
         /// <summary>
-        /// Carga la lista de encargos desde la base de datos local.
+        /// <returns>Carga la lista de encargos desde la base de datos local.</returns>
         /// </summary>
         private async Task CargarEncargos()
         {
             var encargos = await _repo.GetEncargosAsync();
+
+            // Limpiar y forzar refresh
+            EncargosCollectionView.ItemsSource = null;
+            await Task.Delay(10);
 
             if (encargos?.Count > 0)
             {
@@ -59,6 +64,7 @@ namespace Mercader
             }
             else
             {
+                EncargosCollectionView.ItemsSource = new List<Encargo>();
                 Console.WriteLine("ℹ️ No se encontraron encargos en la base de datos");
             }
         }

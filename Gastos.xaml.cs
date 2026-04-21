@@ -1,5 +1,6 @@
 using Microsoft.Maui.Controls;
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Mercader.Domain.Entities;
 
@@ -37,14 +38,16 @@ namespace Mercader
         }
 
         /// <summary>
-        /// Carga los gastos desde la base de datos
+        /// <returns>Carga los gastos desde la base de datos</returns>
         /// </summary>
-        private async Task CargarGastos()
+private async Task CargarGastos()
         {
-
             var gastos = await _repo.GetGastosAsync();
            
-
+            // Limpiar y forzar refresh
+            GastosCollectionView.ItemsSource = null;
+            await Task.Delay(10);
+            
             // Verificar si hay datos
             if (gastos?.Count > 0)
                 {
@@ -53,9 +56,10 @@ namespace Mercader
                 }
                 else
                 {
+                    GastosCollectionView.ItemsSource = new List<Gasto>();
                     Console.WriteLine("ℹ️ No se encontraron gastos en la base de datos");
                 }
-          
+           
         }
 
        

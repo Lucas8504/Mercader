@@ -1,5 +1,6 @@
 using Microsoft.Maui.Controls;
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Mercader.Domain.Entities;
 
@@ -37,7 +38,7 @@ namespace Mercader
         }
 
         /// <summary>
-        /// Carga las ventas desde la base de datos
+        /// <returns>Carga las ventas desde la base de datos</returns>
         /// </summary>
         private async Task CargarVentas()
         {
@@ -45,6 +46,10 @@ namespace Mercader
             {
                 var ventas = await _repo.GetVentasAsync();
 
+                // Limpiar y forzar refresh
+                VentasCollectionView.ItemsSource = null;
+                await Task.Delay(10); // Pequeño delay para UI
+                
                 // Verificar si hay datos
                 if (ventas?.Count > 0)
                 {
@@ -53,6 +58,7 @@ namespace Mercader
                 }
                 else
                 {
+                    VentasCollectionView.ItemsSource = new List<Ventas>();
                     Console.WriteLine("ℹ️ No se encontraron ventas en la base de datos");
                 }
             }
@@ -191,6 +197,9 @@ namespace Mercader
                 {
                     _isLoading = true;
 
+                    // Debug
+                    System.Diagnostics.Debug.WriteLine($"[DEBUG] EliminarVenta: Id={venta.Id}, Desc={venta.Descripcion}");
+
                     // Eliminar de la base de datos
                     await _repo.DeleteVentaAsync(venta);
 
@@ -198,8 +207,9 @@ namespace Mercader
                     await DisplayAlert("✅ Éxito",
                         "La venta se eliminó correctamente", "OK");
 
-                    // Recargar la lista
+                    // Debug - recargar y verificar
                     await CargarVentas();
+                    System.Diagnostics.Debug.WriteLine($"[DEBUG] Después de recargar");
                 }
             }
             catch (Exception ex)

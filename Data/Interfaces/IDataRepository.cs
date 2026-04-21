@@ -30,5 +30,9 @@ namespace Mercader.Data.Interfaces
         // ===== CONSULTAS ESPECÍFICAS =====
         Task<List<Ventas>> GetVentasUltimos6MesesAsync();
         Task<List<Gasto>> GetGastosUltimos6MesesAsync();
+
+        // ===== MÉTODOS GENÉRICOS (AUDITORÍA) =====
+        Task<List<T>> GetAllAsync<T>() where T : BaseEntity, new();
+        Task<List<T>> GetDeletedAsync<T>() where T : BaseEntity, new();
     }
 }

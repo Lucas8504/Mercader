@@ -3,11 +3,8 @@ using SQLite;
 namespace Mercader.Domain.Entities
 {
     [Table("Gastos")]
-    public class Gasto : IFecha
+    public class Gasto : BaseEntity, IFecha
     {
-        [PrimaryKey, AutoIncrement, Unique]
-        public int Id { get; set; }
-
         [Column("Descripcion")]
         public string? Descripcion { get; set; }
 

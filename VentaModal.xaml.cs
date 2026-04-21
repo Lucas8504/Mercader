@@ -1,5 +1,6 @@
 using System.Globalization;
 using Mercader.Domain.Entities;
+using Mercader.Services;
 #if ANDROID
 using Mercader.Platforms.Android;
 #endif
@@ -29,29 +30,44 @@ public partial class VentaModal : ContentPage
 
     private async void OnAgregarVentaClicked(object sender, EventArgs e)
     {
-        if (!ValidateV_Entries())
+        // Validar usando ValidationService
+        var descValidation = ValidationService.ValidateRequired(DescripcionV_Entry.Text, "una descripción");
+        if (!descValidation.IsValid)
+        {
+            await DisplayAlert("Error", descValidation.ErrorMessage, "OK");
             return;
+        }
 
+        var precioResult = ValidationService.ParseDecimal(PrecioEntry.Text);
+        if (!precioResult.Success)
+        {
+            await DisplayAlert("Error", precioResult.Error ?? "Precio inválido", "OK");
+            return;
+        }
+
+        var cantidadResult = ValidationService.ParseDecimal(CantidadEntry.Text);
+        if (!cantidadResult.Success)
+        {
+            await DisplayAlert("Error", cantidadResult.Error ?? "Cantidad inválida", "OK");
+            return;
+        }
 
         try
         {
             Venta = new Ventas
             {
-                Precio = decimal.Parse(PrecioEntry!.Text!, CultureInfo.InvariantCulture),
-                Cantidad = decimal.Parse(CantidadEntry!.Text!, CultureInfo.InvariantCulture),
-                Descripcion = DescripcionV_Entry!.Text!,
+                Precio = precioResult.Value ?? 0,
+                Cantidad = cantidadResult.Value ?? 0,
+                Descripcion = DescripcionV_Entry.Text,
                 Fecha = DateTime.Now
             };
-            
-        }
-        catch (FormatException)
-        {
-            await DisplayAlert("Error", "Por favor, ingrese valores num�ricos v�lidos", "OK");
         }
         catch (Exception ex)
         {
-            await DisplayAlert("Error", $"Error al agregar venta: {ex.Message}", "OK");
+            await DisplayAlert("Error", $"Error al crear venta: {ex.Message}", "OK");
+            return;
         }
+        
         await SaveVentaAsync();
     }
 
@@ -66,30 +82,6 @@ public partial class VentaModal : ContentPage
 
         await Navigation.PopModalAsync();
     }
-
-    private bool ValidateV_Entries()
-    {
-        
-        if (string.IsNullOrWhiteSpace(DescripcionV_Entry.Text))
-        {
-            DisplayAlert("Error", "Por favor, ingrese una descripci�n", "OK");
-            return false;
-        }
-        if (string.IsNullOrWhiteSpace(PrecioEntry.Text))
-        {
-            DisplayAlert("Error", "Por favor, ingrese un precio", "OK");
-            return false;
-        }
-        if (string.IsNullOrWhiteSpace(CantidadEntry.Text))
-        {
-            DisplayAlert("Error", "Por favor, ingrese una cantidad", "OK");
-            return false;
-        }
-
-        return true;
-    }
-
-
 
     private async void Cancelar(object sender, EventArgs e)
     {
