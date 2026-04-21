@@ -1,0 +1,145 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage
+    x:Class="Mercader.Configuracion"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    Title="⚙️ Configuración"
+    BackgroundColor="#1C1C1E">
+
+    <ScrollView>
+        <VerticalStackLayout Padding="20" Spacing="15">
+
+            <!-- Sección: General -->
+            <Label
+                Text="General"
+                FontSize="18"
+                FontAttributes="Bold"
+                TextColor="#FFFFFF" />
+
+            <Frame Padding="15" BackgroundColor="#2C2C2E">
+                <VerticalStackLayout Spacing="10">
+                    <!-- Moneda -->
+                    <Grid ColumnDefinitions="*, Auto">
+                        <VerticalStackLayout Grid.Column="0">
+                            <Label Text="Moneda" FontSize="16" TextColor="#FFFFFF" />
+                            <Label Text="Símbolo de moneda para los precios" FontSize="12" TextColor="#8E8E93" />
+                        </VerticalStackLayout>
+                        <Picker
+                            x:Name="MonedaPicker"
+                            Grid.Column="1"
+                            WidthRequest="100"
+                            SelectedIndex="0"
+                            TextColor="#FFFFFF">
+                            <Picker.ItemsSource>
+                                <x:Array Type="{x:Type x:String}">
+                                    <x:String>$</x:String>
+                                    <x:String>USD</x:String>
+                                    <x:String>€</x:String>
+                                    <x:String>R$</x:String>
+                                </x:Array>
+                            </Picker.ItemsSource>
+                        </Picker>
+                    </Grid>
+                </VerticalStackLayout>
+            </Frame>
+
+            <!-- Sección: Notificaciones -->
+            <Label
+                Text="Notificaciones"
+                FontSize="18"
+                FontAttributes="Bold"
+                TextColor="#FFFFFF" />
+
+            <Frame Padding="15" BackgroundColor="#2C2C2E">
+                <VerticalStackLayout Spacing="10">
+                    <!-- Recordatorio de entregas -->
+                    <Grid ColumnDefinitions="*, Auto">
+                        <VerticalStackLayout Grid.Column="0">
+                            <Label Text="Recordatorio de entregas" FontSize="16" TextColor="#FFFFFF" />
+                            <Label Text="Notificar encargos pendientes" FontSize="12" TextColor="#8E8E93" />
+                        </VerticalStackLayout>
+                        <Switch x:Name="NotificacionEntregasSwitch" Grid.Column="1" Toggled="OnNotificacionEntregasToggled" />
+                    </Grid>
+
+                    <!-- Tiempo de recordatorio -->
+                    <Grid ColumnDefinitions="*, Auto" x:Name="TiempoRecordatorioGrid" IsVisible="False">
+                        <VerticalStackLayout Grid.Column="0">
+                            <Label Text="Recordar antes" FontSize="14" TextColor="#8E8E93" />
+                        </VerticalStackLayout>
+                        <Picker
+                            x:Name="TiempoRecordatorioPicker"
+                            Grid.Column="1"
+                            WidthRequest="140"
+                            SelectedIndex="1"
+                            TextColor="#FFFFFF"
+                            SelectedIndexChanged="OnTiempoRecordatorioChanged">
+                            <Picker.ItemsSource>
+                                <x:Array Type="{x:Type x:String}">
+                                    <x:String>El día de entrega</x:String>
+                                    <x:String>1 hora antes</x:String>
+                                    <x:String>2 horas antes</x:String>
+                                    <x:String>1 día antes</x:String>
+                                    <x:String>2 días antes</x:String>
+                                </x:Array>
+                            </Picker.ItemsSource>
+                        </Picker>
+                    </Grid>
+
+                    <BoxView HeightRequest="0.5" Color="#38383A" />
+                </VerticalStackLayout>
+            </Frame>
+
+            <!-- Sección: Datos -->
+            <Label
+                Text="Datos"
+                FontSize="18"
+                FontAttributes="Bold"
+                TextColor="#FFFFFF" />
+
+            <Frame Padding="15" BackgroundColor="#2C2C2E">
+                <VerticalStackLayout Spacing="10">
+                    <!-- Exportar datos -->
+                    <Button
+                        Text="📤 Exportar Datos"
+                        BackgroundColor="#0A84FF"
+                        TextColor="White"
+                        Clicked="OnExportarClicked" />
+
+                    <BoxView HeightRequest="0.5" Color="#38383A" />
+
+                    <!-- Importar datos -->
+                    <Button
+                        Text="📥 Importar Datos"
+                        BackgroundColor="#5E5CE6"
+                        TextColor="White"
+                        Clicked="OnImportarClicked" />
+
+                    <BoxView HeightRequest="0.5" Color="#38383A" />
+
+                    <!-- Limpiar datos -->
+                    <Button
+                        Text="🗑️ Limpiar Todos los Datos"
+                        BackgroundColor="#FF453A"
+                        TextColor="White"
+                        Clicked="OnLimpiarDatosClicked" />
+                </VerticalStackLayout>
+            </Frame>
+
+            <!-- Sección: Acerca de -->
+            <Label
+                Text="Acerca de"
+                FontSize="18"
+                FontAttributes="Bold"
+                TextColor="#FFFFFF" />
+
+            <Frame Padding="15" BackgroundColor="#2C2C2E">
+                <VerticalStackLayout Spacing="5">
+                    <Label Text="Mercader" FontSize="16" FontAttributes="Bold" TextColor="#FFFFFF" />
+                    <Label Text="Versión 1.0.0" FontSize="14" TextColor="#8E8E93" />
+                    <Label Text="Gestión de ventas, gastos y encargos" FontSize="12" TextColor="#8E8E93" />
+                </VerticalStackLayout>
+            </Frame>
+
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>

@@ -88,5 +88,6 @@
     <ShellContent Title="Gastos" Icon="💸" ContentTemplate="{DataTemplate local:Gastos}" />
     <ShellContent Title="Encargos" Icon="📦" ContentTemplate="{DataTemplate local:Encargos}" />
     <ShellContent Title="Ventas" Icon="💵​" ContentTemplate="{DataTemplate local:Venta}" />
+    <ShellContent Title="Configuración" Icon="⚙️" ContentTemplate="{DataTemplate local:Configuracion}" />
 
 </Shell>

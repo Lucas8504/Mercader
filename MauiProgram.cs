@@ -35,6 +35,7 @@ namespace Mercader
             // Services
             builder.Services.AddSingleton<IChartService, ChartService>();
             builder.Services.AddSingleton<IBalanceCalculatorService, BalanceCalculatorService>();
+            builder.Services.AddSingleton<INotificationService, NotificationService>();
 
             // Shell
             builder.Services.AddSingleton<AppShell>();
@@ -46,6 +47,7 @@ namespace Mercader
             builder.Services.AddTransient<DetalleEncargo>();
             builder.Services.AddTransient<EditarEncargoPage>();
             builder.Services.AddTransient<Venta>();
+            builder.Services.AddTransient<Configuracion>();
 
             // ViewModels
             builder.Services.AddTransient<MainViewModel>();
