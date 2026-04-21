@@ -1,15 +1,16 @@
 using Mercader.Domain.Entities;
+using Mercader.Data.Interfaces;
 
 namespace Mercader;
 
 public partial class EditarGastoPage : ContentPage
 {
-    private readonly DataRepository _repo;
+    private readonly IDataRepository _repository;
     private Gasto _gasto;
 
-    public EditarGastoPage(Gasto gasto, DataRepository repo)
+    public EditarGastoPage(Gasto gasto, IDataRepository repository)
     {
-        _repo = repo ?? throw new ArgumentNullException(nameof(repo));
+        _repository = repository ?? throw new ArgumentNullException(nameof(repository));
         _gasto = gasto ?? throw new ArgumentNullException(nameof(gasto));
 
         InitializeComponent();
@@ -27,7 +28,7 @@ public partial class EditarGastoPage : ContentPage
         _gasto.Cantidad = decimal.Parse(CantidadEntry.Text);
         
 
-        await _repo.SaveGastoAsync(_gasto);
+        await _repository.SaveGastoAsync(_gasto);
         await DisplayAlert("�xito", "Gasto actualizado correctamente", "OK");
         await Navigation.PopAsync();
     }

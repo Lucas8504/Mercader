@@ -27,6 +27,11 @@ namespace Mercader
             builder.Services.AddSingleton<Data.DataRepository>();
             builder.Services.AddSingleton<IDataRepository>(sp => sp.GetRequiredService<Data.DataRepository>());
 
+            // ViewModels
+            builder.Services.AddTransient<VentasViewModel>();
+            builder.Services.AddTransient<GastosViewModel>();
+            builder.Services.AddTransient<EncargosViewModel>();
+
             // Services
             builder.Services.AddSingleton<IChartService, ChartService>();
             builder.Services.AddSingleton<IBalanceCalculatorService, BalanceCalculatorService>();

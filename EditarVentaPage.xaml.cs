@@ -1,15 +1,16 @@
 using Mercader.Domain.Entities;
+using Mercader.Data.Interfaces;
 
 namespace Mercader;
 
 public partial class EditarVentaPage : ContentPage
 {
-    private readonly DataRepository _repo;
+    private readonly IDataRepository _repository;
     private readonly Ventas _venta;
 
-    public EditarVentaPage(Ventas venta, DataRepository repo)
+    public EditarVentaPage(Ventas venta, IDataRepository repository)
     {
-        _repo = repo ?? throw new ArgumentNullException(nameof(repo));
+        _repository = repository ?? throw new ArgumentNullException(nameof(repository));
         _venta = venta ?? throw new ArgumentNullException(nameof(venta));
 
         InitializeComponent();
@@ -25,7 +26,7 @@ public partial class EditarVentaPage : ContentPage
         _venta.Precio = decimal.Parse(PrecioEntry.Text);
         _venta.Cantidad = decimal.Parse(CantidadEntry.Text);
 
-        await _repo.SaveVentasAsync(_venta);
+        await _repository.SaveVentasAsync(_venta);
         await DisplayAlert("�xito", "Venta actualizada correctamente", "OK");
         await Navigation.PopAsync();
     }

@@ -1,34 +1,24 @@
 using Mercader.Domain.Entities;
+using Mercader.Data.Interfaces;
 
 namespace Mercader;
 
-/// <summary>
-/// P�gina de detalle que muestra la informaci�n completa de un gasto espec�fico.
-/// Permite visualizar, editar y eliminar el gasto seleccionado.
-/// </summary>
 public partial class DetalleGasto : ContentPage
 {
-    /// <summary>
-    /// Instancia del gasto que se est� visualizando en esta p�gina.
-    /// </summary>
-    private readonly DataRepository _repo;
+    private readonly IDataRepository _repository;
     private Gasto _gasto;
 
-    /// <summary>
-    /// Constructor de la p�gina DetalleGasto.
-    /// </summary>
-    /// <param name="gasto">El objeto Gasto que se desea visualizar y gestionar.</param>
-    public DetalleGasto(Gasto gasto, DataRepository repo)
+    public DetalleGasto(Gasto gasto, IDataRepository repository)
     {
         InitializeComponent();
         _gasto = gasto;
+        _repository = repository;
 
         // Establece el contexto de enlace para el binding de datos en la interfaz
         BindingContext = gasto;
 
         // Calcula y muestra el total inicial
         CalcularYMostrarTotal();
-        _repo = repo;
     }
 
     /// <summary>
@@ -57,7 +47,7 @@ public partial class DetalleGasto : ContentPage
         try
         {
             // Navega a la p�gina de edici�n pasando el gasto actual
-            await Navigation.PushAsync(new EditarGastoPage(_gasto, _repo));
+            await Navigation.PushAsync(new EditarGastoPage(_gasto, _repository));
         }
         catch (Exception ex)
         {
@@ -84,7 +74,7 @@ public partial class DetalleGasto : ContentPage
             try
             {
                 // Elimina el gasto del repositorio de datos
-                await _repo.DeleteGastoAsync(_gasto);
+                await _repository.DeleteGastoAsync(_gasto);
 
                 // Muestra mensaje de �xito
                 await DisplayAlert("�xito", "Gasto eliminado correctamente", "OK");

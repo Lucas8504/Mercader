@@ -1,19 +1,20 @@
 using Mercader.Domain.Entities;
+using Mercader.Data.Interfaces;
 
 namespace Mercader;
 
 public partial class DetalleEncargo : ContentPage
 {
-    private readonly DataRepository _repo;
+    private readonly IDataRepository _repository;
     private Encargo _encargo;
 
-    public DetalleEncargo(Encargo encargo, DataRepository repo)
+    public DetalleEncargo(Encargo encargo, IDataRepository repository)
     {
         InitializeComponent();
         _encargo = encargo;
+        _repository = repository;
         BindingContext = _encargo;
         CalcularTotal();
-        _repo = repo;
     }
 
     private void CalcularTotal()
@@ -45,8 +46,8 @@ public partial class DetalleEncargo : ContentPage
                 Fecha = DateTime.Now
             };
 
-            await _repo.SaveVentasAsync(venta);
-            await _repo.DeleteEncargoAsync(_encargo);
+            await _repository.SaveVentasAsync(venta);
+            await _repository.DeleteEncargoAsync(_encargo);
 
             await Navigation.PopAsync(); // 👈 volver
         }
@@ -60,7 +61,7 @@ public partial class DetalleEncargo : ContentPage
     {
         try
         {
-            await Navigation.PushAsync(new EditarEncargoPage(_encargo, _repo));
+            await Navigation.PushAsync(new EditarEncargoPage(_encargo, _repository));
         }
         catch (Exception ex)
         {
@@ -79,7 +80,7 @@ public partial class DetalleEncargo : ContentPage
         try
         {
             // Recargar el encargo desde la base de datos para obtener los datos más recientes
-            var encargosActualizados = await _repo.GetEncargosAsync();
+            var encargosActualizados = await _repository.GetEncargosAsync();
             if (encargosActualizados != null && encargosActualizados.Any())
             {
                 // Asumimos que queremos el encargo correspondiente al ID actual
@@ -110,7 +111,7 @@ public partial class DetalleEncargo : ContentPage
         {
             try
             {
-                await _repo.DeleteEncargoAsync(_encargo);
+                await _repository.DeleteEncargoAsync(_encargo);
                 await DisplayAlert("Éxito", "Encargo eliminado correctamente", "OK");
                 await Navigation.PopAsync(); // Volver a la página anterior
             }

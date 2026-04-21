@@ -3,30 +3,29 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Mercader.Domain.Entities;
+using Mercader.ViewModels;
+using Mercader.Data.Interfaces;
 
 namespace Mercader
 {
     public partial class Venta : ContentPage
     {
-        private readonly DataRepository _repo;
+        private readonly IDataRepository _repository;
+        private readonly VentasViewModel _viewModel;
         private bool _isLoading = false;
 
-        public Venta(DataRepository repo)
+        public Venta(IDataRepository repository, VentasViewModel viewModel)
         {
-            _repo = repo ?? throw new ArgumentNullException(nameof(repo));
+            _repository = repository ?? throw new ArgumentNullException(nameof(repository));
+            _viewModel = viewModel ?? throw new ArgumentNullException(nameof(viewModel));
             InitializeComponent();
+            BindingContext = _viewModel;
             ConfigurarPagina();
         }
 
-        /// <summary>
-        /// Configuración inicial de la página
-        /// </summary>
         private void ConfigurarPagina()
         {
-            // Configurar el título de la página
             Title = "📊 Ventas";
-
-            // Aplicar animación de entrada suave
             this.Opacity = 0;
             this.FadeTo(1, 300);
         }
@@ -34,38 +33,20 @@ namespace Mercader
         protected override async void OnAppearing()
         {
             base.OnAppearing();
-            await CargarVentas();
+            await _viewModel.CargarVentasCommand.ExecuteAsync(null);
+            VentasCollectionView.ItemsSource = _viewModel.Ventas;
         }
 
-        /// <summary>
-        /// <returns>Carga las ventas desde la base de datos</returns>
-        /// </summary>
         private async Task CargarVentas()
         {
             try
             {
-                var ventas = await _repo.GetVentasAsync();
-
-                // Limpiar y forzar refresh
-                VentasCollectionView.ItemsSource = null;
-                await Task.Delay(10); // Pequeño delay para UI
-                
-                // Verificar si hay datos
-                if (ventas?.Count > 0)
-                {
-                    VentasCollectionView.ItemsSource = ventas;
-                    Console.WriteLine($"✅ Se cargaron {ventas.Count} ventas correctamente");
-                }
-                else
-                {
-                    VentasCollectionView.ItemsSource = new List<Ventas>();
-                    Console.WriteLine("ℹ️ No se encontraron ventas en la base de datos");
-                }
+                await _viewModel.CargarVentasCommand.ExecuteAsync(null);
+                VentasCollectionView.ItemsSource = _viewModel.Ventas;
             }
             catch (Exception ex)
             {
                 Console.WriteLine($"❌ Error al cargar las ventas: {ex.Message}");
-                throw; // Re-lanzar para manejo en nivel superior
             }
         }
 
@@ -98,7 +79,7 @@ namespace Mercader
                         await frame.ScaleTo(1, 100);
 
                         // Navegar a detalles
-                        await Navigation.PushAsync(new DetalleVenta(venta,_repo));
+                        await Navigation.PushAsync(new DetalleVenta(venta, _repository));
                     }
                 }
             }
@@ -166,7 +147,7 @@ namespace Mercader
         {
             try
             {
-                await Navigation.PushAsync(new EditarVentaPage(venta,_repo));
+                await Navigation.PushAsync(new EditarVentaPage(venta, _repository));
             }
             catch (Exception ex)
             {
@@ -200,8 +181,8 @@ namespace Mercader
                     // Debug
                     System.Diagnostics.Debug.WriteLine($"[DEBUG] EliminarVenta: Id={venta.Id}, Desc={venta.Descripcion}");
 
-                    // Eliminar de la base de datos
-                    await _repo.DeleteVentaAsync(venta);
+                    // Eliminar via ViewModel
+                    await _viewModel.EliminarVentaCommand.ExecuteAsync(venta);
 
                     // Mostrar mensaje de éxito
                     await DisplayAlert("✅ Éxito",

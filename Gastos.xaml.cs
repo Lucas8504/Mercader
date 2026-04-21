@@ -3,30 +3,29 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Mercader.Domain.Entities;
+using Mercader.ViewModels;
+using Mercader.Data.Interfaces;
 
 namespace Mercader
 {
     public partial class Gastos : ContentPage
     {
-        private readonly DataRepository _repo;
+        private readonly IDataRepository _repository;
+        private readonly GastosViewModel _viewModel;
         private bool _isLoading = false;
 
-        public Gastos(DataRepository repo)
+        public Gastos(IDataRepository repository, GastosViewModel viewModel)
         {
-            _repo = repo ?? throw new ArgumentNullException(nameof(repo));
+            _repository = repository ?? throw new ArgumentNullException(nameof(repository));
+            _viewModel = viewModel ?? throw new ArgumentNullException(nameof(viewModel));
             InitializeComponent();
+            BindingContext = _viewModel;
             ConfigurarPagina();
         }
 
-        /// <summary>
-        /// Configuración inicial de la página
-        /// </summary>
         private void ConfigurarPagina()
         {
-            // Configurar el título de la página
             Title = "💸 Gastos";
-
-            // Aplicar animación de entrada suave
             this.Opacity = 0;
             this.FadeTo(1, 300);
         }
@@ -34,35 +33,16 @@ namespace Mercader
         protected override async void OnAppearing()
         {
             base.OnAppearing();
-            await CargarGastos();
+            await _viewModel.CargarGastosCommand.ExecuteAsync(null);
+            GastosCollectionView.ItemsSource = _viewModel.Gastos;
         }
 
-        /// <summary>
-        /// <returns>Carga los gastos desde la base de datos</returns>
-        /// </summary>
-private async Task CargarGastos()
+        private async Task CargarGastos()
         {
-            var gastos = await _repo.GetGastosAsync();
-           
-            // Limpiar y forzar refresh
-            GastosCollectionView.ItemsSource = null;
-            await Task.Delay(10);
-            
-            // Verificar si hay datos
-            if (gastos?.Count > 0)
-                {
-                    GastosCollectionView.ItemsSource = gastos;
-                    Console.WriteLine($"✅ Se cargaron {gastos.Count} gastos correctamente");
-                }
-                else
-                {
-                    GastosCollectionView.ItemsSource = new List<Gasto>();
-                    Console.WriteLine("ℹ️ No se encontraron gastos en la base de datos");
-                }
-           
+            await _viewModel.CargarGastosCommand.ExecuteAsync(null);
+            GastosCollectionView.ItemsSource = _viewModel.Gastos;
         }
 
-       
         protected override bool OnBackButtonPressed()
         {
             // Prevenir navegación hacia atrás
@@ -92,7 +72,7 @@ private async Task CargarGastos()
                         await frame.ScaleTo(1, 100);
 
                         // Navegar a detalles
-                        await Navigation.PushAsync(new DetalleGasto(gasto, _repo));
+                        await Navigation.PushAsync(new DetalleGasto(gasto, _repository));
                     }
                 }
             }
@@ -158,7 +138,7 @@ private async Task CargarGastos()
         {
             try
             {
-                await Navigation.PushAsync(new EditarGastoPage(gasto, _repo));
+                await Navigation.PushAsync(new EditarGastoPage(gasto, _repository));
             }
             catch (Exception ex)
             {
@@ -189,8 +169,8 @@ private async Task CargarGastos()
                 {
                     _isLoading = true;
 
-                    // Eliminar de la base de datos
-                    await _repo.DeleteGastoAsync(gasto);
+                    // Eliminar via ViewModel
+                    await _viewModel.EliminarGastoCommand.ExecuteAsync(gasto);
 
                     // Mostrar mensaje de éxito
                     await DisplayAlert("✅ Éxito",

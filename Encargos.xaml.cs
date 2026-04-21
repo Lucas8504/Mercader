@@ -4,69 +4,44 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Mercader.Domain.Entities;
+using Mercader.ViewModels;
+using Mercader.Data.Interfaces;
 
 namespace Mercader
 {
-    /// <summary>
-    /// Página que muestra y gestiona la lista de encargos registrados en el sistema.
-    /// Permite visualizar, editar, eliminar, contactar clientes y concretar ventas.
-    /// </summary>
     public partial class Encargos : ContentPage
     {
-        /// <summary>
-        /// Indica si hay una operación en curso para evitar ejecuciones simultáneas.
-        /// </summary>
-        private readonly DataRepository _repo;
+        private readonly IDataRepository _repository;
+        private readonly EncargosViewModel _viewModel;
         private bool _isLoading = false;
 
-        /// <summary>
-        /// Constructor principal. Inicializa los componentes y configura la interfaz.
-        /// </summary>
-        public Encargos(DataRepository repo)
+        public Encargos(IDataRepository repository, EncargosViewModel viewModel)
         {
+            _repository = repository ?? throw new ArgumentNullException(nameof(repository));
+            _viewModel = viewModel ?? throw new ArgumentNullException(nameof(viewModel));
             InitializeComponent();
-            _repo = repo;
+            BindingContext = _viewModel;
             ConfigurarPagina();
         }
 
-        /// <summary>
-        /// Configura los elementos iniciales de la página, incluyendo animación y título.
-        /// </summary>
         private void ConfigurarPagina()
         {
             Title = "📋 Encargos";
             this.Opacity = 0;
-            this.FadeTo(1, 300); // Animación de entrada suave
+            this.FadeTo(1, 300);
         }
 
-        /// <inheritdoc/>
         protected override async void OnAppearing()
         {
             base.OnAppearing();
-            await CargarEncargos();
+            await _viewModel.CargarEncargosCommand.ExecuteAsync(null);
+            EncargosCollectionView.ItemsSource = _viewModel.Encargos;
         }
 
-        /// <summary>
-        /// <returns>Carga la lista de encargos desde la base de datos local.</returns>
-        /// </summary>
         private async Task CargarEncargos()
         {
-            var encargos = await _repo.GetEncargosAsync();
-
-            // Limpiar y forzar refresh
-            EncargosCollectionView.ItemsSource = null;
-            await Task.Delay(10);
-
-            if (encargos?.Count > 0)
-            {
-                EncargosCollectionView.ItemsSource = encargos;
-                Console.WriteLine($"✅ Se cargaron {encargos.Count} encargos correctamente");
-            }
-            else
-            {
-                EncargosCollectionView.ItemsSource = new List<Encargo>();
-                Console.WriteLine("ℹ️ No se encontraron encargos en la base de datos");
-            }
+            await _viewModel.CargarEncargosCommand.ExecuteAsync(null);
+            EncargosCollectionView.ItemsSource = _viewModel.Encargos;
         }
 
         /// <summary>
@@ -236,7 +211,7 @@ namespace Mercader
                 {
                     await frame.ScaleTo(0.95, 100);
                     await frame.ScaleTo(1, 100);
-                    await Navigation.PushAsync(new DetalleEncargo(encargo, _repo));
+await Navigation.PushAsync(new DetalleEncargo(encargo, _repository));
                 }
             }
             catch (Exception ex)
@@ -309,7 +284,7 @@ namespace Mercader
         {
             try
             {
-                await Navigation.PushAsync(new EditarEncargoPage(encargo, _repo));
+                await Navigation.PushAsync(new EditarEncargoPage(encargo, _repository));
             }
             catch (Exception ex)
             {
@@ -339,7 +314,7 @@ namespace Mercader
                 if (confirmar)
                 {
                     _isLoading = true;
-                    await _repo.DeleteEncargoAsync(encargo);
+                    await _viewModel.EliminarEncargoCommand.ExecuteAsync(encargo);
                     await DisplayAlert("✅ Éxito", "El encargo se eliminó correctamente", "OK");
                     await CargarEncargos();
                 }
@@ -361,7 +336,7 @@ namespace Mercader
         {
             try
             {
-                await Navigation.PushAsync(new DetalleEncargo(encargo, _repo));
+                await Navigation.PushAsync(new DetalleEncargo(encargo, _repository));
             }
             catch (Exception ex)
             {
@@ -390,16 +365,7 @@ namespace Mercader
                 {
                     _isLoading = true;
 
-                    var venta = new Ventas
-                    {
-                        Descripcion = encargo.Descripcion,
-                        Precio = encargo.Precio,
-                        Cantidad = encargo.Cantidad,
-                        Fecha = DateTime.Now
-                    };
-
-                    await _repo.SaveVentasAsync(venta);
-                    await _repo.DeleteEncargoAsync(encargo);
+                    await _viewModel.ConvertirEnVentaCommand.ExecuteAsync(encargo);
 
                     await DisplayAlert("✅ Venta Concretada",
                         "La venta se registró correctamente y el encargo fue eliminado", "OK");

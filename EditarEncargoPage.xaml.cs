@@ -1,19 +1,20 @@
 using Mercader.Domain.Entities;
+using Mercader.Data.Interfaces;
 
 namespace Mercader;
 
 public partial class EditarEncargoPage : ContentPage
 {
-    private readonly DataRepository _repo;
+    private readonly IDataRepository _repository;
     private Encargo _encargo;
 
-    public EditarEncargoPage(Encargo encargo, DataRepository repo)
+    public EditarEncargoPage(Encargo encargo, IDataRepository repository)
     {
         InitializeComponent();
         _encargo = encargo;
+        _repository = repository;
         CargarDatos();
         SuscribirEventos();
-        _repo = repo;
     }
 
     private void CargarDatos()
@@ -120,7 +121,7 @@ public partial class EditarEncargoPage : ContentPage
             _encargo.Cantidad = cantidad;
 
             // Guardar en la base de datos
-            await _repo.SaveEncargoAsync(_encargo);
+            await _repository.SaveEncargoAsync(_encargo);
 
             // Mostrar mensaje de �xito
             await DisplayAlert("�xito", "Encargo actualizado correctamente", "OK");

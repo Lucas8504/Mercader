@@ -1,19 +1,20 @@
 using Mercader.Domain.Entities;
+using Mercader.Data.Interfaces;
 
 namespace Mercader;
 
 public partial class DetalleVenta : ContentPage
 {
-    private readonly DataRepository _repo;
+    private readonly IDataRepository _repository;
     private Ventas _venta;
 
-    public DetalleVenta(Ventas venta, DataRepository repo)
+    public DetalleVenta(Ventas venta, IDataRepository repository)
     {
         InitializeComponent();
         _venta = venta;
         BindingContext = venta;
         CalcularYMostrarTotal();
-        _repo = repo;
+        _repository = repository;
     }
 
     private void CalcularYMostrarTotal()
@@ -29,7 +30,7 @@ public partial class DetalleVenta : ContentPage
     {
         try
         {
-            await Navigation.PushAsync(new EditarVentaPage(_venta, _repo));
+            await Navigation.PushAsync(new EditarVentaPage(_venta, _repository));
         }
         catch (Exception ex)
         {
@@ -47,7 +48,7 @@ public partial class DetalleVenta : ContentPage
         {
             try
             {
-                await _repo.DeleteVentaAsync(_venta);
+                await _repository.DeleteVentaAsync(_venta);
                 await DisplayAlert("�xito", "Venta eliminada correctamente", "OK");
 
                 // Volver a la p�gina anterior
