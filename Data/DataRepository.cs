@@ -31,13 +31,80 @@ namespace Mercader.Data
                     return;
 
                 _database = new SQLiteAsyncConnection(_dbPath);
+                
+                // Crear tablas
                 await _database.CreateTableAsync<Encargo>();
                 await _database.CreateTableAsync<Ventas>();
                 await _database.CreateTableAsync<Gasto>();
+                
+                // Ejecutar migraciones
+                await RunMigrationsAsync();
             }
             finally
             {
                 _semaphore.Release();
+            }
+        }
+
+        /// <summary>
+        /// Ejecuta migraciones para agregar columnas faltantes.
+        /// </summary>
+        private async Task RunMigrationsAsync()
+        {
+            if (_database is null)
+                return;
+
+            try
+            {
+                // Migración: Agregar columnas de auditoría a Ventas
+                await AddColumnIfNotExistsAsync("Ventas", "CreatedAt", "TEXT");
+                await AddColumnIfNotExistsAsync("Ventas", "UpdatedAt", "TEXT");
+                await AddColumnIfNotExistsAsync("Ventas", "IsDeleted", "INTEGER DEFAULT 0");
+
+                // Migración: Agregar columnas de auditoría a Gastos
+                await AddColumnIfNotExistsAsync("Gastos", "CreatedAt", "TEXT");
+                await AddColumnIfNotExistsAsync("Gastos", "UpdatedAt", "TEXT");
+                await AddColumnIfNotExistsAsync("Gastos", "IsDeleted", "INTEGER DEFAULT 0");
+
+                // Migración: Agregar columnas de auditoría a Encargo
+                await AddColumnIfNotExistsAsync("Encargo", "CreatedAt", "TEXT");
+                await AddColumnIfNotExistsAsync("Encargo", "UpdatedAt", "TEXT");
+                await AddColumnIfNotExistsAsync("Encargo", "IsDeleted", "INTEGER DEFAULT 0");
+
+                System.Diagnostics.Debug.WriteLine("[MIGRATION] Migraciones ejecutadas exitosamente");
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"[MIGRATION] Error en migraciones: {ex.Message}");
+            }
+        }
+
+        /// <summary>
+        /// Agrega una columna a una tabla si no existe.
+        /// Intenta siempre y captura error si ya existe.
+        /// </summary>
+        private async Task AddColumnIfNotExistsAsync(string tableName, string columnName, string columnDefinition)
+        {
+            if (_database is null)
+                return;
+
+            try
+            {
+                // Intentar agregar la columna directamente
+                // SQLite tirará error si ya existe, lo cual es OK
+                await _database.ExecuteAsync(
+                    $"ALTER TABLE {tableName} ADD COLUMN {columnName} {columnDefinition}");
+                
+                System.Diagnostics.Debug.WriteLine($"[MIGRATION] Columna {columnName} agregada a {tableName}");
+            }
+            catch (Exception ex)
+            {
+                // Si el error dice que la columna ya existe, está OK
+                // Cualquier otro error, lo registramos
+                if (!ex.Message.Contains("duplicate column name"))
+                {
+                    System.Diagnostics.Debug.WriteLine($"[MIGRATION] {tableName}.{columnName}: {ex.Message}");
+                }
             }
         }
 
