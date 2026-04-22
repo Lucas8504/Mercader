@@ -1,5 +1,6 @@
 using Microcharts.Maui;
 using Mercader.ViewModels;
+using Mercader.Data.Interfaces;
 using Mercader.Models;
 using Mercader.Domain.Entities;
 using Microsoft.Maui.Platform;
@@ -10,12 +11,12 @@ namespace Mercader
     public partial class MainPage : ContentPage
     {
         private readonly MainViewModel _viewModel;
-        private readonly DataRepository _repo;
+        private readonly IDataRepository _repository;
 
-        public MainPage(DataRepository repo, MainViewModel vm)
+        public MainPage(IDataRepository repository, MainViewModel vm)
         {
             InitializeComponent();
-            _repo = repo;
+            _repository = repository;
             _viewModel = vm;
             BindingContext = _viewModel;
         }
@@ -57,7 +58,7 @@ namespace Mercader
         {
             try
             {
-                var modal = new EncModal(_repo);
+                var modal = new EncModal(_repository);
                 await Navigation.PushModalAsync(modal);
                 await CargarDatosAsync();
             }
@@ -71,7 +72,7 @@ namespace Mercader
         {
             try
             {
-                var modal = new VentaModal(_repo);
+                var modal = new VentaModal(_repository);
                 await Navigation.PushModalAsync(modal);
                 await CargarDatosAsync();
             }
@@ -85,7 +86,7 @@ namespace Mercader
         {
             try
             {
-                var modal = new GastoModal(_repo);
+                var modal = new GastoModal(_repository);
                 await Navigation.PushModalAsync(modal);
                 await CargarDatosAsync();
             }
