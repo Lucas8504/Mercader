@@ -1,26 +1,23 @@
 using System.Globalization;
 using Mercader.Domain.Entities;
+using Mercader.Data.Interfaces;
 #if ANDROID
 using Mercader.Platforms.Android;
 #endif
-
-
-
 
 namespace Mercader;
 
 public partial class GastoModal : ContentPage
 {
-    private readonly DataRepository _repo;
-    public Gasto Gasto { get; private set; } = null!; // Null forgiving operator  
+    private readonly IDataRepository _repository;
+    public Gasto Gasto { get; private set; } = null!;
 
-    public GastoModal(DataRepository repo)
+    public GastoModal(IDataRepository repository)
     {
-        ArgumentNullException.ThrowIfNull(repo);
+        ArgumentNullException.ThrowIfNull(repository);
 
         InitializeComponent();
-
-        _repo = repo;
+        _repository = repository;
     }
 
     private async void OnAgregarGastoClicked(object sender, EventArgs e)
@@ -51,7 +48,7 @@ public partial class GastoModal : ContentPage
 
     private async Task SaveGastoAsync()
     {
-        await _repo.SaveGastoAsync(Gasto);
+        await _repository.SaveGastoAsync(Gasto);
 #if ANDROID
         KeyboardHelper.Close();
 #endif

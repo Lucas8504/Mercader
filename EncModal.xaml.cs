@@ -1,6 +1,6 @@
 using System.Globalization;
 using Mercader.Domain.Entities;
-using Mercader.Data;
+using Mercader.Data.Interfaces;
 #if ANDROID
 using Mercader.Platforms.Android;
 #endif
@@ -9,18 +9,14 @@ namespace Mercader;
 
 public partial class EncModal : ContentPage
 {
-    
-    public Encargo Encargo { get; private set; } = null!; // Null forgiving operator
+    public Encargo Encargo { get; private set; } = null!;
+    private readonly IDataRepository _repository;
 
-    private readonly DataRepository _repo;
-
-    public EncModal(DataRepository repo)
+    public EncModal(IDataRepository repository)
     {
-        
-        ArgumentNullException.ThrowIfNull(repo);
-
+        ArgumentNullException.ThrowIfNull(repository);
         InitializeComponent();
-        _repo = repo;
+        _repository = repository;
     }
 
     private async void OnAgregarEncargoClicked(object sender, EventArgs e)
@@ -58,7 +54,7 @@ public partial class EncModal : ContentPage
     private async Task SaveEncargoAsync()
     {
         
-        await _repo.SaveEncargoAsync(Encargo);
+        await _repository.SaveEncargoAsync(Encargo);
 
 #if ANDROID
         KeyboardHelper.Close();

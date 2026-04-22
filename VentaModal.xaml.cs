@@ -1,6 +1,6 @@
 using System.Globalization;
 using Mercader.Domain.Entities;
-using Mercader.Services;
+using Mercader.Data.Interfaces;
 #if ANDROID
 using Mercader.Platforms.Android;
 #endif
@@ -11,20 +11,16 @@ namespace Mercader;
 public partial class VentaModal : ContentPage
 {
     
-    private readonly DataRepository _repo;
-    public Ventas Venta { get; private set; } = null!; // Null forgiving operator
+    private readonly IDataRepository _repository;
+    public Ventas Venta { get; private set; } = null!;
 
 
-    public VentaModal( DataRepository repo)
+    public VentaModal(IDataRepository repository)
     {
-        
-        ArgumentNullException.ThrowIfNull(repo);
+        ArgumentNullException.ThrowIfNull(repository);
 
         InitializeComponent();
-        
-        _repo = repo;
-
-
+        _repository = repository;
     }
 
 
@@ -74,7 +70,7 @@ public partial class VentaModal : ContentPage
     private async Task SaveVentaAsync()
     {
         
-        await _repo.SaveVentasAsync(Venta);
+        await _repository.SaveVentasAsync(Venta);
 
 #if ANDROID
         KeyboardHelper.Close();

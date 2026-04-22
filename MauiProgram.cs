@@ -49,6 +49,11 @@ namespace Mercader
             builder.Services.AddTransient<Venta>();
             builder.Services.AddTransient<Configuracion>();
 
+            // Modals
+            builder.Services.AddTransient<VentaModal>();
+            builder.Services.AddTransient<GastoModal>();
+            builder.Services.AddTransient<EncModal>();
+
             // ViewModels
             builder.Services.AddTransient<MainViewModel>();
 
