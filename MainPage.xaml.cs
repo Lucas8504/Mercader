@@ -24,32 +24,19 @@ namespace Mercader
         protected override async void OnAppearing()
         {
             base.OnAppearing();
-            await CargarDatosAsync();
-        }
-
-        private async Task CargarDatosAsync()
-        {
-            try
+            // Usar el Command del ViewModel
+            if (_viewModel.CargarDatosCommand.CanExecute(null))
             {
-                // Usar el Command del ViewModel (CommunityToolkit.Mvvm)
-                if (_viewModel.CargarDatosCommand.CanExecute(null))
-                {
-                    await _viewModel.CargarDatosCommand.ExecuteAsync(null);
-                }
+                await _viewModel.CargarDatosCommand.ExecuteAsync(null);
+            }
 
-                // Scroll a los gráficos después de cargar
-                await Task.WhenAll(
-                    ScrollToEndAsync(VentasScroll),
-                    ScrollToEndAsync(GastosScroll),
-                    ScrollToEndAsync(EncargosScroll),
-                    ScrollToEndAsync(GananciasScroll)
-                );
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"Error al cargar datos: {ex.Message}");
-                await DisplayAlert("Error", $"No se pudieron cargar los datos: {ex.Message}", "OK");
-            }
+            // Scroll a los gráficos después de cargar
+            await Task.WhenAll(
+                ScrollToEndAsync(VentasScroll),
+                ScrollToEndAsync(GastosScroll),
+                ScrollToEndAsync(EncargosScroll),
+                ScrollToEndAsync(GananciasScroll)
+            );
         }
 
         #region Eventos de Navegación
@@ -60,11 +47,11 @@ namespace Mercader
             {
                 var modal = new EncModal(_repository);
                 await Navigation.PushModalAsync(modal);
-                await CargarDatosAsync();
+                await _viewModel.CargarDatosCommand.ExecuteAsync(null);
             }
             catch (Exception ex)
             {
-                await DisplayAlert("Error", $"No se pudo abrir el formulario de encargo: {ex.Message}", "OK");
+                await DisplayAlert("Error", $"No se pudo abrir el formulario: {ex.Message}", "OK");
             }
         }
 
@@ -74,7 +61,7 @@ namespace Mercader
             {
                 var modal = new VentaModal(_repository);
                 await Navigation.PushModalAsync(modal);
-                await CargarDatosAsync();
+                await _viewModel.CargarDatosCommand.ExecuteAsync(null);
             }
             catch (Exception ex)
             {
@@ -88,7 +75,7 @@ namespace Mercader
             {
                 var modal = new GastoModal(_repository);
                 await Navigation.PushModalAsync(modal);
-                await CargarDatosAsync();
+                await _viewModel.CargarDatosCommand.ExecuteAsync(null);
             }
             catch (Exception ex)
             {
@@ -124,7 +111,7 @@ namespace Mercader
 
             try
             {
-                await CargarDatosAsync();
+                await _viewModel.CargarDatosCommand.ExecuteAsync(null);
 
                 string carpetaPersonalizada = Path.Combine(FileSystem.Current.AppDataDirectory, "Exportaciones");
                 Directory.CreateDirectory(carpetaPersonalizada);
