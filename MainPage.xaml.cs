@@ -1,3 +1,4 @@
+using CommunityToolkit.Maui.Storage;
 using Microcharts.Maui;
 using Mercader.ViewModels;
 using Mercader.Data.Interfaces;
@@ -113,30 +114,55 @@ namespace Mercader
             {
                 await _viewModel.CargarDatosCommand.ExecuteAsync(null);
 
-                string carpetaPersonalizada = Path.Combine(FileSystem.Current.AppDataDirectory, "Exportaciones");
-                Directory.CreateDirectory(carpetaPersonalizada);
-
                 string nombreArchivo = $"Balance_Financiero_{DateTime.Now:yyyyMMdd_HHmmss}.xlsx";
-                string rutaArchivo = Path.Combine(carpetaPersonalizada, nombreArchivo);
-
                 var exportData = _viewModel.CrearExportDto();
-                await ExportExcel.ExportarBalanceAExcelAsync(exportData, rutaArchivo);
 
-                var mensaje = $"📊 ¡Reporte generado exitosamente!\n\n" +
-                             $"📁 Archivo: {nombreArchivo}\n" +
-                             $"📍 Ubicación: {carpetaPersonalizada}";
+                // 1. Generar Excel a temporal
+                string tempDir = Path.Combine(FileSystem.Current.CacheDirectory, "Exportaciones");
+                Directory.CreateDirectory(tempDir);
+                string rutaTemp = Path.Combine(tempDir, nombreArchivo);
+                await ExportExcel.ExportarBalanceAExcelAsync(exportData, rutaTemp);
 
-                var respuesta = await DisplayAlert("✅ Exportación Completada", mensaje, "📂 Abrir archivo", "✋ Cerrar");
+                // 2. FileSaver: diálogo nativo "Guardar como"
+                using var fileStream = File.OpenRead(rutaTemp);
+                var saverResult = await FileSaver.Default.SaveAsync(nombreArchivo, fileStream, CancellationToken.None);
 
-                if (respuesta)
+                string rutaFinal;
+                if (saverResult.IsSuccessful)
                 {
-                    await AbrirUbicacionArchivoAsync(rutaArchivo, carpetaPersonalizada);
+                    // Usuario eligió dónde guardar ✅
+                    var rutaGuardado = saverResult.FilePath;
+                    File.Delete(rutaTemp);
+                    rutaFinal = $"📁 {rutaGuardado ?? "Ubicación elegida"}";
                 }
+                else
+                {
+                    // Usuario canceló → auto-guardado
+#if ANDROID
+                    (rutaFinal, _) = await GuardarEnDescargasAndroidAsync(rutaTemp, nombreArchivo);
+#else
+                    string carpetaDocs = Path.Combine(
+                        Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "Mercader");
+                    Directory.CreateDirectory(carpetaDocs);
+                    rutaFinal = Path.Combine(carpetaDocs, nombreArchivo);
+                    File.Move(rutaTemp, rutaFinal, overwrite: true);
+#endif
+                }
+
+                var mensaje = $"📊 ¡Reporte generado!\n\n" +
+                              $"📁 {nombreArchivo}\n" +
+                              $"📍 {rutaFinal}";
+
+                await DisplayAlert("✅ Exportación Completada", mensaje, "OK");
             }
             catch (Exception ex)
             {
-                await DisplayAlert("❌ Error en la exportación", $"No se pudo generar el reporte Excel:\n\n{ex.Message}", "Entendido");
-                Debug.WriteLine($"Error detallado en exportación: {ex}");
+                var mensajeError = $"No se pudo generar el reporte:\n\n{ex.Message}";
+#if DEBUG
+                mensajeError += $"\n\n📋 {ex.GetType().Name}: {ex.StackTrace?.Split('\n').FirstOrDefault()}";
+#endif
+                await DisplayAlert("❌ Error en exportación", mensajeError, "Entendido");
+                System.Diagnostics.Debug.WriteLine($"[ExportError] {ex}");
             }
             finally
             {
@@ -148,32 +174,147 @@ namespace Mercader
             }
         }
 
-        private async Task AbrirUbicacionArchivoAsync(string rutaArchivo, string rutaCarpeta)
+#if ANDROID
+        /// <summary>
+        /// Guarda el archivo en Downloads/Mercader/.
+        /// Android 9-10: ruta directa.
+        /// Android 11+: MediaStore API (no necesita permisos especiales).
+        /// </summary>
+        private static async Task<(string displayPath, string? contentUri)> GuardarEnDescargasAndroidAsync(string rutaTemp, string nombreArchivo)
+        {
+            // Android 11+ (API 30+) → MediaStore (no necesita permisos)
+            if (Android.OS.Build.VERSION.SdkInt >= Android.OS.BuildVersionCodes.R)
+            {
+                return await GuardarConMediaStoreAsync(rutaTemp, nombreArchivo);
+            }
+
+            // Android 4.4-10 → intentar ruta directa a Downloads
+            try
+            {
+                var rutaDownloads = Android.OS.Environment.GetExternalStoragePublicDirectory(
+                    Android.OS.Environment.DirectoryDownloads)?.AbsolutePath;
+
+                if (!string.IsNullOrEmpty(rutaDownloads))
+                {
+                    string carpetaMercader = Path.Combine(rutaDownloads, "Mercader");
+                    Directory.CreateDirectory(carpetaMercader);
+                    string rutaFinal = Path.Combine(carpetaMercader, nombreArchivo);
+
+                    File.Move(rutaTemp, rutaFinal, overwrite: true);
+                    return (rutaFinal, null); // contentUri null = ruta directa de archivo
+                }
+            }
+            catch
+            {
+                // Sin permiso WRITE_EXTERNAL_STORAGE, cae al fallback
+            }
+
+            // Fallback: ExternalFilesDir (funciona sin permisos en TODAS las versiones)
+            // Ruta: /storage/emulated/0/Android/data/{package}/files/Documents/Mercader/
+            var rutaFallback = Android.App.Application.Context.GetExternalFilesDir(
+                Android.OS.Environment.DirectoryDocuments)?.AbsolutePath;
+
+            if (string.IsNullOrEmpty(rutaFallback))
+                throw new InvalidOperationException("No se pudo obtener una carpeta para guardar el archivo");
+
+            string carpetaFallback = Path.Combine(rutaFallback, "Mercader");
+            Directory.CreateDirectory(carpetaFallback);
+            string archivoFinal = Path.Combine(carpetaFallback, nombreArchivo);
+
+            File.Move(rutaTemp, archivoFinal, overwrite: true);
+            return (archivoFinal, null);
+        }
+
+        /// <summary>
+        /// Guarda en Downloads usando MediaStore (Android 11+).
+        /// Solo se llama cuando SdkInt >= R (API 30), por eso suprimimos CA1416.
+        /// </summary>
+#pragma warning disable CA1416 // MediaStore.Downloads disponible desde API 29
+        private static async Task<(string displayPath, string contentUri)> GuardarConMediaStoreAsync(string rutaTemp, string nombreArchivo)
+        {
+            byte[] bytes = await File.ReadAllBytesAsync(rutaTemp);
+
+            var contentValues = new Android.Content.ContentValues();
+            contentValues.Put(Android.Provider.MediaStore.IMediaColumns.DisplayName, nombreArchivo);
+            contentValues.Put(Android.Provider.MediaStore.IMediaColumns.MimeType,
+                "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
+            contentValues.Put(Android.Provider.MediaStore.IMediaColumns.RelativePath, "Download/Mercader");
+
+            var context = Android.App.Application.Context;
+            var uri = context.ContentResolver?.Insert(
+                Android.Provider.MediaStore.Downloads.ExternalContentUri, contentValues);
+
+            if (uri == null)
+                throw new InvalidOperationException("No se pudo crear el archivo en Descargas (MediaStore)");
+
+            using var outputStream = context.ContentResolver!.OpenOutputStream(uri);
+            if (outputStream == null)
+                throw new InvalidOperationException("No se pudo abrir el stream para escribir en Descargas");
+
+            await outputStream.WriteAsync(bytes, 0, bytes.Length);
+            await outputStream.FlushAsync();
+
+            // Limpiar temp
+            File.Delete(rutaTemp);
+
+            // Devolver ruta visible + content URI para abrir el archivo
+            return ($"/storage/emulated/0/Download/Mercader/{nombreArchivo}", uri.ToString()!);
+        }
+#pragma warning restore CA1416
+#endif
+
+        private async Task AbrirOCompartirArchivoAsync(string rutaArchivo, string? contentUri = null)
         {
             try
             {
-                if (string.IsNullOrEmpty(rutaArchivo) || !File.Exists(rutaArchivo))
+#if ANDROID
+                // Caso 1: MediaStore → abrir con content URI vía Intent directo
+                if (!string.IsNullOrEmpty(contentUri))
                 {
-                    await DisplayAlert("Error", "No se pudo encontrar el archivo.", "OK");
+                    var uri = Android.Net.Uri.Parse(contentUri);
+                    if (uri != null)
+                    {
+                        var intent = new Android.Content.Intent(Android.Content.Intent.ActionView);
+                        intent.SetDataAndType(uri,
+                            "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
+                        intent.AddFlags(Android.Content.ActivityFlags.GrantReadUriPermission);
+                        Android.App.Application.Context.StartActivity(intent);
+                        return;
+                    }
+                }
+
+                // Caso 2: ruta directa, el archivo existe
+                if (File.Exists(rutaArchivo))
+                {
+                    await Launcher.OpenAsync(new OpenFileRequest
+                    {
+                        File = new ReadOnlyFile(rutaArchivo),
+                        Title = "Balance Financiero"
+                    });
                     return;
                 }
 
-                if (DeviceInfo.Platform == DevicePlatform.Android)
+                // Caso 3: no encontramos el archivo
+                await DisplayAlert("Info",
+                    "El archivo se guardó en Descargas/Mercader/. Abrí tu gestor de archivos para verlo.",
+                    "OK");
+#else
+                if (!File.Exists(rutaArchivo))
                 {
-                    await Launcher.OpenAsync(new OpenFileRequest { File = new ReadOnlyFile(rutaArchivo) });
+                    await DisplayAlert("Error", "No se encontró el archivo.", "OK");
+                    return;
                 }
-                else if (DeviceInfo.Platform == DevicePlatform.iOS)
+
+                await Launcher.OpenAsync(new OpenFileRequest
                 {
-                    await DisplayAlert("Información", $"El archivo ha sido guardado en:\n{rutaCarpeta}", "OK");
-                }
-                else
-                {
-                    await Launcher.OpenAsync(new OpenFileRequest { File = new ReadOnlyFile(rutaCarpeta) });
-                }
+                    File = new ReadOnlyFile(rutaArchivo),
+                    Title = "Balance Financiero"
+                });
+#endif
             }
             catch (Exception ex)
             {
-                await DisplayAlert("Error", $"No se pudo abrir la ubicación del archivo: {ex.Message}", "OK");
+                await DisplayAlert("Error", $"No se pudo abrir: {ex.Message}", "OK");
             }
         }
 

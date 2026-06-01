@@ -1,3 +1,4 @@
+using CommunityToolkit.Maui;
 using Mercader.ViewModels;
 using Mercader.Services.Interfaces;
 using Mercader.Data.Interfaces;
@@ -17,6 +18,7 @@ namespace Mercader
             builder
                 .UseMauiApp<App>()
                 .UseMicrocharts()
+                .UseMauiCommunityToolkit()
                 .ConfigureFonts(fonts =>
                 {
                     fonts.AddFont("OpenSans-Regular.ttf", "OpenSansRegular");

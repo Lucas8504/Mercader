@@ -18,12 +18,29 @@ namespace Mercader
 
             using (ExcelPackage package = new ExcelPackage())
             {
-                // Crear todas las hojas
-                CrearHojaResumen(package, data);
+                // Hojas de datos (esenciales - siempre deben funcionar)
                 CrearHojaVentas(package, data.Ventas.ToList());
                 CrearHojaGastos(package, data.Gastos.ToList());
                 CrearHojaEncargos(package, data.Encargos.ToList());
-                CrearHojaGrafico(package, data);
+
+                // Hojas con gráficos (pueden fallar en plataformas sin System.Drawing)
+                try
+                {
+                    CrearHojaResumen(package, data);
+                }
+                catch (Exception ex)
+                {
+                    System.Diagnostics.Debug.WriteLine($"[ExportExcel] Resumen sheet skipped: {ex.Message}");
+                }
+
+                try
+                {
+                    CrearHojaGrafico(package, data);
+                }
+                catch (Exception ex)
+                {
+                    System.Diagnostics.Debug.WriteLine($"[ExportExcel] Charts sheet skipped: {ex.Message}");
+                }
 
                 // Guardar el archivo
                 FileInfo fileInfo = new FileInfo(rutaArchivo);

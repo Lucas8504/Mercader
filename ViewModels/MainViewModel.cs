@@ -1,4 +1,3 @@
-using System.Globalization;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Mercader.Models;
@@ -56,6 +55,13 @@ namespace Mercader.ViewModels
         [ObservableProperty]
         private string _margen = "0%";
 
+        // ===== Valores raw para exportación (sin formateo) =====
+        private decimal _rawTotalVentas;
+        private decimal _rawTotalGastos;
+        private decimal _rawTotalEncargos;
+        private decimal _rawGanancias;
+        private decimal _rawMargen;
+
         // ===== Selector de período =====
         public List<string> Periodos { get; } = new() { "Días", "Semanas", "Meses", "Años" };
 
@@ -103,7 +109,14 @@ namespace Mercader.ViewModels
             var gastosPorPeriodo = _balanceService.AgruparGastosPorPeriodo(Gastos, PeriodoSeleccionado);
             var encargosPorPeriodo = _balanceService.AgruparEncargosPorPeriodo(Encargos, PeriodoSeleccionado);
 
-            // Actualizar UI
+            // Guardar raw values para exportación (evita string→decimal)
+            _rawTotalVentas = totalVentas;
+            _rawTotalGastos = totalGastos;
+            _rawTotalEncargos = totalEncargos;
+            _rawGanancias = ganancias;
+            _rawMargen = margen;
+
+            // Actualizar UI con formato
             TotalVentas = totalVentas.ToString("C");
             TotalGastos = totalGastos.ToString("C");
             TotalEncargos = totalEncargos.ToString("C");
@@ -242,11 +255,11 @@ namespace Mercader.ViewModels
                 Ventas = Ventas.ToList(),
                 Gastos = Gastos.ToList(),
                 Encargos = Encargos.ToList(),
-                TotalVentas = decimal.Parse(TotalVentas, NumberStyles.Currency),
-                TotalGastos = decimal.Parse(TotalGastos, NumberStyles.Currency),
-                TotalEncargos = decimal.Parse(TotalEncargos, NumberStyles.Currency),
-                Ganancias = decimal.Parse(Ganancias, NumberStyles.Currency),
-                Margen = decimal.Parse(Margen.TrimEnd('%')),
+                TotalVentas = _rawTotalVentas,
+                TotalGastos = _rawTotalGastos,
+                TotalEncargos = _rawTotalEncargos,
+                Ganancias = _rawGanancias,
+                Margen = _rawMargen,
                 Periodo = PeriodoSeleccionado
             };
         }
