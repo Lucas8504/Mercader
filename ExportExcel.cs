@@ -2,11 +2,11 @@ using OfficeOpenXml;
 using OfficeOpenXml.Style;
 using System.Drawing;
 using System.Globalization;
-using OfficeOpenXml.Drawing.Chart;
 using Color = System.Drawing.Color;
 using Mercader.Models;
 using Mercader.Domain.Entities;
 using Mercader.ViewModels;
+using SkiaSharp;
 
 namespace Mercader
 {
@@ -18,19 +18,19 @@ namespace Mercader
 
             using (ExcelPackage package = new ExcelPackage())
             {
-                // Hojas de datos (esenciales - siempre deben funcionar)
+                // Hojas de datos (esenciales)
                 CrearHojaVentas(package, data.Ventas.ToList());
                 CrearHojaGastos(package, data.Gastos.ToList());
                 CrearHojaEncargos(package, data.Encargos.ToList());
 
-                // Hojas con gráficos (pueden fallar en plataformas sin System.Drawing)
+                // Hojas con gráficos — si fallan no matan el archivo
                 try
                 {
                     CrearHojaResumen(package, data);
                 }
                 catch (Exception ex)
                 {
-                    System.Diagnostics.Debug.WriteLine($"[ExportExcel] Resumen sheet skipped: {ex.Message}");
+                    System.Diagnostics.Debug.WriteLine($"[ExportExcel] CRITICAL - Resumen sheet failed: {ex}");
                 }
 
                 try
@@ -39,7 +39,7 @@ namespace Mercader
                 }
                 catch (Exception ex)
                 {
-                    System.Diagnostics.Debug.WriteLine($"[ExportExcel] Charts sheet skipped: {ex.Message}");
+                    System.Diagnostics.Debug.WriteLine($"[ExportExcel] CRITICAL - Charts sheet failed: {ex}");
                 }
 
                 // Guardar el archivo
@@ -152,47 +152,29 @@ namespace Mercader
 
             int filaGrafico = filaActual + 2;
 
+            // Calcular totales REALES desde los datos (sin filtro de período)
+            var totalVentasReal = data.Ventas.Sum(v => v.Precio * v.Cantidad);
+            var totalGastosReal = data.Gastos.Sum(g => g.Monto * g.Cantidad);
+            var totalEncargosReal = data.Encargos.Sum(e => e.Precio * e.Cantidad);
+
+            System.Diagnostics.Debug.WriteLine($"[ExportExcel] Doughnut data: Ventas={totalVentasReal}, Gastos={totalGastosReal}, Encargos={totalEncargosReal}");
+
             // Datos para gráfico
             worksheet.Cells[filaGrafico, 6].Value = "Concepto";
             worksheet.Cells[filaGrafico, 7].Value = "Monto";
 
             worksheet.Cells[filaGrafico + 1, 6].Value = "Ventas";
-            worksheet.Cells[filaGrafico + 1, 7].Value = data.TotalVentas;
+            worksheet.Cells[filaGrafico + 1, 7].Value = totalVentasReal;
 
             worksheet.Cells[filaGrafico + 2, 6].Value = "Gastos";
-            worksheet.Cells[filaGrafico + 2, 7].Value = Math.Abs(data.TotalGastos);
+            worksheet.Cells[filaGrafico + 2, 7].Value = Math.Abs(totalGastosReal);
 
             worksheet.Cells[filaGrafico + 3, 6].Value = "Encargos";
-            worksheet.Cells[filaGrafico + 3, 7].Value = Math.Abs(data.TotalEncargos);
+            worksheet.Cells[filaGrafico + 3, 7].Value = Math.Abs(totalEncargosReal);
 
-            var chart = worksheet.Drawings.AddChart("DistribucionBalance", eChartType.Doughnut);
-
-            chart.Title.Text = "Distribución del Balance";
-            chart.Title.Font.Size = 14;
-            chart.Title.Font.Bold = true;
-
-            chart.SetPosition(4, 0, 4, 0);   // fila, offset, columna, offset
-            chart.SetSize(420, 320);
-
-            // Serie
-            var serie = chart.Series.Add(
-                worksheet.Cells[filaGrafico + 1, 7, filaGrafico + 3, 7],
-                worksheet.Cells[filaGrafico + 1, 6, filaGrafico + 3, 6]
-            );
-
-            serie.Header = "Distribución";
-
-
-            var doughnut = chart.PlotArea.ChartTypes[0] as ExcelDoughnutChart;
-
-            doughnut!.DataLabel.ShowPercent = true;
-            doughnut.DataLabel.ShowCategory = true;
-            doughnut.DataLabel.Position = eLabelPosition.BestFit;
-
-            // Colores
-            doughnut.Series[0].DataPoints[0].Fill.Color = Color.FromArgb(40, 167, 69);  // Ventas (verde)
-            doughnut.Series[0].DataPoints[1].Fill.Color = Color.FromArgb(220, 53, 69);  // Gastos (rojo)
-            doughnut.Series[0].DataPoints[2].Fill.Color = Color.FromArgb(255, 193, 7);  // Encargos (amarillo)
+            var chartImage = RenderizarDonut(totalVentasReal, totalGastosReal, totalEncargosReal, 420, 320);
+            var picture = worksheet.Drawings.AddPicture("DistribucionBalance", new MemoryStream(chartImage));
+            picture.SetPosition(4, 0, 4, 0);
 
 
 
@@ -375,33 +357,14 @@ namespace Mercader
                 worksheet.Cells[fila, 2, fila, 4].Style.Numberformat.Format = "#,##0";
             }
 
-            // Crear gráfico
-            var chart = worksheet.Drawings.AddChart("GraficoFinanciero", eChartType.Line);
-            chart.Title.Text = "Evolución Financiera Mensual";
-            chart.Title.Font.Size = 16;
-            chart.Title.Font.Bold = true;
+            System.Diagnostics.Debug.WriteLine($"[ExportExcel] Line chart: {datosMensuales.Count} months");
+            foreach (var dm in datosMensuales)
+                System.Diagnostics.Debug.WriteLine($"  {dm.Mes}: V={dm.Ventas} G={dm.Gastos} Gcia={dm.Ganancia}");
 
-            // Configurar posición del gráfico
-            chart.SetPosition(4 + datosMensuales.Count + 2, 0, 0, 0);
-            chart.SetSize(800, 400);
-
-            // Agregar series de datos
-            var serieVentas = chart.Series.Add(worksheet.Cells[4, 2, 4 + datosMensuales.Count - 1, 2],
-                                              worksheet.Cells[4, 1, 4 + datosMensuales.Count - 1, 1]);
-            serieVentas.Header = "Ventas";
-
-            var serieGastos = chart.Series.Add(worksheet.Cells[4, 3, 4 + datosMensuales.Count - 1, 3],
-                                              worksheet.Cells[4, 1, 4 + datosMensuales.Count - 1, 1]);
-            serieGastos.Header = "Gastos";
-
-            var serieGanancias = chart.Series.Add(worksheet.Cells[4, 4, 4 + datosMensuales.Count - 1, 4],
-                                                 worksheet.Cells[4, 1, 4 + datosMensuales.Count - 1, 1]);
-            serieGanancias.Header = "Ganancias";
-
-            // Configurar ejes
-            chart.XAxis.Title.Text = "Período";
-            chart.YAxis.Title.Text = "Monto ($)";
-            chart.Legend.Position = eLegendPosition.Bottom;
+            // Renderizar gráfico como imagen con SkiaSharp
+            var lineChartImage = RenderizarEvolucion(datosMensuales, 800, 400);
+            var picture = worksheet.Drawings.AddPicture("GraficoFinanciero", new MemoryStream(lineChartImage));
+            picture.SetPosition(4 + datosMensuales.Count + 2, 0, 0, 0);
 
             // Configurar anchos de columna
             worksheet.Column(1).Width = 15;
@@ -416,10 +379,160 @@ namespace Mercader
             worksheet.Cells[filaInstrucciones, 1].Style.Font.Color.SetColor(Color.FromArgb(23, 162, 184));
 
             worksheet.Cells[filaInstrucciones + 1, 1].Value = "• El gráfico muestra la evolución de tus finanzas en los últimos 6 meses";
-            worksheet.Cells[filaInstrucciones + 2, 1].Value = "• Línea verde: Ventas (ingresos)";
-            worksheet.Cells[filaInstrucciones + 3, 1].Value = "• Línea roja: Gastos (egresos)";
-            worksheet.Cells[filaInstrucciones + 4, 1].Value = "• Línea azul: Ganancias netas (ventas - gastos)";
-            worksheet.Cells[filaInstrucciones + 5, 1].Value = "• Puedes hacer clic derecho en el gráfico para personalizarlo";
+            worksheet.Cells[filaInstrucciones + 2, 1].Value = "• Verde: Ventas | Rojo: Gastos | Azul: Ganancias";
+        }
+
+        // ===== Renderizado de gráficos con SkiaSharp =====
+
+        private static byte[] RenderizarDonut(decimal ventas, decimal gastos, decimal encargos, int width, int height)
+        {
+            var total = (float)(ventas + Math.Abs(gastos) + Math.Abs(encargos));
+            if (total == 0) return Array.Empty<byte>();
+
+            using var surface = SKSurface.Create(new SKImageInfo(width, height));
+            var canvas = surface.Canvas;
+            canvas.Clear(new SKColor(0xF8, 0xF9, 0xFA));
+
+            var colores = new[] {
+                SKColor.Parse("#28a745"),
+                SKColor.Parse("#dc3545"),
+                SKColor.Parse("#ffc107")
+            };
+            var valores = new[] { (float)ventas, (float)Math.Abs(gastos), (float)Math.Abs(encargos) };
+            var labels = new[] { "Ventas", "Gastos", "Encargos" };
+
+            var rect = new SKRect(30, 20, width - 30, height - 20);
+            var cx = (rect.Left + rect.Right) / 2f;
+            var cy = (rect.Top + rect.Bottom) / 2f;
+            float startAngle = -90;
+
+            for (int i = 0; i < 3; i++)
+            {
+                var sweep = valores[i] / total * 360f;
+                using var paint = new SKPaint { Color = colores[i], Style = SKPaintStyle.Fill, IsAntialias = true };
+                canvas.DrawArc(rect, startAngle, sweep, true, paint);
+                startAngle += sweep;
+            }
+
+            // Círculo interior (efecto donut)
+            var innerR = Math.Min(rect.Width, rect.Height) * 0.35f;
+            using var inner = new SKPaint { Color = new SKColor(0xF8, 0xF9, 0xFA), Style = SKPaintStyle.Fill, IsAntialias = true };
+            canvas.DrawCircle(cx, cy, innerR, inner);
+
+            // Leyenda
+            float legendY = height - 5;
+            float legendX = cx - 120;
+            using var labelPaint = new SKPaint { Color = SKColors.Black, TextSize = 14, IsAntialias = true };
+            for (int i = 0; i < 3; i++)
+            {
+                using var swatch = new SKPaint { Color = colores[i], Style = SKPaintStyle.Fill };
+                canvas.DrawRect(new SKRect(legendX, legendY - 12, legendX + 12, legendY), swatch);
+                canvas.DrawText(labels[i], legendX + 18, legendY - 2, labelPaint);
+                legendX += 80;
+            }
+
+            using var image = surface.Snapshot();
+            using var data = image.Encode(SKEncodedImageFormat.Png, 90);
+            return data.ToArray();
+        }
+
+        private static byte[] RenderizarEvolucion(List<DatoMensual> datos, int width, int height)
+        {
+            if (datos == null || datos.Count == 0) return Array.Empty<byte>();
+
+            using var surface = SKSurface.Create(new SKImageInfo(width, height));
+            var canvas = surface.Canvas;
+            canvas.Clear(new SKColor(0xFF, 0xFF, 0xFF));
+
+            var margin = 60f;
+            var chartW = width - margin * 2;
+            var chartH = height - margin * 2;
+
+            // Reunir todos los valores para escala
+            var allValues = datos.SelectMany(d => new[] { (float)d.Ventas, (float)Math.Abs(d.Gastos), (float)d.Ganancia }).ToList();
+            if (allValues.All(v => v == 0)) return Array.Empty<byte>();
+
+            var maxVal = allValues.Max();
+            var minVal = 0f;
+
+            // Dibujar fondo del área del gráfico
+            using var bgPaint = new SKPaint { Color = new SKColor(0xF8, 0xF9, 0xFA), Style = SKPaintStyle.Fill };
+            canvas.DrawRect(new SKRect(margin, margin, margin + chartW, margin + chartH), bgPaint);
+
+            // Ejes
+            using var axisPaint = new SKPaint { Color = new SKColor(0xCC, 0xCC, 0xCC), StrokeWidth = 1 };
+            canvas.DrawLine(margin, margin + chartH, margin + chartW, margin + chartH, axisPaint);
+            canvas.DrawLine(margin, margin, margin, margin + chartH, axisPaint);
+
+            // Grid horizontal
+            int gridLines = 4;
+            using var gridPaint = new SKPaint { Color = new SKColor(0xE0, 0xE0, 0xE0), StrokeWidth = 0.5f, PathEffect = SKPathEffect.CreateDash(new[] { 4f, 4f }, 0) };
+            using var valPaint = new SKPaint { Color = SKColors.DimGray, TextSize = 11, IsAntialias = true };
+            for (int i = 0; i <= gridLines; i++)
+            {
+                var y = margin + chartH - (chartH / gridLines * i);
+                canvas.DrawLine(margin, y, margin + chartW, y, gridPaint);
+                canvas.DrawText($"${(maxVal / gridLines * i):N0}", 5, y + 4, valPaint);
+            }
+
+            // Dibujar 3 series: Ventas, Gastos, Ganancias
+            var seriesConfig = new[] {
+                new { Color = SKColor.Parse("#28a745"), Values = datos.Select(d => (float)d.Ventas).ToList(), Label = "Ventas" },
+                new { Color = SKColor.Parse("#dc3545"), Values = datos.Select(d => (float)Math.Abs(d.Gastos)).ToList(), Label = "Gastos" },
+                new { Color = SKColor.Parse("#1D69BE"), Values = datos.Select(d => (float)d.Ganancia).ToList(), Label = "Ganancias" },
+            };
+
+            int n = datos.Count;
+            foreach (var serie in seriesConfig)
+            {
+                using var linePaint = new SKPaint { Color = serie.Color, StrokeWidth = 2.5f, Style = SKPaintStyle.Stroke, IsAntialias = true };
+                using var path = new SKPath();
+                for (int i = 0; i < n; i++)
+                {
+                    var x = margin + (chartW / (n - 1 > 0 ? n - 1 : 1)) * i;
+                    var y = margin + chartH - (serie.Values[i] / maxVal * chartH);
+                    if (i == 0) path.MoveTo(x, y);
+                    else path.LineTo(x, y);
+                }
+                canvas.DrawPath(path, linePaint);
+
+                // Puntos
+                using var pointPaint = new SKPaint { Color = serie.Color, Style = SKPaintStyle.Fill, IsAntialias = true };
+                for (int i = 0; i < n; i++)
+                {
+                    var x = margin + (chartW / (n - 1 > 0 ? n - 1 : 1)) * i;
+                    var y = margin + chartH - (serie.Values[i] / maxVal * chartH);
+                    canvas.DrawCircle(x, y, 4, pointPaint);
+                }
+            }
+
+            // Labels del eje X
+            using var xLabelPaint = new SKPaint { Color = SKColors.Black, TextSize = 11, IsAntialias = true, TextAlign = SKTextAlign.Center };
+            for (int i = 0; i < n; i++)
+            {
+                var x = margin + (chartW / (n - 1 > 0 ? n - 1 : 1)) * i;
+                canvas.DrawText(datos[i].Mes, x, height - 10, xLabelPaint);
+            }
+
+            // Título
+            using var titlePaint = new SKPaint { Color = SKColor.Parse("#2C3E50"), TextSize = 16, IsAntialias = true, TextAlign = SKTextAlign.Center };
+            canvas.DrawText("Evolución Financiera Mensual", width / 2, 20, titlePaint);
+
+            // Leyenda
+            float lx = margin + 10;
+            float ly = height - 35;
+            using var legPaint = new SKPaint { Color = SKColors.Black, TextSize = 12, IsAntialias = true };
+            foreach (var serie in seriesConfig)
+            {
+                using var swatch = new SKPaint { Color = serie.Color, Style = SKPaintStyle.Fill };
+                canvas.DrawRect(new SKRect(lx, ly - 10, lx + 10, ly), swatch);
+                canvas.DrawText(serie.Label, lx + 15, ly - 2, legPaint);
+                lx += 90;
+            }
+
+            using var image = surface.Snapshot();
+            using var data = image.Encode(SKEncodedImageFormat.Png, 90);
+            return data.ToArray();
         }
 
         private static void CrearTablaDetallada(ExcelWorksheet worksheet, string titulo,

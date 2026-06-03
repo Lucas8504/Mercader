@@ -125,35 +125,21 @@ namespace Mercader
 
                 // 2. FileSaver: diálogo nativo "Guardar como"
                 using var fileStream = File.OpenRead(rutaTemp);
-                var saverResult = await FileSaver.Default.SaveAsync(nombreArchivo, fileStream, CancellationToken.None);
-
-                string rutaFinal;
-                if (saverResult.IsSuccessful)
+ 
+#if IOS || MACCATALYST
+                if (OperatingSystem.IsIOSVersionAtLeast(14) || OperatingSystem.IsMacCatalystVersionAtLeast(14))
                 {
-                    // Usuario eligió dónde guardar ✅
-                    var rutaGuardado = saverResult.FilePath;
-                    File.Delete(rutaTemp);
-                    rutaFinal = $"📁 {rutaGuardado ?? "Ubicación elegida"}";
+                    var saverResult = await FileSaver.Default.SaveAsync(nombreArchivo, fileStream, CancellationToken.None);
+                    await HandleFileSaverResult(saverResult, rutaTemp, nombreArchivo);
                 }
                 else
                 {
-                    // Usuario canceló → auto-guardado
-#if ANDROID
-                    (rutaFinal, _) = await GuardarEnDescargasAndroidAsync(rutaTemp, nombreArchivo);
-#else
-                    string carpetaDocs = Path.Combine(
-                        Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "Mercader");
-                    Directory.CreateDirectory(carpetaDocs);
-                    rutaFinal = Path.Combine(carpetaDocs, nombreArchivo);
-                    File.Move(rutaTemp, rutaFinal, overwrite: true);
-#endif
+                    throw new PlatformNotSupportedException("La exportación solo es compatible con iOS 14.0+ y MacCatalyst 14.0+.");
                 }
-
-                var mensaje = $"📊 ¡Reporte generado!\n\n" +
-                              $"📁 {nombreArchivo}\n" +
-                              $"📍 {rutaFinal}";
-
-                await DisplayAlert("✅ Exportación Completada", mensaje, "OK");
+#else
+                var saverResult = await FileSaver.Default.SaveAsync(nombreArchivo, fileStream, CancellationToken.None);
+                await HandleFileSaverResult(saverResult, rutaTemp, nombreArchivo);
+#endif
             }
             catch (Exception ex)
             {
@@ -172,6 +158,35 @@ namespace Mercader
                     botonExportar.Text = "📊 EXPORTAR REPORTE COMPLETO";
                 }
             }
+        }
+
+        private async Task HandleFileSaverResult(FileSaverResult saverResult, string rutaTemp, string nombreArchivo)
+        {
+            string rutaFinal;
+            if (saverResult.IsSuccessful)
+            {
+                var rutaGuardado = saverResult.FilePath;
+                File.Delete(rutaTemp);
+                rutaFinal = $"📁 {rutaGuardado ?? "Ubicación elegida"}";
+            }
+            else
+            {
+#if ANDROID
+                (rutaFinal, _) = await GuardarEnDescargasAndroidAsync(rutaTemp, nombreArchivo);
+#else
+                string carpetaDocs = Path.Combine(
+                    Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "Mercader");
+                Directory.CreateDirectory(carpetaDocs);
+                rutaFinal = Path.Combine(carpetaDocs, nombreArchivo);
+                File.Move(rutaTemp, rutaFinal, overwrite: true);
+#endif
+            }
+
+            var mensaje = $"📊 ¡Reporte generado!\n\n" +
+                          $"📁 {nombreArchivo}\n" +
+                          $"📍 {rutaFinal}";
+
+            await DisplayAlert("✅ Exportación Completada", mensaje, "OK");
         }
 
 #if ANDROID
