@@ -401,9 +401,16 @@ namespace Mercader
             var valores = new[] { (float)ventas, (float)Math.Abs(gastos), (float)Math.Abs(encargos) };
             var labels = new[] { "Ventas", "Gastos", "Encargos" };
 
-            var rect = new SKRect(30, 20, width - 30, height - 20);
-            var cx = (rect.Left + rect.Right) / 2f;
-            var cy = (rect.Top + rect.Bottom) / 2f;
+            // Área cuadrada centrada para que el donut no se vea ovalado
+            var drawSize = Math.Min(width - 60, height - 50);
+            var rect = new SKRect(
+                (width - drawSize) / 2,
+                (height - drawSize) / 2 - 10,
+                (width + drawSize) / 2,
+                (height + drawSize) / 2 - 10);
+
+            var cx = rect.MidX;
+            var cy = rect.MidY;
             float startAngle = -90;
 
             for (int i = 0; i < 3; i++)
