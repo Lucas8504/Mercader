@@ -88,8 +88,11 @@ public partial class VentaModal : ContentPage
 
     private async Task SaveVentaAsync()
     {
-        
         await _repository.SaveVentasAsync(Venta);
+
+        // Rehabilitar descripción en autocompletado si estaba descartada
+        if (!string.IsNullOrWhiteSpace(Venta.Descripcion))
+            await _repository.ReinstateAutocompleteDescriptionAsync(Venta.Descripcion);
 
 #if ANDROID
         KeyboardHelper.Close();

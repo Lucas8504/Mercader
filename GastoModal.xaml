@@ -21,7 +21,7 @@
                 Text="Nuevo Gasto"
                 TextColor="#cccccc" />
 
-            <!--  Campo de Descripción  -->
+            <!--  Campo de Descripción con autocompletado  -->
             <Frame
                 Padding="10"
                 BackgroundColor="#2a2a2a"
@@ -32,7 +32,62 @@
                     BackgroundColor="Transparent"
                     Placeholder="Descripción del gasto"
                     PlaceholderColor="#7d7c7c"
-                    TextColor="#cccccc" />
+                    TextColor="#cccccc"
+                    TextChanged="OnDescripcionGastoTextChanged" />
+            </Frame>
+
+            <!--  Lista de sugerencias para autocompletado  -->
+            <Frame
+                x:Name="GastoSuggestionsFrame"
+                Padding="0"
+                BackgroundColor="#2a2a2a"
+                CornerRadius="8"
+                HasShadow="False"
+                IsVisible="False"
+                MaximumHeightRequest="200">
+                <CollectionView
+                    x:Name="GastoSuggestionsView"
+                    SelectionMode="Single"
+                    SelectionChanged="OnGastoSuggestionSelected">
+                    <CollectionView.ItemTemplate>
+                        <DataTemplate x:DataType="x:String">
+                            <Grid
+                                Padding="12,10"
+                                ColumnSpacing="0"
+                                BackgroundColor="Transparent">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="Auto" />
+                                </Grid.ColumnDefinitions>
+
+                                <Grid.GestureRecognizers>
+                                    <TapGestureRecognizer Tapped="OnGastoSuggestionTapped" />
+                                </Grid.GestureRecognizers>
+
+                                <Label
+                                    Grid.Column="0"
+                                    Text="{Binding .}"
+                                    TextColor="#cccccc"
+                                    FontSize="15"
+                                    VerticalOptions="Center" />
+
+                                <Label
+                                    Grid.Column="1"
+                                    Text="✕"
+                                    TextColor="#FF5252"
+                                    FontSize="14"
+                                    FontAttributes="Bold"
+                                    VerticalOptions="Center"
+                                    HorizontalOptions="End"
+                                    Padding="8,4">
+                                    <Label.GestureRecognizers>
+                                        <TapGestureRecognizer Tapped="OnGastoDismissSuggestionTapped" />
+                                    </Label.GestureRecognizers>
+                                </Label>
+                            </Grid>
+                        </DataTemplate>
+                    </CollectionView.ItemTemplate>
+                </CollectionView>
             </Frame>
 
             <!--  Campo de Monto  -->

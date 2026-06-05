@@ -21,7 +21,7 @@
                 TextColor="#cccccc"
                 HorizontalOptions="Center" />
 
-            <!-- Campo de cliente -->
+            <!-- Campo de cliente con autocompletado -->
             <Frame
                 BackgroundColor="#2a2a2a"
                 CornerRadius="8"
@@ -32,7 +32,62 @@
                     Placeholder="Nombre del cliente"
                     PlaceholderColor="#7d7c7c"
                     TextColor="#cccccc"
-                    BackgroundColor="Transparent" />
+                    BackgroundColor="Transparent"
+                    TextChanged="OnNombreEncargoTextChanged" />
+            </Frame>
+
+            <!-- Lista de sugerencias para autocompletado de nombres -->
+            <Frame
+                x:Name="NombreSuggestionsFrame"
+                Padding="0"
+                BackgroundColor="#2a2a2a"
+                CornerRadius="8"
+                HasShadow="False"
+                IsVisible="False"
+                MaximumHeightRequest="200">
+                <CollectionView
+                    x:Name="NombreSuggestionsView"
+                    SelectionMode="Single"
+                    SelectionChanged="OnNombreSuggestionSelected">
+                    <CollectionView.ItemTemplate>
+                        <DataTemplate x:DataType="x:String">
+                            <Grid
+                                Padding="12,10"
+                                ColumnSpacing="0"
+                                BackgroundColor="Transparent">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="Auto" />
+                                </Grid.ColumnDefinitions>
+
+                                <Grid.GestureRecognizers>
+                                    <TapGestureRecognizer Tapped="OnNombreSuggestionTapped" />
+                                </Grid.GestureRecognizers>
+
+                                <Label
+                                    Grid.Column="0"
+                                    Text="{Binding .}"
+                                    TextColor="#cccccc"
+                                    FontSize="15"
+                                    VerticalOptions="Center" />
+
+                                <Label
+                                    Grid.Column="1"
+                                    Text="✕"
+                                    TextColor="#FF5252"
+                                    FontSize="14"
+                                    FontAttributes="Bold"
+                                    VerticalOptions="Center"
+                                    HorizontalOptions="End"
+                                    Padding="8,4">
+                                    <Label.GestureRecognizers>
+                                        <TapGestureRecognizer Tapped="OnNombreDismissSuggestionTapped" />
+                                    </Label.GestureRecognizers>
+                                </Label>
+                            </Grid>
+                        </DataTemplate>
+                    </CollectionView.ItemTemplate>
+                </CollectionView>
             </Frame>
 
             <!-- Campo de Teléfono mejorado -->
@@ -62,7 +117,7 @@
                 </Grid>
             </Frame>
 
-            <!-- Campo de Descripción -->
+            <!-- Campo de Descripción con autocompletado -->
             <Frame
                 BackgroundColor="#2a2a2a"
                 CornerRadius="8"
@@ -73,7 +128,62 @@
                     Placeholder="Descripción"
                     PlaceholderColor="#7d7c7c"
                     TextColor="#cccccc"
-                    BackgroundColor="Transparent" />
+                    BackgroundColor="Transparent"
+                    TextChanged="OnDescripcionEncargoTextChanged" />
+            </Frame>
+
+            <!-- Lista de sugerencias para autocompletado -->
+            <Frame
+                x:Name="EncargoSuggestionsFrame"
+                Padding="0"
+                BackgroundColor="#2a2a2a"
+                CornerRadius="8"
+                HasShadow="False"
+                IsVisible="False"
+                MaximumHeightRequest="200">
+                <CollectionView
+                    x:Name="EncargoSuggestionsView"
+                    SelectionMode="Single"
+                    SelectionChanged="OnEncargoSuggestionSelected">
+                    <CollectionView.ItemTemplate>
+                        <DataTemplate x:DataType="x:String">
+                            <Grid
+                                Padding="12,10"
+                                ColumnSpacing="0"
+                                BackgroundColor="Transparent">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="Auto" />
+                                </Grid.ColumnDefinitions>
+
+                                <Grid.GestureRecognizers>
+                                    <TapGestureRecognizer Tapped="OnEncargoSuggestionTapped" />
+                                </Grid.GestureRecognizers>
+
+                                <Label
+                                    Grid.Column="0"
+                                    Text="{Binding .}"
+                                    TextColor="#cccccc"
+                                    FontSize="15"
+                                    VerticalOptions="Center" />
+
+                                <Label
+                                    Grid.Column="1"
+                                    Text="✕"
+                                    TextColor="#FF5252"
+                                    FontSize="14"
+                                    FontAttributes="Bold"
+                                    VerticalOptions="Center"
+                                    HorizontalOptions="End"
+                                    Padding="8,4">
+                                    <Label.GestureRecognizers>
+                                        <TapGestureRecognizer Tapped="OnEncargoDismissSuggestionTapped" />
+                                    </Label.GestureRecognizers>
+                                </Label>
+                            </Grid>
+                        </DataTemplate>
+                    </CollectionView.ItemTemplate>
+                </CollectionView>
             </Frame>
 
             <!-- Campo de Precio -->

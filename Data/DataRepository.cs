@@ -283,6 +283,69 @@ namespace Mercader.Data
                 .ToList();
         }
 
+        public async Task<List<string>> GetDistinctGastosDescriptionsAsync()
+        {
+            if (_database is null)
+                throw new InvalidOperationException("La base de datos no está inicializada.");
+
+            var descriptions = await _database.QueryAsync<Gasto>(
+                @"SELECT DISTINCT g.Descripcion
+                  FROM Gastos g
+                  LEFT JOIN DescripcionOculta d ON g.Descripcion = d.Descripcion
+                  WHERE g.Descripcion IS NOT NULL
+                    AND g.Descripcion != ''
+                    AND g.IsDeleted != 1
+                    AND d.Id IS NULL
+                  ORDER BY g.Descripcion");
+
+            return descriptions
+                .Where(g => g.Descripcion is not null)
+                .Select(g => g.Descripcion!)
+                .ToList();
+        }
+
+        public async Task<List<string>> GetDistinctEncargosDescriptionsAsync()
+        {
+            if (_database is null)
+                throw new InvalidOperationException("La base de datos no está inicializada.");
+
+            var descriptions = await _database.QueryAsync<Encargo>(
+                @"SELECT DISTINCT e.Descripcion
+                  FROM Encargo e
+                  LEFT JOIN DescripcionOculta d ON e.Descripcion = d.Descripcion
+                  WHERE e.Descripcion IS NOT NULL
+                    AND e.Descripcion != ''
+                    AND e.IsDeleted != 1
+                    AND d.Id IS NULL
+                  ORDER BY e.Descripcion");
+
+            return descriptions
+                .Where(e => e.Descripcion is not null)
+                .Select(e => e.Descripcion!)
+                .ToList();
+        }
+
+        public async Task<List<string>> GetDistinctEncargosNombresAsync()
+        {
+            if (_database is null)
+                throw new InvalidOperationException("La base de datos no está inicializada.");
+
+            var nombres = await _database.QueryAsync<Encargo>(
+                @"SELECT DISTINCT e.Nombre
+                  FROM Encargo e
+                  LEFT JOIN DescripcionOculta d ON e.Nombre = d.Descripcion
+                  WHERE e.Nombre IS NOT NULL
+                    AND e.Nombre != ''
+                    AND e.IsDeleted != 1
+                    AND d.Id IS NULL
+                  ORDER BY e.Nombre");
+
+            return nombres
+                .Where(e => e.Nombre is not null)
+                .Select(e => e.Nombre!)
+                .ToList();
+        }
+
         public async Task DismissAutocompleteDescriptionAsync(string descripcion)
         {
             if (_database is null)
@@ -300,6 +363,20 @@ namespace Mercader.Data
                     Descripcion = descripcion
                 });
             }
+        }
+
+        public async Task ReinstateAutocompleteDescriptionAsync(string descripcion)
+        {
+            if (_database is null)
+                throw new InvalidOperationException("La base de datos no está inicializada.");
+
+            if (string.IsNullOrWhiteSpace(descripcion))
+                return;
+
+            var existente = await _database.Table<DescripcionOculta>()
+                .FirstOrDefaultAsync(d => d.Descripcion == descripcion);
+            if (existente is not null)
+                await _database.DeleteAsync(existente);
         }
 
         // ===== CONSULTAS ESPECÍFICAS =====
