@@ -12,6 +12,7 @@ public partial class VentaModal : ContentPage
 {
     
     private readonly IDataRepository _repository;
+    private List<string> _todasLasDescripciones = new();
     public Ventas Venta { get; private set; } = null!;
 
 
@@ -21,6 +22,24 @@ public partial class VentaModal : ContentPage
 
         InitializeComponent();
         _repository = repository;
+    }
+
+    protected override async void OnAppearing()
+    {
+        base.OnAppearing();
+        await CargarSugerenciasAsync();
+    }
+
+    private async Task CargarSugerenciasAsync()
+    {
+        try
+        {
+            _todasLasDescripciones = await _repository.GetDistinctVentasDescriptionsAsync();
+        }
+        catch (Exception ex)
+        {
+            System.Diagnostics.Debug.WriteLine($"[AUTOCOMPLETE] Error al cargar sugerencias: {ex.Message}");
+        }
     }
 
 
@@ -88,6 +107,51 @@ public partial class VentaModal : ContentPage
 
         await Navigation.PopModalAsync();
 
+    }
+
+    // ===== AUTOCOMPLETADO =====
+
+    private void OnDescripcionTextChanged(object sender, TextChangedEventArgs e)
+    {
+        var texto = e.NewTextValue?.Trim() ?? "";
+
+        if (texto.Length == 0 || _todasLasDescripciones.Count == 0)
+        {
+            SuggestionsFrame.IsVisible = false;
+            return;
+        }
+
+        var filtradas = _todasLasDescripciones
+            .Where(d => d.Contains(texto, StringComparison.OrdinalIgnoreCase))
+            .ToList();
+
+        if (filtradas.Count > 0)
+        {
+            SuggestionsView.ItemsSource = filtradas;
+            SuggestionsFrame.IsVisible = true;
+        }
+        else
+        {
+            SuggestionsFrame.IsVisible = false;
+        }
+    }
+
+    private void OnSuggestionSelected(object sender, SelectionChangedEventArgs e)
+    {
+        if (e.CurrentSelection.FirstOrDefault() is string descripcion)
+        {
+            DescripcionV_Entry.Text = descripcion;
+            SuggestionsFrame.IsVisible = false;
+        }
+    }
+
+    private void OnSuggestionTapped(object sender, TappedEventArgs e)
+    {
+        if (sender is Grid grid && grid.BindingContext is string descripcion)
+        {
+            DescripcionV_Entry.Text = descripcion;
+            SuggestionsFrame.IsVisible = false;
+        }
     }
 
 }

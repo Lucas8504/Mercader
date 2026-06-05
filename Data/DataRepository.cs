@@ -259,6 +259,22 @@ namespace Mercader.Data
             return result;
         }
 
+        // ===== AUTOCOMPLETADO =====
+
+        public async Task<List<string>> GetDistinctVentasDescriptionsAsync()
+        {
+            if (_database is null)
+                throw new InvalidOperationException("La base de datos no está inicializada.");
+
+            var descriptions = await _database.QueryAsync<Ventas>(
+                "SELECT DISTINCT Descripcion FROM Ventas WHERE Descripcion IS NOT NULL AND Descripcion != '' AND IsDeleted != 1 ORDER BY Descripcion");
+
+            return descriptions
+                .Where(v => v.Descripcion is not null)
+                .Select(v => v.Descripcion!)
+                .ToList();
+        }
+
         // ===== CONSULTAS ESPECÍFICAS =====
 
         public async Task<List<Ventas>> GetVentasUltimos6MesesAsync()

@@ -21,7 +21,7 @@
                 Text="Agregar Venta"
                 TextColor="#cccccc" />
 
-            <!--  Campo de Descripción  -->
+            <!--  Campo de Descripción con autocompletado  -->
             <Frame
                 Padding="10"
                 BackgroundColor="#2a2a2a"
@@ -33,7 +33,38 @@
                     Keyboard="Default"
                     Placeholder="Descripción"
                     PlaceholderColor="#7d7c7c"
-                    TextColor="#cccccc" />
+                    TextColor="#cccccc"
+                    TextChanged="OnDescripcionTextChanged" />
+            </Frame>
+
+            <!--  Lista de sugerencias para autocompletado  -->
+            <Frame
+                x:Name="SuggestionsFrame"
+                Padding="0"
+                BackgroundColor="#2a2a2a"
+                CornerRadius="8"
+                HasShadow="False"
+                IsVisible="False"
+                MaximumHeightRequest="200">
+                <CollectionView
+                    x:Name="SuggestionsView"
+                    SelectionMode="Single"
+                    SelectionChanged="OnSuggestionSelected">
+                    <CollectionView.ItemTemplate>
+                        <DataTemplate x:DataType="x:String">
+                            <Grid Padding="12,10" BackgroundColor="Transparent">
+                                <Grid.GestureRecognizers>
+                                    <TapGestureRecognizer Tapped="OnSuggestionTapped" />
+                                </Grid.GestureRecognizers>
+                                <Label
+                                    Text="{Binding .}"
+                                    TextColor="#cccccc"
+                                    FontSize="15"
+                                    VerticalOptions="Center" />
+                            </Grid>
+                        </DataTemplate>
+                    </CollectionView.ItemTemplate>
+                </CollectionView>
             </Frame>
 
             <!--  Campo de Precio  -->
