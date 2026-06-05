@@ -154,4 +154,33 @@ public partial class VentaModal : ContentPage
         }
     }
 
+    private async void OnDismissSuggestionTapped(object sender, TappedEventArgs e)
+    {
+        if (sender is Label label && label.BindingContext is string descripcion)
+        {
+            try
+            {
+                // Persistir que no se muestre más
+                await _repository.DismissAutocompleteDescriptionAsync(descripcion);
+
+                // Remover de la lista en memoria
+                _todasLasDescripciones.Remove(descripcion);
+
+                // Refrescar la vista de sugerencias si está visible
+                if (SuggestionsFrame.IsVisible && SuggestionsView.ItemsSource is List<string> filtradas)
+                {
+                    filtradas.Remove(descripcion);
+                    if (filtradas.Count == 0)
+                        SuggestionsFrame.IsVisible = false;
+                    else
+                        SuggestionsView.ItemsSource = filtradas.ToList(); // refrescar
+                }
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"[AUTOCOMPLETE] Error al descartar sugerencia: {ex.Message}");
+            }
+        }
+    }
+
 }

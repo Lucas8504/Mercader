@@ -52,15 +52,41 @@
                     SelectionChanged="OnSuggestionSelected">
                     <CollectionView.ItemTemplate>
                         <DataTemplate x:DataType="x:String">
-                            <Grid Padding="12,10" BackgroundColor="Transparent">
+                            <Grid
+                                Padding="12,10"
+                                ColumnSpacing="0"
+                                BackgroundColor="Transparent">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="Auto" />
+                                </Grid.ColumnDefinitions>
+
                                 <Grid.GestureRecognizers>
                                     <TapGestureRecognizer Tapped="OnSuggestionTapped" />
                                 </Grid.GestureRecognizers>
+
+                                <!-- Texto de la sugerencia -->
                                 <Label
+                                    Grid.Column="0"
                                     Text="{Binding .}"
                                     TextColor="#cccccc"
                                     FontSize="15"
                                     VerticalOptions="Center" />
+
+                                <!-- Botón para eliminar la sugerencia -->
+                                <Label
+                                    Grid.Column="1"
+                                    Text="✕"
+                                    TextColor="#FF5252"
+                                    FontSize="14"
+                                    FontAttributes="Bold"
+                                    VerticalOptions="Center"
+                                    HorizontalOptions="End"
+                                    Padding="8,4">
+                                    <Label.GestureRecognizers>
+                                        <TapGestureRecognizer Tapped="OnDismissSuggestionTapped" />
+                                    </Label.GestureRecognizers>
+                                </Label>
                             </Grid>
                         </DataTemplate>
                     </CollectionView.ItemTemplate>

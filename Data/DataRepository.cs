@@ -36,6 +36,7 @@ namespace Mercader.Data
                 await _database.CreateTableAsync<Encargo>();
                 await _database.CreateTableAsync<Ventas>();
                 await _database.CreateTableAsync<Gasto>();
+                await _database.CreateTableAsync<DescripcionOculta>();
                 
                 // Ejecutar migraciones
                 await RunMigrationsAsync();
@@ -267,12 +268,38 @@ namespace Mercader.Data
                 throw new InvalidOperationException("La base de datos no está inicializada.");
 
             var descriptions = await _database.QueryAsync<Ventas>(
-                "SELECT DISTINCT Descripcion FROM Ventas WHERE Descripcion IS NOT NULL AND Descripcion != '' AND IsDeleted != 1 ORDER BY Descripcion");
+                @"SELECT DISTINCT v.Descripcion
+                  FROM Ventas v
+                  LEFT JOIN DescripcionOculta d ON v.Descripcion = d.Descripcion
+                  WHERE v.Descripcion IS NOT NULL
+                    AND v.Descripcion != ''
+                    AND v.IsDeleted != 1
+                    AND d.Id IS NULL
+                  ORDER BY v.Descripcion");
 
             return descriptions
                 .Where(v => v.Descripcion is not null)
                 .Select(v => v.Descripcion!)
                 .ToList();
+        }
+
+        public async Task DismissAutocompleteDescriptionAsync(string descripcion)
+        {
+            if (_database is null)
+                throw new InvalidOperationException("La base de datos no está inicializada.");
+
+            if (string.IsNullOrWhiteSpace(descripcion))
+                return;
+
+            // Solo inserta si no existe ya
+            var existe = await _database.FindAsync<DescripcionOculta>(d => d.Descripcion == descripcion);
+            if (existe is null)
+            {
+                await _database.InsertAsync(new DescripcionOculta
+                {
+                    Descripcion = descripcion
+                });
+            }
         }
 
         // ===== CONSULTAS ESPECÍFICAS =====

@@ -33,6 +33,7 @@ namespace Mercader.Data.Interfaces
 
         // ===== AUTOCOMPLETADO =====
         Task<List<string>> GetDistinctVentasDescriptionsAsync();
+        Task DismissAutocompleteDescriptionAsync(string descripcion);
 
         // ===== MÉTODOS GENÉRICOS (AUDITORÍA) =====
         Task<List<T>> GetAllAsync<T>() where T : BaseEntity, new();
