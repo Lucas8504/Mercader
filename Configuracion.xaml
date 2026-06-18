@@ -4,7 +4,7 @@
     xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
     Title="⚙️ Configuración"
-    BackgroundColor="#1C1C1E">
+    BackgroundColor="{AppThemeBinding Light={StaticResource PageBackground}, Dark={StaticResource PageBackgroundDark}}">
 
     <ScrollView>
         <VerticalStackLayout Padding="20" Spacing="15">
@@ -14,28 +14,52 @@
                 Text="General"
                 FontSize="18"
                 FontAttributes="Bold"
-                TextColor="#FFFFFF" />
+                TextColor="{AppThemeBinding Light={StaticResource TextPrimary}, Dark={StaticResource TextPrimaryDark}}" />
 
-            <Frame Padding="15" BackgroundColor="#2C2C2E">
+            <Frame Padding="15" BackgroundColor="{AppThemeBinding Light={StaticResource CardBackground}, Dark={StaticResource CardBackgroundDark}}">
                 <VerticalStackLayout Spacing="10">
                     <!-- Moneda -->
                     <Grid ColumnDefinitions="*, Auto">
                         <VerticalStackLayout Grid.Column="0">
-                            <Label Text="Moneda" FontSize="16" TextColor="#FFFFFF" />
-                            <Label Text="Símbolo de moneda para los precios" FontSize="12" TextColor="#8E8E93" />
+                            <Label Text="Moneda" FontSize="16" TextColor="{AppThemeBinding Light={StaticResource TextPrimary}, Dark={StaticResource TextPrimaryDark}}" />
+                            <Label Text="Símbolo de moneda para los precios" FontSize="12" TextColor="{AppThemeBinding Light={StaticResource TextSecondary}, Dark={StaticResource TextSecondaryDark}}" />
                         </VerticalStackLayout>
                         <Picker
                             x:Name="MonedaPicker"
                             Grid.Column="1"
                             WidthRequest="100"
                             SelectedIndex="0"
-                            TextColor="#FFFFFF">
+                            TextColor="{AppThemeBinding Light={StaticResource TextPrimary}, Dark={StaticResource TextPrimaryDark}}">
                             <Picker.ItemsSource>
                                 <x:Array Type="{x:Type x:String}">
                                     <x:String>$</x:String>
                                     <x:String>USD</x:String>
                                     <x:String>€</x:String>
                                     <x:String>R$</x:String>
+                                </x:Array>
+                            </Picker.ItemsSource>
+                        </Picker>
+                    </Grid>
+
+                    <BoxView HeightRequest="0.5" Color="{AppThemeBinding Light={StaticResource DividerColor}, Dark={StaticResource DividerColorDark}}" />
+
+                    <!-- Tema -->
+                    <Grid ColumnDefinitions="*, Auto">
+                        <VerticalStackLayout Grid.Column="0">
+                            <Label Text="Tema" FontSize="16" TextColor="{AppThemeBinding Light={StaticResource TextPrimary}, Dark={StaticResource TextPrimaryDark}}" />
+                            <Label Text="Claro, oscuro o seguir el sistema" FontSize="12" TextColor="{AppThemeBinding Light={StaticResource TextSecondary}, Dark={StaticResource TextSecondaryDark}}" />
+                        </VerticalStackLayout>
+                        <Picker
+                            x:Name="TemaPicker"
+                            Grid.Column="1"
+                            WidthRequest="140"
+                            TextColor="{AppThemeBinding Light={StaticResource TextPrimary}, Dark={StaticResource TextPrimaryDark}}"
+                            SelectedIndexChanged="OnTemaChanged">
+                            <Picker.ItemsSource>
+                                <x:Array Type="{x:Type x:String}">
+                                    <x:String>Sistema</x:String>
+                                    <x:String>Claro</x:String>
+                                    <x:String>Oscuro</x:String>
                                 </x:Array>
                             </Picker.ItemsSource>
                         </Picker>
@@ -48,15 +72,15 @@
                 Text="Notificaciones"
                 FontSize="18"
                 FontAttributes="Bold"
-                TextColor="#FFFFFF" />
+                TextColor="{AppThemeBinding Light={StaticResource TextPrimary}, Dark={StaticResource TextPrimaryDark}}" />
 
-            <Frame Padding="15" BackgroundColor="#2C2C2E">
+            <Frame Padding="15" BackgroundColor="{AppThemeBinding Light={StaticResource CardBackground}, Dark={StaticResource CardBackgroundDark}}">
                 <VerticalStackLayout Spacing="10">
                     <!-- Recordatorio de entregas -->
                     <Grid ColumnDefinitions="*, Auto">
                         <VerticalStackLayout Grid.Column="0">
-                            <Label Text="Recordatorio de entregas" FontSize="16" TextColor="#FFFFFF" />
-                            <Label Text="Notificar encargos pendientes" FontSize="12" TextColor="#8E8E93" />
+                            <Label Text="Recordatorio de entregas" FontSize="16" TextColor="{AppThemeBinding Light={StaticResource TextPrimary}, Dark={StaticResource TextPrimaryDark}}" />
+                            <Label Text="Notificar encargos pendientes" FontSize="12" TextColor="{AppThemeBinding Light={StaticResource TextSecondary}, Dark={StaticResource TextSecondaryDark}}" />
                         </VerticalStackLayout>
                         <Switch x:Name="NotificacionEntregasSwitch" Grid.Column="1" Toggled="OnNotificacionEntregasToggled" />
                     </Grid>
@@ -64,14 +88,14 @@
                     <!-- Tiempo de recordatorio -->
                     <Grid ColumnDefinitions="*, Auto" x:Name="TiempoRecordatorioGrid" IsVisible="False">
                         <VerticalStackLayout Grid.Column="0">
-                            <Label Text="Recordar antes" FontSize="14" TextColor="#8E8E93" />
+                            <Label Text="Recordar antes" FontSize="14" TextColor="{AppThemeBinding Light={StaticResource TextSecondary}, Dark={StaticResource TextSecondaryDark}}" />
                         </VerticalStackLayout>
                         <Picker
                             x:Name="TiempoRecordatorioPicker"
                             Grid.Column="1"
                             WidthRequest="140"
                             SelectedIndex="1"
-                            TextColor="#FFFFFF"
+                            TextColor="{AppThemeBinding Light={StaticResource TextPrimary}, Dark={StaticResource TextPrimaryDark}}"
                             SelectedIndexChanged="OnTiempoRecordatorioChanged">
                             <Picker.ItemsSource>
                                 <x:Array Type="{x:Type x:String}">
@@ -85,7 +109,7 @@
                         </Picker>
                     </Grid>
 
-                    <BoxView HeightRequest="0.5" Color="#38383A" />
+                    <BoxView HeightRequest="0.5" Color="{AppThemeBinding Light={StaticResource DividerColor}, Dark={StaticResource DividerColorDark}}" />
                 </VerticalStackLayout>
             </Frame>
 
@@ -94,9 +118,9 @@
                 Text="Datos"
                 FontSize="18"
                 FontAttributes="Bold"
-                TextColor="#FFFFFF" />
+                TextColor="{AppThemeBinding Light={StaticResource TextPrimary}, Dark={StaticResource TextPrimaryDark}}" />
 
-            <Frame Padding="15" BackgroundColor="#2C2C2E">
+            <Frame Padding="15" BackgroundColor="{AppThemeBinding Light={StaticResource CardBackground}, Dark={StaticResource CardBackgroundDark}}">
                 <VerticalStackLayout Spacing="10">
                     <!-- Exportar datos -->
                     <Button
@@ -105,7 +129,7 @@
                         TextColor="White"
                         Clicked="OnExportarClicked" />
 
-                    <BoxView HeightRequest="0.5" Color="#38383A" />
+                    <BoxView HeightRequest="0.5" Color="{AppThemeBinding Light={StaticResource DividerColor}, Dark={StaticResource DividerColorDark}}" />
 
                     <!-- Importar datos -->
                     <Button
@@ -114,7 +138,7 @@
                         TextColor="White"
                         Clicked="OnImportarClicked" />
 
-                    <BoxView HeightRequest="0.5" Color="#38383A" />
+                    <BoxView HeightRequest="0.5" Color="{AppThemeBinding Light={StaticResource DividerColor}, Dark={StaticResource DividerColorDark}}" />
 
                     <!-- Limpiar datos -->
                     <Button
@@ -130,13 +154,13 @@
                 Text="Acerca de"
                 FontSize="18"
                 FontAttributes="Bold"
-                TextColor="#FFFFFF" />
+                TextColor="{AppThemeBinding Light={StaticResource TextPrimary}, Dark={StaticResource TextPrimaryDark}}" />
 
-            <Frame Padding="15" BackgroundColor="#2C2C2E">
+            <Frame Padding="15" BackgroundColor="{AppThemeBinding Light={StaticResource CardBackground}, Dark={StaticResource CardBackgroundDark}}">
                 <VerticalStackLayout Spacing="5">
-                    <Label Text="Mercader" FontSize="16" FontAttributes="Bold" TextColor="#FFFFFF" />
-                    <Label Text="Versión 1.0.0" FontSize="14" TextColor="#8E8E93" />
-                    <Label Text="Gestión de ventas, gastos y encargos" FontSize="12" TextColor="#8E8E93" />
+                    <Label Text="Mercader" FontSize="16" FontAttributes="Bold" TextColor="{AppThemeBinding Light={StaticResource TextPrimary}, Dark={StaticResource TextPrimaryDark}}" />
+                    <Label Text="Versión 1.0.0" FontSize="14" TextColor="{AppThemeBinding Light={StaticResource TextSecondary}, Dark={StaticResource TextSecondaryDark}}" />
+                    <Label Text="Gestión de ventas, gastos y encargos" FontSize="12" TextColor="{AppThemeBinding Light={StaticResource TextSecondary}, Dark={StaticResource TextSecondaryDark}}" />
                 </VerticalStackLayout>
             </Frame>
 

@@ -11,6 +11,9 @@ namespace Mercader
 
             SQLitePCL.Batteries_V2.Init();
 
+            // Aplicar tema guardado
+            AplicarTema();
+
             // Inicializar la base de datos una sola vez
             Task.Run(async () =>
             {
@@ -18,6 +21,18 @@ namespace Mercader
             });
 
             MainPage = shell;
+        }
+
+        public static void AplicarTema()
+        {
+            var tema = Preferences.Get("tema", "system");
+
+            Current.UserAppTheme = tema switch
+            {
+                "light" => AppTheme.Light,
+                "dark" => AppTheme.Dark,
+                _ => AppTheme.Unspecified // sigue al sistema
+            };
         }
     }
 }

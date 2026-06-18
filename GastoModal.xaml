@@ -4,7 +4,7 @@
     xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
     Title="Nuevo Gasto"
-    BackgroundColor="#1e1e1e">
+    BackgroundColor="{AppThemeBinding Light={StaticResource PageBackground}, Dark={StaticResource PageBackgroundDark}}">
     <!--  Fondo oscuro para combinar con MainPage  -->
 
     <ScrollView>
@@ -19,20 +19,20 @@
                 FontSize="20"
                 HorizontalOptions="Center"
                 Text="Nuevo Gasto"
-                TextColor="#cccccc" />
+                TextColor="{AppThemeBinding Light={StaticResource TextPrimary}, Dark={StaticResource TextPrimaryDark}}" />
 
             <!--  Campo de Descripción con autocompletado  -->
             <Frame
                 Padding="10"
-                BackgroundColor="#2a2a2a"
+                BackgroundColor="{AppThemeBinding Light={StaticResource CardAltBackground}, Dark={StaticResource CardAltBackgroundDark}}"
                 CornerRadius="8"
                 HasShadow="False">
                 <Entry
                     x:Name="DescripcionGastoEntry"
                     BackgroundColor="Transparent"
                     Placeholder="Descripción del gasto"
-                    PlaceholderColor="#7d7c7c"
-                    TextColor="#cccccc"
+                    PlaceholderColor="{AppThemeBinding Light={StaticResource TextPlaceholder}, Dark={StaticResource TextPlaceholderDark}}"
+                    TextColor="{AppThemeBinding Light={StaticResource TextPrimary}, Dark={StaticResource TextPrimaryDark}}"
                     TextChanged="OnDescripcionGastoTextChanged" />
             </Frame>
 
@@ -40,7 +40,7 @@
             <Frame
                 x:Name="GastoSuggestionsFrame"
                 Padding="0"
-                BackgroundColor="#2a2a2a"
+                BackgroundColor="{AppThemeBinding Light={StaticResource CardAltBackground}, Dark={StaticResource CardAltBackgroundDark}}"
                 CornerRadius="8"
                 HasShadow="False"
                 IsVisible="False"
@@ -67,7 +67,7 @@
                                 <Label
                                     Grid.Column="0"
                                     Text="{Binding .}"
-                                    TextColor="#cccccc"
+                                    TextColor="{AppThemeBinding Light={StaticResource TextPrimary}, Dark={StaticResource TextPrimaryDark}}"
                                     FontSize="15"
                                     VerticalOptions="Center" />
 
@@ -93,7 +93,7 @@
             <!--  Campo de Monto  -->
             <Frame
                 Padding="10"
-                BackgroundColor="#2a2a2a"
+                BackgroundColor="{AppThemeBinding Light={StaticResource CardAltBackground}, Dark={StaticResource CardAltBackgroundDark}}"
                 CornerRadius="8"
                 HasShadow="False">
                 <Entry
@@ -101,14 +101,14 @@
                     BackgroundColor="Transparent"
                     Keyboard="Numeric"
                     Placeholder="Monto"
-                    PlaceholderColor="#7d7c7c"
-                    TextColor="#cccccc" />
+                    PlaceholderColor="{AppThemeBinding Light={StaticResource TextPlaceholder}, Dark={StaticResource TextPlaceholderDark}}"
+                    TextColor="{AppThemeBinding Light={StaticResource TextPrimary}, Dark={StaticResource TextPrimaryDark}}" />
             </Frame>
 
             <!--  Campo de Cantidad  -->
             <Frame
                 Padding="10"
-                BackgroundColor="#2a2a2a"
+                BackgroundColor="{AppThemeBinding Light={StaticResource CardAltBackground}, Dark={StaticResource CardAltBackgroundDark}}"
                 CornerRadius="8"
                 HasShadow="False">
                 <Entry
@@ -116,8 +116,8 @@
                     BackgroundColor="Transparent"
                     Keyboard="Numeric"
                     Placeholder="Cantidad"
-                    PlaceholderColor="#7d7c7c"
-                    TextColor="#cccccc" />
+                    PlaceholderColor="{AppThemeBinding Light={StaticResource TextPlaceholder}, Dark={StaticResource TextPlaceholderDark}}"
+                    TextColor="{AppThemeBinding Light={StaticResource TextPrimary}, Dark={StaticResource TextPrimaryDark}}" />
             </Frame>
 
             <!--  Botón Agregar Gasto  -->

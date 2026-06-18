@@ -4,7 +4,7 @@
     xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
     Title="Detalle del Encargo"
-    BackgroundColor="#1e1e1e">
+    BackgroundColor="{AppThemeBinding Light={StaticResource PageBackground}, Dark={StaticResource PageBackgroundDark}}">
 
     <ScrollView>
         <VerticalStackLayout
@@ -17,7 +17,7 @@
             <!-- Card con los detalles -->
             <Frame
                 Padding="20"
-                BackgroundColor="#2a2a2a"
+                BackgroundColor="{AppThemeBinding Light={StaticResource CardAltBackground}, Dark={StaticResource CardAltBackgroundDark}}"
                 CornerRadius="12"
                 HasShadow="True">
                 <VerticalStackLayout Spacing="15">
@@ -33,7 +33,7 @@
                             x:Name="LabelNombre"
                             FontSize="18"
                             Text="{Binding Nombre}"
-                            TextColor="#ffffff" />
+                            TextColor="{AppThemeBinding Light={StaticResource TextPrimary}, Dark={StaticResource TextPrimaryDark}}" />
                     </VerticalStackLayout>
 
                     <!-- Descripción -->
@@ -47,7 +47,7 @@
                             x:Name="LabelDescripcion"
                             FontSize="16"
                             Text="{Binding Descripcion}"
-                            TextColor="#cccccc" />
+                            TextColor="{AppThemeBinding Light={StaticResource TextPrimary}, Dark={StaticResource TextPrimaryDark}}" />
                     </VerticalStackLayout>
 
                     <!-- Precio y Cantidad en una fila -->
@@ -84,7 +84,7 @@
                                 FontSize="18"
                                 FontAttributes="Bold"
                                 Text="{Binding Cantidad}"
-                                TextColor="#ffffff" />
+                                TextColor="{AppThemeBinding Light={StaticResource TextPrimary}, Dark={StaticResource TextPrimaryDark}}" />
                         </VerticalStackLayout>
                     </Grid>
 
@@ -120,7 +120,7 @@
                                 x:Name="LabelFecha"
                                 FontSize="16"
                                 Text="{Binding Fecha, StringFormat='{0:dd/MM/yyyy}'}"
-                                TextColor="#cccccc" />
+                                TextColor="{AppThemeBinding Light={StaticResource TextPrimary}, Dark={StaticResource TextPrimaryDark}}" />
                         </VerticalStackLayout>
 
                         <!-- Fecha de entrega -->
@@ -134,7 +134,7 @@
                                 x:Name="LabelFechaEntrega"
                                 FontSize="16"
                                 Text="{Binding FechaEntrega, StringFormat='{0:dd/MM/yyyy}'}"
-                                TextColor="#cccccc" />
+                                TextColor="{AppThemeBinding Light={StaticResource TextPrimary}, Dark={StaticResource TextPrimaryDark}}" />
                         </VerticalStackLayout>
                     </Grid>
 

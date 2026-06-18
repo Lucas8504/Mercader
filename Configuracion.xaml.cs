@@ -48,6 +48,15 @@ public partial class Configuracion : ContentPage
         {
             await ProgramarRecordatorios();
         }
+
+        // Cargar tema guardado
+        var tema = Preferences.Get("tema", "system");
+        TemaPicker.SelectedIndex = tema switch
+        {
+            "light" => 1,
+            "dark" => 2,
+            _ => 0
+        };
     }
 
     private void OnNotificacionEntregasToggled(object sender, ToggledEventArgs e)
@@ -99,6 +108,19 @@ public partial class Configuracion : ContentPage
             4 => 48,
             _ => 1
         };
+    }
+
+    private void OnTemaChanged(object sender, EventArgs e)
+    {
+        var tema = TemaPicker.SelectedIndex switch
+        {
+            1 => "light",
+            2 => "dark",
+            _ => "system"
+        };
+
+        Preferences.Set("tema", tema);
+        App.AplicarTema();
     }
 
     private async void OnExportarClicked(object sender, EventArgs e)

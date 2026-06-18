@@ -4,7 +4,7 @@
     xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
     Title="Agregar Encargo"
-    BackgroundColor="#1e1e1e">
+    BackgroundColor="{AppThemeBinding Light={StaticResource PageBackground}, Dark={StaticResource PageBackgroundDark}}">
     <!-- Fondo oscuro para combinar con MainPage -->
 
     <ScrollView>
@@ -18,20 +18,20 @@
                 Text="Agregar Encargo"
                 FontSize="20"
                 FontAttributes="Bold"
-                TextColor="#cccccc"
+                TextColor="{AppThemeBinding Light={StaticResource TextPrimary}, Dark={StaticResource TextPrimaryDark}}"
                 HorizontalOptions="Center" />
 
             <!-- Campo de cliente con autocompletado -->
             <Frame
-                BackgroundColor="#2a2a2a"
+                BackgroundColor="{AppThemeBinding Light={StaticResource CardAltBackground}, Dark={StaticResource CardAltBackgroundDark}}"
                 CornerRadius="8"
                 Padding="10"
                 HasShadow="False">
                 <Entry
                     x:Name="EncargoEntry"
                     Placeholder="Nombre del cliente"
-                    PlaceholderColor="#7d7c7c"
-                    TextColor="#cccccc"
+                    PlaceholderColor="{AppThemeBinding Light={StaticResource TextPlaceholder}, Dark={StaticResource TextPlaceholderDark}}"
+                    TextColor="{AppThemeBinding Light={StaticResource TextPrimary}, Dark={StaticResource TextPrimaryDark}}"
                     BackgroundColor="Transparent"
                     TextChanged="OnNombreEncargoTextChanged" />
             </Frame>
@@ -40,7 +40,7 @@
             <Frame
                 x:Name="NombreSuggestionsFrame"
                 Padding="0"
-                BackgroundColor="#2a2a2a"
+                BackgroundColor="{AppThemeBinding Light={StaticResource CardAltBackground}, Dark={StaticResource CardAltBackgroundDark}}"
                 CornerRadius="8"
                 HasShadow="False"
                 IsVisible="False"
@@ -67,7 +67,7 @@
                                 <Label
                                     Grid.Column="0"
                                     Text="{Binding .}"
-                                    TextColor="#cccccc"
+                                    TextColor="{AppThemeBinding Light={StaticResource TextPrimary}, Dark={StaticResource TextPrimaryDark}}"
                                     FontSize="15"
                                     VerticalOptions="Center" />
 
@@ -92,14 +92,14 @@
 
             <!-- Campo de Teléfono mejorado -->
             <Frame
-                BackgroundColor="#2a2a2a"
+                BackgroundColor="{AppThemeBinding Light={StaticResource CardAltBackground}, Dark={StaticResource CardAltBackgroundDark}}"
                 CornerRadius="8"
                 Padding="10"
                 HasShadow="False">
                 <Grid ColumnDefinitions="Auto, *" VerticalOptions="Center">
                     <Label
                         Text="📞"
-                        TextColor="#7d7c7c"
+                        TextColor="{AppThemeBinding Light={StaticResource TextSecondary}, Dark={StaticResource TextSecondaryDark}}"
                         FontSize="16"
                         VerticalOptions="Center"
                         Grid.Column="0"
@@ -108,8 +108,8 @@
                         x:Name="ContactoEntry"
                         Keyboard="Telephone"
                         Placeholder="Teléfono (ej: 11 1234-5678)"
-                        PlaceholderColor="#7d7c7c"
-                        TextColor="#cccccc"
+                        PlaceholderColor="{AppThemeBinding Light={StaticResource TextPlaceholder}, Dark={StaticResource TextPlaceholderDark}}"
+                        TextColor="{AppThemeBinding Light={StaticResource TextPrimary}, Dark={StaticResource TextPrimaryDark}}"
                         BackgroundColor="Transparent"
                         MaxLength="20"
                         Grid.Column="1"
@@ -119,15 +119,15 @@
 
             <!-- Campo de Descripción con autocompletado -->
             <Frame
-                BackgroundColor="#2a2a2a"
+                BackgroundColor="{AppThemeBinding Light={StaticResource CardAltBackground}, Dark={StaticResource CardAltBackgroundDark}}"
                 CornerRadius="8"
                 Padding="10"
                 HasShadow="False">
                 <Entry
                     x:Name="DescripcionEntry"
                     Placeholder="Descripción"
-                    PlaceholderColor="#7d7c7c"
-                    TextColor="#cccccc"
+                    PlaceholderColor="{AppThemeBinding Light={StaticResource TextPlaceholder}, Dark={StaticResource TextPlaceholderDark}}"
+                    TextColor="{AppThemeBinding Light={StaticResource TextPrimary}, Dark={StaticResource TextPrimaryDark}}"
                     BackgroundColor="Transparent"
                     TextChanged="OnDescripcionEncargoTextChanged" />
             </Frame>
@@ -136,7 +136,7 @@
             <Frame
                 x:Name="EncargoSuggestionsFrame"
                 Padding="0"
-                BackgroundColor="#2a2a2a"
+                BackgroundColor="{AppThemeBinding Light={StaticResource CardAltBackground}, Dark={StaticResource CardAltBackgroundDark}}"
                 CornerRadius="8"
                 HasShadow="False"
                 IsVisible="False"
@@ -163,7 +163,7 @@
                                 <Label
                                     Grid.Column="0"
                                     Text="{Binding .}"
-                                    TextColor="#cccccc"
+                                    TextColor="{AppThemeBinding Light={StaticResource TextPrimary}, Dark={StaticResource TextPrimaryDark}}"
                                     FontSize="15"
                                     VerticalOptions="Center" />
 
@@ -188,7 +188,7 @@
 
             <!-- Campo de Precio -->
             <Frame
-                BackgroundColor="#2a2a2a"
+                BackgroundColor="{AppThemeBinding Light={StaticResource CardAltBackground}, Dark={StaticResource CardAltBackgroundDark}}"
                 CornerRadius="8"
                 Padding="10"
                 HasShadow="False">
@@ -196,14 +196,14 @@
                     x:Name="PrecioEntry"
                     Keyboard="Numeric"
                     Placeholder="Precio ($)"
-                    PlaceholderColor="#7d7c7c"
-                    TextColor="#cccccc"
+                    PlaceholderColor="{AppThemeBinding Light={StaticResource TextPlaceholder}, Dark={StaticResource TextPlaceholderDark}}"
+                    TextColor="{AppThemeBinding Light={StaticResource TextPrimary}, Dark={StaticResource TextPrimaryDark}}"
                     BackgroundColor="Transparent" />
             </Frame>
 
             <!-- Campo de Cantidad -->
             <Frame
-                BackgroundColor="#2a2a2a"
+                BackgroundColor="{AppThemeBinding Light={StaticResource CardAltBackground}, Dark={StaticResource CardAltBackgroundDark}}"
                 CornerRadius="8"
                 Padding="10"
                 HasShadow="False">
@@ -211,27 +211,27 @@
                     x:Name="CantidadEntry"
                     Keyboard="Numeric"
                     Placeholder="Cantidad"
-                    PlaceholderColor="#7d7c7c"
-                    TextColor="#cccccc"
+                    PlaceholderColor="{AppThemeBinding Light={StaticResource TextPlaceholder}, Dark={StaticResource TextPlaceholderDark}}"
+                    TextColor="{AppThemeBinding Light={StaticResource TextPrimary}, Dark={StaticResource TextPrimaryDark}}"
                     BackgroundColor="Transparent" />
             </Frame>
 
             <!-- Campo de Fecha de Entrega -->
             <Frame
-                BackgroundColor="#2a2a2a"
+                BackgroundColor="{AppThemeBinding Light={StaticResource CardAltBackground}, Dark={StaticResource CardAltBackgroundDark}}"
                 CornerRadius="8"
                 Padding="10"
                 HasShadow="False">
                 <Grid ColumnDefinitions="Auto, *" VerticalOptions="Center">
                     <Label
                         Text="Fecha de Entrega:"
-                        TextColor="#7d7c7c"
+                        TextColor="{AppThemeBinding Light={StaticResource TextSecondary}, Dark={StaticResource TextSecondaryDark}}"
                         FontSize="14"
                         VerticalOptions="Center"
                         Grid.Column="0" />
                     <DatePicker
                         x:Name="FechaEntregaDatePicker"
-                        TextColor="#cccccc"
+                        TextColor="{AppThemeBinding Light={StaticResource TextPrimary}, Dark={StaticResource TextPrimaryDark}}"
                         BackgroundColor="Transparent"
                         Grid.Column="1" />
                 </Grid>

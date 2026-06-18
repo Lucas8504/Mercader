@@ -26,6 +26,26 @@
     <Color x:Key="Gray900">#212121</Color>
     <Color x:Key="Gray950">#141414</Color>
 
+    <!-- App Theme Colors -->
+    <Color x:Key="PageBackground">#F2F2F7</Color>
+    <Color x:Key="PageBackgroundDark">#1C1C1C</Color>
+    <Color x:Key="CardBackground">#FFFFFF</Color>
+    <Color x:Key="CardBackgroundDark">#2C2C2E</Color>
+    <Color x:Key="CardAltBackground">#FFFFFF</Color>
+    <Color x:Key="CardAltBackgroundDark">#2a2a2a</Color>
+    <Color x:Key="InputBackground">#FFFFFF</Color>
+    <Color x:Key="InputBackgroundDark">#3a3a3a</Color>
+    <Color x:Key="TextPrimary">#1C1C1E</Color>
+    <Color x:Key="TextPrimaryDark">#FFFFFF</Color>
+    <Color x:Key="TextSecondary">#8E8E93</Color>
+    <Color x:Key="TextSecondaryDark">#8E8E93</Color>
+    <Color x:Key="TextPlaceholder">#C7C7CC</Color>
+    <Color x:Key="TextPlaceholderDark">#7d7c7c</Color>
+    <Color x:Key="DividerColor">#C6C6C8</Color>
+    <Color x:Key="DividerColorDark">#38383A</Color>
+    <Color x:Key="DeepBackground">#F2F2F7</Color>
+    <Color x:Key="DeepBackgroundDark">#0f0f0f</Color>
+
     <SolidColorBrush x:Key="PrimaryBrush" Color="{StaticResource Primary}" />
     <SolidColorBrush x:Key="SecondaryBrush" Color="{StaticResource Secondary}" />
     <SolidColorBrush x:Key="TertiaryBrush" Color="{StaticResource Tertiary}" />

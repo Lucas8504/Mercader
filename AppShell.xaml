@@ -5,27 +5,27 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
     xmlns:local="clr-namespace:Mercader"
     Title="Mercader"
-    BackgroundColor="#1C1C1C"
-    FlyoutBackgroundColor="#1e1e1e"
+    BackgroundColor="{AppThemeBinding Light={DynamicResource PageBackground}, Dark={DynamicResource PageBackgroundDark}}"
+    FlyoutBackgroundColor="{AppThemeBinding Light={DynamicResource PageBackground}, Dark={DynamicResource PageBackgroundDark}}"
     Shell.FlyoutBehavior="Flyout"
     Shell.TitleColor="White"
     Shell.NavBarHasShadow="False"
     FlyoutIcon="consultar_listas_removebg.png" >
     <!--  Flyout Header  -->
     <Shell.FlyoutHeader>
-        <Grid Padding="20" BackgroundColor="#1e1e1e">
+        <Grid Padding="20" BackgroundColor="{AppThemeBinding Light={DynamicResource PageBackground}, Dark={DynamicResource PageBackgroundDark}}">
             <Label
                 FontAttributes="Bold"
                 FontSize="24"
                 HorizontalOptions="Center"
                 Text="Mercader"
-                TextColor="#cccccc"
+                TextColor="{AppThemeBinding Light={DynamicResource TextPrimary}, Dark={DynamicResource TextPrimaryDark}}"
                 VerticalOptions="Center" />
         </Grid>
     </Shell.FlyoutHeader>
     <!--  Flyout Footer  -->
     <Shell.FlyoutFooter>
-        <Grid Padding="10" BackgroundColor="#1e1e1e">
+        <Grid Padding="10" BackgroundColor="{AppThemeBinding Light={DynamicResource PageBackground}, Dark={DynamicResource PageBackgroundDark}}">
             <Grid.RowDefinitions>
                 <RowDefinition Height="*"/>
                 <RowDefinition Height="*"/>
@@ -35,14 +35,14 @@
                 FontSize="14"
                 HorizontalOptions="Center"
                 Text="Versión 1.0"
-                TextColor="#7d7c7c"
+                TextColor="{AppThemeBinding Light={DynamicResource TextSecondary}, Dark={DynamicResource TextSecondaryDark}}"
                 VerticalOptions="Center" />
             <Label
                 Grid.Row="1"
                 FontSize="14"
                 HorizontalOptions="Center"
                 Text="por  Luks.dev y FPDS Vasos :)"
-                TextColor="#7d7c7c"
+                TextColor="{AppThemeBinding Light={DynamicResource TextSecondary}, Dark={DynamicResource TextSecondaryDark}}"
                 VerticalOptions="Center" />
         </Grid>
     </Shell.FlyoutFooter>
@@ -68,13 +68,13 @@
                     FontSize="17"
                     HorizontalOptions="Start"
                     Text="{Binding Title}"
-                    TextColor="#cccccc"
+                    TextColor="{AppThemeBinding Light={DynamicResource TextPrimary}, Dark={DynamicResource TextPrimaryDark}}"
                     VerticalOptions="Center" />
                 <!--  Separador  -->
                 <Rectangle
                     Grid.RowSpan="4"
                     Grid.ColumnSpan="3"
-                    Fill="#7d7c7c"
+                    Fill="{AppThemeBinding Light={DynamicResource DividerColor}, Dark={DynamicResource DividerColorDark}}"
                     HeightRequest="0.5"
                     Opacity="0.2"
                     VerticalOptions="End" />

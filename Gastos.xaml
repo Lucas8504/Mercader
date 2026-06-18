@@ -5,7 +5,7 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
     xmlns:local="clr-namespace:Mercader"
     Title="💸 Registro de Gastos"
-    BackgroundColor="#0f0f0f">
+    BackgroundColor="{AppThemeBinding Light={StaticResource DeepBackground}, Dark={StaticResource DeepBackgroundDark}}">
 
     <Grid>
         <Grid.RowDefinitions>
@@ -40,7 +40,7 @@
                                 <!-- Tarjeta de gasto minimalista moderna -->
                                 <Frame
                                     Padding="16"
-                                    BackgroundColor="#252525"
+                                    BackgroundColor="{AppThemeBinding Light={StaticResource CardBackground}, Dark={StaticResource CardBackgroundDark}}"
                                     BorderColor="Transparent"
                                     CornerRadius="16"
                                     HasShadow="False">
@@ -70,7 +70,7 @@
                                                 FontSize="17"
                                                 LineBreakMode="WordWrap"
                                                 Text="{Binding Descripcion}"
-                                                TextColor="#E8E8E8"
+                                                TextColor="{AppThemeBinding Light={StaticResource TextPrimary}, Dark={StaticResource TextPrimaryDark}}"
                                                 VerticalOptions="Center" />
 
                                             <!-- Cantidad -->
@@ -78,7 +78,7 @@
                                                 Grid.Column="1"
                                                 FontSize="12"
                                                 Text="{Binding Cantidad, StringFormat='{0} unid.'}"
-                                                TextColor="#888888"
+                                                TextColor="{AppThemeBinding Light={StaticResource TextSecondary}, Dark={StaticResource TextSecondaryDark}}"
                                                 VerticalOptions="Center" />
                                         </Grid>
 
@@ -137,7 +137,7 @@
                                             Grid.Row="2"
                                             FontSize="12"
                                             Text="{Binding Fecha, StringFormat='{0:dd MMM yyyy}'}"
-                                            TextColor="#6A6A6A" />
+                                            TextColor="{AppThemeBinding Light={StaticResource TextSecondary}, Dark={StaticResource TextSecondaryDark}}" />
                                     </Grid>
                                 </Frame>
                             </SwipeView>
@@ -161,13 +161,13 @@
                                 FontAttributes="Bold"
                                 FontSize="18"
                                 Text="No hay gastos registrados"
-                                TextColor="#cccccc"
+                                TextColor="{AppThemeBinding Light={StaticResource TextPrimary}, Dark={StaticResource TextPrimaryDark}}"
                                 HorizontalTextAlignment="Center" />
 
                             <Label
                                 FontSize="14"
                                 Text="Los gastos aparecerán aquí cuando se registren"
-                                TextColor="#888888"
+                                TextColor="{AppThemeBinding Light={StaticResource TextSecondary}, Dark={StaticResource TextSecondaryDark}}"
                                 HorizontalTextAlignment="Center" />
                         </StackLayout>
                     </CollectionView.EmptyView>
