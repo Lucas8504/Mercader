@@ -41,29 +41,57 @@
                         </Picker>
                     </Grid>
 
-                    <BoxView HeightRequest="0.5" Color="{AppThemeBinding Light={StaticResource DividerColor}, Dark={StaticResource DividerColorDark}}" />
+                    <BoxView HeightRequest="0.5" Color="{AppThemeBinding Light={StaticResource DividerColor}, Dark={StaticResource DividerColorDark}}" Margin="0,4" />
 
                     <!-- Tema -->
-                    <Grid ColumnDefinitions="*, Auto">
-                        <VerticalStackLayout Grid.Column="0">
-                            <Label Text="Tema" FontSize="16" TextColor="{AppThemeBinding Light={StaticResource TextPrimary}, Dark={StaticResource TextPrimaryDark}}" />
-                            <Label Text="Claro, oscuro o seguir el sistema" FontSize="12" TextColor="{AppThemeBinding Light={StaticResource TextSecondary}, Dark={StaticResource TextSecondaryDark}}" />
-                        </VerticalStackLayout>
-                        <Picker
-                            x:Name="TemaPicker"
-                            Grid.Column="1"
-                            WidthRequest="140"
-                            TextColor="{AppThemeBinding Light={StaticResource TextPrimary}, Dark={StaticResource TextPrimaryDark}}"
-                            SelectedIndexChanged="OnTemaChanged">
-                            <Picker.ItemsSource>
-                                <x:Array Type="{x:Type x:String}">
-                                    <x:String>Sistema</x:String>
-                                    <x:String>Claro</x:String>
-                                    <x:String>Oscuro</x:String>
-                                </x:Array>
-                            </Picker.ItemsSource>
-                        </Picker>
-                    </Grid>
+                    <VerticalStackLayout Spacing="6">
+                        <Label Text="Tema" FontSize="16" TextColor="{AppThemeBinding Light={StaticResource TextPrimary}, Dark={StaticResource TextPrimaryDark}}" />
+                        <Label Text="Elegí cómo se ve la app" FontSize="12" TextColor="{AppThemeBinding Light={StaticResource TextSecondary}, Dark={StaticResource TextSecondaryDark}}" />
+
+                        <Grid ColumnDefinitions="*,6,*,6,*" x:Name="TemaSelector" Margin="0,4,0,0">
+                            <!-- Sistema -->
+                            <Frame x:Name="TemaSistemaFrame" Grid.Column="0" Padding="6,8" CornerRadius="10" HasShadow="False"
+                                   BackgroundColor="{AppThemeBinding Light={StaticResource CardAltBackground}, Dark={StaticResource CardAltBackgroundDark}}"
+                                   BorderColor="Transparent">
+                                <Frame.GestureRecognizers>
+                                    <TapGestureRecognizer Tapped="OnTemaSistemaTapped" />
+                                </Frame.GestureRecognizers>
+                                <VerticalStackLayout Spacing="2" HorizontalOptions="Center">
+                                    <Label Text="📱" FontSize="16" HorizontalOptions="Center" />
+                                    <Label Text="Sistema" FontSize="11" HorizontalOptions="Center"
+                                           TextColor="{AppThemeBinding Light={StaticResource TextPrimary}, Dark={StaticResource TextPrimaryDark}}" />
+                                </VerticalStackLayout>
+                            </Frame>
+
+                            <!-- Claro -->
+                            <Frame x:Name="TemaClaroFrame" Grid.Column="2" Padding="6,8" CornerRadius="10" HasShadow="False"
+                                   BackgroundColor="{AppThemeBinding Light={StaticResource CardAltBackground}, Dark={StaticResource CardAltBackgroundDark}}"
+                                   BorderColor="Transparent">
+                                <Frame.GestureRecognizers>
+                                    <TapGestureRecognizer Tapped="OnTemaClaroTapped" />
+                                </Frame.GestureRecognizers>
+                                <VerticalStackLayout Spacing="2" HorizontalOptions="Center">
+                                    <Label Text="☀️" FontSize="16" HorizontalOptions="Center" />
+                                    <Label Text="Claro" FontSize="11" HorizontalOptions="Center"
+                                           TextColor="{AppThemeBinding Light={StaticResource TextPrimary}, Dark={StaticResource TextPrimaryDark}}" />
+                                </VerticalStackLayout>
+                            </Frame>
+
+                            <!-- Oscuro -->
+                            <Frame x:Name="TemaOscuroFrame" Grid.Column="4" Padding="6,8" CornerRadius="10" HasShadow="False"
+                                   BackgroundColor="{AppThemeBinding Light={StaticResource CardAltBackground}, Dark={StaticResource CardAltBackgroundDark}}"
+                                   BorderColor="Transparent">
+                                <Frame.GestureRecognizers>
+                                    <TapGestureRecognizer Tapped="OnTemaOscuroTapped" />
+                                </Frame.GestureRecognizers>
+                                <VerticalStackLayout Spacing="2" HorizontalOptions="Center">
+                                    <Label Text="🌙" FontSize="16" HorizontalOptions="Center" />
+                                    <Label Text="Oscuro" FontSize="11" HorizontalOptions="Center"
+                                           TextColor="{AppThemeBinding Light={StaticResource TextPrimary}, Dark={StaticResource TextPrimaryDark}}" />
+                                </VerticalStackLayout>
+                            </Frame>
+                        </Grid>
+                    </VerticalStackLayout>
                 </VerticalStackLayout>
             </Frame>
 

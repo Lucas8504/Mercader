@@ -49,14 +49,9 @@ public partial class Configuracion : ContentPage
             await ProgramarRecordatorios();
         }
 
-        // Cargar tema guardado
+        // Cargar tema guardado y resaltar el seleccionado
         var tema = Preferences.Get("tema", "system");
-        TemaPicker.SelectedIndex = tema switch
-        {
-            "light" => 1,
-            "dark" => 2,
-            _ => 0
-        };
+        ResaltarTema(tema);
     }
 
     private void OnNotificacionEntregasToggled(object sender, ToggledEventArgs e)
@@ -110,18 +105,26 @@ public partial class Configuracion : ContentPage
         };
     }
 
-    private void OnTemaChanged(object sender, EventArgs e)
+    private void ResaltarTema(string tema)
     {
-        var tema = TemaPicker.SelectedIndex switch
-        {
-            1 => "light",
-            2 => "dark",
-            _ => "system"
-        };
+        var selected = Color.FromArgb("#0A84FF");
+        var none = Colors.Transparent;
 
+        TemaSistemaFrame.BorderColor = tema == "system" ? selected : none;
+        TemaClaroFrame.BorderColor = tema == "light" ? selected : none;
+        TemaOscuroFrame.BorderColor = tema == "dark" ? selected : none;
+    }
+
+    private void AplicarTema(string tema)
+    {
         Preferences.Set("tema", tema);
+        ResaltarTema(tema);
         App.AplicarTema();
     }
+
+    private void OnTemaSistemaTapped(object sender, TappedEventArgs e) => AplicarTema("system");
+    private void OnTemaClaroTapped(object sender, TappedEventArgs e) => AplicarTema("light");
+    private void OnTemaOscuroTapped(object sender, TappedEventArgs e) => AplicarTema("dark");
 
     private async void OnExportarClicked(object sender, EventArgs e)
     {
