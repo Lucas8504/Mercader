@@ -8,9 +8,9 @@
     BackgroundColor="{AppThemeBinding Light={DynamicResource PageBackground}, Dark={DynamicResource PageBackgroundDark}}"
     FlyoutBackgroundColor="{AppThemeBinding Light={DynamicResource PageBackground}, Dark={DynamicResource PageBackgroundDark}}"
     Shell.FlyoutBehavior="Flyout"
-    Shell.TitleColor="White"
     Shell.NavBarHasShadow="False"
-    FlyoutIcon="consultar_listas_removebg.png" >
+    Shell.TitleColor="{AppThemeBinding Light={DynamicResource TextPrimary}, Dark=White}"
+    Shell.ForegroundColor="{AppThemeBinding Light={DynamicResource TextPrimary}, Dark=White}" >
     <!--  Flyout Header  -->
     <Shell.FlyoutHeader>
         <Grid Padding="20" BackgroundColor="{AppThemeBinding Light={DynamicResource PageBackground}, Dark={DynamicResource PageBackgroundDark}}">
