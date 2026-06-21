@@ -9,6 +9,14 @@ namespace Mercader.Services.Charts
 {
     public class ChartService : IChartService
     {
+        private static bool EsModoClaro =>
+            Application.Current?.UserAppTheme == AppTheme.Light ||
+            Application.Current?.RequestedTheme == AppTheme.Light;
+
+        private static SKColor ChartBg => EsModoClaro ? SKColor.Parse("#FFFFFF") : SKColor.Parse("#2a2a2a");
+        private static SKColor ChartText => EsModoClaro ? SKColor.Parse("#1C1C1E") : SKColor.Parse("#E0E0E0");
+        private static SKColor ChartValueLabel => EsModoClaro ? SKColor.Parse("#1C1C1E") : SKColor.Parse("#FFFFFF");
+        private static SKColor ChartGridLine => EsModoClaro ? SKColor.Parse("#D1D1D6") : SKColor.Parse("#404040");
 
     public Chart CrearGraficoEncargos(List<(string Periodo, decimal Total)> datos)
     {
@@ -32,8 +40,8 @@ namespace Mercader.Services.Charts
                 Label = d.Periodo,
                 ValueLabel = FormatearValorEntero(d.Total),
                 Color = SKColor.Parse(color),
-                TextColor = SKColor.Parse("#B0B0B0"),
-                ValueLabelColor = SKColor.Parse("#FFFFFF")
+                TextColor = ChartText,
+                ValueLabelColor = ChartValueLabel
             };
         }).ToArray();
         return CrearLineChartBase(entries);
@@ -61,8 +69,8 @@ namespace Mercader.Services.Charts
                 Label = d.Periodo,
                 ValueLabel = FormatearValorEntero(d.Total),
                 Color = SKColor.Parse(color),
-                TextColor = SKColor.Parse("#B0B0B0"),
-                ValueLabelColor = SKColor.Parse("#FFFFFF")
+                TextColor = ChartText,
+                ValueLabelColor = ChartValueLabel
             };
         }).ToArray();
         return CrearLineChartBase(entries);
@@ -88,8 +96,8 @@ namespace Mercader.Services.Charts
                 Label = d.Periodo,
                 ValueLabel = FormatearValorEntero(d.Total),
                 Color = SKColor.Parse(color),
-                TextColor = SKColor.Parse("#E0E0E0"),
-                ValueLabelColor = SKColor.Parse("#FFFFFF")
+                TextColor = ChartText,
+                ValueLabelColor = ChartValueLabel
             };
         }).ToArray();
 
@@ -132,8 +140,8 @@ namespace Mercader.Services.Charts
                 Label = d.Periodo,
                 ValueLabel = FormatearValorEntero(d.Total),
                 Color = SKColor.Parse(color),
-                TextColor = SKColors.White,
-                ValueLabelColor = SKColors.White
+                TextColor = ChartText,
+                ValueLabelColor = ChartValueLabel
             };
         }).ToArray();
 
@@ -151,7 +159,7 @@ namespace Mercader.Services.Charts
             ValueLabelTextSize = 24,
 
             // 🎨 Estética
-            BackgroundColor = SKColor.Parse("#2a2a2a"),
+            BackgroundColor = ChartBg,
             LineSize = 5,
             PointSize = 10,
             IsAnimated = true,
@@ -166,7 +174,7 @@ namespace Mercader.Services.Charts
             ShowYAxisLines = true,
             YAxisLinesPaint = new SKPaint
             {
-                Color = SKColor.Parse("#404040"),
+                Color = ChartGridLine,
                 StrokeWidth = 1,
                 IsAntialias = true
             },
