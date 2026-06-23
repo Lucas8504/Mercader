@@ -14,20 +14,21 @@
             <!--  Sección Botones Principales  -->
             <HorizontalStackLayout
                 HorizontalOptions="Center"
-                Spacing="10">
+                Spacing="8">
 
                 <Button
                     Clicked="InAgregarGasto"
                     CornerRadius="16"
                     FontAttributes="Bold"
-                    FontSize="14"
-                    HeightRequest="46"
-                    Text="➕​ Gasto"
+                    FontSize="13"
+                    HeightRequest="44"
+                    LineBreakMode="NoWrap"
+                    Text="➕ Gasto"
                     TextColor="White"
-                    WidthRequest="108">
+                    WidthRequest="96">
                     <Button.Background>
                         <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
-                            <GradientStop Color="#8e1a3a" Offset="0.0" />
+                            <GradientStop Color="#a63a4a" Offset="0.0" />
                             <GradientStop Color="#6e0a24" Offset="1.0" />
                         </LinearGradientBrush>
                     </Button.Background>
@@ -40,14 +41,15 @@
                     Clicked="InAgregarEncargo"
                     CornerRadius="16"
                     FontAttributes="Bold"
-                    FontSize="14"
-                    HeightRequest="46"
-                    Text="➕ ​Encargo"
+                    FontSize="13"
+                    HeightRequest="44"
+                    LineBreakMode="NoWrap"
+                    Text="➕ Encargo"
                     TextColor="White"
-                    WidthRequest="108">
+                    WidthRequest="96">
                     <Button.Background>
                         <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
-                            <GradientStop Color="#ff8b55" Offset="0.0" />
+                            <GradientStop Color="#ff9b65" Offset="0.0" />
                             <GradientStop Color="#ff6b35" Offset="1.0" />
                         </LinearGradientBrush>
                     </Button.Background>
@@ -60,14 +62,15 @@
                     Clicked="InAgregarVenta"
                     CornerRadius="16"
                     FontAttributes="Bold"
-                    FontSize="14"
-                    HeightRequest="46"
-                    Text="➕​ Venta"
+                    FontSize="13"
+                    HeightRequest="44"
+                    LineBreakMode="NoWrap"
+                    Text="➕ Venta"
                     TextColor="White"
-                    WidthRequest="108">
+                    WidthRequest="96">
                     <Button.Background>
                         <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
-                            <GradientStop Color="#4ab469" Offset="0.0" />
+                            <GradientStop Color="#56bc71" Offset="0.0" />
                             <GradientStop Color="#2e9449" Offset="1.0" />
                         </LinearGradientBrush>
                     </Button.Background>
@@ -340,7 +343,7 @@
                 TextColor="White">
                 <Button.Background>
                     <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
-                        <GradientStop Color="#84b0f9" Offset="0.0" />
+                        <GradientStop Color="#8cb8ff" Offset="0.0" />
                         <GradientStop Color="#6490E9" Offset="1.0" />
                     </LinearGradientBrush>
                 </Button.Background>
