@@ -13,35 +13,53 @@
 
             <!--  Sección Botones Principales  -->
             <HorizontalStackLayout
-                Margin="-5,0,0,0"
                 HorizontalOptions="Center"
-                Spacing="7">
-
+                Spacing="10">
 
                 <Button
                     BackgroundColor="{StaticResource GastoColor}"
                     Clicked="InAgregarGasto"
-                    CornerRadius="17"
+                    CornerRadius="16"
+                    FontAttributes="Bold"
+                    FontSize="14"
+                    HeightRequest="46"
                     Text="➕​ Gasto"
                     TextColor="White"
-                    WidthRequest="106" />
+                    WidthRequest="108">
+                    <Button.Shadow>
+                        <Shadow Brush="#40000000" Offset="0,3" Radius="8" Opacity="0.3" />
+                    </Button.Shadow>
+                </Button>
 
                 <Button
                     BackgroundColor="{StaticResource EncargoColor}"
                     Clicked="InAgregarEncargo"
-                    CornerRadius="17"
+                    CornerRadius="16"
+                    FontAttributes="Bold"
+                    FontSize="14"
+                    HeightRequest="46"
                     Text="➕ ​Encargo"
                     TextColor="White"
-                    WidthRequest="106" />
+                    WidthRequest="108">
+                    <Button.Shadow>
+                        <Shadow Brush="#40000000" Offset="0,3" Radius="8" Opacity="0.3" />
+                    </Button.Shadow>
+                </Button>
 
                 <Button
                     BackgroundColor="{StaticResource VentaColor}"
                     Clicked="InAgregarVenta"
-                    CornerRadius="17"
+                    CornerRadius="16"
+                    FontAttributes="Bold"
+                    FontSize="14"
+                    HeightRequest="46"
                     Text="➕​ Venta"
                     TextColor="White"
-                    WidthRequest="106" />
-
+                    WidthRequest="108">
+                    <Button.Shadow>
+                        <Shadow Brush="#40000000" Offset="0,3" Radius="8" Opacity="0.3" />
+                    </Button.Shadow>
+                </Button>
 
             </HorizontalStackLayout>
 
@@ -298,14 +316,18 @@
 
             <!--  Botón Exportar  -->
             <Button
-                Margin="10,1,0,0"
                 BackgroundColor="{StaticResource ExportarColor}"
                 Clicked="OnExportarAExcelClicked"
-                CornerRadius="17"
+                CornerRadius="16"
                 FontAttributes="Bold"
-                HeightRequest="50"
-                Text="📊 EXPORTAR REPORTE COMPLETO"
-                TextColor="White" />
+                FontSize="15"
+                HeightRequest="54"
+                Text="📊  EXPORTAR REPORTE COMPLETO"
+                TextColor="White">
+                <Button.Shadow>
+                    <Shadow Brush="#40000000" Offset="0,3" Radius="8" Opacity="0.3" />
+                </Button.Shadow>
+            </Button>
 
         </VerticalStackLayout>
     </ScrollView>
