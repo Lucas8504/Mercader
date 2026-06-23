@@ -17,7 +17,6 @@
                 Spacing="10">
 
                 <Button
-                    BackgroundColor="{StaticResource GastoColor}"
                     Clicked="InAgregarGasto"
                     CornerRadius="16"
                     FontAttributes="Bold"
@@ -26,13 +25,18 @@
                     Text="➕​ Gasto"
                     TextColor="White"
                     WidthRequest="108">
+                    <Button.Background>
+                        <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                            <GradientStop Color="#8e1a3a" Offset="0.0" />
+                            <GradientStop Color="#6e0a24" Offset="1.0" />
+                        </LinearGradientBrush>
+                    </Button.Background>
                     <Button.Shadow>
                         <Shadow Brush="#40000000" Offset="0,3" Radius="8" Opacity="0.3" />
                     </Button.Shadow>
                 </Button>
 
                 <Button
-                    BackgroundColor="{StaticResource EncargoColor}"
                     Clicked="InAgregarEncargo"
                     CornerRadius="16"
                     FontAttributes="Bold"
@@ -41,13 +45,18 @@
                     Text="➕ ​Encargo"
                     TextColor="White"
                     WidthRequest="108">
+                    <Button.Background>
+                        <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                            <GradientStop Color="#ff8b55" Offset="0.0" />
+                            <GradientStop Color="#ff6b35" Offset="1.0" />
+                        </LinearGradientBrush>
+                    </Button.Background>
                     <Button.Shadow>
                         <Shadow Brush="#40000000" Offset="0,3" Radius="8" Opacity="0.3" />
                     </Button.Shadow>
                 </Button>
 
                 <Button
-                    BackgroundColor="{StaticResource VentaColor}"
                     Clicked="InAgregarVenta"
                     CornerRadius="16"
                     FontAttributes="Bold"
@@ -56,6 +65,12 @@
                     Text="➕​ Venta"
                     TextColor="White"
                     WidthRequest="108">
+                    <Button.Background>
+                        <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                            <GradientStop Color="#4ab469" Offset="0.0" />
+                            <GradientStop Color="#2e9449" Offset="1.0" />
+                        </LinearGradientBrush>
+                    </Button.Background>
                     <Button.Shadow>
                         <Shadow Brush="#40000000" Offset="0,3" Radius="8" Opacity="0.3" />
                     </Button.Shadow>
@@ -316,7 +331,6 @@
 
             <!--  Botón Exportar  -->
             <Button
-                BackgroundColor="{StaticResource ExportarColor}"
                 Clicked="OnExportarAExcelClicked"
                 CornerRadius="16"
                 FontAttributes="Bold"
@@ -324,6 +338,12 @@
                 HeightRequest="54"
                 Text="📊  EXPORTAR REPORTE COMPLETO"
                 TextColor="White">
+                <Button.Background>
+                    <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                        <GradientStop Color="#84b0f9" Offset="0.0" />
+                        <GradientStop Color="#6490E9" Offset="1.0" />
+                    </LinearGradientBrush>
+                </Button.Background>
                 <Button.Shadow>
                     <Shadow Brush="#40000000" Offset="0,3" Radius="8" Opacity="0.3" />
                 </Button.Shadow>
