@@ -83,18 +83,25 @@
                                             <!-- Contacto con touch -->
                                             <Frame
                                                 Grid.Column="1"
-                                                BackgroundColor="#2A2A3A"
-                                                BorderColor="#3A3A4A"
+                                                BackgroundColor="{AppThemeBinding Light={StaticResource InputBackground}, Dark={StaticResource InputBackgroundDark}}"
+                                                BorderColor="{AppThemeBinding Light={StaticResource DividerColor}, Dark={StaticResource DividerColorDark}}"
                                                 CornerRadius="8"
-                                                Padding="8,6"
+                                                Padding="10,6"
                                                 HasShadow="False">
                                                 <Frame.GestureRecognizers>
                                                     <TapGestureRecognizer Tapped="OnContactTapped" />
                                                 </Frame.GestureRecognizers>
-                                                <Label
-                                                    FontSize="12"
-                                                    Text="{Binding Contacto}"
-                                                    TextColor="#6AB0D0" />
+                                                <HorizontalStackLayout Spacing="4">
+                                                    <Label
+                                                        FontSize="12"
+                                                        Text="📞"
+                                                        VerticalOptions="Center" />
+                                                    <Label
+                                                        FontSize="12"
+                                                        Text="{Binding Contacto}"
+                                                        TextColor="{AppThemeBinding Light={StaticResource TextPrimary}, Dark={StaticResource TextSecondaryDark}}"
+                                                        VerticalOptions="Center" />
+                                                </HorizontalStackLayout>
                                             </Frame>
                                         </Grid>
 
