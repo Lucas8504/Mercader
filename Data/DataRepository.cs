@@ -200,18 +200,9 @@ namespace Mercader.Data
             if (_database is null)
                 throw new InvalidOperationException("La base de datos no está inicializada.");
 
-            var all = await _database.Table<Ventas>().ToListAsync();
-            // Filtrar solo los no eliminados - maneja null como false
-            var filtered = all.Where(x => x.IsDeleted != true).ToList();
-            
-            // Debug
-            System.Diagnostics.Debug.WriteLine($"[DEBUG] GetVentasAsync: {all.Count} total, {filtered.Count} sin eliminar");
-            foreach(var v in all)
-            {
-                System.Diagnostics.Debug.WriteLine($"  - Id:{v.Id}, IsDeleted:{v.IsDeleted}, Desc:{v.Descripcion}");
-            }
-            
-            return filtered;
+            return await _database.Table<Ventas>()
+                .Where(x => x.IsDeleted != true)
+                .ToListAsync();
         }
 
         public async Task<int> SaveVentasAsync(Ventas venta)
