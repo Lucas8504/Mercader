@@ -1,12 +1,14 @@
-using OfficeOpenXml;
-using OfficeOpenXml.Style;
-using System.Drawing;
-using System.Globalization;
-using Color = System.Drawing.Color;
-using Mercader.Models;
+using NPOI.SS.UserModel;
+using NPOI.SS.Util;
+using NPOI.XSSF.UserModel;
+using NPOI.XDDF.UserModel;
+using NPOI.XDDF.UserModel.Chart;
+using NPOI.OpenXmlFormats.Dml;
 using Mercader.Domain.Entities;
-using Mercader.ViewModels;
+using Mercader.Models;
 using SkiaSharp;
+using HA = NPOI.SS.UserModel.HorizontalAlignment;
+using VA = NPOI.SS.UserModel.VerticalAlignment;
 
 namespace Mercader
 {
@@ -14,288 +16,435 @@ namespace Mercader
     {
         public static async Task ExportarBalanceAExcelAsync(BalanceExportDto data, string rutaArchivo)
         {
-            ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
-
-            using (ExcelPackage package = new ExcelPackage())
+            using (var workbook = new XSSFWorkbook())
             {
-                // Hojas de datos (esenciales)
-                CrearHojaVentas(package, data.Ventas.ToList());
-                CrearHojaGastos(package, data.Gastos.ToList());
-                CrearHojaEncargos(package, data.Encargos.ToList());
+                CrearHojaVentas(workbook, data.Ventas.ToList());
+                CrearHojaGastos(workbook, data.Gastos.ToList());
+                CrearHojaEncargos(workbook, data.Encargos.ToList());
 
-                // Hojas con gráficos — si fallan no matan el archivo
-                try
-                {
-                    CrearHojaResumen(package, data);
-                }
+                try { CrearHojaResumen(workbook, data); }
                 catch (Exception ex)
                 {
                     System.Diagnostics.Debug.WriteLine($"[ExportExcel] CRITICAL - Resumen sheet failed: {ex}");
                 }
 
-                try
-                {
-                    CrearHojaGrafico(package, data);
-                }
+                try { CrearHojaGrafico(workbook, data); }
                 catch (Exception ex)
                 {
                     System.Diagnostics.Debug.WriteLine($"[ExportExcel] CRITICAL - Charts sheet failed: {ex}");
                 }
 
-                // Guardar el archivo
-                FileInfo fileInfo = new FileInfo(rutaArchivo);
-                await package.SaveAsAsync(fileInfo);
+                await Task.Run(() =>
+                {
+                    using var fs = new FileStream(rutaArchivo, FileMode.Create, FileAccess.Write);
+                    workbook.Write(fs);
+                });
             }
         }
 
-        private static void CrearHojaResumen(ExcelPackage package, BalanceExportDto data)
-        {
-            var worksheet = package.Workbook.Worksheets.Add("📊 Resumen Ejecutivo");
+        // ======================================================================
+        // ESTILOS COMPARTIDOS (creados una sola vez para evitar duplicados)
+        // ======================================================================
 
-            // Configurar ancho de columnas
-            worksheet.Column(1).Width = 25;
-            worksheet.Column(2).Width = 20;
-            worksheet.Column(3).Width = 20;
-            worksheet.Column(4).Width = 20;
+        /// <summary>Fondo celeste claro, texto negro, bold, centrado, bordes.</summary>
+        private static ICellStyle CrearEstiloHeaderAzul(XSSFWorkbook wb)
+        {
+            var s = wb.CreateCellStyle();
+            var f = wb.CreateFont();
+            f.FontName = "Calibri"; f.FontHeightInPoints = 12; f.IsBold = true;
+            s.SetFont(f);
+            ((XSSFCellStyle)s).SetFillForegroundColor(new XSSFColor(new SKColor(198, 224, 247)));
+            s.FillPattern = FillPattern.SolidForeground;
+            s.Alignment = HA.Center;
+            s.VerticalAlignment = VA.Center;
+            s.BorderTop = BorderStyle.Thin; s.BorderBottom = BorderStyle.Thin;
+            s.BorderLeft = BorderStyle.Thin; s.BorderRight = BorderStyle.Thin;
+            return s;
+        }
+
+        /// <summary>Fondo verde claro, texto oscuro, bold.</summary>
+        private static ICellStyle CrearEstiloHeaderVerde(XSSFWorkbook wb)
+        {
+            var s = wb.CreateCellStyle();
+            var f = wb.CreateFont();
+            f.FontName = "Calibri"; f.FontHeightInPoints = 12; f.IsBold = true;
+            s.SetFont(f);
+            ((XSSFCellStyle)s).SetFillForegroundColor(new XSSFColor(new SKColor(198, 239, 206)));
+            s.FillPattern = FillPattern.SolidForeground;
+            s.Alignment = HA.Center;
+            s.VerticalAlignment = VA.Center;
+            s.BorderTop = BorderStyle.Thin; s.BorderBottom = BorderStyle.Thin;
+            s.BorderLeft = BorderStyle.Thin; s.BorderRight = BorderStyle.Thin;
+            return s;
+        }
+
+        /// <summary>Fondo gris claro, texto oscuro, bold.</summary>
+        private static ICellStyle CrearEstiloHeaderGris(XSSFWorkbook wb)
+        {
+            var s = wb.CreateCellStyle();
+            var f = wb.CreateFont();
+            f.FontName = "Calibri"; f.FontHeightInPoints = 11; f.IsBold = true;
+            s.SetFont(f);
+            ((XSSFCellStyle)s).SetFillForegroundColor(new XSSFColor(new SKColor(233, 236, 239)));
+            s.FillPattern = FillPattern.SolidForeground;
+            s.BorderTop = BorderStyle.Thin; s.BorderBottom = BorderStyle.Thin;
+            s.BorderLeft = BorderStyle.Thin; s.BorderRight = BorderStyle.Thin;
+            return s;
+        }
+
+        /// <summary>Fondo amarillo claro, bold — para totales.</summary>
+        private static ICellStyle CrearEstiloTotal(XSSFWorkbook wb)
+        {
+            var s = wb.CreateCellStyle();
+            var f = wb.CreateFont();
+            f.FontName = "Calibri"; f.FontHeightInPoints = 12; f.IsBold = true;
+            s.SetFont(f);
+            ((XSSFCellStyle)s).SetFillForegroundColor(new XSSFColor(new SKColor(255, 243, 205)));
+            s.FillPattern = FillPattern.SolidForeground;
+            s.DataFormat = wb.CreateDataFormat().GetFormat("$#,##0");
+            s.BorderTop = BorderStyle.Thin; s.BorderBottom = BorderStyle.Thin;
+            s.BorderLeft = BorderStyle.Thin; s.BorderRight = BorderStyle.Thin;
+            return s;
+        }
+
+        /// <summary>Fondo gris muy claro para filas alternadas.</summary>
+        private static ICellStyle CrearEstiloAlternado(XSSFWorkbook wb)
+        {
+            var s = wb.CreateCellStyle();
+            ((XSSFCellStyle)s).SetFillForegroundColor(new XSSFColor(new SKColor(248, 249, 250)));
+            s.FillPattern = FillPattern.SolidForeground;
+            return s;
+        }
+
+        /// <summary>Bordes delgados + Calibri 11, para datos.</summary>
+        private static ICellStyle CrearEstiloDato(XSSFWorkbook wb)
+        {
+            var s = wb.CreateCellStyle();
+            var f = wb.CreateFont();
+            f.FontName = "Calibri"; f.FontHeightInPoints = 11;
+            s.SetFont(f);
+            s.BorderTop = BorderStyle.Thin; s.BorderBottom = BorderStyle.Thin;
+            s.BorderLeft = BorderStyle.Thin; s.BorderRight = BorderStyle.Thin;
+            return s;
+        }
+
+        /// <summary>Dato con formato moneda $X.XXX.</summary>
+        private static ICellStyle CrearEstiloMoneda(XSSFWorkbook wb)
+        {
+            var s = CrearEstiloDato(wb);
+            s.DataFormat = wb.CreateDataFormat().GetFormat("$#,##0");
+            return s;
+        }
+
+        /// <summary>Fondo verde claro + bold para ganancias positivas.</summary>
+        private static ICellStyle CrearEstiloGananciaPositiva(XSSFWorkbook wb)
+        {
+            var s = CrearEstiloMoneda(wb);
+            var f = wb.CreateFont();
+            f.FontName = "Calibri"; f.FontHeightInPoints = 11; f.IsBold = true;
+            ((XSSFFont)f).SetColor(new XSSFColor(new SKColor(21, 128, 61)));
+            s.SetFont(f);
+            ((XSSFCellStyle)s).SetFillForegroundColor(new XSSFColor(new SKColor(212, 237, 218)));
+            s.FillPattern = FillPattern.SolidForeground;
+            return s;
+        }
+
+        /// <summary>Fondo rojo claro + bold para ganancias negativas.</summary>
+        private static ICellStyle CrearEstiloGananciaNegativa(XSSFWorkbook wb)
+        {
+            var s = CrearEstiloMoneda(wb);
+            var f = wb.CreateFont();
+            f.FontName = "Calibri"; f.FontHeightInPoints = 11; f.IsBold = true;
+            ((XSSFFont)f).SetColor(new XSSFColor(new SKColor(192, 31, 42)));
+            s.SetFont(f);
+            ((XSSFCellStyle)s).SetFillForegroundColor(new XSSFColor(new SKColor(248, 215, 218)));
+            s.FillPattern = FillPattern.SolidForeground;
+            return s;
+        }
+
+        // ======================================================================
+        // HOJA RESUMEN EJECUTIVO
+        // ======================================================================
+
+        private static void CrearHojaResumen(XSSFWorkbook workbook, BalanceExportDto data)
+        {
+            var ws = workbook.CreateSheet("Resumen Ejecutivo");
+
+            ws.DefaultColumnWidth = 15;
+            ws.SetColumnWidth(0, 28 * 256);
+            ws.SetColumnWidth(1, 18 * 256);
+            ws.SetColumnWidth(2, 18 * 256);
+            ws.SetColumnWidth(3, 18 * 256);
+
+            var stHeader = CrearEstiloHeaderAzul(workbook);
+            var stDato = CrearEstiloDato(workbook);
+            var stMoneda = CrearEstiloMoneda(workbook);
+            var stAlternado = CrearEstiloAlternado(workbook);
 
             // TÍTULO PRINCIPAL
-            worksheet.Cells["A1:D1"].Merge = true;
-            worksheet.Cells["A1"].Value = "REPORTE FINANCIERO - BALANCE GENERAL";
-            var tituloRange = worksheet.Cells["A1:D1"];
-            tituloRange.Style.Font.Bold = true;
-            tituloRange.Style.Font.Size = 18;
-            tituloRange.Style.Font.Color.SetColor(System.Drawing.Color.White);
-            tituloRange.Style.Fill.PatternType = ExcelFillStyle.Solid;
-            tituloRange.Style.Fill.BackgroundColor.SetColor(Color.FromArgb(44, 62, 80)); // #2C3E50
-            tituloRange.Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
-            tituloRange.Style.VerticalAlignment = ExcelVerticalAlignment.Center;
-            worksheet.Row(1).Height = 35;
+            var titleRow = ws.CreateRow(0);
+            titleRow.HeightInPoints = 30;
+            var titleCell = titleRow.CreateCell(0);
+            titleCell.SetCellValue("REPORTE FINANCIERO - BALANCE GENERAL");
+            titleCell.CellStyle = stHeader;
+            for (int c = 1; c < 4; c++)
+                titleRow.CreateCell(c).CellStyle = stHeader;
+            ws.AddMergedRegion(new CellRangeAddress(0, 0, 0, 3));
 
             // Fecha de generación
-            worksheet.Cells["A2"].Value = $"Generado el: {DateTime.Now:dd/MM/yyyy HH:mm}";
-            worksheet.Cells["A2"].Style.Font.Italic = true;
+            var dateRow = ws.CreateRow(1);
+            var dateCell = dateRow.CreateCell(0);
+            dateCell.SetCellValue($"Generado el: {DateTime.Now:dd/MM/yyyy HH:mm}");
+            var dateStyle = workbook.CreateCellStyle();
+            var dateFont = workbook.CreateFont();
+            dateFont.FontName = "Calibri"; dateFont.FontHeightInPoints = 10; dateFont.IsItalic = true;
+            ((XSSFFont)dateFont).SetColor(new XSSFColor(new SKColor(108, 117, 125)));
+            dateStyle.SetFont(dateFont);
+            dateCell.CellStyle = dateStyle;
 
-            // Fix for CS0117: 'Color' no contiene una definición para 'Gray'
-            // The issue arises because `Microsoft.Maui.Graphics.Color` does not have a predefined `Gray` property.
-            // Replace the problematic line with the following:
+            // MÉTRICAS CLAVE
+            int filaActual = 3;
 
-            worksheet.Cells["A2"].Style.Font.Color.SetColor(Color.FromArgb(128, 128, 128)); // Gray color using ARGB values
-            
-
-            // MÉTRICAS PRINCIPALES
-            int filaActual = 4;
-
-            // Encabezado de métricas
-            worksheet.Cells[filaActual, 1].Value = "MÉTRICAS CLAVE";
-            worksheet.Cells[filaActual, 2].Value = "VALOR";
-            worksheet.Cells[filaActual, 3].Value = "PARTICIPACIÓN";
-            worksheet.Cells[filaActual, 4].Value = "ESTADO";
-
-            var encabezadoRange = worksheet.Cells[filaActual, 1, filaActual, 4];
-            EstilarEncabezado(encabezadoRange, Color.FromArgb(52, 73, 94)); // #34495E
-
+            var headerRow = ws.CreateRow(filaActual);
+            string[] metricHeaders = { "METRICA CLAVE", "VALOR", "PARTICIPACION", "ESTADO" };
+            for (int c = 0; c < 4; c++)
+            {
+                var cell = headerRow.CreateCell(c);
+                cell.SetCellValue(metricHeaders[c]);
+                cell.CellStyle = stHeader;
+            }
             filaActual++;
 
-            // Calcular métricas
             var ganancias = data.Ganancias;
             var ventas = data.TotalVentas;
             var gastos = data.TotalGastos;
             var encargos = data.TotalEncargos;
-            var totalOperaciones =
-                data.TotalVentas +
-                Math.Abs(data.TotalGastos) +
-                Math.Abs(data.TotalEncargos);
+            var totalOperaciones = data.TotalVentas + Math.Abs(data.TotalGastos) + Math.Abs(data.TotalEncargos);
 
-            // Datos de métricas
-            var datosMetricas = new object[,]
+            var datosMetricas = new (string Label, decimal Valor, string Participacion, string Estado)[]
             {
-                { "💰 Ganancias Netas", ganancias, "", ganancias >= 0 ? "✅ POSITIVO" : "❌ NEGATIVO" },
-                { "📈 Ventas Totales", ventas, $"{(totalOperaciones > 0 ? (ventas/totalOperaciones*100):0):F1}%", "💚 INGRESOS" },
-                { "📉 Gastos Totales", gastos, $"{(totalOperaciones > 0 ? (Math.Abs(gastos)/totalOperaciones*100):0):F1}%", "🔴 EGRESOS" },
-                { "📋 Encargos Pendientes", encargos, $"{(totalOperaciones > 0 ? (Math.Abs(encargos)/totalOperaciones*100):0):F1}%", "🟡 PENDIENTE" }
+                ("Ganancias Netas", ganancias, "", ganancias >= 0 ? "POSITIVO" : "NEGATIVO"),
+                ("Ventas Totales", ventas, $"{(totalOperaciones > 0 ? ventas / totalOperaciones * 100 : 0):F1}%", "INGRESOS"),
+                ("Gastos Totales", gastos, $"{(totalOperaciones > 0 ? Math.Abs(gastos) / totalOperaciones * 100 : 0):F1}%", "EGRESOS"),
+                ("Encargos Pendientes", encargos, $"{(totalOperaciones > 0 ? Math.Abs(encargos) / totalOperaciones * 100 : 0):F1}%", "PENDIENTE")
             };
 
-            // Llenar datos
-            for (int i = 0; i < 4; i++)
+            var stGananciaPos = CrearEstiloGananciaPositiva(workbook);
+            var stGananciaNeg = CrearEstiloGananciaNegativa(workbook);
+
+            for (int i = 0; i < datosMetricas.Length; i++)
             {
-                for (int j = 0; j < 4; j++)
-                {
-                    worksheet.Cells[filaActual + i, j + 1].Value = datosMetricas[i, j];
-                }
+                var (label, valor, participacion, estado) = datosMetricas[i];
+                var row = ws.CreateRow(filaActual + i);
 
-                // Formatear valores monetarios
-                worksheet.Cells[filaActual + i, 2].Style.Numberformat.Format = "$#,##0";
+                row.CreateCell(0).SetCellValue(label);
+                var cellValor = row.CreateCell(1);
+                cellValor.SetCellValue((double)valor);
+                row.CreateCell(2).SetCellValue(participacion);
+                row.CreateCell(3).SetCellValue(estado);
 
-                // Aplicar estilos alternados
-                var filaRange = worksheet.Cells[filaActual + i, 1, filaActual + i, 4];
-                if (i % 2 == 0)
-                {
-                    filaRange.Style.Fill.PatternType = ExcelFillStyle.Solid;
-                    filaRange.Style.Fill.BackgroundColor.SetColor(Color.FromArgb(248, 249, 250)); // #F8F9FA
-                }
-                filaRange.Style.Border.BorderAround(ExcelBorderStyle.Thin);
+                for (int c = 0; c < 4; c++)
+                    row.GetCell(c).CellStyle = stDato;
 
-                // Color especial para ganancias
+                // Colorear ganancias primera fila
                 if (i == 0)
                 {
-                    var colorGanancias = ganancias >= 0 ? Color.FromArgb(212, 237, 218) : Color.FromArgb(248, 215, 218);
-                    filaRange.Style.Fill.PatternType = ExcelFillStyle.Solid;
-                    filaRange.Style.Fill.BackgroundColor.SetColor(colorGanancias);
-                    filaRange.Style.Font.Bold = true;
+                    for (int c = 0; c < 4; c++)
+                        row.GetCell(c).CellStyle = valor >= 0 ? stGananciaPos : stGananciaNeg;
+                }
+
+                // Formato moneda para columna valor
+                if (i > 0) cellValor.CellStyle = stMoneda;
+
+                // Alternar color de fila
+                if (i % 2 == 1)
+                {
+                    for (int c = 0; c < 4; c++)
+                    {
+                        var existing = row.GetCell(c).CellStyle;
+                        var alt = workbook.CreateCellStyle();
+                        alt.CloneStyleFrom(existing);
+                        alt.FillPattern = stAlternado.FillPattern;
+                        try { ((XSSFCellStyle)alt).SetFillForegroundColor((XSSFColor)((XSSFCellStyle)stAlternado).FillForegroundColorColor); }
+                        catch { }
+                        row.GetCell(c).CellStyle = alt;
+                    }
                 }
             }
 
-            filaActual += 6;
-
             // ANÁLISIS POR PERÍODO
-            CrearSeccionAnalisisPeriodo(worksheet, data, filaActual);
+            filaActual += 6;
+            CrearSeccionAnalisisPeriodo(workbook, ws, data, filaActual);
 
+            // Datos para gráfico PIE (columnas F-G)
             int filaGrafico = filaActual + 2;
 
-            // Calcular totales REALES desde los datos (sin filtro de período)
             var totalVentasReal = data.Ventas.Sum(v => v.Precio * v.Cantidad);
             var totalGastosReal = data.Gastos.Sum(g => g.Monto * g.Cantidad);
             var totalEncargosReal = data.Encargos.Sum(e => e.Precio * e.Cantidad);
 
-            System.Diagnostics.Debug.WriteLine($"[ExportExcel] Doughnut data: Ventas={totalVentasReal}, Gastos={totalGastosReal}, Encargos={totalEncargosReal}");
+            EscribirCelda(ws, filaGrafico, 5, "Concepto", stHeader);
+            EscribirCelda(ws, filaGrafico, 6, "Monto", stHeader);
+            EscribirCelda(ws, filaGrafico + 1, 5, "Ventas", stDato);
+            EscribirCelda(ws, filaGrafico + 1, 6, (double)totalVentasReal, stMoneda);
+            EscribirCelda(ws, filaGrafico + 2, 5, "Gastos", stDato);
+            EscribirCelda(ws, filaGrafico + 2, 6, (double)Math.Abs(totalGastosReal), stMoneda);
+            EscribirCelda(ws, filaGrafico + 3, 5, "Encargos", stDato);
+            EscribirCelda(ws, filaGrafico + 3, 6, (double)Math.Abs(totalEncargosReal), stMoneda);
 
-            // Datos para gráfico
-            worksheet.Cells[filaGrafico, 6].Value = "Concepto";
-            worksheet.Cells[filaGrafico, 7].Value = "Monto";
-
-            worksheet.Cells[filaGrafico + 1, 6].Value = "Ventas";
-            worksheet.Cells[filaGrafico + 1, 7].Value = totalVentasReal;
-
-            worksheet.Cells[filaGrafico + 2, 6].Value = "Gastos";
-            worksheet.Cells[filaGrafico + 2, 7].Value = Math.Abs(totalGastosReal);
-
-            worksheet.Cells[filaGrafico + 3, 6].Value = "Encargos";
-            worksheet.Cells[filaGrafico + 3, 7].Value = Math.Abs(totalEncargosReal);
-
-            var chartImage = RenderizarDonut(totalVentasReal, totalGastosReal, totalEncargosReal, 420, 320);
-            var picture = worksheet.Drawings.AddPicture("DistribucionBalance", new MemoryStream(chartImage));
-            picture.SetPosition(4, 0, 4, 0);
-
-
-
+            // Gráfico PIE nativo (sin ejes — pie chart no los necesita)
+            var drawing = (XSSFDrawing)ws.CreateDrawingPatriarch();
+            var anchor = drawing.CreateAnchor(0, 0, 0, 0, 4, 3, 18, 18);
+            var chart = drawing.CreateChart(anchor);
+            chart.GetOrAddLegend().Position = LegendPosition.Bottom;
+            var catRange = new CellRangeAddress(filaGrafico + 1, filaGrafico + 3, 5, 5);
+            var valRange = new CellRangeAddress(filaGrafico + 1, filaGrafico + 3, 6, 6);
+            var catDS = XDDFDataSourcesFactory.FromStringCellRange(ws, catRange);
+            var valDS = XDDFDataSourcesFactory.FromNumericCellRange(ws, valRange);
+            var pieData = chart.CreateData<string, double>(ChartTypes.PIE, null, null);
+            pieData.SetVaryColors(true);
+            var pieSeries = pieData.AddSeries(catDS, valDS);
+            pieSeries.SetTitle("Distribucion del Balance", null);
+            chart.Plot(pieData);
         }
 
-        private static void CrearSeccionAnalisisPeriodo(ExcelWorksheet worksheet, BalanceExportDto data, int filaInicio)
+        // ======================================================================
+        // SECCIÓN ANÁLISIS POR PERÍODO
+        // ======================================================================
+
+        private static void CrearSeccionAnalisisPeriodo(XSSFWorkbook workbook, ISheet ws, BalanceExportDto data, int filaInicio)
         {
+            var stSeccion = CrearEstiloHeaderAzul(workbook);
+            var stHeader = CrearEstiloHeaderVerde(workbook);
+            var stDato = CrearEstiloDato(workbook);
+            var stMoneda = CrearEstiloMoneda(workbook);
+            var stTotal = CrearEstiloTotal(workbook);
+            var stAlternado = CrearEstiloAlternado(workbook);
+
             // Título de sección
-            worksheet.Cells[filaInicio, 1, filaInicio, 4].Merge = true;
-            worksheet.Cells[filaInicio, 1].Value = "📊 ANÁLISIS POR PERÍODO (ÚLTIMOS 6 MESES)";
-            var tituloRange = worksheet.Cells[filaInicio, 1, filaInicio, 4];
-            EstilarEncabezado(tituloRange, Color.FromArgb(52, 152, 219)); // #3498DB
+            var titleRow = ws.CreateRow(filaInicio);
+            var titleCell = titleRow.CreateCell(0);
+            titleCell.SetCellValue("ANALISIS POR PERIODO (ULTIMOS 6 MESES)");
+            titleCell.CellStyle = stSeccion;
+            for (int c = 1; c < 4; c++)
+                titleRow.CreateCell(c).CellStyle = stSeccion;
+            ws.AddMergedRegion(new CellRangeAddress(filaInicio, filaInicio, 0, 3));
 
             filaInicio += 2;
 
-            // Generar datos por mes
             var datosMensuales = GenerarDatosMensuales(data);
 
             // Encabezados
-            worksheet.Cells[filaInicio, 1].Value = "MES";
-            worksheet.Cells[filaInicio, 2].Value = "VENTAS";
-            worksheet.Cells[filaInicio, 3].Value = "GASTOS";
-            worksheet.Cells[filaInicio, 4].Value = "GANANCIA";
-
-            var encabezadosRange = worksheet.Cells[filaInicio, 1, filaInicio, 4];
-            EstilarEncabezado(encabezadosRange, Color.FromArgb(22, 160, 133)); // #16A085
-
+            var headerRow = ws.CreateRow(filaInicio);
+            string[] headers = { "MES", "VENTAS", "GASTOS", "GANANCIA" };
+            for (int c = 0; c < 4; c++)
+            {
+                var cell = headerRow.CreateCell(c);
+                cell.SetCellValue(headers[c]);
+                cell.CellStyle = stHeader;
+            }
             filaInicio++;
 
-            // Datos mensuales
+            var stGananciaPos = CrearEstiloGananciaPositiva(workbook);
+            var stGananciaNeg = CrearEstiloGananciaNegativa(workbook);
+
             for (int i = 0; i < datosMensuales.Count; i++)
             {
                 var dato = datosMensuales[i];
-                var fila = filaInicio + i;
+                var row = ws.CreateRow(filaInicio + i);
 
-                worksheet.Cells[fila, 1].Value = dato.Mes;
-                worksheet.Cells[fila, 2].Value = dato.Ventas;
-                worksheet.Cells[fila, 3].Value = dato.Gastos;
-                worksheet.Cells[fila, 4].Value = dato.Ganancia;
+                row.CreateCell(0).SetCellValue(dato.Mes);
+                row.CreateCell(1).SetCellValue((double)dato.Ventas);
+                row.GetCell(1).CellStyle = stMoneda;
+                row.CreateCell(2).SetCellValue((double)dato.Gastos);
+                row.GetCell(2).CellStyle = stMoneda;
+                row.CreateCell(3).SetCellValue((double)dato.Ganancia);
+                row.GetCell(3).CellStyle = dato.Ganancia >= 0 ? stGananciaPos : stGananciaNeg;
 
-                // Formato monetario
-                worksheet.Cells[fila, 2, fila, 4].Style.Numberformat.Format = "$#,##0";
-
-                // Color alternado
-                var filaRange = worksheet.Cells[fila, 1, fila, 4];
-                if (i % 2 == 0)
+                for (int c = 0; c < 4; c++)
                 {
-                    filaRange.Style.Fill.PatternType = ExcelFillStyle.Solid;
-                    filaRange.Style.Fill.BackgroundColor.SetColor(Color.FromArgb(248, 249, 250));
+                    var esBase = row.GetCell(c).CellStyle;
+                    var merged = workbook.CreateCellStyle();
+                    merged.CloneStyleFrom(esBase);
+                    merged.BorderTop = stDato.BorderTop;
+                    merged.BorderBottom = stDato.BorderBottom;
+                    merged.BorderLeft = stDato.BorderLeft;
+                    merged.BorderRight = stDato.BorderRight;
+                    row.GetCell(c).CellStyle = merged;
                 }
 
-                // Color para ganancia
-                if (dato.Ganancia >= 0)
+                // Alternar color de fila
+                if (i % 2 == 1)
                 {
-                    worksheet.Cells[fila, 4].Style.Font.Color.SetColor(Color.FromArgb(40, 167, 69)); // Verde
+                    for (int c = 0; c < 4; c++)
+                    {
+                        var existing = row.GetCell(c).CellStyle;
+                        var alt = workbook.CreateCellStyle();
+                        alt.CloneStyleFrom(existing);
+                        alt.FillPattern = stAlternado.FillPattern;
+                        try { ((XSSFCellStyle)alt).SetFillForegroundColor((XSSFColor)((XSSFCellStyle)stAlternado).FillForegroundColorColor); }
+                        catch { }
+                        row.GetCell(c).CellStyle = alt;
+                    }
                 }
-                else
-                {
-                    worksheet.Cells[fila, 4].Style.Font.Color.SetColor(Color.FromArgb(220, 53, 69)); // Rojo
-                }
-
-                filaRange.Style.Border.BorderAround(ExcelBorderStyle.Thin);
             }
 
-            // Agregar totales
-            filaInicio += datosMensuales.Count;
+            // Totales
+            filaInicio += datosMensuales.Count + 1;
             var totalVentas = datosMensuales.Sum(d => d.Ventas);
             var totalGastos = datosMensuales.Sum(d => d.Gastos);
             var totalGanancias = datosMensuales.Sum(d => d.Ganancia);
 
-            worksheet.Cells[filaInicio, 1].Value = "TOTALES";
-            worksheet.Cells[filaInicio, 2].Value = totalVentas;
-            worksheet.Cells[filaInicio, 3].Value = totalGastos;
-            worksheet.Cells[filaInicio, 4].Value = totalGanancias;
-
-            var totalesRange = worksheet.Cells[filaInicio, 1, filaInicio, 4];
-            totalesRange.Style.Font.Bold = true;
-            totalesRange.Style.Fill.PatternType = ExcelFillStyle.Solid;
-            totalesRange.Style.Fill.BackgroundColor.SetColor(Color.FromArgb(255, 193, 7)); // #FFC107
-            totalesRange.Style.Numberformat.Format = "$#,##0";
+            var totalRow = ws.CreateRow(filaInicio);
+            EscribirCelda(totalRow, 0, "TOTALES", stTotal);
+            EscribirCelda(totalRow, 1, (double)totalVentas, stTotal);
+            EscribirCelda(totalRow, 2, (double)totalGastos, stTotal);
+            EscribirCelda(totalRow, 3, (double)totalGanancias, stTotal);
         }
 
-        private static void CrearHojaVentas(ExcelPackage package, List<Ventas> ventas)
+        // ======================================================================
+        // HOJAS DE DATOS DETALLADAS
+        // ======================================================================
+
+        private static void CrearHojaVentas(XSSFWorkbook workbook, List<Ventas> ventas)
         {
-            var worksheet = package.Workbook.Worksheets.Add("💰 Ventas");
-            CrearTablaDetallada(worksheet, "REGISTRO DE VENTAS",
-                new[] { "FECHA", "DESCRIPCIÓN", "CANTIDAD", "PRECIO UNIT.", "TOTAL" },
+            var ws = workbook.CreateSheet("Ventas");
+            CrearTablaDetallada(workbook, ws, "REGISTRO DE VENTAS",
+                new[] { "FECHA", "DESCRIPCION", "CANTIDAD", "PRECIO UNIT.", "TOTAL" },
                 ventas.Count,
                 (i) => new object[]
                 {
                     ventas[i].Fecha.ToString("dd/MM/yyyy"),
                     ventas[i].Descripcion ?? "N/A",
                     ventas[i].Cantidad,
-                    ventas[i].Precio,
-                    ventas[i].Precio * ventas[i].Cantidad
+                    (double)ventas[i].Precio,
+                    (double)(ventas[i].Precio * ventas[i].Cantidad)
                 },
-                Color.FromArgb(40, 167, 69)); // Verde
+                CrearEstiloHeaderVerde(workbook));
         }
 
-        private static void CrearHojaGastos(ExcelPackage package, List<Gasto> gastos)
+        private static void CrearHojaGastos(XSSFWorkbook workbook, List<Gasto> gastos)
         {
-            var worksheet = package.Workbook.Worksheets.Add("💸 Gastos");
-            CrearTablaDetallada(worksheet, "REGISTRO DE GASTOS",
-                new[] { "FECHA", "DESCRIPCIÓN", "CANTIDAD", "MONTO UNIT.", "TOTAL" },
+            var ws = workbook.CreateSheet("Gastos");
+            CrearTablaDetallada(workbook, ws, "REGISTRO DE GASTOS",
+                new[] { "FECHA", "DESCRIPCION", "CANTIDAD", "MONTO UNIT.", "TOTAL" },
                 gastos.Count,
                 (i) => new object[]
                 {
                     gastos[i].Fecha.ToString("dd/MM/yyyy"),
                     gastos[i].Descripcion ?? "N/A",
                     gastos[i].Cantidad,
-                    gastos[i].Monto,
-                    gastos[i].Monto * gastos[i].Cantidad
+                    (double)gastos[i].Monto,
+                    (double)(gastos[i].Monto * gastos[i].Cantidad)
                 },
-                Color.FromArgb(220, 53, 69)); // Rojo
+                CrearEstiloHeaderGris(workbook));
         }
 
-        private static void CrearHojaEncargos(ExcelPackage package, List<Encargo> encargos)
+        private static void CrearHojaEncargos(XSSFWorkbook workbook, List<Encargo> encargos)
         {
-            var worksheet = package.Workbook.Worksheets.Add("📋 Encargos");
-            CrearTablaDetallada(worksheet, "REGISTRO DE ENCARGOS",
-                new[] { "FECHA", "NOMBRE", "DESCRIPCIÓN", "CANTIDAD", "PRECIO UNIT.", "TOTAL", "FECHA ENTREGA" },
+            var ws = workbook.CreateSheet("Encargos");
+            CrearTablaDetallada(workbook, ws, "REGISTRO DE ENCARGOS",
+                new[] { "FECHA", "NOMBRE", "DESCRIPCION", "CANTIDAD", "PRECIO UNIT.", "TOTAL", "FECHA ENTREGA" },
                 encargos.Count,
                 (i) => new object[]
                 {
@@ -303,319 +452,279 @@ namespace Mercader
                     encargos[i].Nombre ?? "N/A",
                     encargos[i].Descripcion ?? "N/A",
                     encargos[i].Cantidad,
-                    encargos[i].Precio,
-                    encargos[i].Precio * encargos[i].Cantidad,
+                    (double)encargos[i].Precio,
+                    (double)(encargos[i].Precio * encargos[i].Cantidad),
                     encargos[i].FechaEntrega.ToString("dd/MM/yyyy")
                 },
-                Color.FromArgb(255, 193, 7)); // Amarillo
+                CrearEstiloHeaderGris(workbook));
         }
 
-        private static void CrearHojaGrafico(ExcelPackage package, BalanceExportDto data)
+        private static void CrearTablaDetallada(XSSFWorkbook workbook, ISheet ws, string titulo,
+            string[] encabezados, int cantidadDatos, Func<int, object[]> obtenerDatos,
+            ICellStyle estiloHeaderColor)
         {
-            var worksheet = package.Workbook.Worksheets.Add("📈 Gráfico Financiero");
+            var stHeaderGray = CrearEstiloHeaderGris(workbook);
+            var stDato = CrearEstiloDato(workbook);
+            var stMoneda = CrearEstiloMoneda(workbook);
+            var stAlternado = CrearEstiloAlternado(workbook);
 
-            // Título
-            worksheet.Cells["A1:D1"].Merge = true;
-            worksheet.Cells["A1"].Value = "EVOLUCIÓN FINANCIERA - ÚLTIMOS 6 MESES";
-            var tituloRange = worksheet.Cells["A1:D1"];
-            EstilarEncabezado(tituloRange, Color.FromArgb(142, 68, 173)); // #8E44AD
-            worksheet.Row(1).Height = 30;
+            for (int i = 0; i < encabezados.Length; i++)
+                ws.SetColumnWidth(i, 16 * 256);
 
-            // Generar datos mensuales
-            var datosMensuales = GenerarDatosMensuales(data);
+            // Título (fila 0)
+            var titleRow = ws.CreateRow(0);
+            titleRow.HeightInPoints = 28;
+            var titleCell = titleRow.CreateCell(0);
+            titleCell.SetCellValue(titulo);
+            titleCell.CellStyle = estiloHeaderColor;
+            for (int c = 1; c < encabezados.Length; c++)
+                titleRow.CreateCell(c).CellStyle = estiloHeaderColor;
+            ws.AddMergedRegion(new CellRangeAddress(0, 0, 0, encabezados.Length - 1));
 
-            // Encabezados de datos
-            worksheet.Cells["A3"].Value = "MES";
-            worksheet.Cells["B3"].Value = "VENTAS";
-            worksheet.Cells["C3"].Value = "GASTOS";
-            worksheet.Cells["D3"].Value = "GANANCIAS";
+            // Info de registros (fila 2)
+            var infoRow = ws.CreateRow(2);
+            var infoCell = infoRow.CreateCell(0);
+            infoCell.SetCellValue($"Total de registros: {cantidadDatos}");
+            var boldStyle = workbook.CreateCellStyle();
+            var boldFont = workbook.CreateFont();
+            boldFont.FontName = "Calibri"; boldFont.FontHeightInPoints = 11; boldFont.IsBold = true;
+            boldStyle.SetFont(boldFont);
+            infoCell.CellStyle = boldStyle;
 
-            var encabezadosRange = worksheet.Cells["A3:D3"];
-            EstilarEncabezado(encabezadosRange, Color.FromArgb(44, 62, 80)); // #2C3E50
-
-            // Llenar datos
-            for (int i = 0; i < datosMensuales.Count; i++)
-            {
-                var dato = datosMensuales[i];
-                var fila = 4 + i;
-
-                worksheet.Cells[fila, 1].Value = dato.Mes;
-                worksheet.Cells[fila, 2].Value = dato.Ventas;
-                worksheet.Cells[fila, 3].Value = Math.Abs(dato.Gastos);
-                worksheet.Cells[fila, 4].Value = dato.Ganancia;
-
-
-                // Formato alternado
-                var filaRange = worksheet.Cells[fila, 1, fila, 4];
-                if (i % 2 == 0)
-                {
-                    filaRange.Style.Fill.PatternType = ExcelFillStyle.Solid;
-                    filaRange.Style.Fill.BackgroundColor.SetColor(Color.FromArgb(248, 249, 250));
-                }
-
-                // Formato monetario
-                worksheet.Cells[fila, 2, fila, 4].Style.Numberformat.Format = "#,##0";
-            }
-
-            System.Diagnostics.Debug.WriteLine($"[ExportExcel] Line chart: {datosMensuales.Count} months");
-            foreach (var dm in datosMensuales)
-                System.Diagnostics.Debug.WriteLine($"  {dm.Mes}: V={dm.Ventas} G={dm.Gastos} Gcia={dm.Ganancia}");
-
-            // Renderizar gráfico como imagen con SkiaSharp
-            var lineChartImage = RenderizarEvolucion(datosMensuales, 800, 400);
-            var picture = worksheet.Drawings.AddPicture("GraficoFinanciero", new MemoryStream(lineChartImage));
-            picture.SetPosition(4 + datosMensuales.Count + 2, 0, 0, 0);
-
-            // Configurar anchos de columna
-            worksheet.Column(1).Width = 15;
-            worksheet.Column(2).Width = 15;
-            worksheet.Column(3).Width = 15;
-            worksheet.Column(4).Width = 15;
-
-            // Agregar instrucciones
-            var filaInstrucciones = 4 + datosMensuales.Count + 20;
-            worksheet.Cells[filaInstrucciones, 1].Value = "💡 ANÁLISIS AUTOMÁTICO:";
-            worksheet.Cells[filaInstrucciones, 1].Style.Font.Bold = true;
-            worksheet.Cells[filaInstrucciones, 1].Style.Font.Color.SetColor(Color.FromArgb(23, 162, 184));
-
-            worksheet.Cells[filaInstrucciones + 1, 1].Value = "• El gráfico muestra la evolución de tus finanzas en los últimos 6 meses";
-            worksheet.Cells[filaInstrucciones + 2, 1].Value = "• Verde: Ventas | Rojo: Gastos | Azul: Ganancias";
-        }
-
-        // ===== Renderizado de gráficos con SkiaSharp =====
-
-        private static byte[] RenderizarDonut(decimal ventas, decimal gastos, decimal encargos, int width, int height)
-        {
-            var total = (float)(ventas + Math.Abs(gastos) + Math.Abs(encargos));
-            if (total == 0) return Array.Empty<byte>();
-
-            using var surface = SKSurface.Create(new SKImageInfo(width, height));
-            var canvas = surface.Canvas;
-            canvas.Clear(new SKColor(0xF8, 0xF9, 0xFA));
-
-            var colores = new[] {
-                SKColor.Parse("#28a745"),
-                SKColor.Parse("#dc3545"),
-                SKColor.Parse("#ffc107")
-            };
-            var valores = new[] { (float)ventas, (float)Math.Abs(gastos), (float)Math.Abs(encargos) };
-            var labels = new[] { "Ventas", "Gastos", "Encargos" };
-
-            // Área cuadrada centrada para que el donut no se vea ovalado
-            var drawSize = Math.Min(width - 60, height - 50);
-            var rect = new SKRect(
-                (width - drawSize) / 2,
-                (height - drawSize) / 2 - 10,
-                (width + drawSize) / 2,
-                (height + drawSize) / 2 - 10);
-
-            var cx = rect.MidX;
-            var cy = rect.MidY;
-            float startAngle = -90;
-
-            for (int i = 0; i < 3; i++)
-            {
-                var sweep = valores[i] / total * 360f;
-                using var paint = new SKPaint { Color = colores[i], Style = SKPaintStyle.Fill, IsAntialias = true };
-                canvas.DrawArc(rect, startAngle, sweep, true, paint);
-                startAngle += sweep;
-            }
-
-            // Círculo interior (efecto donut)
-            var innerR = Math.Min(rect.Width, rect.Height) * 0.35f;
-            using var inner = new SKPaint { Color = new SKColor(0xF8, 0xF9, 0xFA), Style = SKPaintStyle.Fill, IsAntialias = true };
-            canvas.DrawCircle(cx, cy, innerR, inner);
-
-            // Leyenda
-            float legendY = height - 5;
-            float legendX = cx - 120;
-            using var labelPaint = new SKPaint { Color = SKColors.Black, TextSize = 14, IsAntialias = true };
-            for (int i = 0; i < 3; i++)
-            {
-                using var swatch = new SKPaint { Color = colores[i], Style = SKPaintStyle.Fill };
-                canvas.DrawRect(new SKRect(legendX, legendY - 12, legendX + 12, legendY), swatch);
-                canvas.DrawText(labels[i], legendX + 18, legendY - 2, labelPaint);
-                legendX += 80;
-            }
-
-            using var image = surface.Snapshot();
-            using var data = image.Encode(SKEncodedImageFormat.Png, 90);
-            return data.ToArray();
-        }
-
-        private static byte[] RenderizarEvolucion(List<DatoMensual> datos, int width, int height)
-        {
-            if (datos == null || datos.Count == 0) return Array.Empty<byte>();
-
-            using var surface = SKSurface.Create(new SKImageInfo(width, height));
-            var canvas = surface.Canvas;
-            canvas.Clear(new SKColor(0xFF, 0xFF, 0xFF));
-
-            var margin = 60f;
-            var chartW = width - margin * 2;
-            var chartH = height - margin * 2;
-
-            // Reunir todos los valores para escala
-            var allValues = datos.SelectMany(d => new[] { (float)d.Ventas, (float)Math.Abs(d.Gastos), (float)d.Ganancia }).ToList();
-            if (allValues.All(v => v == 0)) return Array.Empty<byte>();
-
-            var maxVal = allValues.Max();
-            var minVal = 0f;
-
-            // Dibujar fondo del área del gráfico
-            using var bgPaint = new SKPaint { Color = new SKColor(0xF8, 0xF9, 0xFA), Style = SKPaintStyle.Fill };
-            canvas.DrawRect(new SKRect(margin, margin, margin + chartW, margin + chartH), bgPaint);
-
-            // Ejes
-            using var axisPaint = new SKPaint { Color = new SKColor(0xCC, 0xCC, 0xCC), StrokeWidth = 1 };
-            canvas.DrawLine(margin, margin + chartH, margin + chartW, margin + chartH, axisPaint);
-            canvas.DrawLine(margin, margin, margin, margin + chartH, axisPaint);
-
-            // Grid horizontal
-            int gridLines = 4;
-            using var gridPaint = new SKPaint { Color = new SKColor(0xE0, 0xE0, 0xE0), StrokeWidth = 0.5f, PathEffect = SKPathEffect.CreateDash(new[] { 4f, 4f }, 0) };
-            using var valPaint = new SKPaint { Color = SKColors.DimGray, TextSize = 11, IsAntialias = true };
-            for (int i = 0; i <= gridLines; i++)
-            {
-                var y = margin + chartH - (chartH / gridLines * i);
-                canvas.DrawLine(margin, y, margin + chartW, y, gridPaint);
-                canvas.DrawText($"${(maxVal / gridLines * i):N0}", 5, y + 4, valPaint);
-            }
-
-            // Dibujar 3 series: Ventas, Gastos, Ganancias
-            var seriesConfig = new[] {
-                new { Color = SKColor.Parse("#28a745"), Values = datos.Select(d => (float)d.Ventas).ToList(), Label = "Ventas" },
-                new { Color = SKColor.Parse("#dc3545"), Values = datos.Select(d => (float)Math.Abs(d.Gastos)).ToList(), Label = "Gastos" },
-                new { Color = SKColor.Parse("#1D69BE"), Values = datos.Select(d => (float)d.Ganancia).ToList(), Label = "Ganancias" },
-            };
-
-            int n = datos.Count;
-            foreach (var serie in seriesConfig)
-            {
-                using var linePaint = new SKPaint { Color = serie.Color, StrokeWidth = 2.5f, Style = SKPaintStyle.Stroke, IsAntialias = true };
-                using var path = new SKPath();
-                for (int i = 0; i < n; i++)
-                {
-                    var x = margin + (chartW / (n - 1 > 0 ? n - 1 : 1)) * i;
-                    var y = margin + chartH - (serie.Values[i] / maxVal * chartH);
-                    if (i == 0) path.MoveTo(x, y);
-                    else path.LineTo(x, y);
-                }
-                canvas.DrawPath(path, linePaint);
-
-                // Puntos
-                using var pointPaint = new SKPaint { Color = serie.Color, Style = SKPaintStyle.Fill, IsAntialias = true };
-                for (int i = 0; i < n; i++)
-                {
-                    var x = margin + (chartW / (n - 1 > 0 ? n - 1 : 1)) * i;
-                    var y = margin + chartH - (serie.Values[i] / maxVal * chartH);
-                    canvas.DrawCircle(x, y, 4, pointPaint);
-                }
-            }
-
-            // Labels del eje X
-            using var xLabelPaint = new SKPaint { Color = SKColors.Black, TextSize = 11, IsAntialias = true, TextAlign = SKTextAlign.Center };
-            for (int i = 0; i < n; i++)
-            {
-                var x = margin + (chartW / (n - 1 > 0 ? n - 1 : 1)) * i;
-                canvas.DrawText(datos[i].Mes, x, height - 10, xLabelPaint);
-            }
-
-            // Título
-            using var titlePaint = new SKPaint { Color = SKColor.Parse("#2C3E50"), TextSize = 16, IsAntialias = true, TextAlign = SKTextAlign.Center };
-            canvas.DrawText("Evolución Financiera Mensual", width / 2, 20, titlePaint);
-
-            // Leyenda
-            float lx = margin + 10;
-            float ly = height - 35;
-            using var legPaint = new SKPaint { Color = SKColors.Black, TextSize = 12, IsAntialias = true };
-            foreach (var serie in seriesConfig)
-            {
-                using var swatch = new SKPaint { Color = serie.Color, Style = SKPaintStyle.Fill };
-                canvas.DrawRect(new SKRect(lx, ly - 10, lx + 10, ly), swatch);
-                canvas.DrawText(serie.Label, lx + 15, ly - 2, legPaint);
-                lx += 90;
-            }
-
-            using var image = surface.Snapshot();
-            using var data = image.Encode(SKEncodedImageFormat.Png, 90);
-            return data.ToArray();
-        }
-
-        private static void CrearTablaDetallada(ExcelWorksheet worksheet, string titulo,
-            string[] encabezados, int cantidadDatos, Func<int, object[]> obtenerDatos, Color colorTema)
-        {
-            // Configurar anchos de columnas
-            for (int i = 1; i <= encabezados.Length; i++)
-            {
-                worksheet.Column(i).Width = 15;
-            }
-
-            // Título
-            worksheet.Cells[1, 1, 1, encabezados.Length].Merge = true;
-            worksheet.Cells[1, 1].Value = titulo;
-            var tituloRange = worksheet.Cells[1, 1, 1, encabezados.Length];
-            EstilarEncabezado(tituloRange, colorTema);
-            worksheet.Row(1).Height = 30;
-
-            // Información adicional
-            worksheet.Cells[3, 1].Value = $"Total de registros: {cantidadDatos}";
-            worksheet.Cells[3, 1].Style.Font.Bold = true;
-
-            // Encabezados de tabla
+            // Encabezados de tabla (fila 4)
+            var headerRow = ws.CreateRow(4);
             for (int i = 0; i < encabezados.Length; i++)
             {
-                worksheet.Cells[5, i + 1].Value = encabezados[i];
+                var cell = headerRow.CreateCell(i);
+                cell.SetCellValue(encabezados[i]);
+                cell.CellStyle = stHeaderGray;
             }
-            var encabezadosRange = worksheet.Cells[5, 1, 5, encabezados.Length];
-            EstilarEncabezado(encabezadosRange, Color.FromArgb(73, 80, 87)); // #495057
 
-            // Datos
+            // Datos (desde fila 5)
             for (int i = 0; i < cantidadDatos; i++)
             {
-                var fila = 6 + i;
+                var row = ws.CreateRow(5 + i);
                 var datos = obtenerDatos(i);
 
                 for (int j = 0; j < datos.Length; j++)
                 {
-                    worksheet.Cells[fila, j + 1].Value = datos[j];
+                    var cell = row.CreateCell(j);
+                    SetCellValue(cell, datos[j]);
+
+                    // Moneda para PRECIO, MONTO, TOTAL
+                    bool isCurrency = encabezados[j].Contains("PRECIO") || encabezados[j].Contains("MONTO") || encabezados[j].Contains("TOTAL");
+                    cell.CellStyle = isCurrency ? stMoneda : stDato;
                 }
 
-                // Estilo alternado
-                var filaRange = worksheet.Cells[fila, 1, fila, encabezados.Length];
-                if (i % 2 == 0)
+                // Alternar color de fila
+                if (i % 2 == 1)
                 {
-                    filaRange.Style.Fill.PatternType = ExcelFillStyle.Solid;
-                    filaRange.Style.Fill.BackgroundColor.SetColor(Color.FromArgb(248, 249, 250));
-                }
-                filaRange.Style.Border.BorderAround(ExcelBorderStyle.Thin);
-
-                // Formato monetario para columnas de precio y total
-                for (int j = 0; j < encabezados.Length; j++)
-                {
-                    if (encabezados[j].Contains("PRECIO") || encabezados[j].Contains("MONTO") || encabezados[j].Contains("TOTAL"))
+                    for (int j = 0; j < encabezados.Length; j++)
                     {
-                        worksheet.Cells[fila, j + 1].Style.Numberformat.Format = "$#,##0.00";
+                        var existing = row.GetCell(j).CellStyle;
+                        var alt = workbook.CreateCellStyle();
+                        alt.CloneStyleFrom(existing);
+                        alt.FillPattern = stAlternado.FillPattern;
+                        try { ((XSSFCellStyle)alt).SetFillForegroundColor((XSSFColor)((XSSFCellStyle)stAlternado).FillForegroundColorColor); }
+                        catch { }
+                        row.GetCell(j).CellStyle = alt;
                     }
                 }
             }
-
-            // Marco general
-            var tablaCompleta = worksheet.Cells[5, 1, 5 + cantidadDatos, encabezados.Length];
-            tablaCompleta.Style.Border.BorderAround(ExcelBorderStyle.Medium);
         }
 
-        private static void EstilarEncabezado(ExcelRange range, Color color)
+        // ======================================================================
+        // HOJA GRÁFICO FINANCIERO
+        // ======================================================================
+
+        private static void CrearHojaGrafico(XSSFWorkbook workbook, BalanceExportDto data)
         {
-            range.Style.Font.Bold = true;
-            range.Style.Font.Color.SetColor(Color.White);
-            range.Style.Font.Size = 12;
-            range.Style.Fill.PatternType = ExcelFillStyle.Solid;
-            range.Style.Fill.BackgroundColor.SetColor(color);
-            range.Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
-            range.Style.VerticalAlignment = ExcelVerticalAlignment.Center;
-            range.Style.Border.BorderAround(ExcelBorderStyle.Medium);
+            var ws = workbook.CreateSheet("Grafico Financiero");
+
+            var stTitle = CrearEstiloHeaderAzul(workbook);
+            var stHeader = CrearEstiloHeaderGris(workbook);
+            var stDato = CrearEstiloDato(workbook);
+            var stMoneda = CrearEstiloMoneda(workbook);
+            var stAlternado = CrearEstiloAlternado(workbook);
+
+            ws.SetColumnWidth(0, 15 * 256);
+            ws.SetColumnWidth(1, 15 * 256);
+            ws.SetColumnWidth(2, 15 * 256);
+            ws.SetColumnWidth(3, 15 * 256);
+
+            // Título
+            var titleRow = ws.CreateRow(0);
+            titleRow.HeightInPoints = 28;
+            var titleCell = titleRow.CreateCell(0);
+            titleCell.SetCellValue("EVOLUCION FINANCIERA - ULTIMOS 6 MESES");
+            titleCell.CellStyle = stTitle;
+            for (int c = 1; c < 4; c++)
+                titleRow.CreateCell(c).CellStyle = stTitle;
+            ws.AddMergedRegion(new CellRangeAddress(0, 0, 0, 3));
+
+            var datosMensuales = GenerarDatosMensuales(data);
+
+            // Encabezados (fila 2)
+            var headerRow = ws.CreateRow(2);
+            string[] headers = { "MES", "VENTAS", "GASTOS", "GANANCIAS" };
+            for (int c = 0; c < 4; c++)
+            {
+                var cell = headerRow.CreateCell(c);
+                cell.SetCellValue(headers[c]);
+                cell.CellStyle = stHeader;
+            }
+
+            // Datos (desde fila 3)
+            for (int i = 0; i < datosMensuales.Count; i++)
+            {
+                var dato = datosMensuales[i];
+                var row = ws.CreateRow(3 + i);
+
+                row.CreateCell(0).SetCellValue(dato.Mes);
+                row.CreateCell(1).SetCellValue((double)dato.Ventas);
+                row.GetCell(1).CellStyle = stMoneda;
+                row.CreateCell(2).SetCellValue((double)Math.Abs(dato.Gastos));
+                row.GetCell(2).CellStyle = stMoneda;
+                row.CreateCell(3).SetCellValue((double)dato.Ganancia);
+                row.GetCell(3).CellStyle = stMoneda;
+
+                for (int c = 0; c < 4; c++)
+                    row.GetCell(c).CellStyle = MergeBorder(workbook, row.GetCell(c).CellStyle, stDato);
+
+                // Alternar color de fila
+                if (i % 2 == 1)
+                {
+                    for (int c = 0; c < 4; c++)
+                        row.GetCell(c).CellStyle = MergeFill(workbook, row.GetCell(c).CellStyle, stAlternado);
+                }
+            }
+
+            // Gráfico de líneas nativo
+            int dataStartRow = 3;
+            int dataEndRow = 3 + datosMensuales.Count - 1;
+
+            var drawing = (XSSFDrawing)ws.CreateDrawingPatriarch();
+            var anchor = drawing.CreateAnchor(0, 0, 0, 0, 0, dataEndRow + 2, 10, dataEndRow + 20);
+            var chart = drawing.CreateChart(anchor);
+            chart.GetOrAddLegend().Position = LegendPosition.Bottom;
+            var bottomAxis = chart.CreateCategoryAxis(AxisPosition.Bottom);
+            bottomAxis.SetTitle("Mes");
+            var leftAxis = chart.CreateValueAxis(AxisPosition.Left);
+            leftAxis.SetTitle("Monto ($)");
+
+            var mesRange = new CellRangeAddress(dataStartRow, dataEndRow, 0, 0);
+            var ventasRange = new CellRangeAddress(dataStartRow, dataEndRow, 1, 1);
+            var gastosRange = new CellRangeAddress(dataStartRow, dataEndRow, 2, 2);
+            var gananciasRange = new CellRangeAddress(dataStartRow, dataEndRow, 3, 3);
+
+            var mesDS = XDDFDataSourcesFactory.FromStringCellRange(ws, mesRange);
+            var ventasDS = XDDFDataSourcesFactory.FromNumericCellRange(ws, ventasRange);
+            var gastosDS = XDDFDataSourcesFactory.FromNumericCellRange(ws, gastosRange);
+            var gananciasDS = XDDFDataSourcesFactory.FromNumericCellRange(ws, gananciasRange);
+
+            var lineData = chart.CreateData<string, double>(ChartTypes.LINE, bottomAxis, leftAxis);
+            lineData.SetVaryColors(true);
+            var ventasSeries = lineData.AddSeries(mesDS, ventasDS);
+            ventasSeries.SetTitle("Ventas", null);
+            SetLineSeriesColor(ventasSeries, 41, 128, 185); // Azul
+            var gastosSeries = lineData.AddSeries(mesDS, gastosDS);
+            gastosSeries.SetTitle("Gastos", null);
+            SetLineSeriesColor(gastosSeries, 231, 76, 60);  // Rojo
+            var gananciasSeries = lineData.AddSeries(mesDS, gananciasDS);
+            gananciasSeries.SetTitle("Ganancias", null);
+            SetLineSeriesColor(gananciasSeries, 39, 174, 96); // Verde
+            chart.Plot(lineData);
         }
+
+        // ======================================================================
+        // HELPERS: Escribir celdas
+        // ======================================================================
+
+        private static void EscribirCelda(ISheet sheet, int row, int col, string value, ICellStyle? style)
+        {
+            var r = sheet.GetRow(row) ?? sheet.CreateRow(row);
+            var cell = r.CreateCell(col);
+            cell.SetCellValue(value);
+            if (style != null) cell.CellStyle = style;
+        }
+
+        private static void EscribirCelda(ISheet sheet, int row, int col, double value, ICellStyle? style)
+        {
+            var r = sheet.GetRow(row) ?? sheet.CreateRow(row);
+            var cell = r.CreateCell(col);
+            cell.SetCellValue(value);
+            if (style != null) cell.CellStyle = style;
+        }
+
+        private static void EscribirCelda(IRow row, int col, string value, ICellStyle style)
+        {
+            var cell = row.CreateCell(col);
+            cell.SetCellValue(value);
+            if (style != null) cell.CellStyle = style;
+        }
+
+        private static void EscribirCelda(IRow row, int col, double value, ICellStyle style)
+        {
+            var cell = row.CreateCell(col);
+            cell.SetCellValue(value);
+            if (style != null) cell.CellStyle = style;
+        }
+
+        private static void SetCellValue(ICell cell, object value)
+        {
+            if (value == null) cell.SetCellValue("");
+            else if (value is string s) cell.SetCellValue(s);
+            else if (value is int i) cell.SetCellValue(i);
+            else if (value is double dbl) cell.SetCellValue(dbl);
+            else if (value is decimal dec) cell.SetCellValue((double)dec);
+            else if (value is DateTime dt) cell.SetCellValue(dt.ToString("dd/MM/yyyy"));
+            else cell.SetCellValue(value.ToString());
+        }
+
+        // ======================================================================
+        // HELPERS: Estilos combinados (solo para casos que lo requieren)
+        // ======================================================================
+
+        private static ICellStyle MergeFill(XSSFWorkbook workbook, ICellStyle baseStyle, ICellStyle fillStyle)
+        {
+            if (baseStyle == null) return fillStyle;
+            if (fillStyle == null) return baseStyle;
+
+            var result = workbook.CreateCellStyle();
+            result.CloneStyleFrom(baseStyle);
+
+            try
+            {
+                if (fillStyle.FillPattern != FillPattern.NoFill)
+                {
+                    result.FillPattern = fillStyle.FillPattern;
+                    ((XSSFCellStyle)result).SetFillForegroundColor((XSSFColor)((XSSFCellStyle)fillStyle).FillForegroundColorColor);
+                }
+            }
+            catch { }
+
+            return result;
+        }
+
+        private static ICellStyle MergeBorder(XSSFWorkbook workbook, ICellStyle baseStyle, ICellStyle borderStyle)
+        {
+            if (baseStyle == null) return borderStyle;
+            if (borderStyle == null) return baseStyle;
+
+            var result = workbook.CreateCellStyle();
+            result.CloneStyleFrom(baseStyle);
+
+            result.BorderTop = borderStyle.BorderTop;
+            result.BorderBottom = borderStyle.BorderBottom;
+            result.BorderLeft = borderStyle.BorderLeft;
+            result.BorderRight = borderStyle.BorderRight;
+
+            return result;
+        }
+
+        // ======================================================================
+        // HELPER: Datos mensuales
+        // ======================================================================
 
         private static List<DatoMensual> GenerarDatosMensuales(BalanceExportDto data)
         {
@@ -636,12 +745,30 @@ namespace Mercader
 
                 return new DatoMensual
                 {
-                    Mes = mes.ToString("MMM yyyy", new CultureInfo("es-ES")),
+                    Mes = mes.ToString("MMM yyyy", new System.Globalization.CultureInfo("es-ES")),
                     Ventas = totalVentas,
                     Gastos = totalGastos,
                     Ganancia = ganancia
                 };
             }).ToList();
+        }
+
+        private static void SetLineSeriesColor(XDDFChartData<string, double>.Series series, byte r, byte g, byte b)
+        {
+            try
+            {
+                var spPr = new XDDFShapeProperties();
+                var ctSpPr = spPr.GetXmlObject();
+                var ctLine = ctSpPr.AddNewLn();
+                var ctSolidFill = ctLine.AddNewSolidFill();
+                var ctSrgbClr = ctSolidFill.AddNewSrgbClr();
+                ctSrgbClr.val = new byte[] { r, g, b };
+                series.SetShapeProperties(spPr);
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"[ExportExcel] Color failed: {ex.Message}");
+            }
         }
 
         private class DatoMensual
