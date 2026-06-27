@@ -623,7 +623,7 @@ namespace Mercader
             var gananciasDS = XDDFDataSourcesFactory.FromNumericCellRange(ws, gananciasRange);
 
             var lineData = chart.CreateData<string, double>(ChartTypes.LINE, bottomAxis, leftAxis);
-            lineData.SetVaryColors(true);
+            // Colors are set per-series via SetLineSeriesColor below
             var ventasSeries = lineData.AddSeries(mesDS, ventasDS);
             ventasSeries.SetTitle("Ventas", null);
             SetLineSeriesColor(ventasSeries, 41, 128, 185); // Azul
@@ -759,10 +759,15 @@ namespace Mercader
             {
                 var spPr = new XDDFShapeProperties();
                 var ctSpPr = spPr.GetXmlObject();
+                // Fill del marcador (cara del punto)
+                var ctFill = ctSpPr.AddNewSolidFill();
+                var ctFillSrgb = ctFill.AddNewSrgbClr();
+                ctFillSrgb.val = new byte[] { r, g, b };
+                // Trazo del marcador y línea conectora
                 var ctLine = ctSpPr.AddNewLn();
-                var ctSolidFill = ctLine.AddNewSolidFill();
-                var ctSrgbClr = ctSolidFill.AddNewSrgbClr();
-                ctSrgbClr.val = new byte[] { r, g, b };
+                var ctLineFill = ctLine.AddNewSolidFill();
+                var ctLineSrgb = ctLineFill.AddNewSrgbClr();
+                ctLineSrgb.val = new byte[] { r, g, b };
                 series.SetShapeProperties(spPr);
             }
             catch (Exception ex)
