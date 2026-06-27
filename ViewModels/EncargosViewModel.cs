@@ -6,15 +6,12 @@ using Mercader.Data.Interfaces;
 
 namespace Mercader.ViewModels
 {
-    public partial class EncargosViewModel : ObservableObject
+    public partial class EncargosViewModel : BaseViewModel
     {
         private readonly IDataRepository _repository;
 
         [ObservableProperty]
         private ObservableCollection<Encargo> _encargos = new();
-
-        [ObservableProperty]
-        private bool _isBusy = false;
 
         public EncargosViewModel(IDataRepository repository)
         {
@@ -24,33 +21,23 @@ namespace Mercader.ViewModels
         [RelayCommand]
         public async Task CargarEncargosAsync()
         {
-            IsBusy = true;
-            try
+            await ExecuteBusyAsync(async () =>
             {
                 var lista = await _repository.GetEncargosAsync();
                 Encargos = new ObservableCollection<Encargo>(lista);
-            }
-            finally
-            {
-                IsBusy = false;
-            }
+            });
         }
 
         [RelayCommand]
         public async Task EliminarEncargoAsync(Encargo encargo)
         {
             if (encargo is null) return;
-            
-            IsBusy = true;
-            try
+
+            await ExecuteBusyAsync(async () =>
             {
                 await _repository.DeleteEncargoAsync(encargo);
                 Encargos.Remove(encargo);
-            }
-            finally
-            {
-                IsBusy = false;
-            }
+            });
         }
 
         [RelayCommand]
@@ -58,8 +45,7 @@ namespace Mercader.ViewModels
         {
             if (encargo is null) return;
 
-            IsBusy = true;
-            try
+            await ExecuteBusyAsync(async () =>
             {
                 var venta = new Ventas
                 {
@@ -72,11 +58,7 @@ namespace Mercader.ViewModels
                 await _repository.SaveVentasAsync(venta);
                 await _repository.DeleteEncargoAsync(encargo);
                 Encargos.Remove(encargo);
-            }
-            finally
-            {
-                IsBusy = false;
-            }
+            });
         }
     }
 }

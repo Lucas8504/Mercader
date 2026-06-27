@@ -68,9 +68,6 @@ namespace Mercader.ViewModels
         [ObservableProperty]
         private string _periodoSeleccionado = "Meses";
 
-        [ObservableProperty]
-        private bool _isBusy;
-
         private readonly INavigationService _navigationService;
 
         // ===== Constructor =====
@@ -157,102 +154,71 @@ namespace Mercader.ViewModels
         [RelayCommand]
         private async Task GuardarVentaAsync(Ventas venta)
         {
-            IsBusy = true;
-            try
+            await ExecuteBusyAsync(async () =>
             {
                 await _dataRepository.SaveVentasAsync(venta);
                 await CargarDatosCommand.ExecuteAsync(null);
-            }
-            finally
-            {
-                IsBusy = false;
-            }
+            });
         }
 
         [RelayCommand]
         private async Task EliminarVentaAsync(Ventas venta)
         {
-            IsBusy = true;
-            try
+            await ExecuteBusyAsync(async () =>
             {
                 await _dataRepository.DeleteVentaAsync(venta);
                 Ventas.Remove(venta);
                 Recalcular();
-            }
-            finally
-            {
-                IsBusy = false;
-            }
+            });
         }
 
         [RelayCommand]
         private async Task GuardarGastoAsync(Gasto gasto)
         {
-            IsBusy = true;
-            try
+            await ExecuteBusyAsync(async () =>
             {
                 await _dataRepository.SaveGastoAsync(gasto);
                 await CargarDatosCommand.ExecuteAsync(null);
-            }
-            finally
-            {
-                IsBusy = false;
-            }
+            });
         }
 
         [RelayCommand]
         private async Task EliminarGastoAsync(Gasto gasto)
         {
-            IsBusy = true;
-            try
+            await ExecuteBusyAsync(async () =>
             {
                 await _dataRepository.DeleteGastoAsync(gasto);
                 Gastos.Remove(gasto);
                 Recalcular();
-            }
-            finally
-            {
-                IsBusy = false;
-            }
+            });
         }
 
         [RelayCommand]
         private async Task GuardarEncargoAsync(Encargo encargo)
         {
-            IsBusy = true;
-            try
+            await ExecuteBusyAsync(async () =>
             {
                 await _dataRepository.SaveEncargoAsync(encargo);
                 await CargarDatosCommand.ExecuteAsync(null);
-            }
-            finally
-            {
-                IsBusy = false;
-            }
+            });
         }
 
         [RelayCommand]
         private async Task EliminarEncargoAsync(Encargo encargo)
         {
-            IsBusy = true;
-            try
+            await ExecuteBusyAsync(async () =>
             {
                 await _dataRepository.DeleteEncargoAsync(encargo);
                 Encargos.Remove(encargo);
                 Recalcular();
-            }
-            finally
-            {
-                IsBusy = false;
-            }
+            });
         }
 
         // ===== Carga de datos =====
         [RelayCommand]
         private async Task CargarDatosAsync()
         {
-            IsBusy = true;
-            try
+            await ExecuteBusyAsync(async () =>
             {
                 var ventas = await _dataRepository.GetVentasAsync();
                 var gastos = await _dataRepository.GetGastosAsync();
@@ -263,11 +229,7 @@ namespace Mercader.ViewModels
                 Encargos = new ObservableCollection<Encargo>(encargos);
 
                 Recalcular();
-            }
-            finally
-            {
-                IsBusy = false;
-            }
+            });
         }
 
         // ===== Export =====
