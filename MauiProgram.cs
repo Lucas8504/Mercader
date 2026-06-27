@@ -38,6 +38,7 @@ namespace Mercader
             builder.Services.AddSingleton<IChartService, ChartService>();
             builder.Services.AddSingleton<IBalanceCalculatorService, BalanceCalculatorService>();
             builder.Services.AddSingleton<INotificationService, NotificationService>();
+            builder.Services.AddSingleton<INavigationService, NavigationService>();
 
             // Shell
             builder.Services.AddSingleton<AppShell>();

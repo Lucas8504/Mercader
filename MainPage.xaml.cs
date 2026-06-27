@@ -1,23 +1,15 @@
 using CommunityToolkit.Maui.Storage;
-using Microcharts.Maui;
 using Mercader.ViewModels;
-using Mercader.Data.Interfaces;
-using Mercader.Models;
-using Mercader.Domain.Entities;
-using Microsoft.Maui.Platform;
-using System.Diagnostics;
 
 namespace Mercader
 {
     public partial class MainPage : ContentPage
     {
         private readonly MainViewModel _viewModel;
-        private readonly IDataRepository _repository;
 
-        public MainPage(IDataRepository repository, MainViewModel vm)
+        public MainPage(MainViewModel vm)
         {
             InitializeComponent();
-            _repository = repository;
             _viewModel = vm;
             BindingContext = _viewModel;
         }
@@ -46,9 +38,7 @@ namespace Mercader
         {
             try
             {
-                var modal = new EncModal(_repository);
-                await Navigation.PushModalAsync(modal);
-                await _viewModel.CargarDatosCommand.ExecuteAsync(null);
+                await _viewModel.AgregarEncargoCommand.ExecuteAsync(null);
             }
             catch (Exception ex)
             {
@@ -60,9 +50,7 @@ namespace Mercader
         {
             try
             {
-                var modal = new VentaModal(_repository);
-                await Navigation.PushModalAsync(modal);
-                await _viewModel.CargarDatosCommand.ExecuteAsync(null);
+                await _viewModel.AgregarVentaCommand.ExecuteAsync(null);
             }
             catch (Exception ex)
             {
@@ -74,9 +62,7 @@ namespace Mercader
         {
             try
             {
-                var modal = new GastoModal(_repository);
-                await Navigation.PushModalAsync(modal);
-                await _viewModel.CargarDatosCommand.ExecuteAsync(null);
+                await _viewModel.AgregarGastoCommand.ExecuteAsync(null);
             }
             catch (Exception ex)
             {

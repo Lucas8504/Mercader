@@ -71,25 +71,47 @@ namespace Mercader.ViewModels
         [ObservableProperty]
         private bool _isBusy;
 
+        private readonly INavigationService _navigationService;
+
         // ===== Constructor =====
         public MainViewModel(
             IDataRepository dataRepository,
             IChartService chartService,
-            IBalanceCalculatorService balanceService)
+            IBalanceCalculatorService balanceService,
+            INavigationService navigationService)
         {
             _dataRepository = dataRepository;
             _chartService = chartService;
             _balanceService = balanceService;
-
-            // Recalcular cuando cambian las colecciones (usando evento del toolkit)
-            Ventas.CollectionChanged += (_, _) => Recalcular();
-            Gastos.CollectionChanged += (_, _) => Recalcular();
-            Encargos.CollectionChanged += (_, _) => Recalcular();
+            _navigationService = navigationService;
         }
 
         partial void OnPeriodoSeleccionadoChanged(string value)
         {
             Recalcular();
+        }
+
+        // ===== Navegación a modales =====
+
+        [RelayCommand]
+        private async Task AgregarEncargoAsync()
+        {
+            await _navigationService.PushModalAsync<EncModal>();
+            await CargarDatosCommand.ExecuteAsync(null);
+        }
+
+        [RelayCommand]
+        private async Task AgregarVentaAsync()
+        {
+            await _navigationService.PushModalAsync<VentaModal>();
+            await CargarDatosCommand.ExecuteAsync(null);
+        }
+
+        [RelayCommand]
+        private async Task AgregarGastoAsync()
+        {
+            await _navigationService.PushModalAsync<GastoModal>();
+            await CargarDatosCommand.ExecuteAsync(null);
         }
 
         // ===== Commands =====
@@ -155,6 +177,7 @@ namespace Mercader.ViewModels
             {
                 await _dataRepository.DeleteVentaAsync(venta);
                 Ventas.Remove(venta);
+                Recalcular();
             }
             finally
             {
@@ -185,6 +208,7 @@ namespace Mercader.ViewModels
             {
                 await _dataRepository.DeleteGastoAsync(gasto);
                 Gastos.Remove(gasto);
+                Recalcular();
             }
             finally
             {
@@ -215,6 +239,7 @@ namespace Mercader.ViewModels
             {
                 await _dataRepository.DeleteEncargoAsync(encargo);
                 Encargos.Remove(encargo);
+                Recalcular();
             }
             finally
             {

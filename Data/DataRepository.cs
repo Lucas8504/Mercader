@@ -7,7 +7,7 @@ namespace Mercader.Data
     /// <summary>
     /// Implementación de IDataRepository usando SQLite.
     /// </summary>
-    public sealed class DataRepository : IDataRepository
+    public sealed class DataRepository : IDataRepository, IAsyncDisposable
     {
         private SQLiteAsyncConnection? _database;
         private readonly string _dbPath;
@@ -421,10 +421,12 @@ namespace Mercader.Data
 
         // ===== DISPOSABLE =====
 
-        public void Dispose()
+        public async ValueTask DisposeAsync()
         {
+            if (_database != null)
+                await _database.CloseAsync();
             _semaphore.Dispose();
-            _database?.CloseAsync().Wait();
+            GC.SuppressFinalize(this);
         }
     }
 }
