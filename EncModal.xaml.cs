@@ -1,4 +1,3 @@
-using System.Globalization;
 using Mercader.Domain.Entities;
 using Mercader.Data.Interfaces;
 #if ANDROID
@@ -42,8 +41,45 @@ public partial class EncModal : ContentPage
 
     private async void OnAgregarEncargoClicked(object sender, EventArgs e)
     {
-        if (!ValidateE_Entries())
+        var nombreValidation = ValidationService.ValidateRequired(EncargoEntry.Text, "un nombre");
+        if (!nombreValidation.IsValid)
+        {
+            await DisplayAlert("Error", nombreValidation.ErrorMessage, "OK");
             return;
+        }
+
+        if (string.IsNullOrWhiteSpace(ContactoEntry.Text))
+        {
+            await DisplayAlert("Error", "Por favor, ingrese un número de teléfono", "OK");
+            return;
+        }
+
+        if (!IsValidPhoneNumber(ContactoEntry.Text))
+        {
+            await DisplayAlert("Error", "Por favor, ingrese un número de teléfono válido", "OK");
+            return;
+        }
+
+        var descValidation = ValidationService.ValidateRequired(DescripcionEntry.Text, "una descripción");
+        if (!descValidation.IsValid)
+        {
+            await DisplayAlert("Error", descValidation.ErrorMessage, "OK");
+            return;
+        }
+
+        var precioResult = ValidationService.ParseDecimal(PrecioEntry.Text);
+        if (!precioResult.Success)
+        {
+            await DisplayAlert("Error", precioResult.Error ?? "Precio inválido", "OK");
+            return;
+        }
+
+        var cantidadResult = ValidationService.ParseDecimal(CantidadEntry.Text);
+        if (!cantidadResult.Success)
+        {
+            await DisplayAlert("Error", cantidadResult.Error ?? "Cantidad inválida", "OK");
+            return;
+        }
 
         try
         {
@@ -51,21 +87,16 @@ public partial class EncModal : ContentPage
             {
                 Nombre = EncargoEntry!.Text,
                 Contacto = CleanPhoneNumber(ContactoEntry!.Text),
-                Cantidad = decimal.Parse(CantidadEntry!.Text!),
-                Precio = decimal.Parse(PrecioEntry!.Text!),
+                Cantidad = cantidadResult.Value ?? 0,
+                Precio = precioResult.Value ?? 0,
                 Descripcion = DescripcionEntry.Text,
                 FechaEntrega = FechaEntregaDatePicker.Date,
                 Fecha = DateTime.Now
             };
         }
-        catch (FormatException)
-        {
-            await DisplayAlert("Error", "Por favor, ingrese valores num�ricos v�lidos", "OK");
-            return;
-        }
         catch (Exception ex)
         {
-            await DisplayAlert("Error", $"Error al agregar encargo: {ex.Message}", "OK");
+            await DisplayAlert("Error", $"Error al crear encargo: {ex.Message}", "OK");
             return;
         }
 
@@ -87,60 +118,6 @@ public partial class EncModal : ContentPage
 #endif
 
         await Navigation.PopModalAsync();
-    }
-
-    private bool ValidateE_Entries()
-    {
-        if (string.IsNullOrWhiteSpace(EncargoEntry.Text))
-        {
-            DisplayAlert("Error", "Por favor, ingrese un nombre", "OK");
-            return false;
-        }
-
-        if (string.IsNullOrWhiteSpace(ContactoEntry.Text))
-        {
-            DisplayAlert("Error", "Por favor, ingrese un n�mero de tel�fono", "OK");
-            return false;
-        }
-
-        // Validaci�n b�sica de formato de tel�fono
-        if (!IsValidPhoneNumber(ContactoEntry.Text))
-        {
-            DisplayAlert("Error", "Por favor, ingrese un n�mero de tel�fono v�lido", "OK");
-            return false;
-        }
-
-        if (string.IsNullOrWhiteSpace(DescripcionEntry.Text))
-        {
-            DisplayAlert("Error", "Por favor, ingrese una descripci�n", "OK");
-            return false;
-        }
-
-        if (string.IsNullOrWhiteSpace(PrecioEntry.Text))
-        {
-            DisplayAlert("Error", "Por favor, ingrese un precio", "OK");
-            return false;
-        }
-
-        if (!decimal.TryParse(PrecioEntry.Text, out decimal precio) || precio <= 0)
-        {
-            DisplayAlert("Error", "Por favor, ingrese un precio v�lido mayor a 0", "OK");
-            return false;
-        }
-
-        if (string.IsNullOrWhiteSpace(CantidadEntry.Text))
-        {
-            DisplayAlert("Error", "Por favor, ingrese una cantidad", "OK");
-            return false;
-        }
-
-        if (!decimal.TryParse(CantidadEntry.Text, out decimal cantidad) || cantidad <= 0)
-        {
-            DisplayAlert("Error", "Por favor, ingrese una cantidad v�lida mayor a 0", "OK");
-            return false;
-        }
-
-        return true;
     }
 
     /// <summary>

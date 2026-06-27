@@ -1,4 +1,3 @@
-using System.Globalization;
 using Mercader.Domain.Entities;
 using Mercader.Data.Interfaces;
 #if ANDROID
@@ -41,27 +40,43 @@ public partial class GastoModal : ContentPage
 
     private async void OnAgregarGastoClicked(object sender, EventArgs e)
     {
-        if (!ValidateG_Entries())
+        var descValidation = ValidationService.ValidateRequired(DescripcionGastoEntry.Text, "una descripción");
+        if (!descValidation.IsValid)
+        {
+            await DisplayAlert("Error", descValidation.ErrorMessage, "OK");
             return;
+        }
+
+        var montoResult = ValidationService.ParseDecimal(MontoGastoEntry.Text);
+        if (!montoResult.Success)
+        {
+            await DisplayAlert("Error", montoResult.Error ?? "Monto inválido", "OK");
+            return;
+        }
+
+        var cantidadResult = ValidationService.ParseDecimal(CantidadG_Entry.Text);
+        if (!cantidadResult.Success)
+        {
+            await DisplayAlert("Error", cantidadResult.Error ?? "Cantidad inválida", "OK");
+            return;
+        }
 
         try
         {
             Gasto = new Gasto
             {
                 Descripcion = DescripcionGastoEntry.Text,
-                Cantidad = decimal.Parse(CantidadG_Entry!.Text!, CultureInfo.InvariantCulture),
-                Monto = decimal.Parse(MontoGastoEntry!.Text!, CultureInfo.InvariantCulture),
+                Cantidad = cantidadResult.Value ?? 0,
+                Monto = montoResult.Value ?? 0,
                 Fecha = DateTime.Now
             };
         }
-        catch (FormatException)
-        {
-            await DisplayAlert("Error", "Por favor, ingrese valores num�ricos v�lidos", "OK");
-        }
         catch (Exception ex)
         {
-            await DisplayAlert("Error", $"Error al agregar gasto: {ex.Message}", "OK");
+            await DisplayAlert("Error", $"Error al crear gasto: {ex.Message}", "OK");
+            return;
         }
+
         await SaveGastoAsync();
     }
 
@@ -77,27 +92,6 @@ public partial class GastoModal : ContentPage
         KeyboardHelper.Close();
 #endif
         await Navigation.PopModalAsync();
-    }
-
-    private bool ValidateG_Entries()
-    {
-        if (string.IsNullOrWhiteSpace(DescripcionGastoEntry.Text))
-        {
-            DisplayAlert("Error", "Por favor, ingrese una descripci�n", "OK");
-            return false;
-        }
-        if (string.IsNullOrWhiteSpace(MontoGastoEntry.Text))
-        {
-            DisplayAlert("Error", "Por favor, ingrese un Monto", "OK");
-            return false;
-        }
-        if (string.IsNullOrWhiteSpace(CantidadG_Entry.Text))
-        {
-            DisplayAlert("Error", "Por favor, ingrese una cantidad", "OK");
-            return false;
-        }
-
-        return true;
     }
 
     private async void Cancelar(object sender, EventArgs e)
