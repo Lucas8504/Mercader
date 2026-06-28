@@ -1,6 +1,5 @@
 using System.Globalization;
 using Mercader.Domain.Entities;
-using Mercader.Data.Interfaces;
 
 namespace Mercader.Services.Calculators
 {

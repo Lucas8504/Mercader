@@ -1,6 +1,6 @@
 using Mercader.Domain.Entities;
 
-namespace Mercader.Data.Interfaces
+namespace Mercader.Services.Interfaces
 {
     /// <summary>
     /// Servicio para cálculos de balance (totales, márgenes, filtros por período).
