@@ -1,3 +1,4 @@
+using System.Globalization;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Mercader.Models;
@@ -39,7 +40,26 @@ namespace Mercader.ViewModels
         [ObservableProperty]
         private Chart? _gananciasChart;
 
-        // ===== Resumen financiero (bindeables) =====
+        // ===== Resumen del mes actual =====
+        [ObservableProperty]
+        private string _mesLabel = DateTime.Now.ToString("MMMM yyyy", new CultureInfo("es-ES"));
+
+        [ObservableProperty]
+        private string _mesVentas = "$0";
+
+        [ObservableProperty]
+        private string _mesGastos = "$0";
+
+        [ObservableProperty]
+        private string _mesEncargos = "$0";
+
+        [ObservableProperty]
+        private string _mesGanancias = "$0";
+
+        [ObservableProperty]
+        private string _mesMargen = "0%";
+
+        // ===== Resumen financiero por período (bindeables) =====
         [ObservableProperty]
         private string _totalVentas = "$0";
 
@@ -147,6 +167,33 @@ namespace Mercader.ViewModels
             VentasChart = _chartService.CrearGraficoVentas(ventasPorPeriodo);
             GastosChart = _chartService.CrearGraficoGastos(gastosPorPeriodo);
             GananciasChart = _chartService.CrearGraficoGanancias(ventasPorPeriodo, gastosPorPeriodo);
+
+            // Resumen del mes actual
+            CalcularResumenMensual();
+        }
+
+        private void CalcularResumenMensual()
+        {
+            var hoy = DateTime.Now;
+            MesLabel = hoy.ToString("MMMM yyyy", new CultureInfo("es-ES"));
+
+            var ventas = Ventas
+                .Where(v => v.Fecha.Year == hoy.Year && v.Fecha.Month == hoy.Month)
+                .Sum(v => v.Precio * v.Cantidad);
+            var gastos = Gastos
+                .Where(g => g.Fecha.Year == hoy.Year && g.Fecha.Month == hoy.Month)
+                .Sum(g => g.Monto * g.Cantidad);
+            var encargos = Encargos
+                .Where(e => e.Fecha.Year == hoy.Year && e.Fecha.Month == hoy.Month)
+                .Sum(e => e.Precio * e.Cantidad);
+            var ganancias = ventas - gastos;
+            var margen = ventas > 0 ? (ganancias / ventas) * 100 : 0;
+
+            MesVentas = ventas.ToString("C");
+            MesGastos = gastos.ToString("C");
+            MesEncargos = encargos.ToString("C");
+            MesGanancias = ganancias.ToString("C");
+            MesMargen = $"{margen:F1}%";
         }
 
         // ===== CRUD Commands =====
