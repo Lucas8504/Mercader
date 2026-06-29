@@ -11,8 +11,6 @@ namespace Mercader.Data
     {
         private SQLiteAsyncConnection? _database;
         private readonly string _dbPath;
-        private readonly SemaphoreSlim _semaphore = new(1, 1);
-
         public DataRepository()
         {
             _dbPath = Path.Combine(
@@ -23,28 +21,19 @@ namespace Mercader.Data
 
         public async Task InitializeDatabaseAsync()
         {
-            try
-            {
-                await _semaphore.WaitAsync();
+            if (_database is not null)
+                return;
 
-                if (_database is not null)
-                    return;
-
-                _database = new SQLiteAsyncConnection(_dbPath);
-                
-                // Crear tablas
-                await _database.CreateTableAsync<Encargo>();
-                await _database.CreateTableAsync<Ventas>();
-                await _database.CreateTableAsync<Gasto>();
-                await _database.CreateTableAsync<DescripcionOculta>();
-                
-                // Ejecutar migraciones
-                await RunMigrationsAsync();
-            }
-            finally
-            {
-                _semaphore.Release();
-            }
+            _database = new SQLiteAsyncConnection(_dbPath);
+            
+            // Crear tablas
+            await _database.CreateTableAsync<Encargo>();
+            await _database.CreateTableAsync<Ventas>();
+            await _database.CreateTableAsync<Gasto>();
+            await _database.CreateTableAsync<DescripcionOculta>();
+            
+            // Ejecutar migraciones
+            await RunMigrationsAsync();
         }
 
         /// <summary>
@@ -209,26 +198,18 @@ namespace Mercader.Data
         {
             ArgumentNullException.ThrowIfNull(venta);
 
-            await _semaphore.WaitAsync();
-            try
-            {
-                if (_database is null)
-                    throw new InvalidOperationException("Base de datos no inicializada");
+            if (_database is null)
+                throw new InvalidOperationException("La base de datos no está inicializada.");
 
-                // Set timestamps
-                if (venta.Id == 0)
-                    venta.CreatedAt = DateTime.UtcNow;
-                else
-                    venta.UpdatedAt = DateTime.UtcNow;
+            // Set timestamps
+            if (venta.Id == 0)
+                venta.CreatedAt = DateTime.UtcNow;
+            else
+                venta.UpdatedAt = DateTime.UtcNow;
 
-                return venta.Id != 0
-                    ? await _database.UpdateAsync(venta)
-                    : await _database.InsertAsync(venta);
-            }
-            finally
-            {
-                _semaphore.Release();
-            }
+            return venta.Id != 0
+                ? await _database.UpdateAsync(venta)
+                : await _database.InsertAsync(venta);
         }
 
         public async Task<int> DeleteVentaAsync(Ventas venta)
@@ -425,7 +406,6 @@ namespace Mercader.Data
         {
             if (_database != null)
                 await _database.CloseAsync();
-            _semaphore.Dispose();
             GC.SuppressFinalize(this);
         }
     }

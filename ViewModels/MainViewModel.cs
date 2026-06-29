@@ -267,6 +267,9 @@ namespace Mercader.ViewModels
         {
             await ExecuteBusyAsync(async () =>
             {
+                // Garantizar DB inicializada antes de cualquier consulta
+                await _dataRepository.InitializeDatabaseAsync();
+
                 var ventas = await _dataRepository.GetVentasAsync();
                 var gastos = await _dataRepository.GetGastosAsync();
                 var encargos = await _dataRepository.GetEncargosAsync();
