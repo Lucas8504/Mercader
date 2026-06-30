@@ -109,9 +109,9 @@ public partial class EncModal : ContentPage
 
         // Rehabilitar nombre y descripción en autocompletado si estaban descartados
         if (!string.IsNullOrWhiteSpace(Encargo.Nombre))
-            await _repository.ReinstateAutocompleteDescriptionAsync(Encargo.Nombre);
+            await _repository.ReinstateAutocompleteDescriptionAsync(Encargo.Nombre, "EncargoNombre");
         if (!string.IsNullOrWhiteSpace(Encargo.Descripcion))
-            await _repository.ReinstateAutocompleteDescriptionAsync(Encargo.Descripcion);
+            await _repository.ReinstateAutocompleteDescriptionAsync(Encargo.Descripcion, "Encargo");
 
 #if ANDROID
         KeyboardHelper.Close();
@@ -219,7 +219,7 @@ public partial class EncModal : ContentPage
         {
             try
             {
-                await _repository.DismissAutocompleteDescriptionAsync(nombre);
+                await _repository.DismissAutocompleteDescriptionAsync(nombre, "EncargoNombre");
                 _todosLosNombres.Remove(nombre);
 
                 if (NombreSuggestionsFrame.IsVisible && NombreSuggestionsView.ItemsSource is List<string> filtradas)
@@ -289,7 +289,7 @@ public partial class EncModal : ContentPage
         {
             try
             {
-                await _repository.DismissAutocompleteDescriptionAsync(descripcion);
+                await _repository.DismissAutocompleteDescriptionAsync(descripcion, "Encargo");
                 _todasLasDescripciones.Remove(descripcion);
 
                 if (EncargoSuggestionsFrame.IsVisible && EncargoSuggestionsView.ItemsSource is List<string> filtradas)

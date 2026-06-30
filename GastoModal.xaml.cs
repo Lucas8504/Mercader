@@ -86,7 +86,7 @@ public partial class GastoModal : ContentPage
 
         // Rehabilitar descripción en autocompletado si estaba descartada
         if (!string.IsNullOrWhiteSpace(Gasto.Descripcion))
-            await _repository.ReinstateAutocompleteDescriptionAsync(Gasto.Descripcion);
+            await _repository.ReinstateAutocompleteDescriptionAsync(Gasto.Descripcion, "Gasto");
 
 #if ANDROID
         KeyboardHelper.Close();
@@ -153,7 +153,7 @@ public partial class GastoModal : ContentPage
         {
             try
             {
-                await _repository.DismissAutocompleteDescriptionAsync(descripcion);
+                await _repository.DismissAutocompleteDescriptionAsync(descripcion, "Gasto");
                 _todasLasDescripciones.Remove(descripcion);
 
                 if (GastoSuggestionsFrame.IsVisible && GastoSuggestionsView.ItemsSource is List<string> filtradas)

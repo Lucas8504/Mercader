@@ -61,6 +61,9 @@ namespace Mercader.Data
                 await AddColumnIfNotExistsAsync("Encargo", "UpdatedAt", "TEXT");
                 await AddColumnIfNotExistsAsync("Encargo", "IsDeleted", "INTEGER DEFAULT 0");
 
+                // Migración: EntityType a DescripcionOculta para scoping por entidad
+                await AddColumnIfNotExistsAsync("DescripcionOculta", "EntityType", "TEXT");
+
                 System.Diagnostics.Debug.WriteLine("[MIGRATION] Migraciones ejecutadas exitosamente");
             }
             catch (Exception ex)
@@ -242,7 +245,7 @@ namespace Mercader.Data
             var descriptions = await _database.QueryAsync<Ventas>(
                 @"SELECT DISTINCT v.Descripcion
                   FROM Ventas v
-                  LEFT JOIN DescripcionOculta d ON v.Descripcion = d.Descripcion
+                  LEFT JOIN DescripcionOculta d ON v.Descripcion = d.Descripcion AND d.EntityType = 'Venta'
                   WHERE v.Descripcion IS NOT NULL
                     AND v.Descripcion != ''
                     AND v.IsDeleted != 1
@@ -263,7 +266,7 @@ namespace Mercader.Data
             var descriptions = await _database.QueryAsync<Gasto>(
                 @"SELECT DISTINCT g.Descripcion
                   FROM Gastos g
-                  LEFT JOIN DescripcionOculta d ON g.Descripcion = d.Descripcion
+                  LEFT JOIN DescripcionOculta d ON g.Descripcion = d.Descripcion AND d.EntityType = 'Gasto'
                   WHERE g.Descripcion IS NOT NULL
                     AND g.Descripcion != ''
                     AND g.IsDeleted != 1
@@ -284,7 +287,7 @@ namespace Mercader.Data
             var descriptions = await _database.QueryAsync<Encargo>(
                 @"SELECT DISTINCT e.Descripcion
                   FROM Encargo e
-                  LEFT JOIN DescripcionOculta d ON e.Descripcion = d.Descripcion
+                  LEFT JOIN DescripcionOculta d ON e.Descripcion = d.Descripcion AND d.EntityType = 'Encargo'
                   WHERE e.Descripcion IS NOT NULL
                     AND e.Descripcion != ''
                     AND e.IsDeleted != 1
@@ -305,7 +308,7 @@ namespace Mercader.Data
             var nombres = await _database.QueryAsync<Encargo>(
                 @"SELECT DISTINCT e.Nombre
                   FROM Encargo e
-                  LEFT JOIN DescripcionOculta d ON e.Nombre = d.Descripcion
+                  LEFT JOIN DescripcionOculta d ON e.Nombre = d.Descripcion AND d.EntityType = 'EncargoNombre'
                   WHERE e.Nombre IS NOT NULL
                     AND e.Nombre != ''
                     AND e.IsDeleted != 1
@@ -318,7 +321,7 @@ namespace Mercader.Data
                 .ToList();
         }
 
-        public async Task DismissAutocompleteDescriptionAsync(string descripcion)
+        public async Task DismissAutocompleteDescriptionAsync(string descripcion, string entityType)
         {
             if (_database is null)
                 throw new InvalidOperationException("La base de datos no está inicializada.");
@@ -326,18 +329,20 @@ namespace Mercader.Data
             if (string.IsNullOrWhiteSpace(descripcion))
                 return;
 
-            // Solo inserta si no existe ya
-            var existe = await _database.FindAsync<DescripcionOculta>(d => d.Descripcion == descripcion);
+            // Solo inserta si no existe ya para esta entidad
+            var existe = await _database.Table<DescripcionOculta>()
+                .FirstOrDefaultAsync(d => d.Descripcion == descripcion && d.EntityType == entityType);
             if (existe is null)
             {
                 await _database.InsertAsync(new DescripcionOculta
                 {
-                    Descripcion = descripcion
+                    Descripcion = descripcion,
+                    EntityType = entityType
                 });
             }
         }
 
-        public async Task ReinstateAutocompleteDescriptionAsync(string descripcion)
+        public async Task ReinstateAutocompleteDescriptionAsync(string descripcion, string entityType)
         {
             if (_database is null)
                 throw new InvalidOperationException("La base de datos no está inicializada.");
@@ -346,7 +351,7 @@ namespace Mercader.Data
                 return;
 
             var existente = await _database.Table<DescripcionOculta>()
-                .FirstOrDefaultAsync(d => d.Descripcion == descripcion);
+                .FirstOrDefaultAsync(d => d.Descripcion == descripcion && d.EntityType == entityType);
             if (existente is not null)
                 await _database.DeleteAsync(existente);
         }

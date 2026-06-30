@@ -92,7 +92,7 @@ public partial class VentaModal : ContentPage
 
         // Rehabilitar descripción en autocompletado si estaba descartada
         if (!string.IsNullOrWhiteSpace(Venta.Descripcion))
-            await _repository.ReinstateAutocompleteDescriptionAsync(Venta.Descripcion);
+            await _repository.ReinstateAutocompleteDescriptionAsync(Venta.Descripcion, "Venta");
 
 #if ANDROID
         KeyboardHelper.Close();
@@ -164,7 +164,7 @@ public partial class VentaModal : ContentPage
             try
             {
                 // Persistir que no se muestre más
-                await _repository.DismissAutocompleteDescriptionAsync(descripcion);
+                await _repository.DismissAutocompleteDescriptionAsync(descripcion, "Venta");
 
                 // Remover de la lista en memoria
                 _todasLasDescripciones.Remove(descripcion);

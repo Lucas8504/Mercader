@@ -3,8 +3,10 @@ using SQLite;
 namespace Mercader.Domain.Entities
 {
     /// <summary>
-    /// Almacena descripciones que el usuario descartó del autocompletado.
-    /// Si se vuelve a agregar una venta con esa descripción, reappeará.
+    /// Almacena descripciones/nombres que el usuario descartó del autocompletado.
+    /// EntityType indica a qué entidad pertenece el descarte ("Venta", "Gasto",
+    /// "Encargo", "EncargoNombre"), para evitar que descartar una descripción
+    /// en una entidad la oculte también en otra.
     /// </summary>
     [Table("DescripcionOculta")]
     public class DescripcionOculta
@@ -14,5 +16,8 @@ namespace Mercader.Domain.Entities
 
         [Column("Descripcion")]
         public string Descripcion { get; set; } = string.Empty;
+
+        [Column("EntityType")]
+        public string EntityType { get; set; } = string.Empty;
     }
 }

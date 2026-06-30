@@ -17,19 +17,26 @@ namespace Mercader
         protected override async void OnAppearing()
         {
             base.OnAppearing();
-            // Usar el Command del ViewModel
-            if (_viewModel.CargarDatosCommand.CanExecute(null))
+            try
             {
-                await _viewModel.CargarDatosCommand.ExecuteAsync(null);
-            }
+                // Usar el Command del ViewModel
+                if (_viewModel.CargarDatosCommand.CanExecute(null))
+                {
+                    await _viewModel.CargarDatosCommand.ExecuteAsync(null);
+                }
 
-            // Scroll a los gráficos después de cargar
-            await Task.WhenAll(
-                ScrollToEndAsync(VentasScroll),
-                ScrollToEndAsync(GastosScroll),
-                ScrollToEndAsync(EncargosScroll),
-                ScrollToEndAsync(GananciasScroll)
-            );
+                // Scroll a los gráficos después de cargar
+                await Task.WhenAll(
+                    ScrollToEndAsync(VentasScroll),
+                    ScrollToEndAsync(GastosScroll),
+                    ScrollToEndAsync(EncargosScroll),
+                    ScrollToEndAsync(GananciasScroll)
+                );
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"[ERROR] MainPage.OnAppearing: {ex}");
+            }
         }
 
         #region Eventos de Navegación
