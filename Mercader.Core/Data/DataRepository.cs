@@ -11,12 +11,13 @@ namespace Mercader.Data
     {
         private SQLiteAsyncConnection? _database;
         private readonly string _dbPath;
-        public DataRepository()
+
+        /// <summary>
+        /// Crea el repositorio con la ruta completa al archivo de base de datos.
+        /// </summary>
+        public DataRepository(string dbPath)
         {
-            _dbPath = Path.Combine(
-                FileSystem.AppDataDirectory,
-                "MercaderDB.db3"
-            );
+            _dbPath = dbPath;
         }
 
         public async Task InitializeDatabaseAsync()
@@ -25,13 +26,13 @@ namespace Mercader.Data
                 return;
 
             _database = new SQLiteAsyncConnection(_dbPath);
-            
+
             // Crear tablas
             await _database.CreateTableAsync<Encargo>();
             await _database.CreateTableAsync<Ventas>();
             await _database.CreateTableAsync<Gasto>();
             await _database.CreateTableAsync<DescripcionOculta>();
-            
+
             // Ejecutar migraciones
             await RunMigrationsAsync();
         }
@@ -87,7 +88,7 @@ namespace Mercader.Data
                 // SQLite tirará error si ya existe, lo cual es OK
                 await _database.ExecuteAsync(
                     $"ALTER TABLE {tableName} ADD COLUMN {columnName} {columnDefinition}");
-                
+
                 System.Diagnostics.Debug.WriteLine($"[MIGRATION] Columna {columnName} agregada a {tableName}");
             }
             catch (Exception ex)
@@ -224,14 +225,14 @@ namespace Mercader.Data
 
             // Debug
             System.Diagnostics.Debug.WriteLine($"[DEBUG] DeleteVentaAsync: Recibido Id={venta.Id}, IsDeleted={venta.IsDeleted}");
-            
+
             // Soft delete
             venta.SoftDelete();
             System.Diagnostics.Debug.WriteLine($"[DEBUG] DeleteVentaAsync: Después softdelete IsDeleted={venta.IsDeleted}");
-            
+
             var result = await _database.UpdateAsync(venta);
             System.Diagnostics.Debug.WriteLine($"[DEBUG] DeleteVentaAsync: UpdateAsync result={result}");
-            
+
             return result;
         }
 

@@ -26,7 +26,8 @@ namespace Mercader
                 });
             
             // Data
-            builder.Services.AddSingleton<Data.DataRepository>();
+            builder.Services.AddSingleton<Data.DataRepository>(sp =>
+                new Data.DataRepository(Path.Combine(FileSystem.AppDataDirectory, "MercaderDB.db3")));
             builder.Services.AddSingleton<IDataRepository>(sp => sp.GetRequiredService<Data.DataRepository>());
 
             // ViewModels

@@ -6,9 +6,9 @@ using NPOI.XDDF.UserModel.Chart;
 using NPOI.OpenXmlFormats.Dml;
 using Mercader.Domain.Entities;
 using Mercader.Models;
-using SkiaSharp;
 using HA = NPOI.SS.UserModel.HorizontalAlignment;
 using VA = NPOI.SS.UserModel.VerticalAlignment;
+
 
 namespace Mercader
 {
@@ -46,6 +46,15 @@ namespace Mercader
         // ESTILOS COMPARTIDOS (creados una sola vez para evitar duplicados)
         // ======================================================================
 
+        private static byte[] Rgb(byte r, byte g, byte b) => new[] { r, g, b };
+
+        private static XSSFColor Color(byte r, byte g, byte b)
+        {
+#pragma warning disable CS0618 // XSSFColor() deprecated pero funcional hasta POI 4.2; no tenemos IIndexedColorMap
+            return new XSSFColor { RGB = Rgb(r, g, b) };
+#pragma warning restore CS0618
+        }
+
         /// <summary>Fondo celeste claro, texto negro, bold, centrado, bordes.</summary>
         private static ICellStyle CrearEstiloHeaderAzul(XSSFWorkbook wb)
         {
@@ -53,7 +62,7 @@ namespace Mercader
             var f = wb.CreateFont();
             f.FontName = "Calibri"; f.FontHeightInPoints = 12; f.IsBold = true;
             s.SetFont(f);
-            ((XSSFCellStyle)s).SetFillForegroundColor(new XSSFColor(new SKColor(198, 224, 247)));
+            ((XSSFCellStyle)s).SetFillForegroundColor(Color(198, 224, 247));
             s.FillPattern = FillPattern.SolidForeground;
             s.Alignment = HA.Center;
             s.VerticalAlignment = VA.Center;
@@ -69,7 +78,7 @@ namespace Mercader
             var f = wb.CreateFont();
             f.FontName = "Calibri"; f.FontHeightInPoints = 12; f.IsBold = true;
             s.SetFont(f);
-            ((XSSFCellStyle)s).SetFillForegroundColor(new XSSFColor(new SKColor(198, 239, 206)));
+            ((XSSFCellStyle)s).SetFillForegroundColor(Color(198, 239, 206));
             s.FillPattern = FillPattern.SolidForeground;
             s.Alignment = HA.Center;
             s.VerticalAlignment = VA.Center;
@@ -85,7 +94,7 @@ namespace Mercader
             var f = wb.CreateFont();
             f.FontName = "Calibri"; f.FontHeightInPoints = 11; f.IsBold = true;
             s.SetFont(f);
-            ((XSSFCellStyle)s).SetFillForegroundColor(new XSSFColor(new SKColor(233, 236, 239)));
+            ((XSSFCellStyle)s).SetFillForegroundColor(Color(233, 236, 239));
             s.FillPattern = FillPattern.SolidForeground;
             s.BorderTop = BorderStyle.Thin; s.BorderBottom = BorderStyle.Thin;
             s.BorderLeft = BorderStyle.Thin; s.BorderRight = BorderStyle.Thin;
@@ -99,7 +108,7 @@ namespace Mercader
             var f = wb.CreateFont();
             f.FontName = "Calibri"; f.FontHeightInPoints = 12; f.IsBold = true;
             s.SetFont(f);
-            ((XSSFCellStyle)s).SetFillForegroundColor(new XSSFColor(new SKColor(255, 243, 205)));
+            ((XSSFCellStyle)s).SetFillForegroundColor(Color(255, 243, 205));
             s.FillPattern = FillPattern.SolidForeground;
             s.DataFormat = wb.CreateDataFormat().GetFormat("$#,##0");
             s.BorderTop = BorderStyle.Thin; s.BorderBottom = BorderStyle.Thin;
@@ -111,7 +120,7 @@ namespace Mercader
         private static ICellStyle CrearEstiloAlternado(XSSFWorkbook wb)
         {
             var s = wb.CreateCellStyle();
-            ((XSSFCellStyle)s).SetFillForegroundColor(new XSSFColor(new SKColor(248, 249, 250)));
+            ((XSSFCellStyle)s).SetFillForegroundColor(Color(248, 249, 250));
             s.FillPattern = FillPattern.SolidForeground;
             return s;
         }
@@ -142,9 +151,9 @@ namespace Mercader
             var s = CrearEstiloMoneda(wb);
             var f = wb.CreateFont();
             f.FontName = "Calibri"; f.FontHeightInPoints = 11; f.IsBold = true;
-            ((XSSFFont)f).SetColor(new XSSFColor(new SKColor(21, 128, 61)));
+            ((XSSFFont)f).SetColor(Color(21, 128, 61));
             s.SetFont(f);
-            ((XSSFCellStyle)s).SetFillForegroundColor(new XSSFColor(new SKColor(212, 237, 218)));
+            ((XSSFCellStyle)s).SetFillForegroundColor(Color(212, 237, 218));
             s.FillPattern = FillPattern.SolidForeground;
             return s;
         }
@@ -155,9 +164,9 @@ namespace Mercader
             var s = CrearEstiloMoneda(wb);
             var f = wb.CreateFont();
             f.FontName = "Calibri"; f.FontHeightInPoints = 11; f.IsBold = true;
-            ((XSSFFont)f).SetColor(new XSSFColor(new SKColor(192, 31, 42)));
+            ((XSSFFont)f).SetColor(Color(192, 31, 42));
             s.SetFont(f);
-            ((XSSFCellStyle)s).SetFillForegroundColor(new XSSFColor(new SKColor(248, 215, 218)));
+            ((XSSFCellStyle)s).SetFillForegroundColor(Color(248, 215, 218));
             s.FillPattern = FillPattern.SolidForeground;
             return s;
         }
@@ -198,7 +207,7 @@ namespace Mercader
             var dateStyle = workbook.CreateCellStyle();
             var dateFont = workbook.CreateFont();
             dateFont.FontName = "Calibri"; dateFont.FontHeightInPoints = 10; dateFont.IsItalic = true;
-            ((XSSFFont)dateFont).SetColor(new XSSFColor(new SKColor(108, 117, 125)));
+            ((XSSFFont)dateFont).SetColor(Color(108, 117, 125));
             dateStyle.SetFont(dateFont);
             dateCell.CellStyle = dateStyle;
 
@@ -762,12 +771,12 @@ namespace Mercader
                 // Fill del marcador (cara del punto)
                 var ctFill = ctSpPr.AddNewSolidFill();
                 var ctFillSrgb = ctFill.AddNewSrgbClr();
-                ctFillSrgb.val = new byte[] { r, g, b };
+                ctFillSrgb.val = Rgb(r, g, b);
                 // Trazo del marcador y línea conectora
                 var ctLine = ctSpPr.AddNewLn();
                 var ctLineFill = ctLine.AddNewSolidFill();
                 var ctLineSrgb = ctLineFill.AddNewSrgbClr();
-                ctLineSrgb.val = new byte[] { r, g, b };
+                ctLineSrgb.val = Rgb(r, g, b);
                 series.SetShapeProperties(spPr);
             }
             catch (Exception ex)

@@ -17,11 +17,11 @@ namespace Mercader.Services
             public string? FieldName { get; set; }
 
             public static ValidationResult Success() => new() { IsValid = true };
-            public static ValidationResult Fail(string message, string field) => new() 
-            { 
-                IsValid = false, 
-                ErrorMessage = message, 
-                FieldName = field 
+            public static ValidationResult Fail(string message, string field) => new()
+            {
+                IsValid = false,
+                ErrorMessage = message,
+                FieldName = field
             };
         }
 
@@ -32,7 +32,7 @@ namespace Mercader.Services
         {
             if (string.IsNullOrWhiteSpace(value))
                 return ValidationResult.Fail($"Por favor, ingrese {fieldName}", fieldName);
-            
+
             return ValidationResult.Success();
         }
 
