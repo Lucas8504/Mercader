@@ -11,10 +11,10 @@ namespace Mercader.Services
             _serviceProvider = serviceProvider;
         }
 
-        public async Task PushModalAsync<TPage>() where TPage : Page
+        public async Task PushModalAsync<TPage>() where TPage : class
         {
             var page = _serviceProvider.GetRequiredService<TPage>();
-            await Shell.Current.Navigation.PushModalAsync(page);
+            await Shell.Current.Navigation.PushModalAsync((Page)(object)page!);
         }
     }
 }

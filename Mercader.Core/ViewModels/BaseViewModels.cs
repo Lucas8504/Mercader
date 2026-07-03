@@ -14,9 +14,9 @@ namespace Mercader.ViewModels
         private string? _errorMessage;
 
         /// <summary>
-        /// Ejecuta una acción async con manejo de errores.
+        /// Ejecuta una accion async con manejo de errores.
         /// Si falla, registra el error en ErrorMessage y en Debug output.
-        /// No relanza la excepción — el error se maneja internamente.
+        /// No relanza la excepcion — el error se maneja internamente.
         /// </summary>
         protected async Task ExecuteBusyAsync(Func<Task> action)
         {

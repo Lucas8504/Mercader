@@ -177,11 +177,11 @@
                         TextColor="{AppThemeBinding Light={StaticResource TextPrimary}, Dark={StaticResource TextPrimaryDark}}"
                         TitleColor="{AppThemeBinding Light={StaticResource TextSecondary}, Dark={StaticResource TextSecondaryDark}}"
                         FontSize="16">
-                    <Picker.Items>
-                        <x:String>Días</x:String>
-                        <x:String>Semanas</x:String>
-                        <x:String>Meses</x:String>
-                    </Picker.Items>
+                        <Picker.Items>
+                            <x:String>Días</x:String>
+                            <x:String>Semanas</x:String>
+                            <x:String>Meses</x:String>
+                        </Picker.Items>
                     </Picker>
                 </Frame>
             </VerticalStackLayout>

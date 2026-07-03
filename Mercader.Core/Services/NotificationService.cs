@@ -1,8 +1,6 @@
 using Mercader.Domain.Entities;
+using Mercader.Data.Interfaces;
 using Mercader.Services.Interfaces;
-using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
 
 namespace Mercader.Services
 {
