@@ -160,10 +160,10 @@ namespace Mercader
                                $"💰 Monto: ${gasto.Monto:F2}\n" +
                                $"📦 Cantidad: {gasto.Cantidad}\n" +
                                $"📅 Fecha: {gasto.Fecha:dd/MM/yyyy}\n\n" +
-                               $"⚠️ Esta acción no se puede deshacer.";
+                               "Esta accion no se puede deshacer.";
 
-                bool confirmar = await DisplayAlert("🗑️ Eliminar Gasto",
-                    mensaje, "Sí, eliminar", "Cancelar");
+                bool confirmar = await DisplayAlert("Eliminar Gasto",
+                    mensaje, "Si, eliminar", "Cancelar");
 
                 if (confirmar)
                 {
@@ -173,8 +173,8 @@ namespace Mercader
                     await _viewModel.EliminarGastoCommand.ExecuteAsync(gasto);
 
                     // Mostrar mensaje de éxito
-                    await DisplayAlert("✅ Éxito",
-                        "El gasto se eliminó correctamente", "OK");
+                    await DisplayAlert("Exito",
+                        "El gasto se elimino correctamente", "OK");
 
                     // Recargar la lista
                     await CargarGastos();
@@ -200,8 +200,8 @@ namespace Mercader
         /// </summary>
         private async Task MostrarError(string titulo, string mensaje)
         {
-            await DisplayAlert($"❌ {titulo}", mensaje, "OK");
-            Console.WriteLine($"❌ {titulo}: {mensaje}");
+            await DisplayAlert(titulo, mensaje, "OK");
+            Console.WriteLine($"{titulo}: {mensaje}");
         }
 
         /// <summary>

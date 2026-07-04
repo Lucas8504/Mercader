@@ -34,24 +34,22 @@ public partial class DetalleVenta : ContentPage
         }
         catch (Exception ex)
         {
-            await DisplayAlert("Error", $"Error al abrir la p�gina de edici�n: {ex.Message}", "OK");
+            await DisplayAlert("Error", $"Error al abrir la pagina de edicion: {ex.Message}", "OK");
         }
     }
 
     private async void OnEliminarClicked(object sender, EventArgs e)
     {
-        bool confirm = await DisplayAlert("Confirmaci�n",
-            $"�Est�s seguro de eliminar la venta \"{_venta.Descripcion}\" del d�a {_venta.Fecha:dd/MM/yyyy}?",
-            "S�", "No");
+        bool confirm = await DisplayAlert("Confirmacion",
+            $"Esta seguro de eliminar la venta \"{_venta.Descripcion}\" del dia {_venta.Fecha:dd/MM/yyyy}?",
+            "Si", "No");
 
         if (confirm)
         {
             try
             {
                 await _repository.DeleteVentaAsync(_venta);
-                await DisplayAlert("�xito", "Venta eliminada correctamente", "OK");
-
-                // Volver a la p�gina anterior
+                await DisplayAlert("Exito", "Venta eliminada correctamente", "OK");
                 await Navigation.PopAsync();
             }
             catch (Exception ex)
@@ -69,8 +67,6 @@ public partial class DetalleVenta : ContentPage
     protected override void OnAppearing()
     {
         base.OnAppearing();
-
-        // Actualizar los datos en caso de que hayan sido modificados
         if (_venta != null)
         {
             CalcularYMostrarTotal();

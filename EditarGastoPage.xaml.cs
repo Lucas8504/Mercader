@@ -12,13 +12,10 @@ public partial class EditarGastoPage : ContentPage
     {
         _repository = repository ?? throw new ArgumentNullException(nameof(repository));
         _gasto = gasto ?? throw new ArgumentNullException(nameof(gasto));
-
         InitializeComponent();
-       
         DescripcionEntry.Text = _gasto.Descripcion;
         PrecioEntry.Text = _gasto.Monto.ToString();
         CantidadEntry.Text = _gasto.Cantidad.ToString();
-        
     }
 
     private async void OnGuardarClicked(object sender, EventArgs e)
@@ -26,10 +23,9 @@ public partial class EditarGastoPage : ContentPage
         _gasto.Descripcion = DescripcionEntry.Text;
         _gasto.Monto = decimal.Parse(PrecioEntry.Text);
         _gasto.Cantidad = decimal.Parse(CantidadEntry.Text);
-        
 
         await _repository.SaveGastoAsync(_gasto);
-        await DisplayAlert("�xito", "Gasto actualizado correctamente", "OK");
+        await DisplayAlert("Exito", "Gasto actualizado correctamente", "OK");
         await Navigation.PopAsync();
     }
 
@@ -37,8 +33,8 @@ public partial class EditarGastoPage : ContentPage
     {
         bool confirm = await DisplayAlert(
             "Confirmar",
-            "�Est�s seguro de que deseas cancelar? Se perder�n los cambios no guardados.",
-            "S�",
+            "Esta seguro de que deseas cancelar? Se perderan los cambios no guardados.",
+            "Si",
             "No");
 
         if (confirm)

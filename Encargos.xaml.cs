@@ -307,15 +307,15 @@ await Navigation.PushAsync(new DetalleEncargo(encargo, _repository));
                                $"📦 Cantidad: {encargo.Cantidad}\n" +
                                $"📅 Pedido: {encargo.Fecha:dd/MM/yyyy}\n" +
                                $"🚚 Entrega: {encargo.FechaEntrega:dd/MM/yyyy}\n\n" +
-                               $"⚠️ Esta acción no se puede deshacer.";
+                               "Esta accion no se puede deshacer.";
 
-                bool confirmar = await DisplayAlert("🗑️ Eliminar Encargo", mensaje, "Sí, eliminar", "Cancelar");
+                bool confirmar = await DisplayAlert("Eliminar Encargo", mensaje, "Si, eliminar", "Cancelar");
 
                 if (confirmar)
                 {
                     _isLoading = true;
                     await _viewModel.EliminarEncargoCommand.ExecuteAsync(encargo);
-                    await DisplayAlert("✅ Éxito", "El encargo se eliminó correctamente", "OK");
+                    await DisplayAlert("Exito", "El encargo se elimino correctamente", "OK");
                     await CargarEncargos();
                 }
             }
@@ -393,8 +393,8 @@ await Navigation.PushAsync(new DetalleEncargo(encargo, _repository));
         /// </summary>
         private async Task MostrarError(string titulo, string mensaje)
         {
-            await DisplayAlert($"❌ {titulo}", mensaje, "OK");
-            Console.WriteLine($"❌ {titulo}: {mensaje}");
+            await DisplayAlert(titulo, mensaje, "OK");
+            Console.WriteLine($"{titulo}: {mensaje}");
         }
 
         /// <summary>

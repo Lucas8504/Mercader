@@ -12,9 +12,7 @@ public partial class EditarVentaPage : ContentPage
     {
         _repository = repository ?? throw new ArgumentNullException(nameof(repository));
         _venta = venta ?? throw new ArgumentNullException(nameof(venta));
-
         InitializeComponent();
-
         DescripcionEntry.Text = _venta.Descripcion;
         PrecioEntry.Text = _venta.Precio.ToString();
         CantidadEntry.Text = _venta.Cantidad.ToString();
@@ -27,15 +25,16 @@ public partial class EditarVentaPage : ContentPage
         _venta.Cantidad = decimal.Parse(CantidadEntry.Text);
 
         await _repository.SaveVentasAsync(_venta);
-        await DisplayAlert("�xito", "Venta actualizada correctamente", "OK");
+        await DisplayAlert("Exito", "Venta actualizada correctamente", "OK");
         await Navigation.PopAsync();
     }
+
     private async void OnCancelarClicked(object sender, EventArgs e)
     {
         bool confirm = await DisplayAlert(
             "Confirmar",
-            "�Est�s seguro de que deseas cancelar? Se perder�n los cambios no guardados.",
-            "S�",
+            "Esta seguro de que deseas cancelar? Se perderan los cambios no guardados.",
+            "Si",
             "No");
 
         if (confirm)
@@ -43,5 +42,4 @@ public partial class EditarVentaPage : ContentPage
             await Navigation.PopAsync();
         }
     }
-
 }
