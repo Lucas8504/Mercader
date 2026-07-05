@@ -1,4 +1,5 @@
 using CommunityToolkit.Maui.Storage;
+using Mercader.Services.Interfaces;
 using Mercader.ViewModels;
 
 namespace Mercader
@@ -6,11 +7,13 @@ namespace Mercader
     public partial class MainPage : ContentPage
     {
         private readonly MainViewModel _viewModel;
+        private readonly IExportPdfService _pdfService;
 
-        public MainPage(MainViewModel vm)
+        public MainPage(MainViewModel vm, IExportPdfService pdfService)
         {
             InitializeComponent();
             _viewModel = vm;
+            _pdfService = pdfService;
             BindingContext = _viewModel;
         }
 
@@ -92,17 +95,40 @@ namespace Mercader
 
         #endregion
 
-        #region Exportación a Excel
+        #region Exportación
+
+        private async void OnExportarPdfClicked(object sender, EventArgs e)
+        {
+            try
+            {
+                await _viewModel.CargarDatosCommand.ExecuteAsync(null);
+
+                string nombreArchivo = $"Balance_{DateTime.Now:yyyyMMdd_HHmmss}.pdf";
+                var exportData = _viewModel.CrearExportDto();
+
+                using var pdfStream = _pdfService.GenerarBalancePdf(exportData);
+
+                string rutaTemp = Path.Combine(FileSystem.Current.CacheDirectory, nombreArchivo);
+                await using var fileStream = File.Create(rutaTemp);
+                pdfStream.Seek(0, SeekOrigin.Begin);
+                await pdfStream.CopyToAsync(fileStream);
+                await fileStream.FlushAsync();
+
+                using var finalStream = File.OpenRead(rutaTemp);
+                var saverResult = await FileSaver.Default.SaveAsync(nombreArchivo, finalStream, CancellationToken.None);
+
+                if (saverResult.IsSuccessful)
+                    await DisplayAlert("PDF exportado", "Balance guardado correctamente.", "OK");
+            }
+            catch (Exception ex)
+            {
+                await DisplayAlert("Error", $"No se pudo exportar el PDF:\n{ex.Message}", "OK");
+                System.Diagnostics.Debug.WriteLine($"[PDF] Error: {ex}");
+            }
+        }
 
         private async void OnExportarAExcelClicked(object sender, EventArgs e)
         {
-            var botonExportar = sender as Button;
-            if (botonExportar != null)
-            {
-                botonExportar.IsEnabled = false;
-                botonExportar.Text = "⏳ Exportando...";
-            }
-
             try
             {
                 await _viewModel.CargarDatosCommand.ExecuteAsync(null);
@@ -110,13 +136,11 @@ namespace Mercader
                 string nombreArchivo = $"Balance_Financiero_{DateTime.Now:yyyyMMdd_HHmmss}.xlsx";
                 var exportData = _viewModel.CrearExportDto();
 
-                // 1. Generar Excel a temporal
                 string tempDir = Path.Combine(FileSystem.Current.CacheDirectory, "Exportaciones");
                 Directory.CreateDirectory(tempDir);
                 string rutaTemp = Path.Combine(tempDir, nombreArchivo);
                 await ExportExcel.ExportarBalanceAExcelAsync(exportData, rutaTemp);
 
-                // 2. FileSaver: diálogo nativo "Guardar como"
                 using var fileStream = File.OpenRead(rutaTemp);
  
 #if IOS || MACCATALYST
@@ -140,16 +164,8 @@ namespace Mercader
 #if DEBUG
                 mensajeError += $"\n\n📋 {ex.GetType().Name}: {ex.StackTrace?.Split('\n').FirstOrDefault()}";
 #endif
-                await DisplayAlert("❌ Error en exportación", mensajeError, "Entendido");
+                await DisplayAlert("Error en exportacion", mensajeError, "Entendido");
                 System.Diagnostics.Debug.WriteLine($"[ExportError] {ex}");
-            }
-            finally
-            {
-                if (botonExportar != null)
-                {
-                    botonExportar.IsEnabled = true;
-                    botonExportar.Text = "📊 EXPORTAR REPORTE COMPLETO";
-                }
             }
         }
 

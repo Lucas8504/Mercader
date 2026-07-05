@@ -1,12 +1,8 @@
-using CommunityToolkit.Maui.Storage;
 using Microsoft.Maui.Controls;
 using Microsoft.Maui.Storage;
 using Mercader.Services.Interfaces;
-using Mercader.Services.Calculators;
-using Mercader.Models;
 using System;
 using System.IO;
-using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -16,19 +12,11 @@ public partial class Configuracion : ContentPage
 {
     private readonly INotificationService _notificationService;
     private readonly IDataRepository _repository;
-    private readonly IExportPdfService _pdfService;
-    private readonly IBalanceCalculatorService _calculator;
 
-    public Configuracion(
-        INotificationService notificationService,
-        IDataRepository repository,
-        IExportPdfService pdfService,
-        IBalanceCalculatorService calculator)
+    public Configuracion(INotificationService notificationService, IDataRepository repository)
     {
         _notificationService = notificationService;
         _repository = repository;
-        _pdfService = pdfService;
-        _calculator = calculator;
         InitializeComponent();
         CargarConfiguracion();
     }
@@ -180,69 +168,6 @@ public partial class Configuracion : ContentPage
         {
             await DisplayAlert("❌ Error", $"Error al exportar: {ex.Message}", "OK");
         }
-    }
-
-    private async void OnExportarPdfClicked(object sender, EventArgs e)
-    {
-        try
-        {
-            var data = await BuildBalanceExportDtoAsync();
-            using var pdfStream = _pdfService.GenerarBalancePdf(data);
-
-            string nombreArchivo = $"Balance_{DateTime.Now:yyyyMMdd_HHmmss}.pdf";
-            string rutaTemp = Path.Combine(FileSystem.CacheDirectory, nombreArchivo);
-            await using var fileStream = File.Create(rutaTemp);
-            pdfStream.Seek(0, SeekOrigin.Begin);
-            await pdfStream.CopyToAsync(fileStream);
-            await fileStream.FlushAsync();
-
-            // FileSaver para guardar donde el usuario quiera
-            using var finalStream = File.OpenRead(rutaTemp);
-            var saverResult = await FileSaver.Default.SaveAsync(nombreArchivo, finalStream, CancellationToken.None);
-
-            if (saverResult.IsSuccessful)
-            {
-                await DisplayAlert("PDF exportado",
-                    $"Balance guardado correctamente.", "OK");
-            }
-        }
-        catch (Exception ex)
-        {
-            await DisplayAlert("Error", $"No se pudo exportar el PDF:\n{ex.Message}", "OK");
-            System.Diagnostics.Debug.WriteLine($"[PDF] Error: {ex}");
-        }
-    }
-
-    private async Task<BalanceExportDto> BuildBalanceExportDtoAsync()
-    {
-        var ventas = await _repository.GetVentasAsync();
-        var gastos = await _repository.GetGastosAsync();
-        var encargos = await _repository.GetEncargosAsync();
-
-        var listVentas = ventas.ToList();
-        var listGastos = gastos.ToList();
-        var listEncargos = encargos.ToList();
-
-        // Periodo por defecto: últimos 12 meses
-        string periodo = "Meses";
-        var totalVentas = _calculator.CalcularTotalVentas(listVentas, periodo);
-        var totalGastos = _calculator.CalcularTotalGastos(listGastos, periodo);
-        var totalEncargos = _calculator.CalcularTotalEncargos(listEncargos, periodo);
-        var ganancias = _calculator.CalcularGanancias(totalVentas, totalGastos);
-        var margen = _calculator.CalcularMargen(totalVentas, ganancias);
-
-        return new BalanceExportDto
-        {
-            Ventas = listVentas,
-            Gastos = listGastos,
-            Encargos = listEncargos,
-            TotalVentas = totalVentas,
-            TotalGastos = totalGastos,
-            TotalEncargos = totalEncargos,
-            Ganancias = ganancias,
-            Margen = margen,
-            Periodo = periodo
-        };
     }
 
     private string GenerarCsvVentas(System.Collections.Generic.List<Domain.Entities.Ventas> ventas)

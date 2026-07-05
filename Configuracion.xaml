@@ -150,26 +150,6 @@
 
             <Frame Padding="15" BackgroundColor="{AppThemeBinding Light={StaticResource CardBackground}, Dark={StaticResource CardBackgroundDark}}">
                 <VerticalStackLayout Spacing="10">
-                    <!-- Exportar -->
-                    <Label Text="Exportar" FontSize="14" FontAttributes="Bold"
-                           TextColor="{AppThemeBinding Light={StaticResource TextSecondary}, Dark={StaticResource TextSecondaryDark}}" />
-
-                    <Grid ColumnDefinitions="*, 10, *">
-                        <Button Grid.Column="0"
-                                Text="📤 Excel"
-                                BackgroundColor="#0A84FF"
-                                TextColor="White"
-                                Clicked="OnExportarClicked" />
-
-                        <Button Grid.Column="2"
-                                Text="📄 PDF"
-                                BackgroundColor="#0A84FF"
-                                TextColor="White"
-                                Clicked="OnExportarPdfClicked" />
-                    </Grid>
-
-                    <BoxView HeightRequest="0.5" Color="{AppThemeBinding Light={StaticResource DividerColor}, Dark={StaticResource DividerColorDark}}" />
-
                     <!-- Importar datos -->
                     <Button
                         Text="📥 Importar Datos"

@@ -409,25 +409,49 @@
                 BackgroundColor="{AppThemeBinding Light={StaticResource CardAltBackground}, Dark={StaticResource CardBackgroundDark}}"
                 HorizontalOptions="Fill" />
 
-            <!--  Botón Exportar  -->
-            <Button
-                Clicked="OnExportarAExcelClicked"
-                CornerRadius="16"
-                FontAttributes="Bold"
-                FontSize="15"
-                HeightRequest="54"
-                Text="📊  EXPORTAR REPORTE COMPLETO"
-                TextColor="White">
-                <Button.Background>
-                    <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
-                        <GradientStop Color="#8cb8ff" Offset="0.0" />
-                        <GradientStop Color="#6490E9" Offset="1.0" />
-                    </LinearGradientBrush>
-                </Button.Background>
-                <Button.Shadow>
-                    <Shadow Brush="#40000000" Offset="0,3" Radius="8" Opacity="0.3" />
-                </Button.Shadow>
-            </Button>
+            <!--  Exportar  -->
+            <Label Text="Exportar" FontSize="13" FontAttributes="Bold"
+                   TextColor="{AppThemeBinding Light={StaticResource TextSecondary}, Dark={StaticResource TextSecondaryDark}}" />
+
+            <Grid ColumnDefinitions="*, 10, *">
+                <Button Grid.Column="0"
+                        Clicked="OnExportarAExcelClicked"
+                        CornerRadius="16"
+                        FontAttributes="Bold"
+                        FontSize="14"
+                        HeightRequest="48"
+                        Text="📤  Excel"
+                        TextColor="White">
+                    <Button.Background>
+                        <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                            <GradientStop Color="#8cb8ff" Offset="0.0" />
+                            <GradientStop Color="#6490E9" Offset="1.0" />
+                        </LinearGradientBrush>
+                    </Button.Background>
+                    <Button.Shadow>
+                        <Shadow Brush="#40000000" Offset="0,3" Radius="8" Opacity="0.3" />
+                    </Button.Shadow>
+                </Button>
+
+                <Button Grid.Column="2"
+                        Clicked="OnExportarPdfClicked"
+                        CornerRadius="16"
+                        FontAttributes="Bold"
+                        FontSize="14"
+                        HeightRequest="48"
+                        Text="📄  PDF"
+                        TextColor="White">
+                    <Button.Background>
+                        <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                            <GradientStop Color="#8cb8ff" Offset="0.0" />
+                            <GradientStop Color="#6490E9" Offset="1.0" />
+                        </LinearGradientBrush>
+                    </Button.Background>
+                    <Button.Shadow>
+                        <Shadow Brush="#40000000" Offset="0,3" Radius="8" Opacity="0.3" />
+                    </Button.Shadow>
+                </Button>
+            </Grid>
 
         </VerticalStackLayout>
     </ScrollView>
