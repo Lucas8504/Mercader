@@ -157,6 +157,12 @@
                         TextColor="White"
                         Clicked="OnExportarClicked" />
 
+                    <Button
+                        Text="📄 Exportar Balance en PDF"
+                        BackgroundColor="#0A84FF"
+                        TextColor="White"
+                        Clicked="OnExportarPdfClicked" />
+
                     <BoxView HeightRequest="0.5" Color="{AppThemeBinding Light={StaticResource DividerColor}, Dark={StaticResource DividerColorDark}}" />
 
                     <!-- Importar datos -->

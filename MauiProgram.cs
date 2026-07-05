@@ -1,6 +1,7 @@
 using CommunityToolkit.Maui;
 using Mercader.ViewModels;
 using Mercader.Services.Interfaces;
+using Mercader.Services;
 using Mercader.Data.Interfaces;
 using Mercader.Services.Calculators;
 using Mercader.Services.Charts;
@@ -40,6 +41,7 @@ namespace Mercader
             builder.Services.AddSingleton<IBalanceCalculatorService, BalanceCalculatorService>();
             builder.Services.AddSingleton<INotificationService, NotificationService>();
             builder.Services.AddSingleton<INavigationService, NavigationService>();
+            builder.Services.AddSingleton<IExportPdfService, ExportPdfService>();
 
             // Shell
             builder.Services.AddSingleton<AppShell>();
