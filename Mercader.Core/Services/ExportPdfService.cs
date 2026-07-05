@@ -7,14 +7,12 @@ using Mercader.Services.Interfaces;
 
 namespace Mercader.Services;
 
-public sealed class ExportPdfService : IExportPdfService, IDisposable
+public sealed class ExportPdfService : IExportPdfService
 {
-    private readonly PdfDocument _document = new();
-    private bool _disposed;
-
     public MemoryStream GenerarBalancePdf(BalanceExportDto data)
     {
-        var page = _document.Pages.Add();
+        using var document = new PdfDocument();
+        var page = document.Pages.Add();
         var graphics = page.Graphics;
 
         float margin = 50;
@@ -88,7 +86,7 @@ public sealed class ExportPdfService : IExportPdfService, IDisposable
             new PointF(margin, page.GetClientSize().Height - 30));
 
         var stream = new MemoryStream();
-        _document.Save(stream);
+        document.Save(stream);
         stream.Position = 0;
         return stream;
     }
@@ -102,14 +100,5 @@ public sealed class ExportPdfService : IExportPdfService, IDisposable
         row.Cells[1].Style.Font = font;
         row.Cells[0].StringFormat = new PdfStringFormat(PdfTextAlignment.Left, PdfVerticalAlignment.Middle);
         row.Cells[1].StringFormat = new PdfStringFormat(PdfTextAlignment.Right, PdfVerticalAlignment.Middle);
-    }
-
-    public void Dispose()
-    {
-        if (!_disposed)
-        {
-            _document.Dispose();
-            _disposed = true;
-        }
     }
 }

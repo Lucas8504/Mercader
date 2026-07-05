@@ -107,15 +107,8 @@ namespace Mercader
                 var exportData = _viewModel.CrearExportDto();
 
                 using var pdfStream = _pdfService.GenerarBalancePdf(exportData);
-
-                string rutaTemp = Path.Combine(FileSystem.Current.CacheDirectory, nombreArchivo);
-                await using var fileStream = File.Create(rutaTemp);
-                pdfStream.Seek(0, SeekOrigin.Begin);
-                await pdfStream.CopyToAsync(fileStream);
-                await fileStream.FlushAsync();
-
-                using var finalStream = File.OpenRead(rutaTemp);
-                var saverResult = await FileSaver.Default.SaveAsync(nombreArchivo, finalStream, CancellationToken.None);
+                var saverResult = await FileSaver.Default.SaveAsync(
+                    nombreArchivo, pdfStream, CancellationToken.None);
 
                 if (saverResult.IsSuccessful)
                     await DisplayAlert("PDF exportado", "Balance guardado correctamente.", "OK");
