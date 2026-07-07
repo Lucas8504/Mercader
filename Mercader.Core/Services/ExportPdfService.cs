@@ -9,7 +9,10 @@ namespace Mercader.Services;
 
 public sealed class ExportPdfService : IExportPdfService
 {
-    public MemoryStream GenerarBalancePdf(BalanceExportDto data)
+    public MemoryStream GenerarBalancePdf(
+        BalanceExportDto data,
+        IReadOnlyList<(byte[] ImageBytes, string Title)>? charts = null,
+        byte[]? fontBytes = null)
     {
         using var document = new PdfDocument();
         var page = document.Pages.Add();
@@ -19,10 +22,22 @@ public sealed class ExportPdfService : IExportPdfService
         float y = margin;
 
         // — Fonts —
-        var titleFont = new PdfStandardFont(PdfFontFamily.Helvetica, 22, PdfFontStyle.Bold);
-        var subtitleFont = new PdfStandardFont(PdfFontFamily.Helvetica, 12, PdfFontStyle.Regular);
-        var headerFont = new PdfStandardFont(PdfFontFamily.Helvetica, 10, PdfFontStyle.Bold);
-        var cellFont = new PdfStandardFont(PdfFontFamily.Helvetica, 10, PdfFontStyle.Regular);
+        PdfFont titleFont, subtitleFont, headerFont, cellFont;
+
+        if (fontBytes != null)
+        {
+            titleFont = new PdfTrueTypeFont(new MemoryStream(fontBytes), 22);
+            subtitleFont = new PdfTrueTypeFont(new MemoryStream(fontBytes), 11);
+            headerFont = new PdfTrueTypeFont(new MemoryStream(fontBytes), 10, PdfFontStyle.Bold);
+            cellFont = new PdfTrueTypeFont(new MemoryStream(fontBytes), 10);
+        }
+        else
+        {
+            titleFont = new PdfStandardFont(PdfFontFamily.Helvetica, 22, PdfFontStyle.Bold);
+            subtitleFont = new PdfStandardFont(PdfFontFamily.Helvetica, 11, PdfFontStyle.Regular);
+            headerFont = new PdfStandardFont(PdfFontFamily.Helvetica, 10, PdfFontStyle.Bold);
+            cellFont = new PdfStandardFont(PdfFontFamily.Helvetica, 10, PdfFontStyle.Regular);
+        }
 
         float pageWidth = page.GetClientSize().Width;
         float usableWidth = pageWidth - margin * 2;
@@ -49,38 +64,89 @@ public sealed class ExportPdfService : IExportPdfService
         var grid = new PdfGrid();
         grid.Columns.Add(2);
 
-        // Header
         var headerRow = grid.Headers.Add(1)[0];
         headerRow.Style.BackgroundBrush = new PdfSolidBrush(new PdfColor(41, 128, 185));
         headerRow.Style.TextBrush = PdfBrushes.White;
         headerRow.Style.Font = headerFont;
-        headerRow.Cells[0].Value = "Metrica";
+        headerRow.Cells[0].Value = "Métrica";
         headerRow.Cells[1].Value = "Valor";
         headerRow.Cells[0].StringFormat = new PdfStringFormat(PdfTextAlignment.Center, PdfVerticalAlignment.Middle);
         headerRow.Cells[1].StringFormat = new PdfStringFormat(PdfTextAlignment.Center, PdfVerticalAlignment.Middle);
 
-        // Data rows
         AddRow(grid, "Total Ventas", $"$ {data.TotalVentas:N2}", cellFont);
         AddRow(grid, "Total Gastos", $"$ {data.TotalGastos:N2}", cellFont);
         AddRow(grid, "Total Encargos", $"$ {data.TotalEncargos:N2}", cellFont);
         AddRow(grid, "Ganancias", $"$ {data.Ganancias:N2}", cellFont);
         AddRow(grid, "Margen", $"{data.Margen:N2} %", cellFont);
 
-        // Column widths
         grid.Columns[0].Width = usableWidth * 0.6f;
         grid.Columns[1].Width = usableWidth * 0.4f;
 
-        // Grid style
         grid.Style.CellPadding = new PdfPaddings(6, 6, 4, 4);
         grid.Style.Font = cellFont;
 
-        // Draw
         var gridResult = grid.Draw(page, new PointF(margin, y));
-        y = gridResult.Bounds.Bottom + 20;
+        y = gridResult.Bounds.Bottom + 25;
+
+        // — Charts (if provided) —
+        if (charts != null)
+        {
+            foreach (var (imageBytes, chartTitle) in charts)
+            {
+                if (imageBytes == null || imageBytes.Length == 0)
+                    continue;
+
+                try
+                {
+                    // Check if we need a new page
+                    float chartNeededHeight = 18 + 250 + 15; // title + maxImgHeight + spacing
+                    if (y + chartNeededHeight > page.GetClientSize().Height - 40)
+                    {
+                        page = document.Pages.Add();
+                        graphics = page.Graphics;
+                        y = margin;
+                    }
+
+                    // Chart title
+                    graphics.DrawString(chartTitle, subtitleFont, PdfBrushes.DarkSlateGray,
+                        new PointF(margin, y));
+                    y += 18;
+
+                    using var imgStream = new MemoryStream(imageBytes);
+                    var chartImg = new PdfBitmap(imgStream);
+
+                    float imgMaxWidth = usableWidth;
+                    float imgMaxHeight = 250f;
+                    float imgWidth = chartImg.Width;
+                    float imgHeight = chartImg.Height;
+
+                    if (imgWidth > imgMaxWidth)
+                    {
+                        float ratio = imgMaxWidth / imgWidth;
+                        imgWidth = imgMaxWidth;
+                        imgHeight *= ratio;
+                    }
+                    if (imgHeight > imgMaxHeight)
+                    {
+                        float ratio = imgMaxHeight / imgHeight;
+                        imgHeight = imgMaxHeight;
+                        imgWidth *= ratio;
+                    }
+
+                    float imgX = margin + (usableWidth - imgWidth) / 2;
+                    graphics.DrawImage(chartImg, new PointF(imgX, y), new SizeF(imgWidth, imgHeight));
+                    y += imgHeight + 15;
+                }
+                catch
+                {
+                    // Chart image failed to render — skip it silently
+                }
+            }
+        }
 
         // — Footer —
         graphics.DrawString(
-            "Mercader App de Gestion",
+            "Mercader App de Gestión",
             new PdfStandardFont(PdfFontFamily.Helvetica, 8, PdfFontStyle.Italic),
             PdfBrushes.Gray,
             new PointF(margin, page.GetClientSize().Height - 30));

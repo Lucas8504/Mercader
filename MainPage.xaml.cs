@@ -1,6 +1,8 @@
 using CommunityToolkit.Maui.Storage;
 using Mercader.Services.Interfaces;
 using Mercader.ViewModels;
+using Microcharts;
+using SkiaSharp;
 
 namespace Mercader
 {
@@ -8,12 +10,20 @@ namespace Mercader
     {
         private readonly MainViewModel _viewModel;
         private readonly IExportPdfService _pdfService;
+        private readonly IBalanceCalculatorService _balanceCalculator;
+        private readonly IChartService _chartService;
 
-        public MainPage(MainViewModel vm, IExportPdfService pdfService)
+        public MainPage(
+            MainViewModel vm,
+            IExportPdfService pdfService,
+            IBalanceCalculatorService balanceCalculator,
+            IChartService chartService)
         {
             InitializeComponent();
             _viewModel = vm;
             _pdfService = pdfService;
+            _balanceCalculator = balanceCalculator;
+            _chartService = chartService;
             BindingContext = _viewModel;
         }
 
@@ -93,25 +103,187 @@ namespace Mercader
             }
         }
 
+        /// <summary>
+        /// Renders a Microcharts Chart to a PNG byte array at the specified resolution.
+        /// </summary>
+        private static byte[]? RenderChartToPng(Chart chart, int width, int height)
+        {
+            if (chart == null) return null;
+
+            var info = new SKImageInfo(width, height);
+            using var surface = SKSurface.Create(info);
+            var canvas = surface.Canvas;
+            canvas.Clear(SKColors.White);
+            chart.Draw(canvas, width, height);
+            using var image = surface.Snapshot();
+            using var data = image.Encode(SKEncodedImageFormat.Png, 90);
+            return data.ToArray();
+        }
+
         #endregion
 
         #region Exportación
 
         private async void OnExportarPdfClicked(object sender, EventArgs e)
         {
+            // — Diagnóstico: log de lo que pasa durante la generación —
+            var diag = new List<string>();
+            diag.Add($"--- DIAG PDF {DateTime.Now:HH:mm:ss} ---");
+            diag.Add($"Periodo VM: {_viewModel.PeriodoSeleccionado}");
+            diag.Add($"Ventas count: {_viewModel.Ventas?.Count ?? -1}");
+            diag.Add($"Gastos count: {_viewModel.Gastos?.Count ?? -1}");
+            diag.Add($"GananciasChart is null: {_viewModel.GananciasChart == null}");
+
             try
             {
                 await _viewModel.CargarDatosCommand.ExecuteAsync(null);
 
+                diag.Add("--- Tras CargarDatos ---");
+                diag.Add($"Ventas count: {_viewModel.Ventas?.Count ?? -1}");
+                diag.Add($"Gastos count: {_viewModel.Gastos?.Count ?? -1}");
+                diag.Add($"GananciasChart is null: {_viewModel.GananciasChart == null}");
+                diag.Add($"Periodo VM: {_viewModel.PeriodoSeleccionado}");
+
                 string nombreArchivo = $"Balance_{DateTime.Now:yyyyMMdd_HHmmss}.pdf";
                 var exportData = _viewModel.CrearExportDto();
 
-                using var pdfStream = _pdfService.GenerarBalancePdf(exportData);
+                // Font: OpenSans para caracteres Unicode
+                byte[]? fontBytes = null;
+                try
+                {
+                    using var fontStream = await FileSystem.OpenAppPackageFileAsync("OpenSans-Regular.ttf");
+                    using var ms = new MemoryStream();
+                    await fontStream.CopyToAsync(ms);
+                    fontBytes = ms.ToArray();
+                    diag.Add($"Font loaded: {fontBytes.Length} bytes");
+                }
+                catch (Exception exFont)
+                {
+                    diag.Add($"Font fallback: {exFont.Message}");
+                }
+
+                // Charts
+                var charts = new List<(byte[] ImageBytes, string Title)>();
+
+                // 1. ViewModel chart
+                try
+                {
+                    if (_viewModel.GananciasChart != null)
+                    {
+                        diag.Add("Chart1: GananciasChart NO es null, renderizando...");
+                        var chartBytes = RenderChartToPng(_viewModel.GananciasChart, 1400, 450);
+                        diag.Add($"Chart1: RenderChartToPng devolvió {(chartBytes != null ? $"{chartBytes.Length} bytes" : "NULL")}");
+                        if (chartBytes != null)
+                        {
+                            charts.Add((chartBytes, $"Ganancias ({_viewModel.PeriodoSeleccionado})"));
+                            diag.Add("Chart1: AGREGADO a lista charts");
+                        }
+                    }
+                    else
+                    {
+                        diag.Add("Chart1: GananciasChart ES null, salteando");
+                    }
+                }
+                catch (Exception ex1)
+                {
+                    diag.Add($"Chart1 EXCEPTION: {ex1.GetType().Name}: {ex1.Message}");
+                }
+
+                // 2. 6-Month chart
+                try
+                {
+                    diag.Add("Chart2: Agrupando ventas x Meses...");
+                    var ventasMensuales = _balanceCalculator.AgruparVentasPorPeriodo(_viewModel.Ventas, "Meses");
+                    diag.Add($"Chart2: ventasMensuales count={ventasMensuales.Count}, datos con Total>0: {ventasMensuales.Count(v => v.Total > 0)}");
+                    var ultimos6Ventas = ventasMensuales.TakeLast(6).ToList();
+                    diag.Add($"Chart2: ultimos6Ventas count={ultimos6Ventas.Count}, sum={ultimos6Ventas.Sum(v => v.Total)}");
+
+                    var gastosMensuales = _balanceCalculator.AgruparGastosPorPeriodo(_viewModel.Gastos, "Meses");
+                    diag.Add($"Chart2: gastosMensuales count={gastosMensuales.Count}, datos con Total>0: {gastosMensuales.Count(g => g.Total > 0)}");
+                    var ultimos6Gastos = gastosMensuales.TakeLast(6).ToList();
+                    diag.Add($"Chart2: ultimos6Gastos count={ultimos6Gastos.Count}, sum={ultimos6Gastos.Sum(g => g.Total)}");
+
+                    if (ultimos6Ventas.Count > 0)
+                    {
+                        diag.Add("Chart2: Creando chart...");
+                        var chart6M = _chartService.CrearGraficoGanancias(ultimos6Ventas, ultimos6Gastos);
+                        var bytes6M = RenderChartToPng(chart6M, 1400, 450);
+                        diag.Add($"Chart2: PNG={bytes6M?.Length ?? -1} bytes");
+                        if (bytes6M != null)
+                        {
+                            charts.Add((bytes6M, "Últimos 6 Meses"));
+                            diag.Add("Chart2: AGREGADO");
+                        }
+                        else
+                            diag.Add("Chart2: bytes6M es NULL");
+                    }
+                }
+                catch (Exception ex2)
+                {
+                    diag.Add($"Chart2 EXCEPTION: {ex2.GetType().Name}: {ex2.Message}");
+                }
+
+                // 3. 30-Day chart
+                try
+                {
+                    diag.Add("Chart3: Agrupando ventas x Días...");
+                    var ventasDiarias = _balanceCalculator.AgruparVentasPorPeriodo(_viewModel.Ventas, "Días");
+                    diag.Add($"Chart3: ventasDiarias count={ventasDiarias.Count}, datos con Total>0: {ventasDiarias.Count(v => v.Total > 0)}");
+                    var ultimos30Ventas = ventasDiarias.TakeLast(30).ToList();
+                    diag.Add($"Chart3: ultimos30Ventas count={ultimos30Ventas.Count}, sum={ultimos30Ventas.Sum(v => v.Total)}");
+
+                    var gastosDiarias = _balanceCalculator.AgruparGastosPorPeriodo(_viewModel.Gastos, "Días");
+                    diag.Add($"Chart3: gastosDiarias count={gastosDiarias.Count}, datos con Total>0: {gastosDiarias.Count(g => g.Total > 0)}");
+                    var ultimos30Gastos = gastosDiarias.TakeLast(30).ToList();
+                    diag.Add($"Chart3: ultimos30Gastos count={ultimos30Gastos.Count}, sum={ultimos30Gastos.Sum(g => g.Total)}");
+
+                    if (ultimos30Ventas.Count > 0)
+                    {
+                        diag.Add("Chart3: Creando chart...");
+                        var chart30D = _chartService.CrearGraficoGanancias(ultimos30Ventas, ultimos30Gastos);
+                        var bytes30D = RenderChartToPng(chart30D, 1400, 450);
+                        diag.Add($"Chart3: PNG={bytes30D?.Length ?? -1} bytes");
+                        if (bytes30D != null)
+                        {
+                            charts.Add((bytes30D, "Últimos 30 Días"));
+                            diag.Add("Chart3: AGREGADO");
+                        }
+                        else
+                            diag.Add("Chart3: bytes30D es NULL");
+                    }
+                }
+                catch (Exception ex3)
+                {
+                    diag.Add($"Chart3 EXCEPTION: {ex3.GetType().Name}: {ex3.Message}");
+                }
+
+                diag.Add($"--- Total charts a pasar al PDF: {charts.Count} ---");
+
+                using var pdfStream = _pdfService.GenerarBalancePdf(
+                    exportData, charts.Count > 0 ? charts : null, fontBytes);
+
                 var saverResult = await FileSaver.Default.SaveAsync(
                     nombreArchivo, pdfStream, CancellationToken.None);
 
-                if (saverResult.IsSuccessful)
-                    await DisplayAlert("PDF exportado", "Balance guardado correctamente.", "OK");
+                // — Guardar diagnóstico —
+                try
+                {
+                    string diagDir = Path.Combine(FileSystem.CacheDirectory, "MercaderDiag");
+                    Directory.CreateDirectory(diagDir);
+                    string diagPath = Path.Combine(diagDir, $"pdf_diag_{DateTime.Now:yyyyMMdd_HHmmss}.txt");
+                    await File.WriteAllTextAsync(diagPath, string.Join(Environment.NewLine, diag));
+
+                    if (saverResult.IsSuccessful)
+                        await DisplayAlert("PDF exportado",
+                            $"Balance guardado correctamente.\n\nDiagnóstico: {diagPath}", "OK");
+                    else
+                        await DisplayAlert("PDF", $"El PDF se generó pero no se pudo guardar.\n\nLog: {diagPath}", "OK");
+                }
+                catch
+                {
+                    if (saverResult.IsSuccessful)
+                        await DisplayAlert("PDF exportado", "Balance guardado correctamente.", "OK");
+                }
             }
             catch (Exception ex)
             {
