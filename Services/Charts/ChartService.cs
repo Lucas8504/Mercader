@@ -155,22 +155,25 @@ namespace Mercader.Services.Charts
             Entries = entries.ToList(),
 
             // 🎯 Texto
-            LabelTextSize = 22,
-            ValueLabelTextSize = 24,
+            LabelTextSize = 20,
+            ValueLabelTextSize = 22,
+            ValueLabelOption = ValueLabelOption.TopOfElement,
 
-            // 🎨 Estética
+            // 🎨 Estética — líneas curvas con área degradada
             BackgroundColor = ChartBg,
-            LineSize = 5,
-            PointSize = 10,
-            IsAnimated = true,
-            LineMode = LineMode.Straight,
-            AnimationDuration = TimeSpan.FromMilliseconds(800),
+            LineSize = 4,
+            PointSize = 8,
+            IsAnimated = false,
+            AnimationProgress = 1,
+            LineMode = LineMode.Spline,
+            LineAreaAlpha = 28,
+            EnableYFadeOutGradient = true,
 
             // 📐 Orientación
             LabelOrientation = Orientation.Horizontal,
             ValueLabelOrientation = Orientation.Horizontal,
 
-            // 📊 Ejes
+            // 📊 Ejes — grilla sutil
             ShowYAxisLines = true,
             YAxisLinesPaint = new SKPaint
             {
@@ -179,12 +182,8 @@ namespace Mercader.Services.Charts
                 IsAntialias = true
             },
 
-            // 📦 Margen
-            Margin = 25,
-
-            // 💡 Extras
-            EnableYFadeOutGradient = true
-
+            // 📦 Margen generoso para que respire
+            Margin = 30,
         };
     }
 

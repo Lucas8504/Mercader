@@ -106,9 +106,17 @@ namespace Mercader
         /// <summary>
         /// Renders a Microcharts Chart to a PNG byte array at the specified resolution.
         /// </summary>
+        /// <summary>
+        /// Renders a Microcharts Chart to a PNG byte array.
+        /// Forces full animation progress so the chart renders at final state.
+        /// </summary>
         private static byte[]? RenderChartToPng(Chart chart, int width, int height)
         {
             if (chart == null) return null;
+
+            // Force full render — without this, a fresh chart renders flat (AnimationProgress = 0)
+            chart.IsAnimated = false;
+            chart.AnimationProgress = 1;
 
             var info = new SKImageInfo(width, height);
             using var surface = SKSurface.Create(info);
