@@ -155,8 +155,8 @@ namespace Mercader.Services.Charts
             Entries = entries.ToList(),
 
             // 🎯 Texto
-            LabelTextSize = 20,
-            ValueLabelTextSize = 22,
+            LabelTextSize = 26,
+            ValueLabelTextSize = 32,
             ValueLabelOption = ValueLabelOption.TopOfElement,
 
             // 🎨 Estética — líneas curvas con área degradada
@@ -183,7 +183,7 @@ namespace Mercader.Services.Charts
             },
 
             // 📦 Margen generoso para que respire
-            Margin = 30,
+            Margin = 40,
         };
     }
 

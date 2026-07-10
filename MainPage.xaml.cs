@@ -114,6 +114,10 @@ namespace Mercader
         {
             if (chart == null) return null;
 
+            // Save original state so we can restore it (avoid mutating the shared chart object)
+            bool originalIsAnimated = chart.IsAnimated;
+            float originalProgress = chart.AnimationProgress;
+
             // Force full render — without this, a fresh chart renders flat (AnimationProgress = 0)
             chart.IsAnimated = false;
             chart.AnimationProgress = 1;
@@ -123,6 +127,11 @@ namespace Mercader
             var canvas = surface.Canvas;
             canvas.Clear(SKColors.White);
             chart.Draw(canvas, width, height);
+
+            // Restore original animation state so the on-screen chart isn't broken
+            chart.IsAnimated = originalIsAnimated;
+            chart.AnimationProgress = originalProgress;
+
             using var image = surface.Snapshot();
             using var data = image.Encode(SKEncodedImageFormat.Png, 90);
             return data.ToArray();
@@ -173,30 +182,6 @@ namespace Mercader
                 // Charts
                 var charts = new List<(byte[] ImageBytes, string Title)>();
 
-                // 1. ViewModel chart
-                try
-                {
-                    if (_viewModel.GananciasChart != null)
-                    {
-                        diag.Add("Chart1: GananciasChart NO es null, renderizando...");
-                        var chartBytes = RenderChartToPng(_viewModel.GananciasChart, 1400, 450);
-                        diag.Add($"Chart1: RenderChartToPng devolvió {(chartBytes != null ? $"{chartBytes.Length} bytes" : "NULL")}");
-                        if (chartBytes != null)
-                        {
-                            charts.Add((chartBytes, $"Ganancias ({_viewModel.PeriodoSeleccionado})"));
-                            diag.Add("Chart1: AGREGADO a lista charts");
-                        }
-                    }
-                    else
-                    {
-                        diag.Add("Chart1: GananciasChart ES null, salteando");
-                    }
-                }
-                catch (Exception ex1)
-                {
-                    diag.Add($"Chart1 EXCEPTION: {ex1.GetType().Name}: {ex1.Message}");
-                }
-
                 // 2. 6-Month chart
                 try
                 {
@@ -231,7 +216,7 @@ namespace Mercader
                     diag.Add($"Chart2 EXCEPTION: {ex2.GetType().Name}: {ex2.Message}");
                 }
 
-                // 3. 30-Day chart
+                // 3. 30-Day charts — partido en semanas para que los valores sean legibles
                 try
                 {
                     diag.Add("Chart3: Agrupando ventas x Días...");
@@ -247,17 +232,30 @@ namespace Mercader
 
                     if (ultimos30Ventas.Count > 0)
                     {
-                        diag.Add("Chart3: Creando chart...");
-                        var chart30D = _chartService.CrearGraficoGanancias(ultimos30Ventas, ultimos30Gastos);
-                        var bytes30D = RenderChartToPng(chart30D, 1400, 450);
-                        diag.Add($"Chart3: PNG={bytes30D?.Length ?? -1} bytes");
-                        if (bytes30D != null)
+                        int semana = 1;
+                        for (int i = 0; i < ultimos30Ventas.Count; i += 7)
                         {
-                            charts.Add((bytes30D, "Últimos 30 Días"));
-                            diag.Add("Chart3: AGREGADO");
+                            var weekVentas = ultimos30Ventas.Skip(i).Take(7).ToList();
+                            var weekGastos = ultimos30Gastos.Skip(i).Take(7).ToList();
+                            if (weekVentas.Count == 0) continue;
+
+                            string periodoLabel = weekVentas.First().Periodo;
+                            if (weekVentas.Count > 1)
+                                periodoLabel = $"{weekVentas.First().Periodo} — {weekVentas.Last().Periodo}";
+
+                            var chartWeek = _chartService.CrearGraficoGanancias(weekVentas, weekGastos);
+                            var bytesWeek = RenderChartToPng(chartWeek, 1400, 450);
+                            diag.Add($"Chart3 Semana {semana}: PNG={bytesWeek?.Length ?? -1} bytes");
+                            if (bytesWeek != null)
+                            {
+                                charts.Add((bytesWeek, $"Últimos 30 Días — {periodoLabel}"));
+                                diag.Add($"Chart3 Semana {semana}: AGREGADO");
+                            }
+                            else
+                                diag.Add($"Chart3 Semana {semana}: bytesWeek es NULL");
+
+                            semana++;
                         }
-                        else
-                            diag.Add("Chart3: bytes30D es NULL");
                     }
                 }
                 catch (Exception ex3)
