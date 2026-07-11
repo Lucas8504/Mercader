@@ -2,6 +2,7 @@ using Syncfusion.Pdf;
 using Syncfusion.Pdf.Graphics;
 using Syncfusion.Pdf.Grid;
 using Syncfusion.Drawing;
+using Mercader.Domain.Entities;
 using Mercader.Models;
 using Mercader.Services.Interfaces;
 
@@ -30,6 +31,9 @@ public sealed class ExportPdfService : IExportPdfService
         using var document = new PdfDocument();
         var pages = new List<PdfPage>();
 
+        // Track every page (including auto-pagination from tables) for the footer
+        document.Pages.PageAdded += (_, args) => pages.Add(args.Page);
+
         // ── Fonts ──
         PdfFont titleFont, subtitleFont, sectionFont, headerFont, cellFont, smallFont;
 
@@ -54,7 +58,6 @@ public sealed class ExportPdfService : IExportPdfService
 
         // ── First page ──
         var page = document.Pages.Add();
-        pages.Add(page);
         var graphics = page.Graphics;
         float pageWidth = page.GetClientSize().Width;
         float usableWidth = pageWidth - Margin * 2;
@@ -143,7 +146,6 @@ public sealed class ExportPdfService : IExportPdfService
                     if (y + chartNeededHeight > page.GetClientSize().Height - FooterHeight)
                     {
                         page = document.Pages.Add();
-                        pages.Add(page);
                         graphics = page.Graphics;
                         y = Margin;
                     }
@@ -184,6 +186,181 @@ public sealed class ExportPdfService : IExportPdfService
                     // Chart failed to render — skip silently
                 }
             }
+        }
+
+        // ════════════════════════════════════════════
+        //  DETAIL SECTIONS — Ventas, Gastos y
+        //  Encargos del mes actual y anterior
+        // ════════════════════════════════════════════
+        var currentMonthStart = new DateTime(DateTime.Now.Year, DateTime.Now.Month, 1);
+        var prevMonthStart = currentMonthStart.AddMonths(-1);
+
+        string[] detHeaders = ["Fecha", "Descripción", "Cant.", "Total"];
+        float[] detWidths  = [0.12f, 0.44f, 0.13f, 0.31f];
+
+        // — Ventas —
+        var vtasCurrent = data.Ventas
+            .Where(v => !v.IsDeleted && v.Fecha >= currentMonthStart && v.Fecha < currentMonthStart.AddMonths(1))
+            .ToList();
+        var vtasPrev = data.Ventas
+            .Where(v => !v.IsDeleted && v.Fecha >= prevMonthStart && v.Fecha < currentMonthStart)
+            .ToList();
+
+        // Section header always visible
+        if (y + 36 > page.GetClientSize().Height - FooterHeight)
+        {
+            page = document.Pages.Add();
+            graphics = page.Graphics;
+            y = Margin;
+        }
+        y = DrawSectionHeader(graphics, "Detalle de Ventas", sectionFont,
+            Margin, usableWidth, y);
+
+        if (vtasCurrent.Count > 0)
+            y = RenderMonthTable(ref page, ref graphics, y,
+                Capitalize(currentMonthStart.ToString("MMMM yyyy")),
+                vtasCurrent.Select(v => new[] {
+                    v.Fecha.ToString("dd/MM"),
+                    v.Descripcion ?? "",
+                    v.Cantidad.ToString("N0"),
+                    $"$ {v.Total:N2}"
+                }).ToArray(),
+                vtasCurrent.Sum(v => v.Total),
+                detHeaders, detWidths, cellFont, headerFont,
+                Margin, usableWidth, document, FooterHeight);
+        else
+            y = DrawNoActivityMessage(graphics, y, cellFont, Margin, usableWidth);
+
+        if (vtasPrev.Count > 0)
+        {
+            if (y + 20 > page.GetClientSize().Height - FooterHeight)
+            {
+                page = document.Pages.Add();
+                graphics = page.Graphics;
+                y = Margin;
+            }
+            y = RenderMonthTable(ref page, ref graphics, y,
+                Capitalize(prevMonthStart.ToString("MMMM yyyy")),
+                vtasPrev.Select(v => new[] {
+                    v.Fecha.ToString("dd/MM"),
+                    v.Descripcion ?? "",
+                    v.Cantidad.ToString("N0"),
+                    $"$ {v.Total:N2}"
+                }).ToArray(),
+                vtasPrev.Sum(v => v.Total),
+                detHeaders, detWidths, cellFont, headerFont,
+                Margin, usableWidth, document, FooterHeight);
+        }
+
+        // — Gastos —
+        var gtosCurrent = data.Gastos
+            .Where(g => !g.IsDeleted && g.Fecha >= currentMonthStart && g.Fecha < currentMonthStart.AddMonths(1))
+            .ToList();
+        var gtosPrev = data.Gastos
+            .Where(g => !g.IsDeleted && g.Fecha >= prevMonthStart && g.Fecha < currentMonthStart)
+            .ToList();
+
+        // Section header always visible
+        if (y + 36 > page.GetClientSize().Height - FooterHeight)
+        {
+            page = document.Pages.Add();
+            graphics = page.Graphics;
+            y = Margin;
+        }
+        y = DrawSectionHeader(graphics, "Detalle de Gastos", sectionFont,
+            Margin, usableWidth, y);
+
+        if (gtosCurrent.Count > 0)
+            y = RenderMonthTable(ref page, ref graphics, y,
+                Capitalize(currentMonthStart.ToString("MMMM yyyy")),
+                gtosCurrent.Select(g => new[] {
+                    g.Fecha.ToString("dd/MM"),
+                    g.Descripcion ?? "",
+                    g.Cantidad.ToString("N0"),
+                    $"$ {g.Total:N2}"
+                }).ToArray(),
+                gtosCurrent.Sum(g => g.Total),
+                detHeaders, detWidths, cellFont, headerFont,
+                Margin, usableWidth, document, FooterHeight);
+        else
+            y = DrawNoActivityMessage(graphics, y, cellFont, Margin, usableWidth);
+
+        if (gtosPrev.Count > 0)
+        {
+            if (y + 20 > page.GetClientSize().Height - FooterHeight)
+            {
+                page = document.Pages.Add();
+                graphics = page.Graphics;
+                y = Margin;
+            }
+            y = RenderMonthTable(ref page, ref graphics, y,
+                Capitalize(prevMonthStart.ToString("MMMM yyyy")),
+                gtosPrev.Select(g => new[] {
+                    g.Fecha.ToString("dd/MM"),
+                    g.Descripcion ?? "",
+                    g.Cantidad.ToString("N0"),
+                    $"$ {g.Total:N2}"
+                }).ToArray(),
+                gtosPrev.Sum(g => g.Total),
+                detHeaders, detWidths, cellFont, headerFont,
+                Margin, usableWidth, document, FooterHeight);
+        }
+
+        // — Encargos —
+        string[] encHeaders = ["Entrega", "Cliente", "Descripción", "Total"];
+        float[] encWidths   = [0.12f, 0.30f, 0.27f, 0.31f];
+
+        var encCurrent = data.Encargos
+            .Where(e => !e.IsDeleted && e.Fecha >= currentMonthStart && e.Fecha < currentMonthStart.AddMonths(1))
+            .ToList();
+        var encPrev = data.Encargos
+            .Where(e => !e.IsDeleted && e.Fecha >= prevMonthStart && e.Fecha < currentMonthStart)
+            .ToList();
+
+        // Section header always visible
+        if (y + 36 > page.GetClientSize().Height - FooterHeight)
+        {
+            page = document.Pages.Add();
+            graphics = page.Graphics;
+            y = Margin;
+        }
+        y = DrawSectionHeader(graphics, "Detalle de Encargos", sectionFont,
+            Margin, usableWidth, y);
+
+        if (encCurrent.Count > 0)
+            y = RenderMonthTable(ref page, ref graphics, y,
+                Capitalize(currentMonthStart.ToString("MMMM yyyy")),
+                encCurrent.Select(e => new[] {
+                    e.FechaEntrega.ToString("dd/MM"),
+                    e.Nombre ?? "",
+                    e.Descripcion ?? "",
+                    $"$ {e.Total:N2}"
+                }).ToArray(),
+                encCurrent.Sum(e => e.Total),
+                encHeaders, encWidths, cellFont, headerFont,
+                Margin, usableWidth, document, FooterHeight);
+        else
+            y = DrawNoActivityMessage(graphics, y, cellFont, Margin, usableWidth);
+
+        if (encPrev.Count > 0)
+        {
+            if (y + 20 > page.GetClientSize().Height - FooterHeight)
+            {
+                page = document.Pages.Add();
+                graphics = page.Graphics;
+                y = Margin;
+            }
+            y = RenderMonthTable(ref page, ref graphics, y,
+                Capitalize(prevMonthStart.ToString("MMMM yyyy")),
+                encPrev.Select(e => new[] {
+                    e.FechaEntrega.ToString("dd/MM"),
+                    e.Nombre ?? "",
+                    e.Descripcion ?? "",
+                    $"$ {e.Total:N2}"
+                }).ToArray(),
+                encPrev.Sum(e => e.Total),
+                encHeaders, encWidths, cellFont, headerFont,
+                Margin, usableWidth, document, FooterHeight);
         }
 
         // ════════════════════════════════════════════
@@ -266,5 +443,138 @@ public sealed class ExportPdfService : IExportPdfService
             PdfTextAlignment.Left, PdfVerticalAlignment.Middle);
         row.Cells[1].StringFormat = new PdfStringFormat(
             PdfTextAlignment.Right, PdfVerticalAlignment.Middle);
+    }
+
+    // ══════════════════════════════════════════════════════
+    //  Detail table helpers
+    // ══════════════════════════════════════════════════════
+
+    /// <summary>
+    /// Draws a "no activity" placeholder message for an empty month.
+    /// </summary>
+    private static float DrawNoActivityMessage(
+        PdfGraphics graphics, float y, PdfFont font,
+        float margin, float usableWidth)
+    {
+        graphics.DrawString("No se registró actividad en este mes a la fecha.",
+            font, new PdfSolidBrush(TextMuted),
+            new RectangleF(margin, y, usableWidth, 20),
+            new PdfStringFormat(PdfTextAlignment.Left, PdfVerticalAlignment.Middle));
+        return y + 22;
+    }
+
+    /// <summary>
+    /// Renders a month sub-header, a detail table, and a total row.
+    /// Returns the Y position after the table.
+    /// </summary>
+    private static float RenderMonthTable(
+        ref PdfPage page, ref PdfGraphics graphics, float currentY,
+        string monthLabel,
+        string[][] rows, decimal total,
+        string[] headers, float[] widths,
+        PdfFont cellFont, PdfFont headerFont,
+        float margin, float usableWidth,
+        PdfDocument document, float footerHeight)
+    {
+        float y = currentY;
+
+        // Estimate height: sub-header(22) + header(22) + rows(18×N) + total(22) + gap(8)
+        float estimated = 22 + 22 + rows.Length * 18 + 22 + 8;
+        if (y + estimated > page.GetClientSize().Height - footerHeight)
+        {
+            page = document.Pages.Add();
+            graphics = page.Graphics;
+            y = margin;
+        }
+
+        // Month sub-header
+        float shY = y;
+        graphics.DrawRectangle(new PdfSolidBrush(new PdfColor(240, 243, 248)),
+            new RectangleF(margin, shY, usableWidth, 22));
+        graphics.DrawString(monthLabel, headerFont, new PdfSolidBrush(TextDark),
+            new PointF(margin + 8, shY + 3));
+        y = shY + 26;
+
+        // Build & draw the grid
+        var grid = BuildDetailGrid(headers, widths, rows, total, headerFont, cellFont, usableWidth);
+        var result = grid.Draw(page, new PointF(margin, y));
+        return result.Bounds.Bottom + 8;
+    }
+
+    /// <summary>
+    /// Creates a PdfGrid with headers, data rows, and a bold total row.
+    /// </summary>
+    private static PdfGrid BuildDetailGrid(
+        string[] headers, float[] widths,
+        string[][] rows, decimal total,
+        PdfFont headerFont, PdfFont cellFont,
+        float usableWidth)
+    {
+        var grid = new PdfGrid();
+        int colCount = headers.Length;
+        grid.Columns.Add(colCount);
+
+        // ── Header row ──
+        var h = grid.Headers.Add(1)[0];
+        h.Style.BackgroundBrush = new PdfSolidBrush(BluePrimary);
+        h.Style.TextBrush = PdfBrushes.White;
+        h.Style.Font = headerFont;
+
+        for (int i = 0; i < colCount; i++)
+        {
+            h.Cells[i].Value = headers[i];
+            bool isLast = i == colCount - 1;
+            h.Cells[i].StringFormat = new PdfStringFormat(
+                isLast ? PdfTextAlignment.Right : PdfTextAlignment.Left,
+                PdfVerticalAlignment.Middle);
+        }
+
+        // ── Data rows ──
+        for (int r = 0; r < rows.Length; r++)
+        {
+            var row = grid.Rows.Add();
+            for (int c = 0; c < colCount; c++)
+            {
+                row.Cells[c].Value = rows[r][c];
+                row.Cells[c].Style.Font = cellFont;
+                bool isLast = c == colCount - 1;
+                row.Cells[c].StringFormat = new PdfStringFormat(
+                    isLast ? PdfTextAlignment.Right : PdfTextAlignment.Left,
+                    PdfVerticalAlignment.Middle);
+            }
+        }
+
+        // ── Total row ──
+        var t = grid.Rows.Add();
+        for (int c = 0; c < colCount; c++)
+        {
+            t.Cells[c].Style.Font = headerFont;
+            t.Cells[c].StringFormat = new PdfStringFormat(
+                c == 0 ? PdfTextAlignment.Left :
+                c == colCount - 1 ? PdfTextAlignment.Right :
+                PdfTextAlignment.Center,
+                PdfVerticalAlignment.Middle);
+        }
+        t.Cells[0].Value = "TOTAL";
+        t.Cells[colCount - 1].Value = $"$ {total:N2}";
+
+        // ── Column widths ──
+        float totalWidthRatio = widths.Sum();
+        for (int i = 0; i < colCount; i++)
+            grid.Columns[i].Width = usableWidth * widths[i] / totalWidthRatio;
+
+        grid.Style.CellPadding = new PdfPaddings(5, 5, 3, 3);
+        grid.Style.Font = cellFont;
+
+        return grid;
+    }
+
+    /// <summary>
+    /// Capitalizes the first letter of a string.
+    /// </summary>
+    private static string Capitalize(string value)
+    {
+        if (string.IsNullOrEmpty(value)) return value;
+        return char.ToUpper(value[0]) + value[1..];
     }
 }
