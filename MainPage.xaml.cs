@@ -141,8 +141,33 @@ namespace Mercader
 
         #region Exportación
 
+        /// <summary>
+        /// Toggles exporting visual state for the button that triggered the
+        /// export. Disables both buttons but only animates the active one.
+        /// </summary>
+        private async Task SetExportingState(Button activeButton, bool exporting)
+        {
+            bool isExcel = activeButton == BtnExcel;
+
+            BtnExcel.IsEnabled = !exporting;
+            BtnPdf.IsEnabled   = !exporting;
+
+            var spinner = isExcel ? SpinnerExcel : SpinnerPdf;
+
+            spinner.IsRunning = exporting;
+            spinner.IsVisible = exporting;
+
+            if (exporting)
+                await activeButton.FadeTo(0.65, 200, Easing.CubicIn);
+            else
+                await activeButton.FadeTo(1.0, 250, Easing.CubicOut);
+        }
+
         private async void OnExportarPdfClicked(object sender, EventArgs e)
         {
+            await SetExportingState(BtnPdf, true);
+            try
+            {
             // — Diagnóstico: log de lo que pasa durante la generación —
             var diag = new List<string>();
             diag.Add($"--- DIAG PDF {DateTime.Now:HH:mm:ss} ---");
@@ -150,9 +175,6 @@ namespace Mercader
             diag.Add($"Ventas count: {_viewModel.Ventas?.Count ?? -1}");
             diag.Add($"Gastos count: {_viewModel.Gastos?.Count ?? -1}");
             diag.Add($"GananciasChart is null: {_viewModel.GananciasChart == null}");
-
-            try
-            {
                 await _viewModel.CargarDatosCommand.ExecuteAsync(null);
 
                 diag.Add("--- Tras CargarDatos ---");
@@ -296,10 +318,15 @@ namespace Mercader
                 await DisplayAlert("Error", $"No se pudo exportar el PDF:\n{ex.Message}", "OK");
                 System.Diagnostics.Debug.WriteLine($"[PDF] Error: {ex}");
             }
+            finally
+            {
+                await SetExportingState(BtnPdf, false);
+            }
         }
 
         private async void OnExportarAExcelClicked(object sender, EventArgs e)
         {
+            await SetExportingState(BtnExcel, true);
             try
             {
                 await _viewModel.CargarDatosCommand.ExecuteAsync(null);
@@ -337,6 +364,10 @@ namespace Mercader
 #endif
                 await DisplayAlert("Error en exportacion", mensajeError, "Entendido");
                 System.Diagnostics.Debug.WriteLine($"[ExportError] {ex}");
+            }
+            finally
+            {
+                await SetExportingState(BtnExcel, false);
             }
         }
 

@@ -414,43 +414,63 @@
                    TextColor="{AppThemeBinding Light={StaticResource TextSecondary}, Dark={StaticResource TextSecondaryDark}}" />
 
             <Grid ColumnDefinitions="*, 10, *">
-                <Button Grid.Column="0"
-                        Clicked="OnExportarAExcelClicked"
-                        CornerRadius="16"
-                        FontAttributes="Bold"
-                        FontSize="14"
-                        HeightRequest="48"
-                        Text="📤  Excel"
-                        TextColor="White">
-                    <Button.Background>
-                        <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
-                            <GradientStop Color="#8cb8ff" Offset="0.0" />
-                            <GradientStop Color="#6490E9" Offset="1.0" />
-                        </LinearGradientBrush>
-                    </Button.Background>
-                    <Button.Shadow>
-                        <Shadow Brush="#40000000" Offset="0,3" Radius="8" Opacity="0.3" />
-                    </Button.Shadow>
-                </Button>
+                <Grid Grid.Column="0">
+                    <Button x:Name="BtnExcel"
+                            Clicked="OnExportarAExcelClicked"
+                            CornerRadius="16"
+                            FontAttributes="Bold"
+                            FontSize="14"
+                            HeightRequest="48"
+                            Text="📤  Excel"
+                            TextColor="White">
+                        <Button.Background>
+                            <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                                <GradientStop Color="#8cb8ff" Offset="0.0" />
+                                <GradientStop Color="#6490E9" Offset="1.0" />
+                            </LinearGradientBrush>
+                        </Button.Background>
+                        <Button.Shadow>
+                            <Shadow Brush="#40000000" Offset="0,3" Radius="8" Opacity="0.3" />
+                        </Button.Shadow>
+                    </Button>
+                    <ActivityIndicator x:Name="SpinnerExcel"
+                                       IsVisible="False"
+                                       IsRunning="False"
+                                       Color="White"
+                                       HeightRequest="24"
+                                       WidthRequest="24"
+                                       HorizontalOptions="Center"
+                                       VerticalOptions="Center" />
+                    </Grid>
 
-                <Button Grid.Column="2"
-                        Clicked="OnExportarPdfClicked"
-                        CornerRadius="16"
-                        FontAttributes="Bold"
-                        FontSize="14"
-                        HeightRequest="48"
-                        Text="📄  PDF"
-                        TextColor="White">
-                    <Button.Background>
-                        <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
-                            <GradientStop Color="#8cb8ff" Offset="0.0" />
-                            <GradientStop Color="#6490E9" Offset="1.0" />
-                        </LinearGradientBrush>
-                    </Button.Background>
-                    <Button.Shadow>
-                        <Shadow Brush="#40000000" Offset="0,3" Radius="8" Opacity="0.3" />
-                    </Button.Shadow>
-                </Button>
+                <Grid Grid.Column="2">
+                    <Button x:Name="BtnPdf"
+                            Clicked="OnExportarPdfClicked"
+                            CornerRadius="16"
+                            FontAttributes="Bold"
+                            FontSize="14"
+                            HeightRequest="48"
+                            Text="📄  PDF"
+                            TextColor="White">
+                        <Button.Background>
+                            <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                                <GradientStop Color="#8cb8ff" Offset="0.0" />
+                                <GradientStop Color="#6490E9" Offset="1.0" />
+                            </LinearGradientBrush>
+                        </Button.Background>
+                        <Button.Shadow>
+                            <Shadow Brush="#40000000" Offset="0,3" Radius="8" Opacity="0.3" />
+                        </Button.Shadow>
+                    </Button>
+                    <ActivityIndicator x:Name="SpinnerPdf"
+                                       IsVisible="False"
+                                       IsRunning="False"
+                                       Color="White"
+                                       HeightRequest="24"
+                                       WidthRequest="24"
+                                       HorizontalOptions="Center"
+                                       VerticalOptions="Center" />
+                </Grid>
             </Grid>
 
         </VerticalStackLayout>
