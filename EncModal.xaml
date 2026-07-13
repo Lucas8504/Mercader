@@ -241,7 +241,7 @@
             <Button
                 Clicked="OnAgregarEncargoClicked"
                 Text="Agregar Encargo"
-                BackgroundColor="#4CAF50"
+                BackgroundColor="{AppThemeBinding Light=#4CAF50, Dark=#A5D6A7}"
                 TextColor="White"
                 CornerRadius="8"
                 FontSize="16"
@@ -251,7 +251,7 @@
             <Button
                 Clicked="Cancelar"
                 Text="Cancelar"
-                BackgroundColor="#FF5722"
+                BackgroundColor="{AppThemeBinding Light=#FF5722, Dark=#FFAB91}"
                 TextColor="White"
                 CornerRadius="8"
                 FontSize="16"

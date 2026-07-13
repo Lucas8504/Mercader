@@ -126,7 +126,7 @@
             <!--  Botón Agregar  -->
             <Button
                 Padding="15"
-                BackgroundColor="#4CAF50"
+                BackgroundColor="{AppThemeBinding Light=#4CAF50, Dark=#A5D6A7}"
                 Clicked="OnAgregarVentaClicked"
                 CornerRadius="8"
                 FontSize="16"
@@ -136,7 +136,7 @@
             <!--  Botón Cancelar  -->
             <Button
                 Padding="15"
-                BackgroundColor="#FF5722"
+                BackgroundColor="{AppThemeBinding Light=#FF5722, Dark=#FFAB91}"
                 Clicked="Cancelar"
                 CornerRadius="8"
                 FontSize="16"

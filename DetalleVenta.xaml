@@ -133,7 +133,7 @@
                 <!-- Botón Volver -->
                 <Button
                     x:Name="BtnVolver"
-                    BackgroundColor="#666666"
+                    BackgroundColor="{AppThemeBinding Light={StaticResource Gray500}, Dark={StaticResource Gray200}}"
                     Clicked="OnVolverClicked"
                     CornerRadius="8"
                     FontAttributes="Bold"

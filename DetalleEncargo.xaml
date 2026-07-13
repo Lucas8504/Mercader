@@ -147,7 +147,7 @@
                 <!-- Botón Concretar Venta -->
                 <Button
                     x:Name="BtnConcretarVenta"
-                    BackgroundColor="#4CAF50"
+                    BackgroundColor="{AppThemeBinding Light=#4CAF50, Dark=#A5D6A7}"
                     Clicked="OnConcretarVentaClicked"
                     CornerRadius="8"
                     FontAttributes="Bold"
@@ -183,7 +183,7 @@
                 <!-- Botón Volver -->
                 <Button
                     x:Name="BtnVolver"
-                    BackgroundColor="#666666"
+                    BackgroundColor="{AppThemeBinding Light={StaticResource Gray500}, Dark={StaticResource Gray200}}"
                     Clicked="OnVolverClicked"
                     CornerRadius="8"
                     FontAttributes="Bold"

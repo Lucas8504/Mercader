@@ -210,7 +210,7 @@
                 <!-- Botón Guardar -->
                 <Button
                     x:Name="BtnGuardar"
-                    BackgroundColor="#4CAF50"
+                    BackgroundColor="{AppThemeBinding Light=#4CAF50, Dark=#A5D6A7}"
                     Clicked="OnGuardarClicked"
                     CornerRadius="8"
                     FontAttributes="Bold"
@@ -222,7 +222,7 @@
                 <!-- Botón Cancelar -->
                 <Button
                     x:Name="BtnCancelar"
-                    BackgroundColor="#666666"
+                    BackgroundColor="{AppThemeBinding Light={StaticResource Gray500}, Dark={StaticResource Gray200}}"
                     Clicked="OnCancelarClicked"
                     CornerRadius="8"
                     FontAttributes="Bold"
