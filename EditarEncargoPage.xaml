@@ -168,7 +168,8 @@
                                 x:Name="FechaEntregaDatePicker"
                                 BackgroundColor="Transparent"
                                 FontSize="16"
-                                TextColor="{AppThemeBinding Light={StaticResource TextPrimary}, Dark={StaticResource TextPrimaryDark}}" />
+                                TextColor="{AppThemeBinding Light={StaticResource TextPrimary}, Dark={StaticResource TextPrimaryDark}}"
+ />
                         </Frame>
                     </VerticalStackLayout>
 
