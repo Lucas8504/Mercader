@@ -184,6 +184,8 @@
                         Mode="Dialog"
                         Format="dd_MM_yyyy"
                         HeightRequest="0"
+                        Background="{AppThemeBinding Light={StaticResource CardBackground}, Dark={StaticResource CardBackgroundDark}}"
+                        ColumnDividerColor="{AppThemeBinding Light={StaticResource DividerColor}, Dark={StaticResource DividerColorDark}}"
                         Closed="OnFechaEntregaPickerClosed">
 
                         <picker:SfDatePicker.HeaderView>
@@ -224,6 +226,19 @@
                             <picker:PickerTextStyle
                                 TextColor="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDark}}" />
                         </picker:SfDatePicker.SelectedTextStyle>
+
+                        <picker:SfDatePicker.FooterView>
+                            <picker:PickerFooterView
+                                Height="50"
+                                Background="{AppThemeBinding Light={StaticResource CardBackground}, Dark={StaticResource CardBackgroundDark}}"
+                                DividerColor="{AppThemeBinding Light={StaticResource DividerColor}, Dark={StaticResource DividerColorDark}}">
+                                <picker:PickerFooterView.TextStyle>
+                                    <picker:PickerTextStyle
+                                        TextColor="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDark}}"
+                                        FontAttributes="Bold" />
+                                </picker:PickerFooterView.TextStyle>
+                            </picker:PickerFooterView>
+                        </picker:SfDatePicker.FooterView>
 
                     </picker:SfDatePicker>
 

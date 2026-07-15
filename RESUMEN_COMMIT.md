@@ -25,4 +25,7 @@ feat(ui): SfDatePicker con dialog mode reemplaza DatePicker nativo
 - ✅ Formato con PickerDateFormat.dd_MM_yyyy (enum, no string)
 - ✅ v1.0.6 usa PickerTextStyle en vez de TextColor directo en las vistas
 - ✅ v1.0.6 no tiene StrokeThickness en PickerSelectionView (usamos Stroke)
+- ✅ Background del dialog body con AppThemeBinding (CardBackground / CardBackgroundDark)
+- ✅ ColumnDividerColor con DividerColor / DividerColorDark
+- ✅ FooterView agregado con OK/Cancel y AppThemeBinding para botones
 - ✅ 0 errores de build, 0 warnings
