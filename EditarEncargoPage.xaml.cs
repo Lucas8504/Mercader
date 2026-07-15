@@ -22,10 +22,24 @@ public partial class EditarEncargoPage : ContentPage
         NombreEntry.Text = _encargo.Nombre;
         ContactoEntry.Text = CleanPhoneNumber(_encargo.Contacto);
         DescripcionEntry.Text = _encargo.Descripcion;
-        FechaEntregaDatePicker.Date = _encargo.FechaEntrega;
+        FechaEntregaPicker.SelectedDate = _encargo.FechaEntrega;
+        FechaEntregaLabel.Text = _encargo.FechaEntrega.ToString("dd/MM/yyyy");
         PrecioEntry.Text = _encargo.Precio.ToString("F2");
         CantidadEntry.Text = _encargo.Cantidad.ToString();
         CalcularTotal();
+    }
+
+    private void OnFechaEntregaTapped(object? sender, TappedEventArgs e)
+    {
+        FechaEntregaPicker.IsOpen = true;
+    }
+
+    private void OnFechaEntregaPickerClosed(object? sender, EventArgs e)
+    {
+        if (FechaEntregaPicker.SelectedDate.HasValue)
+        {
+            FechaEntregaLabel.Text = FechaEntregaPicker.SelectedDate.Value.ToString("dd/MM/yyyy");
+        }
     }
 
     private void SuscribirEventos()
@@ -106,7 +120,7 @@ public partial class EditarEncargoPage : ContentPage
             _encargo.Nombre = NombreEntry.Text.Trim();
             _encargo.Contacto = ContactoEntry.Text.Trim();
             _encargo.Descripcion = DescripcionEntry.Text.Trim();
-            _encargo.FechaEntrega = FechaEntregaDatePicker.Date;
+            _encargo.FechaEntrega = FechaEntregaPicker.SelectedDate ?? _encargo.FechaEntrega;
             _encargo.Precio = precio;
             _encargo.Cantidad = cantidad;
 

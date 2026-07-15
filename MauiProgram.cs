@@ -1,4 +1,5 @@
 using CommunityToolkit.Maui;
+using Syncfusion.Maui.Toolkit.Hosting;
 using Mercader.ViewModels;
 using Mercader.Services.Interfaces;
 using Mercader.Services;
@@ -20,6 +21,7 @@ namespace Mercader
                 .UseMauiApp<App>()
                 .UseMicrocharts()
                 .UseMauiCommunityToolkit()
+                .ConfigureSyncfusionToolkit()
                 .ConfigureFonts(fonts =>
                 {
                     fonts.AddFont("OpenSans-Regular.ttf", "OpenSansRegular");

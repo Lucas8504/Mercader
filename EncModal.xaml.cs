@@ -18,6 +18,22 @@ public partial class EncModal : ContentPage
         ArgumentNullException.ThrowIfNull(repository);
         InitializeComponent();
         _repository = repository;
+
+        FechaEntregaPicker.SelectedDate = DateTime.Now;
+        FechaEntregaLabel.Text = DateTime.Now.ToString("dd/MM/yyyy");
+    }
+
+    private void OnFechaEntregaTapped(object? sender, TappedEventArgs e)
+    {
+        FechaEntregaPicker.IsOpen = true;
+    }
+
+    private void OnFechaEntregaPickerClosed(object? sender, EventArgs e)
+    {
+        if (FechaEntregaPicker.SelectedDate.HasValue)
+        {
+            FechaEntregaLabel.Text = FechaEntregaPicker.SelectedDate.Value.ToString("dd/MM/yyyy");
+        }
     }
 
     protected override async void OnAppearing()
@@ -90,7 +106,7 @@ public partial class EncModal : ContentPage
                 Cantidad = cantidadResult.Value ?? 0,
                 Precio = precioResult.Value ?? 0,
                 Descripcion = DescripcionEntry.Text,
-                FechaEntrega = FechaEntregaDatePicker.Date,
+                FechaEntrega = FechaEntregaPicker.SelectedDate ?? DateTime.Now,
                 Fecha = DateTime.Now
             };
         }

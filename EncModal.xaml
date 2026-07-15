@@ -3,6 +3,7 @@
     x:Class="Mercader.EncModal"
     xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:picker="clr-namespace:Syncfusion.Maui.Toolkit.Picker;assembly=Syncfusion.Maui.Toolkit"
     Title="Agregar Encargo"
     BackgroundColor="{AppThemeBinding Light={StaticResource PageBackground}, Dark={StaticResource PageBackgroundDark}}">
     <!-- Fondo oscuro para combinar con MainPage -->
@@ -229,13 +230,68 @@
                         FontSize="14"
                         VerticalOptions="Center"
                         Grid.Column="0" />
-                    <DatePicker
-                        x:Name="FechaEntregaDatePicker"
-                        TextColor="{AppThemeBinding Light={StaticResource TextPrimary}, Dark={StaticResource TextPrimaryDark}}"
-                        BackgroundColor="Transparent"
-                        Grid.Column="1" />
+                    <Label
+                        x:Name="FechaEntregaLabel"
+                        FontSize="14"
+                        VerticalOptions="Center"
+                        HorizontalOptions="End"
+                        Grid.Column="1"
+                        TextColor="{AppThemeBinding Light={StaticResource TextPrimary}, Dark={StaticResource TextPrimaryDark}}">
+                        <Label.GestureRecognizers>
+                            <TapGestureRecognizer Tapped="OnFechaEntregaTapped" />
+                        </Label.GestureRecognizers>
+                    </Label>
                 </Grid>
             </Frame>
+
+            <!-- SfDatePicker oculto en Dialog mode -->
+            <picker:SfDatePicker
+                x:Name="FechaEntregaPicker"
+                Mode="Dialog"
+                Format="dd_MM_yyyy"
+                HeightRequest="0"
+                Closed="OnFechaEntregaPickerClosed">
+
+                <picker:SfDatePicker.HeaderView>
+                    <picker:PickerHeaderView
+                        Height="50"
+                        Background="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PageBackgroundDark}}">
+                        <picker:PickerHeaderView.TextStyle>
+                            <picker:PickerTextStyle
+                                TextColor="{AppThemeBinding Light={StaticResource White}, Dark={StaticResource TextPrimaryDark}}" />
+                        </picker:PickerHeaderView.TextStyle>
+                    </picker:PickerHeaderView>
+                </picker:SfDatePicker.HeaderView>
+
+                <picker:SfDatePicker.ColumnHeaderView>
+                    <picker:DatePickerColumnHeaderView
+                        Height="40"
+                        Background="{AppThemeBinding Light={StaticResource Gray100}, Dark={StaticResource CardAltBackgroundDark}}">
+                        <picker:DatePickerColumnHeaderView.TextStyle>
+                            <picker:PickerTextStyle
+                                TextColor="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource TextSecondaryDark}}" />
+                        </picker:DatePickerColumnHeaderView.TextStyle>
+                    </picker:DatePickerColumnHeaderView>
+                </picker:SfDatePicker.ColumnHeaderView>
+
+                <picker:SfDatePicker.SelectionView>
+                    <picker:PickerSelectionView
+                        Background="{AppThemeBinding Light={StaticResource Secondary}, Dark={StaticResource CardBackgroundDark}}"
+                        CornerRadius="5"
+                        Stroke="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDark}}" />
+                </picker:SfDatePicker.SelectionView>
+
+                <picker:SfDatePicker.TextStyle>
+                    <picker:PickerTextStyle
+                        TextColor="{AppThemeBinding Light={StaticResource TextPrimary}, Dark={StaticResource TextPrimaryDark}}" />
+                </picker:SfDatePicker.TextStyle>
+
+                <picker:SfDatePicker.SelectedTextStyle>
+                    <picker:PickerTextStyle
+                        TextColor="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDark}}" />
+                </picker:SfDatePicker.SelectedTextStyle>
+
+            </picker:SfDatePicker>
 
             <!-- Botón Agregar Encargo -->
             <Button
