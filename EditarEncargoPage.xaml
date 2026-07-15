@@ -186,7 +186,9 @@
                         HeightRequest="0"
                         Background="{AppThemeBinding Light={StaticResource CardBackground}, Dark={StaticResource CardBackgroundDark}}"
                         ColumnDividerColor="{AppThemeBinding Light={StaticResource DividerColor}, Dark={StaticResource DividerColorDark}}"
-                        Closed="OnFechaEntregaPickerClosed">
+                        Closed="OnFechaEntregaPickerClosed"
+                        OkButtonClicked="OnFechaEntregaPickerOk"
+                        CancelButtonClicked="OnFechaEntregaPickerCancelado">
 
                         <picker:SfDatePicker.HeaderView>
                             <picker:PickerHeaderView
@@ -231,7 +233,9 @@
                             <picker:PickerFooterView
                                 Height="50"
                                 Background="{AppThemeBinding Light={StaticResource CardBackground}, Dark={StaticResource CardBackgroundDark}}"
-                                DividerColor="{AppThemeBinding Light={StaticResource DividerColor}, Dark={StaticResource DividerColorDark}}">
+                                DividerColor="{AppThemeBinding Light={StaticResource DividerColor}, Dark={StaticResource DividerColorDark}}"
+                                OkButtonText="OK"
+                                CancelButtonText="Cancelar">
                                 <picker:PickerFooterView.TextStyle>
                                     <picker:PickerTextStyle
                                         TextColor="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDark}}"
@@ -280,7 +284,7 @@
                 <!-- Botón Guardar -->
                 <Button
                     x:Name="BtnGuardar"
-                    BackgroundColor="{AppThemeBinding Light=#4CAF50, Dark=#A5D6A7}"
+                    BackgroundColor="{AppThemeBinding Light=#4CAF50, Dark=#007600}"
                     Clicked="OnGuardarClicked"
                     CornerRadius="8"
                     FontAttributes="Bold"

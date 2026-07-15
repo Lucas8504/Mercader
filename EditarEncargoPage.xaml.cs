@@ -29,8 +29,11 @@ public partial class EditarEncargoPage : ContentPage
         CalcularTotal();
     }
 
+    private DateTime _fechaOriginal;
+
     private void OnFechaEntregaTapped(object? sender, TappedEventArgs e)
     {
+        _fechaOriginal = FechaEntregaPicker.SelectedDate ?? _encargo.FechaEntrega;
         FechaEntregaPicker.IsOpen = true;
     }
 
@@ -40,6 +43,21 @@ public partial class EditarEncargoPage : ContentPage
         {
             FechaEntregaLabel.Text = FechaEntregaPicker.SelectedDate.Value.ToString("dd/MM/yyyy");
         }
+    }
+
+    private void OnFechaEntregaPickerOk(object? sender, EventArgs e)
+    {
+        if (FechaEntregaPicker.SelectedDate.HasValue)
+        {
+            FechaEntregaLabel.Text = FechaEntregaPicker.SelectedDate.Value.ToString("dd/MM/yyyy");
+        }
+        FechaEntregaPicker.IsOpen = false;
+    }
+
+    private void OnFechaEntregaPickerCancelado(object? sender, EventArgs e)
+    {
+        FechaEntregaPicker.SelectedDate = _fechaOriginal;
+        FechaEntregaPicker.IsOpen = false;
     }
 
     private void SuscribirEventos()

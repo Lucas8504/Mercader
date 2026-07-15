@@ -23,8 +23,11 @@ public partial class EncModal : ContentPage
         FechaEntregaLabel.Text = DateTime.Now.ToString("dd/MM/yyyy");
     }
 
+    private DateTime _fechaOriginal;
+
     private void OnFechaEntregaTapped(object? sender, TappedEventArgs e)
     {
+        _fechaOriginal = FechaEntregaPicker.SelectedDate ?? DateTime.Now;
         FechaEntregaPicker.IsOpen = true;
     }
 
@@ -34,6 +37,21 @@ public partial class EncModal : ContentPage
         {
             FechaEntregaLabel.Text = FechaEntregaPicker.SelectedDate.Value.ToString("dd/MM/yyyy");
         }
+    }
+
+    private void OnFechaEntregaPickerOk(object? sender, EventArgs e)
+    {
+        if (FechaEntregaPicker.SelectedDate.HasValue)
+        {
+            FechaEntregaLabel.Text = FechaEntregaPicker.SelectedDate.Value.ToString("dd/MM/yyyy");
+        }
+        FechaEntregaPicker.IsOpen = false;
+    }
+
+    private void OnFechaEntregaPickerCancelado(object? sender, EventArgs e)
+    {
+        FechaEntregaPicker.SelectedDate = _fechaOriginal;
+        FechaEntregaPicker.IsOpen = false;
     }
 
     protected override async void OnAppearing()

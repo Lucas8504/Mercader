@@ -252,7 +252,9 @@
                 HeightRequest="0"
                 Background="{AppThemeBinding Light={StaticResource CardBackground}, Dark={StaticResource CardBackgroundDark}}"
                 ColumnDividerColor="{AppThemeBinding Light={StaticResource DividerColor}, Dark={StaticResource DividerColorDark}}"
-                Closed="OnFechaEntregaPickerClosed">
+                Closed="OnFechaEntregaPickerClosed"
+                OkButtonClicked="OnFechaEntregaPickerOk"
+                CancelButtonClicked="OnFechaEntregaPickerCancelado">
 
                 <picker:SfDatePicker.HeaderView>
                     <picker:PickerHeaderView
@@ -297,7 +299,9 @@
                             <picker:PickerFooterView
                                 Height="50"
                                 Background="{AppThemeBinding Light={StaticResource CardBackground}, Dark={StaticResource CardBackgroundDark}}"
-                                DividerColor="{AppThemeBinding Light={StaticResource DividerColor}, Dark={StaticResource DividerColorDark}}">
+                                DividerColor="{AppThemeBinding Light={StaticResource DividerColor}, Dark={StaticResource DividerColorDark}}"
+                                OkButtonText="OK"
+                                CancelButtonText="Cancelar">
                                 <picker:PickerFooterView.TextStyle>
                                     <picker:PickerTextStyle
                                         TextColor="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDark}}"
