@@ -7,239 +7,327 @@
     Title="📋 Gestión de Encargos"
     BackgroundColor="{AppThemeBinding Light={StaticResource DeepBackground}, Dark={StaticResource DeepBackgroundDark}}">
 
-    <Grid>
+    <Grid RowSpacing="0">
         <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
 
+        <!-- Barra de búsqueda -->
+        <SearchBar
+            Grid.Row="0"
+            x:Name="BarraBusqueda"
+            Placeholder="Buscar por cliente o producto..."
+            PlaceholderColor="{AppThemeBinding Light={StaticResource TextPlaceholder}, Dark={StaticResource TextPlaceholderDark}}"
+            TextColor="{AppThemeBinding Light={StaticResource TextPrimary}, Dark={StaticResource TextPrimaryDark}}"
+            BackgroundColor="{AppThemeBinding Light={StaticResource InputBackground}, Dark={StaticResource InputBackgroundDark}}"
+            CancelButtonColor="{AppThemeBinding Light={StaticResource TextSecondary}, Dark={StaticResource TextSecondaryDark}}"
+            FontSize="15"
+            Margin="16,12,16,8"
+            TextChanged="OnBusquedaTextChanged" />
 
+        <!-- Filtros horizontales -->
+        <HorizontalStackLayout
+            Grid.Row="1"
+            Spacing="8"
+            Margin="16,0,16,12"
+            HorizontalOptions="Center">
+
+            <Frame
+                x:Name="FiltroTodos"
+                Padding="14,8"
+                CornerRadius="20"
+                BackgroundColor="{StaticResource Primary}"
+                BorderColor="Transparent"
+                HasShadow="False">
+                <Frame.GestureRecognizers>
+                    <TapGestureRecognizer Tapped="OnFiltroTapped" CommandParameter="TODOS" />
+                </Frame.GestureRecognizers>
+                <Label
+                    Text="TODOS"
+                    FontSize="12"
+                    FontAttributes="Bold"
+                    TextColor="White"
+                    VerticalOptions="Center" />
+            </Frame>
+
+            <Frame
+                x:Name="FiltroPendientes"
+                Padding="14,8"
+                CornerRadius="20"
+                BackgroundColor="{AppThemeBinding Light={StaticResource InputBackground}, Dark={StaticResource InputBackgroundDark}}"
+                BorderColor="{AppThemeBinding Light={StaticResource DividerColor}, Dark={StaticResource DividerColorDark}}"
+                HasShadow="False">
+                <Frame.GestureRecognizers>
+                    <TapGestureRecognizer Tapped="OnFiltroTapped" CommandParameter="PENDIENTES" />
+                </Frame.GestureRecognizers>
+                <Label
+                    Text="PENDIENTES"
+                    FontSize="12"
+                    FontAttributes="Bold"
+                    TextColor="{AppThemeBinding Light={StaticResource TextSecondary}, Dark={StaticResource TextSecondaryDark}}"
+                    VerticalOptions="Center" />
+            </Frame>
+
+            <Frame
+                x:Name="FiltroEntregados"
+                Padding="14,8"
+                CornerRadius="20"
+                BackgroundColor="{AppThemeBinding Light={StaticResource InputBackground}, Dark={StaticResource InputBackgroundDark}}"
+                BorderColor="{AppThemeBinding Light={StaticResource DividerColor}, Dark={StaticResource DividerColorDark}}"
+                HasShadow="False">
+                <Frame.GestureRecognizers>
+                    <TapGestureRecognizer Tapped="OnFiltroTapped" CommandParameter="ENTREGADOS" />
+                </Frame.GestureRecognizers>
+                <Label
+                    Text="ENTREGADOS"
+                    FontSize="12"
+                    FontAttributes="Bold"
+                    TextColor="{AppThemeBinding Light={StaticResource TextSecondary}, Dark={StaticResource TextSecondaryDark}}"
+                    VerticalOptions="Center" />
+            </Frame>
+        </HorizontalStackLayout>
 
         <!-- Lista de encargos -->
-        <ScrollView Grid.Row="1" Margin="10,0">
-            <StackLayout Spacing="12">
-                <CollectionView
-                    x:Name="EncargosCollectionView"
-                    SelectionMode="None"
-                    ItemSizingStrategy="MeasureAllItems">
+        <CollectionView
+            Grid.Row="2"
+            x:Name="EncargosCollectionView"
+            SelectionMode="None"
+            ItemSizingStrategy="MeasureAllItems"
+            Margin="16,0">
 
-                    <CollectionView.ItemTemplate>
-                        <DataTemplate>
-                            <SwipeView Margin="5,2">
-                                <SwipeView.RightItems>
-                                    <SwipeItems Mode="Reveal">
-                                        <SwipeItem
-                                            BackgroundColor="#4CAF50"
-                                            Invoked="OnEditSwipeItemInvoked"
-                                            Text="✏️ Editar" />
-                                        <SwipeItem
-                                            BackgroundColor="#F44336"
-                                            Invoked="OnDeleteSwipeItemInvoked"
-                                            Text="🗑️ Eliminar" />
-                                        <SwipeItem
-                                            BackgroundColor="#2196F3"
-                                            Invoked="OnDetallesSwipeItemInvoked"
-                                            Text="👁️ Detalles" />
-                                    </SwipeItems>
-                                </SwipeView.RightItems>
+            <CollectionView.ItemTemplate>
+                <DataTemplate>
+                    <Frame
+                        Margin="0,0,0,12"
+                        Padding="16"
+                        BackgroundColor="{AppThemeBinding Light={StaticResource CardBackground}, Dark={StaticResource CardBackgroundDark}}"
+                        BorderColor="Transparent"
+                        CornerRadius="16"
+                        HasShadow="False">
 
-                                <!-- Tarjeta de encargo minimalista moderna -->
+                        <Grid RowSpacing="10">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
+                            </Grid.RowDefinitions>
+
+                            <!-- Fila 0: Badge de estado -->
+                            <HorizontalStackLayout
+                                Grid.Row="0"
+                                HorizontalOptions="End">
                                 <Frame
-                                    Padding="16"
-                                    BackgroundColor="{AppThemeBinding Light={StaticResource CardBackground}, Dark={StaticResource CardBackgroundDark}}"
-                                    BorderColor="Transparent"
-                                    CornerRadius="16"
-                                    HasShadow="False">
-
-                                    <Frame.GestureRecognizers>
-                                        <TapGestureRecognizer Tapped="OnItemTapped" />
-                                    </Frame.GestureRecognizers>
-
-                                    <Grid RowSpacing="12">
-                                        <Grid.RowDefinitions>
-                                            <RowDefinition Height="Auto" />
-                                            <RowDefinition Height="Auto" />
-                                            <RowDefinition Height="Auto" />
-                                            <RowDefinition Height="Auto" />
-                                        </Grid.RowDefinitions>
-
-                                        <!-- Fila 1: Nombre y Contacto -->
-                                        <Grid Grid.Row="0" ColumnSpacing="12">
-                                            <Grid.ColumnDefinitions>
-                                                <ColumnDefinition Width="*" />
-                                                <ColumnDefinition Width="Auto" />
-                                            </Grid.ColumnDefinitions>
-
-                                            <!-- Nombre del cliente -->
-                                            <Label
-                                                Grid.Column="0"
-                                                FontAttributes="Bold"
-                                                FontSize="17"
-                                                LineBreakMode="WordWrap"
-                                                Text="{Binding Nombre}"
-                                                TextColor="{AppThemeBinding Light={StaticResource TextPrimary}, Dark={StaticResource TextPrimaryDark}}"
-                                                VerticalOptions="Center" />
-
-                                            <!-- Contacto con touch -->
-                                            <Frame
-                                                Grid.Column="1"
-                                                BackgroundColor="{AppThemeBinding Light={StaticResource InputBackground}, Dark={StaticResource InputBackgroundDark}}"
-                                                BorderColor="{AppThemeBinding Light={StaticResource DividerColor}, Dark={StaticResource DividerColorDark}}"
-                                                CornerRadius="8"
-                                                Padding="10,6"
-                                                HasShadow="False">
-                                                <Frame.GestureRecognizers>
-                                                    <TapGestureRecognizer Tapped="OnContactTapped" />
-                                                </Frame.GestureRecognizers>
-                                                <HorizontalStackLayout Spacing="4">
-                                                    <Label
-                                                        FontSize="12"
-                                                        Text="📞"
-                                                        VerticalOptions="Center" />
-                                                    <Label
-                                                        FontSize="12"
-                                                        Text="{Binding Contacto}"
-                                                        TextColor="{AppThemeBinding Light={StaticResource TextPrimary}, Dark={StaticResource TextSecondaryDark}}"
-                                                        VerticalOptions="Center" />
-                                                </HorizontalStackLayout>
-                                            </Frame>
-                                        </Grid>
-
-                                        <!-- Fila 2: Descripción y Cantidad -->
-                                        <Grid Grid.Row="1" ColumnSpacing="12">
-                                            <Grid.ColumnDefinitions>
-                                                <ColumnDefinition Width="*" />
-                                                <ColumnDefinition Width="Auto" />
-                                            </Grid.ColumnDefinitions>
-
-                                            <!-- Descripción -->
-                                            <Label
-                                                Grid.Column="0"
-                                                FontSize="13"
-                                                LineBreakMode="WordWrap"
-                                                Text="{Binding Descripcion}"
-                                                TextColor="{AppThemeBinding Light={StaticResource TextSecondary}, Dark={StaticResource TextSecondaryDark}}"
-                                                VerticalOptions="Center" />
-
-                                            <!-- Cantidad -->
-                                            <Label
-                                                Grid.Column="1"
-                                                FontSize="12"
-                                                Text="{Binding Cantidad, StringFormat='{0} unid.'}"
-                                                TextColor="{AppThemeBinding Light={StaticResource TextSecondary}, Dark={StaticResource TextSecondaryDark}}"
-                                                VerticalOptions="Center" />
-                                        </Grid>
-
-                                        <!-- Fila 3: Total y Precio Unitario -->
-                                        <Grid Grid.Row="2" ColumnSpacing="12">
-                                            <Grid.ColumnDefinitions>
-                                                <ColumnDefinition Width="*" />
-                                                <ColumnDefinition Width="*" />
-                                            </Grid.ColumnDefinitions>
-
-                                            <!-- Total del Encargo -->
-                                            <Frame
-                                                Grid.Column="0"
-                                                BackgroundColor="#A54815"
-                                                BorderColor="#E16F1B"
-                                                CornerRadius="8"
-                                                Padding="10"
-                                                HasShadow="False">
-                                                <VerticalStackLayout Spacing="2" VerticalOptions="Center">
-                                                    <Label
-                                                        Text="Total"
-                                                        FontSize="10"
-                                                        TextColor="#B8A0D0" />
-                                                    <Label
-                                                        FontAttributes="Bold"
-                                                        FontSize="15"
-                                                        Text="{Binding TotalFormateado}"
-                                                        TextColor="#D4C4E8" />
-                                                </VerticalStackLayout>
-                                            </Frame>
-
-                                            <!-- Precio Unitario -->
-                                            <Frame
-                                                Grid.Column="1"
-                                                BackgroundColor="#1E3A5F"
-                                                BorderColor="#2E5A8F"
-                                                CornerRadius="8"
-                                                Padding="10"
-                                                HasShadow="False">
-                                                <VerticalStackLayout Spacing="2" VerticalOptions="Center">
-                                                    <Label
-                                                        Text="x Unidad"
-                                                        FontSize="10"
-                                                        TextColor="#8AA0B0" />
-                                                    <Label
-                                                        FontAttributes="Bold"
-                                                        FontSize="15"
-                                                        Text="{Binding Precio, StringFormat='${0:N2}'}"
-                                                        TextColor="#A8C8D8" />
-                                                </VerticalStackLayout>
-                                            </Frame>
-                                        </Grid>
-
-                                        <!-- Fila 4: Fechas -->
-                                        <Grid Grid.Row="3" ColumnSpacing="16">
-                                            <Grid.ColumnDefinitions>
-                                                <ColumnDefinition Width="*" />
-                                                <ColumnDefinition Width="Auto" />
-                                            </Grid.ColumnDefinitions>
-
-                                            <!-- Fecha de Pedido -->
-                                            <Label
-                                                FontSize="12"
-                                                Text="{Binding Fecha, StringFormat='Pedido: {0:dd MMM}'}"
-                                                TextColor="{AppThemeBinding Light={StaticResource TextSecondary}, Dark={StaticResource TextSecondaryDark}}"
-                                                VerticalOptions="Center" />
-
-                                            <!-- Fecha de Entrega -->
-                                            <Label
-                                                Grid.Column="1"
-                                                FontSize="12"
-                                                Text="{Binding FechaEntrega, StringFormat='Entrega: {0:dd MMM}'}"
-                                                TextColor="#8A8A9A"
-                                                VerticalOptions="Center" />
-                                        </Grid>
-                                    </Grid>
+                                    x:Name="EstadoBadge"
+                                    Padding="10,4"
+                                    CornerRadius="12"
+                                    HasShadow="False"
+                                    BackgroundColor="{Binding Estado, Converter={StaticResource EstadoColorConverter}}">
+                                    <Label
+                                        FontSize="11"
+                                        FontAttributes="Bold"
+                                        TextColor="White"
+                                        Text="{Binding Estado}" />
                                 </Frame>
-                            </SwipeView>
-                        </DataTemplate>
-                    </CollectionView.ItemTemplate>
+                            </HorizontalStackLayout>
 
-                    <!-- Mensaje cuando no hay encargos -->
-                    <CollectionView.EmptyView>
-                        <StackLayout
-                            Padding="20"
-                            VerticalOptions="Center"
-                            HorizontalOptions="Center"
-                            Spacing="15">
+                            <!-- Fila 1: CLIENTE label + nombre -->
+                            <Grid Grid.Row="1">
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="Auto" />
+                                </Grid.RowDefinitions>
+                                <Label
+                                    Grid.Row="0"
+                                    Text="CLIENTE"
+                                    FontSize="10"
+                                    TextColor="{AppThemeBinding Light={StaticResource TextSecondary}, Dark={StaticResource TextSecondaryDark}}"
+                                    Margin="0,0,0,2" />
+                                <Label
+                                    Grid.Row="1"
+                                    Text="{Binding Nombre}"
+                                    FontSize="17"
+                                    FontAttributes="Bold"
+                                    TextColor="{AppThemeBinding Light={StaticResource TextPrimary}, Dark={StaticResource TextPrimaryDark}}"
+                                    LineBreakMode="TailTruncation" />
+                            </Grid>
 
-                            <Label
-                                FontSize="48"
-                                Text="📋"
-                                HorizontalTextAlignment="Center" />
+                            <!-- Fila 2: Teléfono -->
+                            <HorizontalStackLayout
+                                Grid.Row="2"
+                                Spacing="6">
+                                <Label
+                                    Text="📞"
+                                    FontSize="13"
+                                    VerticalOptions="Center" />
+                                <Label
+                                    Text="{Binding Contacto}"
+                                    FontSize="14"
+                                    TextColor="#4CAF50"
+                                    VerticalOptions="Center" />
+                            </HorizontalStackLayout>
 
-                            <Label
-                                FontAttributes="Bold"
-                                FontSize="18"
-                                Text="No hay encargos registrados"
-                                TextColor="{AppThemeBinding Light={StaticResource TextPrimary}, Dark={StaticResource TextPrimaryDark}}"
-                                HorizontalTextAlignment="Center" />
+                            <!-- Fila 3: DESCRIPCIÓN label + descripción -->
+                            <Grid Grid.Row="3">
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="Auto" />
+                                </Grid.RowDefinitions>
+                                <Label
+                                    Grid.Row="0"
+                                    Text="DESCRIPCIÓN DEL PRODUCTO"
+                                    FontSize="10"
+                                    TextColor="{AppThemeBinding Light={StaticResource TextSecondary}, Dark={StaticResource TextSecondaryDark}}"
+                                    Margin="0,0,0,2" />
+                                <Label
+                                    Grid.Row="1"
+                                    Text="{Binding Descripcion}"
+                                    FontSize="14"
+                                    TextColor="{AppThemeBinding Light={StaticResource TextPrimary}, Dark={StaticResource TextPrimaryDark}}"
+                                    LineBreakMode="WordWrap" />
+                            </Grid>
 
-                            <Label
-                                FontSize="14"
-                                Text="Los encargos aparecerán aquí cuando se registren"
-                                TextColor="{AppThemeBinding Light={StaticResource TextSecondary}, Dark={StaticResource TextSecondaryDark}}"
-                                HorizontalTextAlignment="Center" />
-                        </StackLayout>
-                    </CollectionView.EmptyView>
-                </CollectionView>
+                            <!-- Fila 4: FECHA ENTREGA + DESGLOSE -->
+                            <Grid Grid.Row="4" ColumnSpacing="20">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="Auto" />
+                                </Grid.ColumnDefinitions>
 
-                <!-- Espaciado al final -->
-                <BoxView HeightRequest="20" BackgroundColor="Transparent" />
-            </StackLayout>
-        </ScrollView>
+                                <Grid Grid.Column="0">
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="Auto" />
+                                        <RowDefinition Height="Auto" />
+                                    </Grid.RowDefinitions>
+                                    <Label
+                                        Grid.Row="0"
+                                        Text="FECHA ENTREGA"
+                                        FontSize="10"
+                                        TextColor="{AppThemeBinding Light={StaticResource TextSecondary}, Dark={StaticResource TextSecondaryDark}}"
+                                        Margin="0,0,0,2" />
+                                    <Label
+                                        Grid.Row="1"
+                                        Text="{Binding FechaEntrega, StringFormat='{0:dd/MM/yyyy}'}"
+                                        FontSize="14"
+                                        TextColor="{AppThemeBinding Light={StaticResource TextPrimary}, Dark={StaticResource TextPrimaryDark}}" />
+                                </Grid>
+
+                                <Grid Grid.Column="1">
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="Auto" />
+                                        <RowDefinition Height="Auto" />
+                                    </Grid.RowDefinitions>
+                                    <Label
+                                        Grid.Row="0"
+                                        Text="DESGLOSE"
+                                        FontSize="10"
+                                        TextColor="{AppThemeBinding Light={StaticResource TextSecondary}, Dark={StaticResource TextSecondaryDark}}"
+                                        Margin="0,0,0,2" />
+                                    <Label
+                                        Grid.Row="1"
+                                        Text="{Binding Precio, StringFormat='${0:N2}'}"
+                                        FontSize="14"
+                                        TextColor="{AppThemeBinding Light={StaticResource TextPrimary}, Dark={StaticResource TextPrimaryDark}}" />
+                                </Grid>
+                            </Grid>
+
+                            <!-- Fila 5: TOTAL ESTIMADO + acciones -->
+                            <Grid Grid.Row="5" ColumnSpacing="12">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="Auto" />
+                                </Grid.ColumnDefinitions>
+
+                                <Grid Grid.Column="0">
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="Auto" />
+                                        <RowDefinition Height="Auto" />
+                                    </Grid.RowDefinitions>
+                                    <Label
+                                        Grid.Row="0"
+                                        Text="TOTAL ESTIMADO"
+                                        FontSize="10"
+                                        TextColor="{AppThemeBinding Light={StaticResource TextSecondary}, Dark={StaticResource TextSecondaryDark}}"
+                                        Margin="0,0,0,2" />
+                                    <Label
+                                        Grid.Row="1"
+                                        Text="{Binding TotalFormateado, StringFormat='${0}'}"
+                                        FontSize="22"
+                                        FontAttributes="Bold"
+                                        TextColor="#FF9800" />
+                                </Grid>
+
+                                <!-- Acciones inline -->
+                                <HorizontalStackLayout
+                                    Grid.Column="1"
+                                    Spacing="12"
+                                    VerticalOptions="Center">
+                                    <Label
+                                        x:Name="BtnEntregar"
+                                        Text="✓"
+                                        FontSize="22"
+                                        TextColor="#4CAF50"
+                                        VerticalOptions="Center">
+                                        <Label.GestureRecognizers>
+                                            <TapGestureRecognizer Tapped="OnEntregarTapped" />
+                                        </Label.GestureRecognizers>
+                                    </Label>
+                                    <Label
+                                        x:Name="BtnEditar"
+                                        Text="✏️"
+                                        FontSize="20"
+                                        VerticalOptions="Center">
+                                        <Label.GestureRecognizers>
+                                            <TapGestureRecognizer Tapped="OnEditarTapped" />
+                                        </Label.GestureRecognizers>
+                                    </Label>
+                                    <Label
+                                        x:Name="BtnEliminar"
+                                        Text="🗑️"
+                                        FontSize="20"
+                                        VerticalOptions="Center">
+                                        <Label.GestureRecognizers>
+                                            <TapGestureRecognizer Tapped="OnEliminarTapped" />
+                                        </Label.GestureRecognizers>
+                                    </Label>
+                                </HorizontalStackLayout>
+                            </Grid>
+                        </Grid>
+                    </Frame>
+                </DataTemplate>
+            </CollectionView.ItemTemplate>
+
+            <!-- Mensaje cuando no hay encargos -->
+            <CollectionView.EmptyView>
+                <StackLayout
+                    Padding="20"
+                    VerticalOptions="Center"
+                    HorizontalOptions="Center"
+                    Spacing="15">
+
+                    <Label
+                        FontSize="48"
+                        Text="📋"
+                        HorizontalTextAlignment="Center" />
+
+                    <Label
+                        FontAttributes="Bold"
+                        FontSize="18"
+                        Text="No hay encargos registrados"
+                        TextColor="{AppThemeBinding Light={StaticResource TextPrimary}, Dark={StaticResource TextPrimaryDark}}"
+                        HorizontalTextAlignment="Center" />
+
+                    <Label
+                        FontSize="14"
+                        Text="Los encargos aparecerán aquí cuando se registren"
+                        TextColor="{AppThemeBinding Light={StaticResource TextSecondary}, Dark={StaticResource TextSecondaryDark}}"
+                        HorizontalTextAlignment="Center" />
+                </StackLayout>
+            </CollectionView.EmptyView>
+        </CollectionView>
     </Grid>
 </ContentPage>

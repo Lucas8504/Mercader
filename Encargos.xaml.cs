@@ -44,16 +44,132 @@ namespace Mercader
             EncargosCollectionView.ItemsSource = _viewModel.Encargos;
         }
 
-        /// <summary>
-        /// Evita la navegación hacia atrás desde esta pantalla.
-        /// </summary>
-        /// <returns>Siempre retorna true para bloquear el botón físico de retroceso.</returns>
         protected override bool OnBackButtonPressed() => true;
 
-        /// <summary>
-        /// Maneja el evento de tap sobre un número de contacto.
-        /// Abre un menú con opciones para llamar, enviar SMS o copiar el número.
-        /// </summary>
+        #region Búsqueda y Filtros
+
+        private void OnBusquedaTextChanged(object sender, TextChangedEventArgs e)
+        {
+            _viewModel.TextoBusqueda = e.NewTextValue ?? string.Empty;
+        }
+
+        private async void OnFiltroTapped(object sender, EventArgs e)
+        {
+            if (sender is Frame frame && frame.GestureRecognizers[0] is TapGestureRecognizer tap
+                && tap.CommandParameter is string filtro)
+            {
+                _viewModel.FiltroEstado = filtro;
+                ActualizarEstilosFiltros(filtro);
+                await Task.CompletedTask;
+            }
+        }
+
+        private void ActualizarEstilosFiltros(string filtroActivo)
+        {
+            var colorActivo = Color.FromArgb("#487CE4");
+            var colorInactivo = App.Current.RequestedTheme == AppTheme.Dark
+                ? Color.FromArgb("#3a3a3a")
+                : Color.FromArgb("#FFFFFF");
+            var bordeInactivo = App.Current.RequestedTheme == AppTheme.Dark
+                ? Color.FromArgb("#38383A")
+                : Color.FromArgb("#C6C6C8");
+            var textoActivo = Colors.White;
+            var textoInactivo = App.Current.RequestedTheme == AppTheme.Dark
+                ? Color.FromArgb("#8E8E93")
+                : Color.FromArgb("#8E8E93");
+
+            void AplicarEstilo(Frame filtro, bool activo)
+            {
+                filtro.BackgroundColor = activo ? colorActivo : colorInactivo;
+                filtro.BorderColor = activo ? Colors.Transparent : bordeInactivo;
+                if (filtro.Content is Label lbl)
+                {
+                    lbl.TextColor = activo ? textoActivo : textoInactivo;
+                }
+            }
+
+            AplicarEstilo(FiltroTodos, filtroActivo == "TODOS");
+            AplicarEstilo(FiltroPendientes, filtroActivo == "PENDIENTES");
+            AplicarEstilo(FiltroEntregados, filtroActivo == "ENTREGADOS");
+        }
+
+        #endregion
+
+        #region Acciones de Tarjeta
+
+        private async void OnEntregarTapped(object sender, EventArgs e)
+        {
+            if (_isLoading) return;
+
+            try
+            {
+                if (sender is Label label && label.BindingContext is Encargo encargo)
+                {
+                    if (encargo.Estado == "ENTREGADO")
+                    {
+                        await DisplayAlert("ℹ️ Ya entregado", "Este encargo ya fue marcado como entregado.", "OK");
+                        return;
+                    }
+
+                    bool confirmar = await DisplayAlert(
+                        "✅ Marcar como entregado",
+                        $"¿Marcar el encargo de {encargo.Nombre} como ENTREGADO?",
+                        "Sí, entregar",
+                        "Cancelar");
+
+                    if (confirmar)
+                    {
+                        _isLoading = true;
+                        await _viewModel.MarcarEntregadoCommand.ExecuteAsync(encargo);
+                        EncargosCollectionView.ItemsSource = _viewModel.Encargos;
+                        await DisplayAlert("✅ Entregado", "El encargo fue marcado como entregado.", "OK");
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                await MostrarError("Error al entregar", ex.Message);
+            }
+            finally
+            {
+                _isLoading = false;
+            }
+        }
+
+        private async void OnEditarTapped(object sender, EventArgs e)
+        {
+            if (_isLoading) return;
+
+            try
+            {
+                if (sender is Label label && label.BindingContext is Encargo encargo)
+                    await EditarEncargo(encargo);
+            }
+            catch (Exception ex)
+            {
+                await MostrarError("Error de edición", ex.Message);
+            }
+        }
+
+        private async void OnEliminarTapped(object sender, EventArgs e)
+        {
+            if (_isLoading) return;
+
+            try
+            {
+                if (sender is Label label && label.BindingContext is Encargo encargo)
+                    await EliminarEncargo(encargo);
+            }
+            catch (Exception ex)
+            {
+                await MostrarError("Error de eliminación", ex.Message);
+            }
+        }
+
+        #endregion
+
+        #region Contacto
+
         private async void OnContactTapped(object sender, EventArgs e)
         {
             if (_isLoading) return;
@@ -84,9 +200,6 @@ namespace Mercader
             }
         }
 
-        /// <summary>
-        /// Muestra las diferentes opciones disponibles para contactar al cliente.
-        /// </summary>
         private async Task MostrarOpcionesContacto(string telefono, string nombreCliente)
         {
             try
@@ -107,11 +220,9 @@ namespace Mercader
                     case "📞 Llamar":
                         await RealizarLlamada(telefonoLimpio);
                         break;
-
                     case "💬 Enviar SMS":
                         await EnviarSMS(telefonoLimpio);
                         break;
-
                     case "📋 Copiar número":
                         await CopiarNumero(telefonoLimpio);
                         break;
@@ -123,9 +234,6 @@ namespace Mercader
             }
         }
 
-        /// <summary>
-        /// Inicia una llamada telefónica hacia el número indicado.
-        /// </summary>
         private async Task RealizarLlamada(string telefono)
         {
             try
@@ -142,9 +250,6 @@ namespace Mercader
             }
         }
 
-        /// <summary>
-        /// Envía un mensaje SMS al número proporcionado.
-        /// </summary>
         private async Task EnviarSMS(string telefono)
         {
             try
@@ -163,9 +268,6 @@ namespace Mercader
             }
         }
 
-        /// <summary>
-        /// Copia un número telefónico al portapapeles del sistema.
-        /// </summary>
         private async Task CopiarNumero(string telefono)
         {
             try
@@ -180,9 +282,6 @@ namespace Mercader
             }
         }
 
-        /// <summary>
-        /// Limpia un número telefónico eliminando caracteres no numéricos.
-        /// </summary>
         private string LimpiarNumeroTelefono(string telefono)
         {
             if (string.IsNullOrWhiteSpace(telefono))
@@ -197,9 +296,10 @@ namespace Mercader
             return limpio;
         }
 
-        /// <summary>
-        /// Maneja el tap sobre un encargo para navegar a la vista de detalles.
-        /// </summary>
+        #endregion
+
+        #region Navegación y Negocio
+
         private async void OnItemTapped(object sender, EventArgs e)
         {
             if (_isLoading) return;
@@ -211,7 +311,7 @@ namespace Mercader
                 {
                     await frame.ScaleTo(0.95, 100);
                     await frame.ScaleTo(1, 100);
-await Navigation.PushAsync(new DetalleEncargo(encargo, _repository));
+                    await Navigation.PushAsync(new DetalleEncargo(encargo, _repository));
                 }
             }
             catch (Exception ex)
@@ -221,65 +321,6 @@ await Navigation.PushAsync(new DetalleEncargo(encargo, _repository));
             }
         }
 
-        /// <summary>
-        /// Acción de edición al deslizar un encargo.
-        /// </summary>
-        private async void OnEditSwipeItemInvoked(object sender, EventArgs e)
-        {
-            if (_isLoading) return;
-
-            try
-            {
-                if (sender is SwipeItem swipeItem && swipeItem.BindingContext is Encargo encargo)
-                    await EditarEncargo(encargo);
-            }
-            catch (Exception ex)
-            {
-                await MostrarError("Error de edición", ex.Message);
-            }
-        }
-
-        /// <summary>
-        /// Acción de eliminación al deslizar un encargo.
-        /// </summary>
-        private async void OnDeleteSwipeItemInvoked(object sender, EventArgs e)
-        {
-            if (_isLoading) return;
-
-            try
-            {
-                if (sender is SwipeItem swipeItem && swipeItem.BindingContext is Encargo encargo)
-                    await EliminarEncargo(encargo);
-            }
-            catch (Exception ex)
-            {
-                await MostrarError("Error de eliminación", ex.Message);
-            }
-        }
-
-        /// <summary>
-        /// Acción para ver detalles al deslizar un encargo.
-        /// </summary>
-        private async void OnDetallesSwipeItemInvoked(object sender, EventArgs e)
-        {
-            if (_isLoading) return;
-
-            try
-            {
-                if (sender is SwipeItem swipeItem && swipeItem.BindingContext is Encargo encargo)
-                    await MostrarDetalles(encargo);
-            }
-            catch (Exception ex)
-            {
-                await MostrarError("Error al mostrar detalles", ex.Message);
-            }
-        }
-
-        #region Métodos de Negocio
-
-        /// <summary>
-        /// Abre la página de edición del encargo seleccionado.
-        /// </summary>
         private async Task EditarEncargo(Encargo encargo)
         {
             try
@@ -293,9 +334,6 @@ await Navigation.PushAsync(new DetalleEncargo(encargo, _repository));
             }
         }
 
-        /// <summary>
-        /// Elimina un encargo con confirmación del usuario.
-        /// </summary>
         private async Task EliminarEncargo(Encargo encargo)
         {
             try
@@ -329,9 +367,6 @@ await Navigation.PushAsync(new DetalleEncargo(encargo, _repository));
             }
         }
 
-        /// <summary>
-        /// Muestra los detalles completos de un encargo.
-        /// </summary>
         private async Task MostrarDetalles(Encargo encargo)
         {
             try
@@ -345,9 +380,6 @@ await Navigation.PushAsync(new DetalleEncargo(encargo, _repository));
             }
         }
 
-        /// <summary>
-        /// Registra una venta a partir de un encargo existente.
-        /// </summary>
         private async Task ConcretarVenta(Encargo encargo)
         {
             try
@@ -364,12 +396,9 @@ await Navigation.PushAsync(new DetalleEncargo(encargo, _repository));
                 if (confirmar)
                 {
                     _isLoading = true;
-
                     await _viewModel.ConvertirEnVentaCommand.ExecuteAsync(encargo);
-
                     await DisplayAlert("✅ Venta Concretada",
                         "La venta se registró correctamente y el encargo fue eliminado", "OK");
-
                     await CargarEncargos();
                 }
             }
@@ -386,20 +415,14 @@ await Navigation.PushAsync(new DetalleEncargo(encargo, _repository));
 
         #endregion
 
-        #region Métodos de Utilidad
+        #region Utilidad
 
-        /// <summary>
-        /// Muestra un mensaje de error uniforme y lo registra en consola.
-        /// </summary>
         private async Task MostrarError(string titulo, string mensaje)
         {
             await DisplayAlert(titulo, mensaje, "OK");
             Console.WriteLine($"{titulo}: {mensaje}");
         }
 
-        /// <summary>
-        /// Método público para refrescar la lista de encargos desde otra vista.
-        /// </summary>
         public async Task RefrescarEncargos() => await CargarEncargos();
 
         #endregion

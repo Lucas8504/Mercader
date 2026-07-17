@@ -1,31 +1,21 @@
-feat(ui): SfDatePicker con dialog mode reemplaza DatePicker nativo
+feat(encargos): rediseño de lista con búsqueda, filtros y estados
 
 ## ✨ Nueva funcionalidad
-- ✅ SfDatePicker en modo Dialog reemplaza al DatePicker nativo en EditarEncargoPage y EncModal
-- ✅ Label tappable muestra la fecha y abre el picker al tocarla
-- ✅ Fecha se actualiza al cerrar el diálogo (evento Closed)
-- ✅ Ya no se rompe visualmente en dark mode en Android
+- ✅ Barra de búsqueda por nombre de cliente o descripción del producto
+- ✅ Filtros horizontales: TODOS, PENDIENTES, ENTREGADOS
+- ✅ Badge de estado: PENDIENTE (naranja) / ENTREGADO (verde)
+- ✅ Botón ✓ marca como ENTREGADO sin eliminar el encargo de la lista
+- ✅ Campo `Estado` agregado a la entity Encargo (default: "PENDIENTE")
 
 ## 🎨 Diseño
-- ✅ Theming completo con AppThemeBinding y colores del tema de la app
-- ✅ Header, columnas, selección, y textos adaptados a light/dark mode
-- ✅ Sin hardcode de colores — todo referenciado a StaticResource (Primary, Secondary, Gray100, etc.)
-
-## ♻️ Refactor
-- ✅ Eliminado styles.xml con hack de DatePickerDialog para Android
-- ✅ Eliminado color datePickerDarkBackground de colors.xml
-- ✅ MainActivity vuelve a Maui.SplashTheme (revertido styles.xml temporal)
-
-## 📦 Dependencias
-- ✅ Syncfusion.Maui.Toolkit 1.0.6 agregada (compatible con net8.0)
-- ✅ ConfigureSyncfusionToolkit() en MauiProgram.cs
+- ✅ Tarjetas rediseñadas: badge, cliente, teléfono, descripción, fecha, desglose, total
+- ✅ Iconos de acción inline (✓ ✏️ 🗑️) en lugar de SwipeView
+- ✅ Colores armonizados: botones Volver/Cancelar en azul-gris (#6B7B8D / #8E99A4)
+- ✅ EstadoColorConverter para badge dinámico
 
 ## 🔧 Técnico
-- ✅ SfDatePicker oculto con HeightRequest="0" — no ocupa espacio visual
-- ✅ Formato con PickerDateFormat.dd_MM_yyyy (enum, no string)
-- ✅ v1.0.6 usa PickerTextStyle en vez de TextColor directo en las vistas
-- ✅ v1.0.6 no tiene StrokeThickness en PickerSelectionView (usamos Stroke)
-- ✅ Background del dialog body con AppThemeBinding (CardBackground / CardBackgroundDark)
-- ✅ ColumnDividerColor con DividerColor / DividerColorDark
-- ✅ FooterView agregado con OK/Cancel y AppThemeBinding para botones
-- ✅ 0 errores de build, 0 warnings
+- ✅ EncargosViewModel: TextoBusqueda, FiltroEstado, AplicarFiltros(), MarcarEntregadoCommand
+- ✅ Búsqueda filtra por Nombre o Descripcion (case-insensitive)
+- ✅ Filtros por estado con auto-aplicación al cambiar
+- ✅ Datos existentes sin estado se muestran como PENDIENTE (?? "PENDIENTE")
+- ✅ 0 errores de build

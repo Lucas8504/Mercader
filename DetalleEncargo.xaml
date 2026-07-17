@@ -183,7 +183,7 @@
                 <!-- Botón Volver -->
                 <Button
                     x:Name="BtnVolver"
-                    BackgroundColor="{AppThemeBinding Light={StaticResource Gray500}, Dark={StaticResource Gray200}}"
+                    BackgroundColor="{AppThemeBinding Light={StaticResource ButtonSecondaryLight}, Dark={StaticResource ButtonSecondaryDark}}"
                     Clicked="OnVolverClicked"
                     CornerRadius="8"
                     FontAttributes="Bold"

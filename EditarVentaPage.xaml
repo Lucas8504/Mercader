@@ -155,7 +155,7 @@
                 <!-- Botón Cancelar -->
                 <Button
                     x:Name="BtnCancelar"
-                    BackgroundColor="{AppThemeBinding Light={StaticResource Gray500}, Dark={StaticResource Gray200}}"
+                    BackgroundColor="{AppThemeBinding Light={StaticResource ButtonSecondaryLight}, Dark={StaticResource ButtonSecondaryDark}}"
                     Clicked="OnCancelarClicked"
                     CornerRadius="8"
                     FontAttributes="Bold"

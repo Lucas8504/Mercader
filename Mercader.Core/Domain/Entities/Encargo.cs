@@ -26,6 +26,9 @@ namespace Mercader.Domain.Entities
         [Column("FechaEntrega")]
         public DateTime FechaEntrega { get; set; }
 
+        [Column("Estado"), MaxLength(20)]
+        public string Estado { get; set; } = "PENDIENTE";
+
         // Propiedades calculadas (para UI, no se mapean a SQLite)
         public decimal Total => Precio * Cantidad;
         public string TotalFormateado => Total.ToString("N0");

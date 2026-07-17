@@ -66,4 +66,8 @@
     <Color x:Key="EncargoColor">#ff6b35</Color>
     <Color x:Key="VentaColor">#2e9449</Color>
     <Color x:Key="ExportarColor">#6490E9</Color>
+
+    <!-- Secondary Action Buttons (Volver / Cancelar) -->
+    <Color x:Key="ButtonSecondaryLight">#6B7B8D</Color>
+    <Color x:Key="ButtonSecondaryDark">#8E99A4</Color>
 </ResourceDictionary>
