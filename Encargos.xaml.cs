@@ -176,12 +176,8 @@ namespace Mercader
 
             try
             {
-                var frame = sender as Frame;
-                if (frame?.BindingContext is Encargo encargo)
+                if (sender is BindableObject element && element.BindingContext is Encargo encargo)
                 {
-                    await frame.ScaleTo(0.9, 50);
-                    await frame.ScaleTo(1, 50);
-
                     if (string.IsNullOrWhiteSpace(encargo.Contacto))
                     {
                         await DisplayAlert("⚠️ Sin número",

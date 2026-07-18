@@ -160,6 +160,9 @@
                             <HorizontalStackLayout
                                 Grid.Row="2"
                                 Spacing="6">
+                                <HorizontalStackLayout.GestureRecognizers>
+                                    <TapGestureRecognizer Tapped="OnContactTapped" />
+                                </HorizontalStackLayout.GestureRecognizers>
                                 <Label
                                     Text="📞"
                                     FontSize="13"
@@ -205,7 +208,7 @@
                                     </Grid.RowDefinitions>
                                     <Label
                                         Grid.Row="0"
-                                        Text="FECHA ENTREGA"
+                                        Text="📅 FECHA ENTREGA"
                                         FontSize="10"
                                         TextColor="{AppThemeBinding Light={StaticResource TextSecondary}, Dark={StaticResource TextSecondaryDark}}"
                                         Margin="0,0,0,2" />
@@ -227,11 +230,20 @@
                                         FontSize="10"
                                         TextColor="{AppThemeBinding Light={StaticResource TextSecondary}, Dark={StaticResource TextSecondaryDark}}"
                                         Margin="0,0,0,2" />
-                                    <Label
-                                        Grid.Row="1"
-                                        Text="{Binding Precio, StringFormat='${0:N2}'}"
-                                        FontSize="14"
-                                        TextColor="{AppThemeBinding Light={StaticResource TextPrimary}, Dark={StaticResource TextPrimaryDark}}" />
+                                    <HorizontalStackLayout Grid.Row="1" Spacing="0">
+                                        <Label
+                                            Text="{Binding Precio, StringFormat='${0:N2}'}"
+                                            FontSize="14"
+                                            TextColor="{AppThemeBinding Light={StaticResource TextPrimary}, Dark={StaticResource TextPrimaryDark}}" />
+                                        <Label
+                                            Text=" * "
+                                            FontSize="14"
+                                            TextColor="{AppThemeBinding Light={StaticResource TextPrimary}, Dark={StaticResource TextPrimaryDark}}" />
+                                        <Label
+                                            Text="{Binding Cantidad}"
+                                            FontSize="14"
+                                            TextColor="{AppThemeBinding Light={StaticResource TextPrimary}, Dark={StaticResource TextPrimaryDark}}" />
+                                    </HorizontalStackLayout>
                                 </Grid>
                             </Grid>
 
