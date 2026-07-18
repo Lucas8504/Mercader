@@ -117,15 +117,38 @@
                                 <RowDefinition Height="Auto" />
                             </Grid.RowDefinitions>
 
-                            <!-- Fila 0: Badge de estado -->
-                            <HorizontalStackLayout
-                                Grid.Row="0"
-                                HorizontalOptions="End">
+                            <!-- Fila 0: Badge + CLIENTE label + nombre -->
+                            <Grid Grid.Row="0">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="Auto" />
+                                </Grid.ColumnDefinitions>
+                                <Grid Grid.Column="0">
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="Auto" />
+                                        <RowDefinition Height="Auto" />
+                                    </Grid.RowDefinitions>
+                                    <Label
+                                        Grid.Row="0"
+                                        Text="CLIENTE"
+                                        FontSize="10"
+                                        TextColor="{AppThemeBinding Light={StaticResource TextSecondary}, Dark={StaticResource TextSecondaryDark}}"
+                                        Margin="0,0,0,2" />
+                                    <Label
+                                        Grid.Row="1"
+                                        Text="{Binding Nombre}"
+                                        FontSize="17"
+                                        FontAttributes="Bold"
+                                        TextColor="{AppThemeBinding Light={StaticResource TextPrimary}, Dark={StaticResource TextPrimaryDark}}"
+                                        LineBreakMode="TailTruncation" />
+                                </Grid>
                                 <Frame
+                                    Grid.Column="1"
                                     x:Name="EstadoBadge"
                                     Padding="10,4"
                                     CornerRadius="12"
                                     HasShadow="False"
+                                    VerticalOptions="Start"
                                     BackgroundColor="{Binding Estado, Converter={StaticResource EstadoColorConverter}}">
                                     <Label
                                         FontSize="11"
@@ -133,32 +156,11 @@
                                         TextColor="White"
                                         Text="{Binding Estado}" />
                                 </Frame>
-                            </HorizontalStackLayout>
-
-                            <!-- Fila 1: CLIENTE label + nombre -->
-                            <Grid Grid.Row="1">
-                                <Grid.RowDefinitions>
-                                    <RowDefinition Height="Auto" />
-                                    <RowDefinition Height="Auto" />
-                                </Grid.RowDefinitions>
-                                <Label
-                                    Grid.Row="0"
-                                    Text="CLIENTE"
-                                    FontSize="10"
-                                    TextColor="{AppThemeBinding Light={StaticResource TextSecondary}, Dark={StaticResource TextSecondaryDark}}"
-                                    Margin="0,0,0,2" />
-                                <Label
-                                    Grid.Row="1"
-                                    Text="{Binding Nombre}"
-                                    FontSize="17"
-                                    FontAttributes="Bold"
-                                    TextColor="{AppThemeBinding Light={StaticResource TextPrimary}, Dark={StaticResource TextPrimaryDark}}"
-                                    LineBreakMode="TailTruncation" />
                             </Grid>
 
-                            <!-- Fila 2: Teléfono -->
+                            <!-- Fila 1: Teléfono -->
                             <HorizontalStackLayout
-                                Grid.Row="2"
+                                Grid.Row="1"
                                 Spacing="6">
                                 <HorizontalStackLayout.GestureRecognizers>
                                     <TapGestureRecognizer Tapped="OnContactTapped" />
@@ -174,8 +176,8 @@
                                     VerticalOptions="Center" />
                             </HorizontalStackLayout>
 
-                            <!-- Fila 3: DESCRIPCIÓN label + descripción -->
-                            <Grid Grid.Row="3">
+                            <!-- Fila 2: DESCRIPCIÓN label + descripción -->
+                            <Grid Grid.Row="2">
                                 <Grid.RowDefinitions>
                                     <RowDefinition Height="Auto" />
                                     <RowDefinition Height="Auto" />
@@ -194,7 +196,51 @@
                                     LineBreakMode="WordWrap" />
                             </Grid>
 
-                            <!-- Fila 4: FECHA ENTREGA + DESGLOSE -->
+                            <!-- Fila 3: FECHA DEL ENCARGO + FECHA ENTREGA -->
+                            <Grid Grid.Row="3" ColumnSpacing="20">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="Auto" />
+                                </Grid.ColumnDefinitions>
+
+                                <Grid Grid.Column="0">
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="Auto" />
+                                        <RowDefinition Height="Auto" />
+                                    </Grid.RowDefinitions>
+                                    <Label
+                                        Grid.Row="0"
+                                        Text="📅 FECHA DEL ENCARGO"
+                                        FontSize="10"
+                                        TextColor="{AppThemeBinding Light={StaticResource TextSecondary}, Dark={StaticResource TextSecondaryDark}}"
+                                        Margin="0,0,0,2" />
+                                    <Label
+                                        Grid.Row="1"
+                                        Text="{Binding Fecha, StringFormat='{0:dd/MM/yyyy}'}"
+                                        FontSize="14"
+                                        TextColor="{AppThemeBinding Light={StaticResource TextPrimary}, Dark={StaticResource TextPrimaryDark}}" />
+                                </Grid>
+
+                                <Grid Grid.Column="1" HorizontalOptions="End">
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="Auto" />
+                                        <RowDefinition Height="Auto" />
+                                    </Grid.RowDefinitions>
+                                    <Label
+                                        Grid.Row="0"
+                                        Text="🚚 FECHA ENTREGA"
+                                        FontSize="10"
+                                        TextColor="{AppThemeBinding Light={StaticResource TextSecondary}, Dark={StaticResource TextSecondaryDark}}"
+                                        Margin="0,0,0,2" />
+                                    <Label
+                                        Grid.Row="1"
+                                        Text="{Binding FechaEntrega, StringFormat='{0:dd/MM/yyyy}'}"
+                                        FontSize="14"
+                                        TextColor="{AppThemeBinding Light={StaticResource TextPrimary}, Dark={StaticResource TextPrimaryDark}}" />
+                                </Grid>
+                            </Grid>
+
+                            <!-- Fila 4: TOTAL ESTIMADO + DESGLOSE -->
                             <Grid Grid.Row="4" ColumnSpacing="20">
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="*" />
@@ -208,18 +254,19 @@
                                     </Grid.RowDefinitions>
                                     <Label
                                         Grid.Row="0"
-                                        Text="📅 FECHA ENTREGA"
+                                        Text="TOTAL ESTIMADO"
                                         FontSize="10"
                                         TextColor="{AppThemeBinding Light={StaticResource TextSecondary}, Dark={StaticResource TextSecondaryDark}}"
                                         Margin="0,0,0,2" />
                                     <Label
                                         Grid.Row="1"
-                                        Text="{Binding FechaEntrega, StringFormat='{0:dd/MM/yyyy}'}"
-                                        FontSize="14"
-                                        TextColor="{AppThemeBinding Light={StaticResource TextPrimary}, Dark={StaticResource TextPrimaryDark}}" />
+                                        Text="{Binding TotalFormateado, StringFormat='${0}'}"
+                                        FontSize="22"
+                                        FontAttributes="Bold"
+                                        TextColor="#FF9800" />
                                 </Grid>
 
-                                <Grid Grid.Column="1">
+                                <Grid Grid.Column="1" HorizontalOptions="End">
                                     <Grid.RowDefinitions>
                                         <RowDefinition Height="Auto" />
                                         <RowDefinition Height="Auto" />
@@ -247,67 +294,40 @@
                                 </Grid>
                             </Grid>
 
-                            <!-- Fila 5: TOTAL ESTIMADO + acciones -->
-                            <Grid Grid.Row="5" ColumnSpacing="12">
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="*" />
-                                    <ColumnDefinition Width="Auto" />
-                                </Grid.ColumnDefinitions>
-
-                                <Grid Grid.Column="0">
-                                    <Grid.RowDefinitions>
-                                        <RowDefinition Height="Auto" />
-                                        <RowDefinition Height="Auto" />
-                                    </Grid.RowDefinitions>
-                                    <Label
-                                        Grid.Row="0"
-                                        Text="TOTAL ESTIMADO"
-                                        FontSize="10"
-                                        TextColor="{AppThemeBinding Light={StaticResource TextSecondary}, Dark={StaticResource TextSecondaryDark}}"
-                                        Margin="0,0,0,2" />
-                                    <Label
-                                        Grid.Row="1"
-                                        Text="{Binding TotalFormateado, StringFormat='${0}'}"
-                                        FontSize="22"
-                                        FontAttributes="Bold"
-                                        TextColor="#FF9800" />
-                                </Grid>
-
-                                <!-- Acciones inline -->
-                                <HorizontalStackLayout
-                                    Grid.Column="1"
-                                    Spacing="12"
+                            <!-- Fila 5: Acciones -->
+                            <HorizontalStackLayout
+                                Grid.Row="5"
+                                HorizontalOptions="End"
+                                Spacing="16">
+                                <Label
+                                    x:Name="BtnEntregar"
+                                    Text="✓"
+                                    FontSize="22"
+                                    TextColor="#4CAF50"
                                     VerticalOptions="Center">
-                                    <Label
-                                        x:Name="BtnEntregar"
-                                        Text="✓"
-                                        FontSize="22"
-                                        TextColor="#4CAF50"
-                                        VerticalOptions="Center">
-                                        <Label.GestureRecognizers>
-                                            <TapGestureRecognizer Tapped="OnEntregarTapped" />
-                                        </Label.GestureRecognizers>
-                                    </Label>
-                                    <Label
-                                        x:Name="BtnEditar"
-                                        Text="✏️"
-                                        FontSize="20"
-                                        VerticalOptions="Center">
-                                        <Label.GestureRecognizers>
-                                            <TapGestureRecognizer Tapped="OnEditarTapped" />
-                                        </Label.GestureRecognizers>
-                                    </Label>
-                                    <Label
-                                        x:Name="BtnEliminar"
-                                        Text="🗑️"
-                                        FontSize="20"
-                                        VerticalOptions="Center">
-                                        <Label.GestureRecognizers>
-                                            <TapGestureRecognizer Tapped="OnEliminarTapped" />
-                                        </Label.GestureRecognizers>
-                                    </Label>
-                                </HorizontalStackLayout>
-                            </Grid>
+                                    <Label.GestureRecognizers>
+                                        <TapGestureRecognizer Tapped="OnEntregarTapped" />
+                                    </Label.GestureRecognizers>
+                                </Label>
+                                <Label
+                                    x:Name="BtnEditar"
+                                    Text="✏️"
+                                    FontSize="20"
+                                    VerticalOptions="Center">
+                                    <Label.GestureRecognizers>
+                                        <TapGestureRecognizer Tapped="OnEditarTapped" />
+                                    </Label.GestureRecognizers>
+                                </Label>
+                                <Label
+                                    x:Name="BtnEliminar"
+                                    Text="🗑️"
+                                    FontSize="20"
+                                    VerticalOptions="Center">
+                                    <Label.GestureRecognizers>
+                                        <TapGestureRecognizer Tapped="OnEliminarTapped" />
+                                    </Label.GestureRecognizers>
+                                </Label>
+                            </HorizontalStackLayout>
                         </Grid>
                     </Frame>
                 </DataTemplate>
