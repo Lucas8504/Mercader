@@ -131,8 +131,6 @@
                                     <RowDefinition Height="Auto" />
                                     <RowDefinition Height="Auto" />
                                     <RowDefinition Height="Auto" />
-                                    <RowDefinition Height="Auto" />
-                                    <RowDefinition Height="Auto" />
                                 </Grid.RowDefinitions>
 
                                 <!-- Fila 0: Descripción (campo principal) -->
@@ -144,42 +142,8 @@
                                     TextColor="{AppThemeBinding Light={StaticResource TextPrimary}, Dark={StaticResource TextPrimaryDark}}"
                                     LineBreakMode="TailTruncation" />
 
-                                <!-- Fila 1: Cantidad -->
-                                <HorizontalStackLayout
-                                    Grid.Row="1"
-                                    Spacing="6">
-                                    <Label
-                                        Text="📦"
-                                        FontSize="13"
-                                        VerticalOptions="Center" />
-                                    <Label
-                                        Text="{Binding Cantidad, StringFormat='{0} unidades'}"
-                                        FontSize="14"
-                                        TextColor="#4CAF50"
-                                        VerticalOptions="Center" />
-                                </HorizontalStackLayout>
-
-                                <!-- Fila 2: Precio unitario -->
-                                <Grid Grid.Row="2">
-                                    <Grid.RowDefinitions>
-                                        <RowDefinition Height="Auto" />
-                                        <RowDefinition Height="Auto" />
-                                    </Grid.RowDefinitions>
-                                    <Label
-                                        Grid.Row="0"
-                                        Text="PRECIO UNITARIO"
-                                        FontSize="10"
-                                        TextColor="{AppThemeBinding Light={StaticResource TextSecondary}, Dark={StaticResource TextSecondaryDark}}"
-                                        Margin="0,0,0,2" />
-                                    <Label
-                                        Grid.Row="1"
-                                        Text="{Binding Precio, StringFormat='${0:N2}'}"
-                                        FontSize="14"
-                                        TextColor="{AppThemeBinding Light={StaticResource TextPrimary}, Dark={StaticResource TextPrimaryDark}}" />
-                                </Grid>
-
-                                <!-- Fila 3: Fecha -->
-                                <Grid Grid.Row="3">
+                                <!-- Fila 1: Fecha -->
+                                <Grid Grid.Row="1">
                                     <Grid.RowDefinitions>
                                         <RowDefinition Height="Auto" />
                                         <RowDefinition Height="Auto" />
@@ -197,8 +161,8 @@
                                         TextColor="{AppThemeBinding Light={StaticResource TextPrimary}, Dark={StaticResource TextPrimaryDark}}" />
                                 </Grid>
 
-                                <!-- Fila 4: Total + Desglose -->
-                                <Grid Grid.Row="4" ColumnSpacing="20">
+                                <!-- Fila 2: Total + Desglose -->
+                                <Grid Grid.Row="2" ColumnSpacing="20">
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition Width="*" />
                                         <ColumnDefinition Width="Auto" />
@@ -240,20 +204,24 @@
                                                 FontSize="14"
                                                 TextColor="{AppThemeBinding Light={StaticResource TextPrimary}, Dark={StaticResource TextPrimaryDark}}" />
                                             <Label
-                                                Text=" * "
+                                                Text=" x "
                                                 FontSize="14"
                                                 TextColor="{AppThemeBinding Light={StaticResource TextPrimary}, Dark={StaticResource TextPrimaryDark}}" />
                                             <Label
                                                 Text="{Binding Cantidad}"
                                                 FontSize="14"
                                                 TextColor="{AppThemeBinding Light={StaticResource TextPrimary}, Dark={StaticResource TextPrimaryDark}}" />
+                                            <Label
+                                                Text="{Binding UnidadTexto}"
+                                                FontSize="14"
+                                                TextColor="{AppThemeBinding Light={StaticResource TextPrimary}, Dark={StaticResource TextPrimaryDark}}" />
                                         </HorizontalStackLayout>
                                     </Grid>
                                 </Grid>
 
-                                <!-- Fila 5: Acciones -->
+                                <!-- Fila 3: Acciones -->
                                 <HorizontalStackLayout
-                                    Grid.Row="5"
+                                    Grid.Row="3"
                                     HorizontalOptions="End"
                                     Spacing="16">
                                     <Label

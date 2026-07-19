@@ -20,5 +20,6 @@ namespace Mercader.Domain.Entities
         // Propiedades calculadas (para UI, no se mapean a SQLite)
         public decimal Total => Precio * Cantidad;
         public string TotalFormateado => (Precio * Cantidad).ToString("N0");
+        public string UnidadTexto => Cantidad == 1 ? " ud." : " uds.";
     }
 }
