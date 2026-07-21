@@ -7,175 +7,273 @@
     Title="💸 Registro de Gastos"
     BackgroundColor="{AppThemeBinding Light={StaticResource DeepBackground}, Dark={StaticResource DeepBackgroundDark}}">
 
-    <Grid>
+    <Grid RowSpacing="0">
         <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
 
+        <!-- Barra de búsqueda -->
+        <SearchBar
+            Grid.Row="0"
+            x:Name="BarraBusqueda"
+            Placeholder="Buscar por descripción..."
+            PlaceholderColor="{AppThemeBinding Light={StaticResource TextPlaceholder}, Dark={StaticResource TextPlaceholderDark}}"
+            TextColor="{AppThemeBinding Light={StaticResource TextPrimary}, Dark={StaticResource TextPrimaryDark}}"
+            BackgroundColor="{AppThemeBinding Light={StaticResource InputBackground}, Dark={StaticResource InputBackgroundDark}}"
+            CancelButtonColor="{AppThemeBinding Light={StaticResource TextSecondary}, Dark={StaticResource TextSecondaryDark}}"
+            FontSize="15"
+            Margin="16,12,16,8"
+            TextChanged="OnBusquedaTextChanged" />
+
+        <!-- Filtros horizontales -->
+        <HorizontalStackLayout
+            Grid.Row="1"
+            Spacing="8"
+            Margin="16,0,16,12"
+            HorizontalOptions="Center">
+
+            <Frame
+                x:Name="FiltroTodos"
+                Padding="14,8"
+                CornerRadius="20"
+                BackgroundColor="{StaticResource Primary}"
+                BorderColor="Transparent"
+                HasShadow="False">
+                <Frame.GestureRecognizers>
+                    <TapGestureRecognizer Tapped="OnFiltroTapped" CommandParameter="TODOS" />
+                </Frame.GestureRecognizers>
+                <Label
+                    Text="TODOS"
+                    FontSize="12"
+                    FontAttributes="Bold"
+                    TextColor="White"
+                    VerticalOptions="Center" />
+            </Frame>
+
+            <Frame
+                x:Name="FiltroHoy"
+                Padding="14,8"
+                CornerRadius="20"
+                BackgroundColor="{AppThemeBinding Light={StaticResource InputBackground}, Dark={StaticResource InputBackgroundDark}}"
+                BorderColor="{AppThemeBinding Light={StaticResource DividerColor}, Dark={StaticResource DividerColorDark}}"
+                HasShadow="False">
+                <Frame.GestureRecognizers>
+                    <TapGestureRecognizer Tapped="OnFiltroTapped" CommandParameter="HOY" />
+                </Frame.GestureRecognizers>
+                <Label
+                    Text="HOY"
+                    FontSize="12"
+                    FontAttributes="Bold"
+                    TextColor="{AppThemeBinding Light={StaticResource TextSecondary}, Dark={StaticResource TextSecondaryDark}}"
+                    VerticalOptions="Center" />
+            </Frame>
+
+            <Frame
+                x:Name="FiltroEsteMes"
+                Padding="14,8"
+                CornerRadius="20"
+                BackgroundColor="{AppThemeBinding Light={StaticResource InputBackground}, Dark={StaticResource InputBackgroundDark}}"
+                BorderColor="{AppThemeBinding Light={StaticResource DividerColor}, Dark={StaticResource DividerColorDark}}"
+                HasShadow="False">
+                <Frame.GestureRecognizers>
+                    <TapGestureRecognizer Tapped="OnFiltroTapped" CommandParameter="ESTE MES" />
+                </Frame.GestureRecognizers>
+                <Label
+                    Text="ESTE MES"
+                    FontSize="12"
+                    FontAttributes="Bold"
+                    TextColor="{AppThemeBinding Light={StaticResource TextSecondary}, Dark={StaticResource TextSecondaryDark}}"
+                    VerticalOptions="Center" />
+            </Frame>
+        </HorizontalStackLayout>
+
         <!-- Lista de gastos -->
-        <ScrollView Grid.Row="1" Margin="10,0">
-            <StackLayout Spacing="12">
-                <CollectionView
-                    x:Name="GastosCollectionView"
-                    SelectionMode="None"
-                    ItemSizingStrategy="MeasureAllItems">
+        <CollectionView
+            Grid.Row="2"
+            x:Name="GastosCollectionView"
+            SelectionMode="None"
+            ItemSizingStrategy="MeasureAllItems"
+            Margin="16,0">
 
-                    <CollectionView.ItemTemplate>
-                        <DataTemplate>
-                            <SwipeView Margin="5,2">
-                                <SwipeView.RightItems>
-                                    <SwipeItems Mode="Reveal">
-                                        <SwipeItem
-                                            BackgroundColor="#4CAF50"
-                                            Invoked="OnEditSwipeItemInvoked"
-                                            Text="✏️ Editar" />
-                                        <SwipeItem
-                                            BackgroundColor="#F44336"
-                                            Invoked="OnDeleteSwipeItemInvoked"
-                                            Text="🗑️ Eliminar" />
-                                    </SwipeItems>
-                                </SwipeView.RightItems>
+            <CollectionView.ItemTemplate>
+                <DataTemplate>
+                    <SwipeView Margin="0,0,0,12">
+                        <SwipeView.RightItems>
+                            <SwipeItems Mode="Reveal">
+                                <SwipeItem
+                                    BackgroundColor="#4CAF50"
+                                    Invoked="OnEditSwipeItemInvoked"
+                                    Text="✏️ Editar" />
+                                <SwipeItem
+                                    BackgroundColor="#F44336"
+                                    Invoked="OnDeleteSwipeItemInvoked"
+                                    Text="🗑️ Eliminar" />
+                            </SwipeItems>
+                        </SwipeView.RightItems>
 
-                                <!-- Tarjeta de gasto minimalista moderna -->
-                                <Frame
-                                    Padding="16"
-                                    BackgroundColor="{AppThemeBinding Light={StaticResource CardBackground}, Dark={StaticResource CardBackgroundDark}}"
-                                    BorderColor="Transparent"
-                                    CornerRadius="16"
-                                    HasShadow="False">
+                        <!-- Tarjeta estilo ventas -->
+                        <Frame
+                            Padding="16"
+                            BackgroundColor="{AppThemeBinding Light={StaticResource CardBackground}, Dark={StaticResource CardBackgroundDark}}"
+                            BorderColor="Transparent"
+                            CornerRadius="16"
+                            HasShadow="False">
 
-                                    <Frame.GestureRecognizers>
-                                        <TapGestureRecognizer Tapped="OnItemTapped" />
-                                    </Frame.GestureRecognizers>
+                            <Frame.GestureRecognizers>
+                                <TapGestureRecognizer Tapped="OnItemTapped" />
+                            </Frame.GestureRecognizers>
 
-                                    <Grid RowSpacing="12">
+                            <Grid RowSpacing="10">
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="Auto" />
+                                </Grid.RowDefinitions>
+
+                                <!-- Fila 0: Descripción (campo principal) -->
+                                <Label
+                                    Grid.Row="0"
+                                    Text="{Binding Descripcion}"
+                                    FontSize="17"
+                                    FontAttributes="Bold"
+                                    TextColor="{AppThemeBinding Light={StaticResource TextPrimary}, Dark={StaticResource TextPrimaryDark}}"
+                                    LineBreakMode="TailTruncation" />
+
+                                <!-- Fila 1: Fecha -->
+                                <Grid Grid.Row="1">
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="Auto" />
+                                        <RowDefinition Height="Auto" />
+                                    </Grid.RowDefinitions>
+                                    <Label
+                                        Grid.Row="0"
+                                        Text="📅 FECHA DE GASTO"
+                                        FontSize="10"
+                                        TextColor="{AppThemeBinding Light={StaticResource TextSecondary}, Dark={StaticResource TextSecondaryDark}}"
+                                        Margin="0,0,0,2" />
+                                    <Label
+                                        Grid.Row="1"
+                                        Text="{Binding Fecha, StringFormat='{0:dd/MM/yyyy}'}"
+                                        FontSize="14"
+                                        TextColor="{AppThemeBinding Light={StaticResource TextPrimary}, Dark={StaticResource TextPrimaryDark}}" />
+                                </Grid>
+
+                                <!-- Fila 2: Total + Desglose -->
+                                <Grid Grid.Row="2" ColumnSpacing="20">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*" />
+                                        <ColumnDefinition Width="Auto" />
+                                    </Grid.ColumnDefinitions>
+
+                                    <Grid Grid.Column="0">
                                         <Grid.RowDefinitions>
                                             <RowDefinition Height="Auto" />
                                             <RowDefinition Height="Auto" />
+                                        </Grid.RowDefinitions>
+                                        <Label
+                                            Grid.Row="0"
+                                            Text="TOTAL"
+                                            FontSize="10"
+                                            TextColor="{AppThemeBinding Light={StaticResource TextSecondary}, Dark={StaticResource TextSecondaryDark}}"
+                                            Margin="0,0,0,2" />
+                                        <Label
+                                            Grid.Row="1"
+                                            Text="{Binding TotalFormateado, StringFormat='${0}'}"
+                                            FontSize="22"
+                                            FontAttributes="Bold"
+                                            TextColor="#FF9800" />
+                                    </Grid>
+
+                                    <Grid Grid.Column="1" HorizontalOptions="End">
+                                        <Grid.RowDefinitions>
+                                            <RowDefinition Height="Auto" />
                                             <RowDefinition Height="Auto" />
                                         </Grid.RowDefinitions>
-
-                                        <!-- Fila 1: Descripción y Cantidad -->
-                                        <Grid Grid.Row="0" ColumnSpacing="12">
-                                            <Grid.ColumnDefinitions>
-                                                <ColumnDefinition Width="*" />
-                                                <ColumnDefinition Width="Auto" />
-                                            </Grid.ColumnDefinitions>
-
-                                            <!-- Descripción -->
-                                            <Label
-                                                Grid.Column="0"
-                                                FontAttributes="Bold"
-                                                FontSize="17"
-                                                LineBreakMode="WordWrap"
-                                                Text="{Binding Descripcion}"
-                                                TextColor="{AppThemeBinding Light={StaticResource TextPrimary}, Dark={StaticResource TextPrimaryDark}}"
-                                                VerticalOptions="Center" />
-
-                                            <!-- Cantidad -->
-                                            <Label
-                                                Grid.Column="1"
-                                                FontSize="12"
-                                                Text="{Binding Cantidad, StringFormat='{0} unid.'}"
-                                                TextColor="{AppThemeBinding Light={StaticResource TextSecondary}, Dark={StaticResource TextSecondaryDark}}"
-                                                VerticalOptions="Center" />
-                                        </Grid>
-
-                                        <!-- Fila 2: Total y Precio Unitario -->
-                                        <Grid Grid.Row="1" ColumnSpacing="12">
-                                            <Grid.ColumnDefinitions>
-                                                <ColumnDefinition Width="*" />
-                                                <ColumnDefinition Width="*" />
-                                            </Grid.ColumnDefinitions>
-
-                                            <!-- Total -->
-                                            <Frame
-                                                Grid.Column="0"
-                                                BackgroundColor="#750000"
-                                                BorderColor="#BD2C2A"
-                                                CornerRadius="8"
-                                                Padding="10"
-                                                HasShadow="False">
-                                                <VerticalStackLayout Spacing="2" VerticalOptions="Center">
-                                                    <Label
-                                                        Text="Total"
-                                                        FontSize="10"
-                                                        TextColor="#D4A5A5" />
-                                                    <Label
-                                                        FontAttributes="Bold"
-                                                        FontSize="15"
-                                                        Text="{Binding TotalFormateado}"
-                                                        TextColor="#E8C8C8" />
-                                                </VerticalStackLayout>
-                                            </Frame>
-
-                                            <!-- Precio Unitario -->
-                                            <Frame
-                                                Grid.Column="1"
-                                                BackgroundColor="#1E3A5F"
-                                                BorderColor="#2E5A8F"
-                                                CornerRadius="8"
-                                                Padding="10"
-                                                HasShadow="False">
-                                                <VerticalStackLayout Spacing="2" VerticalOptions="Center">
-                                                    <Label
-                                                        Text="x Unidad"
-                                                        FontSize="10"
-                                                        TextColor="#8A8A9A" />
-                                                    <Label
-                                                        FontAttributes="Bold"
-                                                        FontSize="15"
-                                                        Text="{Binding Monto, StringFormat='${0:N2}'}"
-                                                        TextColor="#D0D0E0" />
-                                                </VerticalStackLayout>
-                                            </Frame>
-                                        </Grid>
-
-                                        <!-- Fila 3: Fecha -->
                                         <Label
-                                            Grid.Row="2"
-                                            FontSize="12"
-                                            Text="{Binding Fecha, StringFormat='{0:dd MMM yyyy}'}"
-                                            TextColor="{AppThemeBinding Light={StaticResource TextSecondary}, Dark={StaticResource TextSecondaryDark}}" />
+                                            Grid.Row="0"
+                                            Text="DESGLOSE"
+                                            FontSize="10"
+                                            TextColor="{AppThemeBinding Light={StaticResource TextSecondary}, Dark={StaticResource TextSecondaryDark}}"
+                                            Margin="0,0,0,2" />
+                                        <HorizontalStackLayout Grid.Row="1" Spacing="0">
+                                            <Label
+                                                Text="{Binding Monto, StringFormat='${0:N2}'}"
+                                                FontSize="14"
+                                                TextColor="{AppThemeBinding Light={StaticResource TextPrimary}, Dark={StaticResource TextPrimaryDark}}" />
+                                            <Label
+                                                Text=" x "
+                                                FontSize="14"
+                                                TextColor="{AppThemeBinding Light={StaticResource TextPrimary}, Dark={StaticResource TextPrimaryDark}}" />
+                                            <Label
+                                                Text="{Binding Cantidad}"
+                                                FontSize="14"
+                                                TextColor="{AppThemeBinding Light={StaticResource TextPrimary}, Dark={StaticResource TextPrimaryDark}}" />
+                                            <Label
+                                                Text="{Binding UnidadTexto}"
+                                                FontSize="14"
+                                                TextColor="{AppThemeBinding Light={StaticResource TextPrimary}, Dark={StaticResource TextPrimaryDark}}" />
+                                        </HorizontalStackLayout>
                                     </Grid>
-                                </Frame>
-                            </SwipeView>
-                        </DataTemplate>
-                    </CollectionView.ItemTemplate>
+                                </Grid>
 
-                    <!-- Mensaje cuando no hay gastos -->
-                    <CollectionView.EmptyView>
-                        <StackLayout
-                            Padding="20"
-                            VerticalOptions="Center"
-                            HorizontalOptions="Center"
-                            Spacing="15">
+                                <!-- Fila 3: Acciones -->
+                                <HorizontalStackLayout
+                                    Grid.Row="3"
+                                    HorizontalOptions="End"
+                                    Spacing="16">
+                                    <Label
+                                        Text="✏️"
+                                        FontSize="20"
+                                        VerticalOptions="Center">
+                                        <Label.GestureRecognizers>
+                                            <TapGestureRecognizer Tapped="OnEditarTapped" />
+                                        </Label.GestureRecognizers>
+                                    </Label>
+                                    <Label
+                                        Text="🗑️"
+                                        FontSize="20"
+                                        VerticalOptions="Center">
+                                        <Label.GestureRecognizers>
+                                            <TapGestureRecognizer Tapped="OnEliminarTapped" />
+                                        </Label.GestureRecognizers>
+                                    </Label>
+                                </HorizontalStackLayout>
+                            </Grid>
+                        </Frame>
+                    </SwipeView>
+                </DataTemplate>
+            </CollectionView.ItemTemplate>
 
-                            <Label
-                                FontSize="48"
-                                Text="💸"
-                                HorizontalTextAlignment="Center" />
+            <!-- Mensaje cuando no hay gastos -->
+            <CollectionView.EmptyView>
+                <StackLayout
+                    Padding="20"
+                    VerticalOptions="Center"
+                    HorizontalOptions="Center"
+                    Spacing="15">
 
-                            <Label
-                                FontAttributes="Bold"
-                                FontSize="18"
-                                Text="No hay gastos registrados"
-                                TextColor="{AppThemeBinding Light={StaticResource TextPrimary}, Dark={StaticResource TextPrimaryDark}}"
-                                HorizontalTextAlignment="Center" />
+                    <Label
+                        FontSize="48"
+                        Text="💸"
+                        HorizontalTextAlignment="Center" />
 
-                            <Label
-                                FontSize="14"
-                                Text="Los gastos aparecerán aquí cuando se registren"
-                                TextColor="{AppThemeBinding Light={StaticResource TextSecondary}, Dark={StaticResource TextSecondaryDark}}"
-                                HorizontalTextAlignment="Center" />
-                        </StackLayout>
-                    </CollectionView.EmptyView>
-                </CollectionView>
+                    <Label
+                        FontAttributes="Bold"
+                        FontSize="18"
+                        Text="No hay gastos registrados"
+                        TextColor="{AppThemeBinding Light={StaticResource TextPrimary}, Dark={StaticResource TextPrimaryDark}}"
+                        HorizontalTextAlignment="Center" />
 
-                <!-- Espaciado al final -->
-                <BoxView HeightRequest="20" BackgroundColor="Transparent" />
-            </StackLayout>
-        </ScrollView>
+                    <Label
+                        FontSize="14"
+                        Text="Los gastos aparecerán aquí cuando se registren"
+                        TextColor="{AppThemeBinding Light={StaticResource TextSecondary}, Dark={StaticResource TextSecondaryDark}}"
+                        HorizontalTextAlignment="Center" />
+                </StackLayout>
+            </CollectionView.EmptyView>
+        </CollectionView>
     </Grid>
 </ContentPage>
