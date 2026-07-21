@@ -34,6 +34,7 @@
                     PlaceholderColor="{AppThemeBinding Light={StaticResource TextPlaceholder}, Dark={StaticResource TextPlaceholderDark}}"
                     TextColor="{AppThemeBinding Light={StaticResource TextPrimary}, Dark={StaticResource TextPrimaryDark}}"
                     BackgroundColor="Transparent"
+                    Visual="Material"
                     TextChanged="OnNombreEncargoTextChanged" />
             </Frame>
 
@@ -112,6 +113,7 @@
                         PlaceholderColor="{AppThemeBinding Light={StaticResource TextPlaceholder}, Dark={StaticResource TextPlaceholderDark}}"
                         TextColor="{AppThemeBinding Light={StaticResource TextPrimary}, Dark={StaticResource TextPrimaryDark}}"
                         BackgroundColor="Transparent"
+                        Visual="Material"
                         MaxLength="20"
                         Grid.Column="1"
                         />
@@ -130,6 +132,7 @@
                     PlaceholderColor="{AppThemeBinding Light={StaticResource TextPlaceholder}, Dark={StaticResource TextPlaceholderDark}}"
                     TextColor="{AppThemeBinding Light={StaticResource TextPrimary}, Dark={StaticResource TextPrimaryDark}}"
                     BackgroundColor="Transparent"
+                    Visual="Material"
                     TextChanged="OnDescripcionEncargoTextChanged" />
             </Frame>
 
@@ -199,7 +202,8 @@
                     Placeholder="Precio ($)"
                     PlaceholderColor="{AppThemeBinding Light={StaticResource TextPlaceholder}, Dark={StaticResource TextPlaceholderDark}}"
                     TextColor="{AppThemeBinding Light={StaticResource TextPrimary}, Dark={StaticResource TextPrimaryDark}}"
-                    BackgroundColor="Transparent" />
+                    BackgroundColor="Transparent"
+                    Visual="Material" />
             </Frame>
 
             <!-- Campo de Cantidad -->
@@ -214,7 +218,8 @@
                     Placeholder="Cantidad"
                     PlaceholderColor="{AppThemeBinding Light={StaticResource TextPlaceholder}, Dark={StaticResource TextPlaceholderDark}}"
                     TextColor="{AppThemeBinding Light={StaticResource TextPrimary}, Dark={StaticResource TextPrimaryDark}}"
-                    BackgroundColor="Transparent" />
+                    BackgroundColor="Transparent"
+                    Visual="Material" />
             </Frame>
 
             <!-- Campo de Fecha de Entrega -->
