@@ -34,6 +34,7 @@
                     Placeholder="Descripción"
                     PlaceholderColor="{AppThemeBinding Light={StaticResource TextPlaceholder}, Dark={StaticResource TextPlaceholderDark}}"
                     TextColor="{AppThemeBinding Light={StaticResource TextPrimary}, Dark={StaticResource TextPrimaryDark}}"
+                    Visual="Material"
                     TextChanged="OnDescripcionTextChanged" />
             </Frame>
 
@@ -105,7 +106,8 @@
                     Keyboard="Numeric"
                     Placeholder="Precio"
                     PlaceholderColor="{AppThemeBinding Light={StaticResource TextPlaceholder}, Dark={StaticResource TextPlaceholderDark}}"
-                    TextColor="{AppThemeBinding Light={StaticResource TextPrimary}, Dark={StaticResource TextPrimaryDark}}" />
+                    TextColor="{AppThemeBinding Light={StaticResource TextPrimary}, Dark={StaticResource TextPrimaryDark}}"
+                    Visual="Material" />
             </Frame>
 
             <!--  Campo de Cantidad  -->
@@ -120,7 +122,8 @@
                     Keyboard="Numeric"
                     Placeholder="Cantidad"
                     PlaceholderColor="{AppThemeBinding Light={StaticResource TextPlaceholder}, Dark={StaticResource TextPlaceholderDark}}"
-                    TextColor="{AppThemeBinding Light={StaticResource TextPrimary}, Dark={StaticResource TextPrimaryDark}}" />
+                    TextColor="{AppThemeBinding Light={StaticResource TextPrimary}, Dark={StaticResource TextPrimaryDark}}"
+                    Visual="Material" />
             </Frame>
 
             <!--  Botón Agregar  -->
