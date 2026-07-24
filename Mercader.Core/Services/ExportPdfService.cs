@@ -217,17 +217,14 @@ public sealed class ExportPdfService : IExportPdfService
             Margin, usableWidth, y);
 
         if (vtasCurrent.Count > 0)
+        {
+            var (vtasRows, vtasTotal) = ExpandVentasConArticulos(vtasCurrent, data.ArticulosVenta);
             y = RenderMonthTable(ref page, ref graphics, y,
                 Capitalize(currentMonthStart.ToString("MMMM yyyy")),
-                vtasCurrent.Select(v => new[] {
-                    v.Fecha.ToString("dd/MM"),
-                    v.Descripcion ?? "",
-                    v.Cantidad.ToString("N0"),
-                    $"$ {v.Total:N2}"
-                }).ToArray(),
-                vtasCurrent.Sum(v => v.Total),
+                vtasRows, vtasTotal,
                 detHeaders, detWidths, cellFont, headerFont,
                 Margin, usableWidth, document, FooterHeight);
+        }
         else
             y = DrawNoActivityMessage(graphics, y, cellFont, Margin, usableWidth);
 
@@ -239,15 +236,10 @@ public sealed class ExportPdfService : IExportPdfService
                 graphics = page.Graphics;
                 y = Margin;
             }
+            var (vtasPrevRows, vtasPrevTotal) = ExpandVentasConArticulos(vtasPrev, data.ArticulosVenta);
             y = RenderMonthTable(ref page, ref graphics, y,
                 Capitalize(prevMonthStart.ToString("MMMM yyyy")),
-                vtasPrev.Select(v => new[] {
-                    v.Fecha.ToString("dd/MM"),
-                    v.Descripcion ?? "",
-                    v.Cantidad.ToString("N0"),
-                    $"$ {v.Total:N2}"
-                }).ToArray(),
-                vtasPrev.Sum(v => v.Total),
+                vtasPrevRows, vtasPrevTotal,
                 detHeaders, detWidths, cellFont, headerFont,
                 Margin, usableWidth, document, FooterHeight);
         }
@@ -271,17 +263,14 @@ public sealed class ExportPdfService : IExportPdfService
             Margin, usableWidth, y);
 
         if (gtosCurrent.Count > 0)
+        {
+            var (gtosRows, gtosTotal) = ExpandGastosConArticulos(gtosCurrent, data.ArticulosGasto);
             y = RenderMonthTable(ref page, ref graphics, y,
                 Capitalize(currentMonthStart.ToString("MMMM yyyy")),
-                gtosCurrent.Select(g => new[] {
-                    g.Fecha.ToString("dd/MM"),
-                    g.Descripcion ?? "",
-                    g.Cantidad.ToString("N0"),
-                    $"$ {g.Total:N2}"
-                }).ToArray(),
-                gtosCurrent.Sum(g => g.Total),
+                gtosRows, gtosTotal,
                 detHeaders, detWidths, cellFont, headerFont,
                 Margin, usableWidth, document, FooterHeight);
+        }
         else
             y = DrawNoActivityMessage(graphics, y, cellFont, Margin, usableWidth);
 
@@ -293,15 +282,10 @@ public sealed class ExportPdfService : IExportPdfService
                 graphics = page.Graphics;
                 y = Margin;
             }
+            var (gtosPrevRows, gtosPrevTotal) = ExpandGastosConArticulos(gtosPrev, data.ArticulosGasto);
             y = RenderMonthTable(ref page, ref graphics, y,
                 Capitalize(prevMonthStart.ToString("MMMM yyyy")),
-                gtosPrev.Select(g => new[] {
-                    g.Fecha.ToString("dd/MM"),
-                    g.Descripcion ?? "",
-                    g.Cantidad.ToString("N0"),
-                    $"$ {g.Total:N2}"
-                }).ToArray(),
-                gtosPrev.Sum(g => g.Total),
+                gtosPrevRows, gtosPrevTotal,
                 detHeaders, detWidths, cellFont, headerFont,
                 Margin, usableWidth, document, FooterHeight);
         }
@@ -328,17 +312,14 @@ public sealed class ExportPdfService : IExportPdfService
             Margin, usableWidth, y);
 
         if (encCurrent.Count > 0)
+        {
+            var (encRows, encTotal) = ExpandEncargosConArticulos(encCurrent, data.ArticulosEncargo);
             y = RenderMonthTable(ref page, ref graphics, y,
                 Capitalize(currentMonthStart.ToString("MMMM yyyy")),
-                encCurrent.Select(e => new[] {
-                    e.FechaEntrega.ToString("dd/MM"),
-                    e.Nombre ?? "",
-                    e.Descripcion ?? "",
-                    $"$ {e.Total:N2}"
-                }).ToArray(),
-                encCurrent.Sum(e => e.Total),
+                encRows, encTotal,
                 encHeaders, encWidths, cellFont, headerFont,
                 Margin, usableWidth, document, FooterHeight);
+        }
         else
             y = DrawNoActivityMessage(graphics, y, cellFont, Margin, usableWidth);
 
@@ -350,15 +331,10 @@ public sealed class ExportPdfService : IExportPdfService
                 graphics = page.Graphics;
                 y = Margin;
             }
+            var (encPrevRows, encPrevTotal) = ExpandEncargosConArticulos(encPrev, data.ArticulosEncargo);
             y = RenderMonthTable(ref page, ref graphics, y,
                 Capitalize(prevMonthStart.ToString("MMMM yyyy")),
-                encPrev.Select(e => new[] {
-                    e.FechaEntrega.ToString("dd/MM"),
-                    e.Nombre ?? "",
-                    e.Descripcion ?? "",
-                    $"$ {e.Total:N2}"
-                }).ToArray(),
-                encPrev.Sum(e => e.Total),
+                encPrevRows, encPrevTotal,
                 encHeaders, encWidths, cellFont, headerFont,
                 Margin, usableWidth, document, FooterHeight);
         }
@@ -576,5 +552,92 @@ public sealed class ExportPdfService : IExportPdfService
     {
         if (string.IsNullOrEmpty(value)) return value;
         return char.ToUpper(value[0]) + value[1..];
+    }
+
+    // ══════════════════════════════════════════════════════
+    //  Article-expansion helpers (multi-artículo)
+    // ══════════════════════════════════════════════════════
+
+    /// <summary>
+    /// Expands Ventas entities into article-level rows.
+    /// When articles exist, each article becomes a row with the parent's date.
+    /// Falls back to the entity row for legacy data without articles.
+    /// </summary>
+    private static (string[][] Rows, decimal Total) ExpandVentasConArticulos(
+        List<Ventas> entities, IReadOnlyDictionary<int, List<ArticuloVenta>> articles)
+    {
+        var rows = new List<string[]>();
+        decimal total = 0;
+        foreach (var v in entities)
+        {
+            if (articles.TryGetValue(v.Id, out var arts) && arts.Count > 0)
+            {
+                foreach (var a in arts.OrderBy(a => a.Orden))
+                {
+                    rows.Add(new[] { v.Fecha.ToString("dd/MM"), a.Descripcion ?? "", a.Cantidad.ToString("N0"), $"$ {a.Total:N2}" });
+                    total += a.Total;
+                }
+            }
+            else
+            {
+                rows.Add(new[] { v.Fecha.ToString("dd/MM"), v.Descripcion ?? "", v.Cantidad.ToString("N0"), $"$ {v.Total:N2}" });
+                total += v.Total;
+            }
+        }
+        return (rows.ToArray(), total);
+    }
+
+    /// <summary>
+    /// Expands Gasto entities into article-level rows.
+    /// </summary>
+    private static (string[][] Rows, decimal Total) ExpandGastosConArticulos(
+        List<Gasto> entities, IReadOnlyDictionary<int, List<ArticuloGasto>> articles)
+    {
+        var rows = new List<string[]>();
+        decimal total = 0;
+        foreach (var g in entities)
+        {
+            if (articles.TryGetValue(g.Id, out var arts) && arts.Count > 0)
+            {
+                foreach (var a in arts.OrderBy(a => a.Orden))
+                {
+                    rows.Add(new[] { g.Fecha.ToString("dd/MM"), a.Descripcion ?? "", a.Cantidad.ToString("N0"), $"$ {a.Total:N2}" });
+                    total += a.Total;
+                }
+            }
+            else
+            {
+                rows.Add(new[] { g.Fecha.ToString("dd/MM"), g.Descripcion ?? "", g.Cantidad.ToString("N0"), $"$ {g.Total:N2}" });
+                total += g.Total;
+            }
+        }
+        return (rows.ToArray(), total);
+    }
+
+    /// <summary>
+    /// Expands Encargo entities into article-level rows (4 columns: Entrega, Cliente, Descripción, Total).
+    /// </summary>
+    private static (string[][] Rows, decimal Total) ExpandEncargosConArticulos(
+        List<Encargo> entities, IReadOnlyDictionary<int, List<ArticuloEncargo>> articles)
+    {
+        var rows = new List<string[]>();
+        decimal total = 0;
+        foreach (var e in entities)
+        {
+            if (articles.TryGetValue(e.Id, out var arts) && arts.Count > 0)
+            {
+                foreach (var a in arts.OrderBy(a => a.Orden))
+                {
+                    rows.Add(new[] { e.FechaEntrega.ToString("dd/MM"), e.Nombre ?? "", a.Descripcion ?? "", $"$ {a.Total:N2}" });
+                    total += a.Total;
+                }
+            }
+            else
+            {
+                rows.Add(new[] { e.FechaEntrega.ToString("dd/MM"), e.Nombre ?? "", e.Descripcion ?? "", $"$ {e.Total:N2}" });
+                total += e.Total;
+            }
+        }
+        return (rows.ToArray(), total);
     }
 }

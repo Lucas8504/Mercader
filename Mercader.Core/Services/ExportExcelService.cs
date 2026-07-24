@@ -18,9 +18,9 @@ namespace Mercader
         {
             using (var workbook = new XSSFWorkbook())
             {
-                CrearHojaVentas(workbook, data.Ventas.ToList());
-                CrearHojaGastos(workbook, data.Gastos.ToList());
-                CrearHojaEncargos(workbook, data.Encargos.ToList());
+                CrearHojaVentas(workbook, data.Ventas.ToList(), data.ArticulosVenta);
+                CrearHojaGastos(workbook, data.Gastos.ToList(), data.ArticulosGasto);
+                CrearHojaEncargos(workbook, data.Encargos.ToList(), data.ArticulosEncargo);
 
                 try { CrearHojaResumen(workbook, data); }
                 catch (Exception ex)
@@ -415,57 +415,100 @@ namespace Mercader
         // HOJAS DE DATOS DETALLADAS
         // ======================================================================
 
-        private static void CrearHojaVentas(XSSFWorkbook workbook, List<Ventas> ventas)
+        private static void CrearHojaVentas(XSSFWorkbook workbook, List<Ventas> ventas,
+            IReadOnlyDictionary<int, List<ArticuloVenta>>? articulos = null)
         {
             var ws = workbook.CreateSheet("Ventas");
-            CrearTablaDetallada(workbook, ws, "REGISTRO DE VENTAS",
+            var rows = ExpandVentasParaExcel(ventas, articulos);
+            CrearTablaDetallada(workbook, ws, "REGISTRO DE VENTAS (desglose por artículo)",
                 new[] { "FECHA", "DESCRIPCION", "CANTIDAD", "PRECIO UNIT.", "TOTAL" },
-                ventas.Count,
-                (i) => new object[]
-                {
-                    ventas[i].Fecha.ToString("dd/MM/yyyy"),
-                    ventas[i].Descripcion ?? "N/A",
-                    ventas[i].Cantidad,
-                    (double)ventas[i].Precio,
-                    (double)(ventas[i].Precio * ventas[i].Cantidad)
-                },
+                rows.Count,
+                (i) => rows[i],
                 CrearEstiloHeaderVerde(workbook));
         }
 
-        private static void CrearHojaGastos(XSSFWorkbook workbook, List<Gasto> gastos)
+        private static void CrearHojaGastos(XSSFWorkbook workbook, List<Gasto> gastos,
+            IReadOnlyDictionary<int, List<ArticuloGasto>>? articulos = null)
         {
             var ws = workbook.CreateSheet("Gastos");
-            CrearTablaDetallada(workbook, ws, "REGISTRO DE GASTOS",
+            var rows = ExpandGastosParaExcel(gastos, articulos);
+            CrearTablaDetallada(workbook, ws, "REGISTRO DE GASTOS (desglose por artículo)",
                 new[] { "FECHA", "DESCRIPCION", "CANTIDAD", "MONTO UNIT.", "TOTAL" },
-                gastos.Count,
-                (i) => new object[]
-                {
-                    gastos[i].Fecha.ToString("dd/MM/yyyy"),
-                    gastos[i].Descripcion ?? "N/A",
-                    gastos[i].Cantidad,
-                    (double)gastos[i].Monto,
-                    (double)(gastos[i].Monto * gastos[i].Cantidad)
-                },
+                rows.Count,
+                (i) => rows[i],
                 CrearEstiloHeaderGris(workbook));
         }
 
-        private static void CrearHojaEncargos(XSSFWorkbook workbook, List<Encargo> encargos)
+        private static void CrearHojaEncargos(XSSFWorkbook workbook, List<Encargo> encargos,
+            IReadOnlyDictionary<int, List<ArticuloEncargo>>? articulos = null)
         {
             var ws = workbook.CreateSheet("Encargos");
-            CrearTablaDetallada(workbook, ws, "REGISTRO DE ENCARGOS",
+            var rows = ExpandEncargosParaExcel(encargos, articulos);
+            CrearTablaDetallada(workbook, ws, "REGISTRO DE ENCARGOS (desglose por artículo)",
                 new[] { "FECHA", "NOMBRE", "DESCRIPCION", "CANTIDAD", "PRECIO UNIT.", "TOTAL", "FECHA ENTREGA" },
-                encargos.Count,
-                (i) => new object[]
-                {
-                    encargos[i].Fecha.ToString("dd/MM/yyyy"),
-                    encargos[i].Nombre ?? "N/A",
-                    encargos[i].Descripcion ?? "N/A",
-                    encargos[i].Cantidad,
-                    (double)encargos[i].Precio,
-                    (double)(encargos[i].Precio * encargos[i].Cantidad),
-                    encargos[i].FechaEntrega.ToString("dd/MM/yyyy")
-                },
+                rows.Count,
+                (i) => rows[i],
                 CrearEstiloHeaderGris(workbook));
+        }
+
+        /// <summary>Expande entidades Ventas a filas de artículo para Excel.</summary>
+        private static List<object[]> ExpandVentasParaExcel(List<Ventas> ventas,
+            IReadOnlyDictionary<int, List<ArticuloVenta>>? articulos)
+        {
+            var rows = new List<object[]>();
+            foreach (var v in ventas)
+            {
+                if (articulos is not null && articulos.TryGetValue(v.Id, out var arts) && arts.Count > 0)
+                {
+                    foreach (var a in arts.OrderBy(a => a.Orden))
+                        rows.Add(new object[] { v.Fecha.ToString("dd/MM/yyyy"), a.Descripcion ?? "N/A", a.Cantidad, (double)a.PrecioUnitario, (double)a.Total });
+                }
+                else
+                {
+                    rows.Add(new object[] { v.Fecha.ToString("dd/MM/yyyy"), v.Descripcion ?? "N/A", v.Cantidad, (double)v.Precio, (double)(v.Precio * v.Cantidad) });
+                }
+            }
+            return rows;
+        }
+
+        /// <summary>Expande entidades Gasto a filas de artículo para Excel.</summary>
+        private static List<object[]> ExpandGastosParaExcel(List<Gasto> gastos,
+            IReadOnlyDictionary<int, List<ArticuloGasto>>? articulos)
+        {
+            var rows = new List<object[]>();
+            foreach (var g in gastos)
+            {
+                if (articulos is not null && articulos.TryGetValue(g.Id, out var arts) && arts.Count > 0)
+                {
+                    foreach (var a in arts.OrderBy(a => a.Orden))
+                        rows.Add(new object[] { g.Fecha.ToString("dd/MM/yyyy"), a.Descripcion ?? "N/A", a.Cantidad, (double)a.PrecioUnitario, (double)a.Total });
+                }
+                else
+                {
+                    rows.Add(new object[] { g.Fecha.ToString("dd/MM/yyyy"), g.Descripcion ?? "N/A", g.Cantidad, (double)g.Monto, (double)(g.Monto * g.Cantidad) });
+                }
+            }
+            return rows;
+        }
+
+        /// <summary>Expande entidades Encargo a filas de artículo para Excel.</summary>
+        private static List<object[]> ExpandEncargosParaExcel(List<Encargo> encargos,
+            IReadOnlyDictionary<int, List<ArticuloEncargo>>? articulos)
+        {
+            var rows = new List<object[]>();
+            foreach (var e in encargos)
+            {
+                if (articulos is not null && articulos.TryGetValue(e.Id, out var arts) && arts.Count > 0)
+                {
+                    foreach (var a in arts.OrderBy(a => a.Orden))
+                        rows.Add(new object[] { e.Fecha.ToString("dd/MM/yyyy"), e.Nombre ?? "N/A", a.Descripcion ?? "N/A", a.Cantidad, (double)a.PrecioUnitario, (double)a.Total, e.FechaEntrega.ToString("dd/MM/yyyy") });
+                }
+                else
+                {
+                    rows.Add(new object[] { e.Fecha.ToString("dd/MM/yyyy"), e.Nombre ?? "N/A", e.Descripcion ?? "N/A", e.Cantidad, (double)e.Precio, (double)(e.Precio * e.Cantidad), e.FechaEntrega.ToString("dd/MM/yyyy") });
+                }
+            }
+            return rows;
         }
 
         private static void CrearTablaDetallada(XSSFWorkbook workbook, ISheet ws, string titulo,

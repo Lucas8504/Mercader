@@ -7,21 +7,38 @@ public partial class DetalleVenta : ContentPage
 {
     private readonly IDataRepository _repository;
     private Ventas _venta;
+    private List<ArticuloVenta> _articulos = new();
 
     public DetalleVenta(Ventas venta, IDataRepository repository)
     {
         InitializeComponent();
         _venta = venta;
         BindingContext = venta;
-        CalcularYMostrarTotal();
         _repository = repository;
+        _ = CargarArticulosAsync();
+    }
+
+    private async Task CargarArticulosAsync()
+    {
+        try
+        {
+            _articulos = await _repository.GetArticulosVentaAsync(_venta.Id);
+            BindableLayout.SetItemsSource(ArticulosStack, _articulos);
+            CalcularYMostrarTotal();
+        }
+        catch (Exception ex)
+        {
+            System.Diagnostics.Debug.WriteLine($"[DetalleVenta] Error cargando artículos: {ex.Message}");
+        }
     }
 
     private void CalcularYMostrarTotal()
     {
         if (_venta != null)
         {
-            decimal total = _venta.Precio * _venta.Cantidad;
+            decimal total = _articulos.Count > 0
+                ? _articulos.Sum(a => a.Total)
+                : _venta.Precio * _venta.Cantidad;
             LabelTotal.Text = $"${total:F2}";
         }
     }
@@ -69,7 +86,7 @@ public partial class DetalleVenta : ContentPage
         base.OnAppearing();
         if (_venta != null)
         {
-            CalcularYMostrarTotal();
+            _ = CargarArticulosAsync();
         }
     }
 }

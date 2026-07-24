@@ -1,3 +1,4 @@
+using System.Collections.ObjectModel;
 using Mercader.Domain.Entities;
 using Mercader.Data.Interfaces;
 #if ANDROID
@@ -12,12 +13,14 @@ public partial class EncModal : ContentPage
     private readonly IDataRepository _repository;
     private List<string> _todasLasDescripciones = new();
     private List<string> _todosLosNombres = new();
+    private readonly ObservableCollection<ArticuloEncargo> _articulos = new();
 
     public EncModal(IDataRepository repository)
     {
         ArgumentNullException.ThrowIfNull(repository);
         InitializeComponent();
         _repository = repository;
+        BindableLayout.SetItemsSource(ArticulosStack, _articulos);
 
         FechaEntregaPicker.SelectedDate = DateTime.Now;
         FechaEntregaLabel.Text = DateTime.Now.ToString("dd/MM/yyyy");
@@ -115,14 +118,28 @@ public partial class EncModal : ContentPage
             return;
         }
 
+        // Validar artículos
+        if (_articulos.Count == 0)
+        {
+            await DisplayAlert("Error", "Debe agregar al menos un artículo", "OK");
+            return;
+        }
+
+        var articuloInvalido = _articulos.FirstOrDefault(a => string.IsNullOrWhiteSpace(a.Descripcion));
+        if (articuloInvalido is not null)
+        {
+            await DisplayAlert("Error", "Cada artículo debe tener una descripción", "OK");
+            return;
+        }
+
         try
         {
             Encargo = new Encargo
             {
                 Nombre = EncargoEntry!.Text,
                 Contacto = CleanPhoneNumber(ContactoEntry!.Text),
-                Cantidad = cantidadResult.Value ?? 0,
-                Precio = precioResult.Value ?? 0,
+                Cantidad = 1,
+                Precio = _articulos.Sum(a => a.Total),
                 Descripcion = DescripcionEntry.Text,
                 FechaEntrega = FechaEntregaPicker.SelectedDate ?? DateTime.Now,
                 Fecha = DateTime.Now
@@ -140,6 +157,13 @@ public partial class EncModal : ContentPage
     private async Task SaveEncargoAsync()
     {
         await _repository.SaveEncargoAsync(Encargo);
+
+        // Guardar artículos
+        foreach (var articulo in _articulos)
+        {
+            articulo.EncargoId = Encargo.Id;
+            await _repository.SaveArticuloEncargoAsync(articulo);
+        }
 
         // Rehabilitar nombre y descripción en autocompletado si estaban descartados
         if (!string.IsNullOrWhiteSpace(Encargo.Nombre))
@@ -198,6 +222,61 @@ public partial class EncModal : ContentPage
 #endif
 
         await Navigation.PopModalAsync();
+    }
+
+    // ===== MULTI-ARTÍCULO =====
+
+    private void OnAgregarArticuloClicked(object sender, EventArgs e)
+    {
+        var articulo = new ArticuloEncargo { Orden = _articulos.Count + 1 };
+        _articulos.Add(articulo);
+        ActualizarTotal();
+    }
+
+    private void OnSubirArticulo(object sender, EventArgs e)
+    {
+        if (sender is Button btn && btn.BindingContext is ArticuloEncargo articulo)
+        {
+            var idx = _articulos.IndexOf(articulo);
+            if (idx <= 0) return;
+            _articulos.Move(idx, idx - 1);
+            ReordenarArticulos();
+            ActualizarTotal();
+        }
+    }
+
+    private void OnBajarArticulo(object sender, EventArgs e)
+    {
+        if (sender is Button btn && btn.BindingContext is ArticuloEncargo articulo)
+        {
+            var idx = _articulos.IndexOf(articulo);
+            if (idx < 0 || idx >= _articulos.Count - 1) return;
+            _articulos.Move(idx, idx + 1);
+            ReordenarArticulos();
+            ActualizarTotal();
+        }
+    }
+
+    private void OnEliminarArticulo(object sender, EventArgs e)
+    {
+        if (sender is Button btn && btn.BindingContext is ArticuloEncargo articulo)
+        {
+            _articulos.Remove(articulo);
+            ReordenarArticulos();
+            ActualizarTotal();
+        }
+    }
+
+    private void ReordenarArticulos()
+    {
+        for (int i = 0; i < _articulos.Count; i++)
+            _articulos[i].Orden = i + 1;
+    }
+
+    private void ActualizarTotal()
+    {
+        var total = _articulos.Sum(a => a.Total);
+        TotalLabel.Text = $"${total:N0}";
     }
 
     // ===== AUTOCOMPLETADO =====

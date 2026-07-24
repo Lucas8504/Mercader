@@ -283,15 +283,33 @@ namespace Mercader.ViewModels
         }
 
         // ===== Export =====
-        // No puede ser [RelayCommand] porque devuelve valor (no void/Task)
-        // El método público queda accesible para el code-behind
-        public BalanceExportDto CrearExportDto()
+        public async Task<BalanceExportDto> CrearExportDtoAsync()
         {
+            var ventas = Ventas.ToList();
+            var gastos = Gastos.ToList();
+            var encargos = Encargos.ToList();
+
+            // Cargar artículos para cada entidad
+            var articulosVenta = new Dictionary<int, List<ArticuloVenta>>();
+            foreach (var v in ventas)
+                articulosVenta[v.Id] = await _dataRepository.GetArticulosVentaAsync(v.Id);
+
+            var articulosGasto = new Dictionary<int, List<ArticuloGasto>>();
+            foreach (var g in gastos)
+                articulosGasto[g.Id] = await _dataRepository.GetArticulosGastoAsync(g.Id);
+
+            var articulosEncargo = new Dictionary<int, List<ArticuloEncargo>>();
+            foreach (var e in encargos)
+                articulosEncargo[e.Id] = await _dataRepository.GetArticulosEncargoAsync(e.Id);
+
             return new BalanceExportDto
             {
-                Ventas = Ventas.ToList(),
-                Gastos = Gastos.ToList(),
-                Encargos = Encargos.ToList(),
+                Ventas = ventas,
+                Gastos = gastos,
+                Encargos = encargos,
+                ArticulosVenta = articulosVenta,
+                ArticulosGasto = articulosGasto,
+                ArticulosEncargo = articulosEncargo,
                 TotalVentas = _rawTotalVentas,
                 TotalGastos = _rawTotalGastos,
                 TotalEncargos = _rawTotalEncargos,

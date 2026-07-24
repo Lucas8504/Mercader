@@ -3,6 +3,7 @@
     x:Class="Mercader.DetalleVenta"
     xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:domain="clr-namespace:Mercader.Domain.Entities;assembly=Mercader.Core"
     Title="Detalle de la Venta"
     BackgroundColor="{AppThemeBinding Light={StaticResource PageBackground}, Dark={StaticResource PageBackgroundDark}}">
 
@@ -34,58 +35,6 @@
                             TextColor="{AppThemeBinding Light={StaticResource TextPrimary}, Dark={StaticResource TextPrimaryDark}}" />
                     </VerticalStackLayout>
 
-                    <!-- Precio y Cantidad en una fila -->
-                    <Grid>
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="*" />
-                            <ColumnDefinition Width="*" />
-                        </Grid.ColumnDefinitions>
-
-                        <!-- Precio -->
-                        <VerticalStackLayout Grid.Column="0" Spacing="5">
-                            <Label
-                                FontAttributes="Bold"
-                                FontSize="16"
-                                Text="Precio:"
-                                TextColor="#4CAF50" />
-                            <Label
-                                x:Name="LabelPrecio"
-                                FontSize="18"
-                                FontAttributes="Bold"
-                                Text="{Binding Precio, StringFormat='${0:F2}'}"
-                                TextColor="#FFC107" />
-                        </VerticalStackLayout>
-
-                        <!-- Cantidad -->
-                        <VerticalStackLayout Grid.Column="1" Spacing="5">
-                            <Label
-                                FontAttributes="Bold"
-                                FontSize="16"
-                                Text="Cantidad:"
-                                TextColor="#4CAF50" />
-                            <Label
-                                x:Name="LabelCantidad"
-                                FontSize="18"
-                                FontAttributes="Bold"
-                                Text="{Binding Cantidad}"
-                                TextColor="{AppThemeBinding Light={StaticResource TextPrimary}, Dark={StaticResource TextPrimaryDark}}" />
-                        </VerticalStackLayout>
-                    </Grid>
-
-                    <!-- Total -->
-                    <VerticalStackLayout Spacing="5">
-                        <Label
-                            FontAttributes="Bold"
-                            FontSize="16"
-                            Text="Total:"
-                            TextColor="#4CAF50" />
-                        <Label
-                            x:Name="LabelTotal"
-                            FontSize="20"
-                            FontAttributes="Bold"
-                            TextColor="#FFC107" />
-                    </VerticalStackLayout>
-
                     <!-- Fecha de la venta -->
                     <VerticalStackLayout Spacing="5">
                         <Label
@@ -101,6 +50,93 @@
                     </VerticalStackLayout>
 
                 </VerticalStackLayout>
+            </Frame>
+
+            <!-- ===== ARTÍCULOS ===== -->
+            <Label
+                FontAttributes="Bold"
+                FontSize="16"
+                Text="Artículos:"
+                TextColor="#4CAF50" />
+
+            <VerticalStackLayout
+                x:Name="ArticulosStack"
+                Spacing="6">
+                <BindableLayout.ItemTemplate>
+                    <DataTemplate x:DataType="domain:ArticuloVenta">
+                        <Frame
+                            Padding="10"
+                            BackgroundColor="{AppThemeBinding Light={StaticResource CardAltBackground}, Dark={StaticResource CardAltBackgroundDark}}"
+                            CornerRadius="8"
+                            HasShadow="False">
+                            <Grid
+                                ColumnDefinitions="*,Auto,Auto"
+                                RowDefinitions="Auto,Auto"
+                                ColumnSpacing="8"
+                                RowSpacing="4">
+                                <!-- Descripción -->
+                                <Label
+                                    Grid.Row="0"
+                                    Grid.Column="0"
+                                    Grid.ColumnSpan="3"
+                                    FontSize="15"
+                                    FontAttributes="Bold"
+                                    Text="{Binding Descripcion}"
+                                    TextColor="{AppThemeBinding Light={StaticResource TextPrimary}, Dark={StaticResource TextPrimaryDark}}" />
+                                <!-- Precio Unitario -->
+                                <Label
+                                    Grid.Row="1"
+                                    Grid.Column="0"
+                                    FontSize="13"
+                                    Text="{Binding PrecioUnitario, StringFormat='P/U: ${0:F2}'}"
+                                    TextColor="{AppThemeBinding Light={StaticResource TextSecondary}, Dark={StaticResource TextSecondaryDark}}"
+                                    VerticalOptions="Center" />
+                                <!-- Cantidad -->
+                                <Label
+                                    Grid.Row="1"
+                                    Grid.Column="1"
+                                    FontSize="13"
+                                    Text="{Binding Cantidad, StringFormat='{0} uds.'}"
+                                    TextColor="{AppThemeBinding Light={StaticResource TextSecondary}, Dark={StaticResource TextSecondaryDark}}"
+                                    VerticalOptions="Center" />
+                                <!-- Total del artículo -->
+                                <Label
+                                    Grid.Row="1"
+                                    Grid.Column="2"
+                                    FontSize="14"
+                                    FontAttributes="Bold"
+                                    Text="{Binding Total, StringFormat='${0:F2}'}"
+                                    TextColor="#FFC107"
+                                    VerticalOptions="Center" />
+                            </Grid>
+                        </Frame>
+                    </DataTemplate>
+                </BindableLayout.ItemTemplate>
+            </VerticalStackLayout>
+
+            <!-- Total calculado -->
+            <Frame
+                Padding="12"
+                BackgroundColor="{AppThemeBinding Light={StaticResource CardAltBackground}, Dark={StaticResource CardAltBackgroundDark}}"
+                CornerRadius="8"
+                HasShadow="False">
+                <Grid ColumnDefinitions="Auto,*,Auto">
+                    <Label
+                        Grid.Column="0"
+                        FontAttributes="Bold"
+                        FontSize="16"
+                        Text="Total:"
+                        TextColor="{AppThemeBinding Light={StaticResource TextPrimary}, Dark={StaticResource TextPrimaryDark}}"
+                        VerticalOptions="Center" />
+                    <Label
+                        x:Name="LabelTotal"
+                        Grid.Column="2"
+                        FontAttributes="Bold"
+                        FontSize="18"
+                        Text="$0"
+                        TextColor="#FFC107"
+                        VerticalOptions="Center" />
+                </Grid>
             </Frame>
 
             <!-- Botones de acción -->

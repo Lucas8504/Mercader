@@ -20,6 +20,61 @@ namespace Mercader.ViewModels
         [ObservableProperty]
         private string _filtroPeriodo = "TODOS";
 
+        // ===== MULTI-ARTÍCULO =====
+
+        public ObservableCollection<ArticuloVenta> Articulos { get; } = new();
+
+        [ObservableProperty]
+        private decimal _total;
+
+        [RelayCommand]
+        private void AgregarArticulo()
+        {
+            var nuevo = new ArticuloVenta { Orden = Articulos.Count + 1 };
+            Articulos.Add(nuevo);
+            RecalcularTotal();
+        }
+
+        [RelayCommand]
+        private void EliminarArticulo(ArticuloVenta? articulo)
+        {
+            if (articulo is null) return;
+            Articulos.Remove(articulo);
+            Reordenar();
+            RecalcularTotal();
+        }
+
+        [RelayCommand]
+        private void SubirArticulo(ArticuloVenta? articulo)
+        {
+            if (articulo is null) return;
+            var idx = Articulos.IndexOf(articulo);
+            if (idx <= 0) return;
+            Articulos.Move(idx, idx - 1);
+            Reordenar();
+        }
+
+        [RelayCommand]
+        private void BajarArticulo(ArticuloVenta? articulo)
+        {
+            if (articulo is null) return;
+            var idx = Articulos.IndexOf(articulo);
+            if (idx < 0 || idx >= Articulos.Count - 1) return;
+            Articulos.Move(idx, idx + 1);
+            Reordenar();
+        }
+
+        private void Reordenar()
+        {
+            for (int i = 0; i < Articulos.Count; i++)
+                Articulos[i].Orden = i + 1;
+        }
+
+        public void RecalcularTotal()
+        {
+            Total = Articulos.Sum(a => a.Total);
+        }
+
         public VentasViewModel(IDataRepository repository)
         {
             _repository = repository;

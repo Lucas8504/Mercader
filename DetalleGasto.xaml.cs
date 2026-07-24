@@ -7,6 +7,7 @@ public partial class DetalleGasto : ContentPage
 {
     private readonly IDataRepository _repository;
     private Gasto _gasto;
+    private List<ArticuloGasto> _articulos = new();
 
     public DetalleGasto(Gasto gasto, IDataRepository repository)
     {
@@ -14,14 +15,30 @@ public partial class DetalleGasto : ContentPage
         _gasto = gasto;
         _repository = repository;
         BindingContext = gasto;
-        CalcularYMostrarTotal();
+        _ = CargarArticulosAsync();
+    }
+
+    private async Task CargarArticulosAsync()
+    {
+        try
+        {
+            _articulos = await _repository.GetArticulosGastoAsync(_gasto.Id);
+            BindableLayout.SetItemsSource(ArticulosStack, _articulos);
+            CalcularYMostrarTotal();
+        }
+        catch (Exception ex)
+        {
+            System.Diagnostics.Debug.WriteLine($"[DetalleGasto] Error cargando artículos: {ex.Message}");
+        }
     }
 
     private void CalcularYMostrarTotal()
     {
         if (_gasto != null)
         {
-            decimal total = _gasto.Monto * _gasto.Cantidad;
+            decimal total = _articulos.Count > 0
+                ? _articulos.Sum(a => a.Total)
+                : _gasto.Monto * _gasto.Cantidad;
             LabelTotal.Text = $"${total:F2}";
         }
     }
@@ -69,7 +86,7 @@ public partial class DetalleGasto : ContentPage
         base.OnAppearing();
         if (_gasto != null)
         {
-            CalcularYMostrarTotal();
+            _ = CargarArticulosAsync();
         }
     }
 }

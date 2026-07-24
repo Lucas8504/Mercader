@@ -1,3 +1,4 @@
+using System.Collections.ObjectModel;
 using Mercader.Domain.Entities;
 using Mercader.Data.Interfaces;
 #if ANDROID
@@ -10,6 +11,7 @@ public partial class GastoModal : ContentPage
 {
     private readonly IDataRepository _repository;
     private List<string> _todasLasDescripciones = new();
+    private readonly ObservableCollection<ArticuloGasto> _articulos = new();
     public Gasto Gasto { get; private set; } = null!;
 
     public GastoModal(IDataRepository repository)
@@ -18,6 +20,7 @@ public partial class GastoModal : ContentPage
 
         InitializeComponent();
         _repository = repository;
+        BindableLayout.SetItemsSource(ArticulosStack, _articulos);
     }
 
     protected override async void OnAppearing()
@@ -61,13 +64,27 @@ public partial class GastoModal : ContentPage
             return;
         }
 
+        // Validar artículos
+        if (_articulos.Count == 0)
+        {
+            await DisplayAlert("Error", "Debe agregar al menos un artículo", "OK");
+            return;
+        }
+
+        var articuloInvalido = _articulos.FirstOrDefault(a => string.IsNullOrWhiteSpace(a.Descripcion));
+        if (articuloInvalido is not null)
+        {
+            await DisplayAlert("Error", "Cada artículo debe tener una descripción", "OK");
+            return;
+        }
+
         try
         {
             Gasto = new Gasto
             {
                 Descripcion = DescripcionGastoEntry.Text,
-                Cantidad = cantidadResult.Value ?? 0,
-                Monto = montoResult.Value ?? 0,
+                Cantidad = 1,
+                Monto = _articulos.Sum(a => a.Total),
                 Fecha = DateTime.Now
             };
         }
@@ -83,6 +100,13 @@ public partial class GastoModal : ContentPage
     private async Task SaveGastoAsync()
     {
         await _repository.SaveGastoAsync(Gasto);
+
+        // Guardar artículos
+        foreach (var articulo in _articulos)
+        {
+            articulo.GastoId = Gasto.Id;
+            await _repository.SaveArticuloGastoAsync(articulo);
+        }
 
         // Rehabilitar descripción en autocompletado si estaba descartada
         if (!string.IsNullOrWhiteSpace(Gasto.Descripcion))
@@ -100,6 +124,61 @@ public partial class GastoModal : ContentPage
         KeyboardHelper.Close();
 #endif
         await Navigation.PopModalAsync();
+    }
+
+    // ===== MULTI-ARTÍCULO =====
+
+    private void OnAgregarArticuloClicked(object sender, EventArgs e)
+    {
+        var articulo = new ArticuloGasto { Orden = _articulos.Count + 1 };
+        _articulos.Add(articulo);
+        ActualizarTotal();
+    }
+
+    private void OnSubirArticulo(object sender, EventArgs e)
+    {
+        if (sender is Button btn && btn.BindingContext is ArticuloGasto articulo)
+        {
+            var idx = _articulos.IndexOf(articulo);
+            if (idx <= 0) return;
+            _articulos.Move(idx, idx - 1);
+            ReordenarArticulos();
+            ActualizarTotal();
+        }
+    }
+
+    private void OnBajarArticulo(object sender, EventArgs e)
+    {
+        if (sender is Button btn && btn.BindingContext is ArticuloGasto articulo)
+        {
+            var idx = _articulos.IndexOf(articulo);
+            if (idx < 0 || idx >= _articulos.Count - 1) return;
+            _articulos.Move(idx, idx + 1);
+            ReordenarArticulos();
+            ActualizarTotal();
+        }
+    }
+
+    private void OnEliminarArticulo(object sender, EventArgs e)
+    {
+        if (sender is Button btn && btn.BindingContext is ArticuloGasto articulo)
+        {
+            _articulos.Remove(articulo);
+            ReordenarArticulos();
+            ActualizarTotal();
+        }
+    }
+
+    private void ReordenarArticulos()
+    {
+        for (int i = 0; i < _articulos.Count; i++)
+            _articulos[i].Orden = i + 1;
+    }
+
+    private void ActualizarTotal()
+    {
+        var total = _articulos.Sum(a => a.Total);
+        TotalLabel.Text = $"${total:N0}";
     }
 
     // ===== AUTOCOMPLETADO =====

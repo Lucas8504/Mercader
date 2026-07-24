@@ -7,6 +7,7 @@ public partial class DetalleEncargo : ContentPage
 {
     private readonly IDataRepository _repository;
     private Encargo _encargo;
+    private List<ArticuloEncargo> _articulos = new();
 
     public DetalleEncargo(Encargo encargo, IDataRepository repository)
     {
@@ -14,14 +15,30 @@ public partial class DetalleEncargo : ContentPage
         _encargo = encargo;
         _repository = repository;
         BindingContext = _encargo;
-        CalcularTotal();
+        _ = CargarArticulosAsync();
+    }
+
+    private async Task CargarArticulosAsync()
+    {
+        try
+        {
+            _articulos = await _repository.GetArticulosEncargoAsync(_encargo.Id);
+            BindableLayout.SetItemsSource(ArticulosStack, _articulos);
+            CalcularTotal();
+        }
+        catch (Exception ex)
+        {
+            System.Diagnostics.Debug.WriteLine($"[DetalleEncargo] Error cargando artículos: {ex.Message}");
+        }
     }
 
     private void CalcularTotal()
     {
         if (_encargo != null)
         {
-            var total = _encargo.Precio * _encargo.Cantidad;
+            decimal total = _articulos.Count > 0
+                ? _articulos.Sum(a => a.Total)
+                : _encargo.Precio * _encargo.Cantidad;
             LabelTotal.Text = $"${total:F2}";
         }
     }
@@ -38,18 +55,40 @@ public partial class DetalleEncargo : ContentPage
 
         try
         {
+            // Recargar artículos frescos de la BD
+            _articulos = await _repository.GetArticulosEncargoAsync(_encargo.Id);
+
             var venta = new Ventas
             {
-                Descripcion = _encargo.Descripcion,
-                Precio = _encargo.Precio,
-                Cantidad = _encargo.Cantidad,
+                Descripcion = $"Venta de: {_encargo.Nombre} - {_encargo.Descripcion}",
+                Precio = _articulos.Sum(a => a.Total),
+                Cantidad = 1,
                 Fecha = DateTime.Now
             };
 
             await _repository.SaveVentasAsync(venta);
+
+            // Transferir artículos del encargo a la venta
+            foreach (var ae in _articulos)
+            {
+                var av = new ArticuloVenta
+                {
+                    VentaId = venta.Id,
+                    Descripcion = ae.Descripcion,
+                    PrecioUnitario = ae.PrecioUnitario,
+                    Cantidad = ae.Cantidad,
+                    Orden = ae.Orden
+                };
+                await _repository.SaveArticuloVentaAsync(av);
+            }
+
+            // Soft-delete artículos del encargo y el encargo
+            foreach (var ae in _articulos)
+                await _repository.DeleteArticuloEncargoAsync(ae);
+
             await _repository.DeleteEncargoAsync(_encargo);
 
-            await Navigation.PopAsync(); // 👈 volver
+            await Navigation.PopAsync();
         }
         catch (Exception ex)
         {
@@ -72,31 +111,7 @@ public partial class DetalleEncargo : ContentPage
     protected override void OnAppearing()
     {
         base.OnAppearing();
-        ActualizarDatos();
-    }
-
-    private async void ActualizarDatos()
-    {
-        try
-        {
-            // Recargar el encargo desde la base de datos para obtener los datos más recientes
-            var encargosActualizados = await _repository.GetEncargosAsync();
-            if (encargosActualizados != null && encargosActualizados.Any())
-            {
-                // Asumimos que queremos el encargo correspondiente al ID actual
-                var encargoActualizado = encargosActualizados.FirstOrDefault(e => e.Id == _encargo.Id);
-                if (encargoActualizado != null)
-                {
-                    _encargo = encargoActualizado; // Asignación segura
-                    BindingContext = _encargo;
-                    CalcularTotal();
-                }
-            }
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine($"Error al actualizar datos: {ex.Message}");
-        }
+        _ = CargarArticulosAsync();
     }
 
     private async void OnEliminarClicked(object sender, EventArgs e)
@@ -111,9 +126,14 @@ public partial class DetalleEncargo : ContentPage
         {
             try
             {
+                // Soft-delete artículos del encargo
+                var articulos = await _repository.GetArticulosEncargoAsync(_encargo.Id);
+                foreach (var ae in articulos)
+                    await _repository.DeleteArticuloEncargoAsync(ae);
+
                 await _repository.DeleteEncargoAsync(_encargo);
                 await DisplayAlert("Éxito", "Encargo eliminado correctamente", "OK");
-                await Navigation.PopAsync(); // Volver a la página anterior
+                await Navigation.PopAsync();
             }
             catch (Exception ex)
             {

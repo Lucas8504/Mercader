@@ -32,6 +32,9 @@ namespace Mercader.Data
             await _database.CreateTableAsync<Ventas>();
             await _database.CreateTableAsync<Gasto>();
             await _database.CreateTableAsync<DescripcionOculta>();
+            await _database.CreateTableAsync<ArticuloVenta>();
+            await _database.CreateTableAsync<ArticuloGasto>();
+            await _database.CreateTableAsync<ArticuloEncargo>();
 
             // Ejecutar migraciones
             await RunMigrationsAsync();
@@ -64,6 +67,11 @@ namespace Mercader.Data
 
                 // Migración: EntityType a DescripcionOculta para scoping por entidad
                 await AddColumnIfNotExistsAsync("DescripcionOculta", "EntityType", "TEXT");
+
+                // Migración: Migrar datos legacy a tablas de artículos
+                await MigrateLegacyVentasAsync();
+                await MigrateLegacyGastosAsync();
+                await MigrateLegacyEncargosAsync();
 
                 System.Diagnostics.Debug.WriteLine("[MIGRATION] Migraciones ejecutadas exitosamente");
             }
@@ -236,6 +244,135 @@ namespace Mercader.Data
             return result;
         }
 
+        // ===== ARTÍCULOS DE VENTA =====
+
+        public async Task<List<ArticuloVenta>> GetArticulosVentaAsync(int ventaId)
+        {
+            if (_database is null)
+                throw new InvalidOperationException("La base de datos no está inicializada.");
+
+            return await _database.Table<ArticuloVenta>()
+                .Where(a => a.VentaId == ventaId && a.IsDeleted != true)
+                .OrderBy(a => a.Orden)
+                .ToListAsync();
+        }
+
+        public async Task<int> SaveArticuloVentaAsync(ArticuloVenta articulo)
+        {
+            ArgumentNullException.ThrowIfNull(articulo);
+
+            if (_database is null)
+                throw new InvalidOperationException("La base de datos no está inicializada.");
+
+            // Set timestamps
+            if (articulo.Id == 0)
+                articulo.CreatedAt = DateTime.UtcNow;
+            else
+                articulo.UpdatedAt = DateTime.UtcNow;
+
+            return articulo.Id != 0
+                ? await _database.UpdateAsync(articulo)
+                : await _database.InsertAsync(articulo);
+        }
+
+        public async Task<int> DeleteArticuloVentaAsync(ArticuloVenta articulo)
+        {
+            ArgumentNullException.ThrowIfNull(articulo);
+
+            if (_database is null)
+                throw new InvalidOperationException("La base de datos no está inicializada.");
+
+            // Soft delete
+            articulo.SoftDelete();
+            return await _database.UpdateAsync(articulo);
+        }
+
+        // ===== ARTÍCULOS DE GASTO =====
+
+        public async Task<List<ArticuloGasto>> GetArticulosGastoAsync(int gastoId)
+        {
+            if (_database is null)
+                throw new InvalidOperationException("La base de datos no está inicializada.");
+
+            return await _database.Table<ArticuloGasto>()
+                .Where(a => a.GastoId == gastoId && a.IsDeleted != true)
+                .OrderBy(a => a.Orden)
+                .ToListAsync();
+        }
+
+        public async Task<int> SaveArticuloGastoAsync(ArticuloGasto articulo)
+        {
+            ArgumentNullException.ThrowIfNull(articulo);
+
+            if (_database is null)
+                throw new InvalidOperationException("La base de datos no está inicializada.");
+
+            // Set timestamps
+            if (articulo.Id == 0)
+                articulo.CreatedAt = DateTime.UtcNow;
+            else
+                articulo.UpdatedAt = DateTime.UtcNow;
+
+            return articulo.Id != 0
+                ? await _database.UpdateAsync(articulo)
+                : await _database.InsertAsync(articulo);
+        }
+
+        public async Task<int> DeleteArticuloGastoAsync(ArticuloGasto articulo)
+        {
+            ArgumentNullException.ThrowIfNull(articulo);
+
+            if (_database is null)
+                throw new InvalidOperationException("La base de datos no está inicializada.");
+
+            // Soft delete
+            articulo.SoftDelete();
+            return await _database.UpdateAsync(articulo);
+        }
+
+        // ===== ARTÍCULOS DE ENCARGO =====
+
+        public async Task<List<ArticuloEncargo>> GetArticulosEncargoAsync(int encargoId)
+        {
+            if (_database is null)
+                throw new InvalidOperationException("La base de datos no está inicializada.");
+
+            return await _database.Table<ArticuloEncargo>()
+                .Where(a => a.EncargoId == encargoId && a.IsDeleted != true)
+                .OrderBy(a => a.Orden)
+                .ToListAsync();
+        }
+
+        public async Task<int> SaveArticuloEncargoAsync(ArticuloEncargo articulo)
+        {
+            ArgumentNullException.ThrowIfNull(articulo);
+
+            if (_database is null)
+                throw new InvalidOperationException("La base de datos no está inicializada.");
+
+            // Set timestamps
+            if (articulo.Id == 0)
+                articulo.CreatedAt = DateTime.UtcNow;
+            else
+                articulo.UpdatedAt = DateTime.UtcNow;
+
+            return articulo.Id != 0
+                ? await _database.UpdateAsync(articulo)
+                : await _database.InsertAsync(articulo);
+        }
+
+        public async Task<int> DeleteArticuloEncargoAsync(ArticuloEncargo articulo)
+        {
+            ArgumentNullException.ThrowIfNull(articulo);
+
+            if (_database is null)
+                throw new InvalidOperationException("La base de datos no está inicializada.");
+
+            // Soft delete
+            articulo.SoftDelete();
+            return await _database.UpdateAsync(articulo);
+        }
+
         // ===== AUTOCOMPLETADO =====
 
         public async Task<List<string>> GetDistinctVentasDescriptionsAsync()
@@ -404,6 +541,104 @@ namespace Mercader.Data
             return await _database.Table<T>()
                 .Where(x => x.IsDeleted)
                 .ToListAsync();
+        }
+
+        // ===== MIGRACIÓN DE DATOS LEGACY =====
+
+        /// <summary>
+        /// Migra datos legacy de Ventas a ArticulosVenta si aún no se ha ejecutado.
+        /// </summary>
+        private async Task MigrateLegacyVentasAsync()
+        {
+            if (_database is null)
+                return;
+
+            try
+            {
+                var count = await _database.ExecuteScalarAsync<int>(
+                    "SELECT COUNT(*) FROM ArticulosVenta");
+                if (count > 0)
+                    return; // Ya migrado
+
+                var legacyCount = await _database.ExecuteScalarAsync<int>(
+                    "SELECT COUNT(*) FROM Ventas WHERE IsDeleted != 1");
+                if (legacyCount == 0)
+                    return; // No hay datos legacy
+
+                await _database.ExecuteAsync(
+                    @"INSERT INTO ArticulosVenta (VentaId, Descripcion, PrecioUnitario, Cantidad, Orden, CreatedAt, UpdatedAt, IsDeleted)
+                      SELECT Id, Descripcion, Precio, Cantidad, 1, CreatedAt, UpdatedAt, IsDeleted FROM Ventas WHERE IsDeleted != 1");
+
+                System.Diagnostics.Debug.WriteLine($"[MIGRATION] Migrados {legacyCount} registros de Ventas a ArticulosVenta");
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"[MIGRATION] Error migrando Ventas: {ex.Message}");
+            }
+        }
+
+        /// <summary>
+        /// Migra datos legacy de Gastos a ArticulosGasto si aún no se ha ejecutado.
+        /// </summary>
+        private async Task MigrateLegacyGastosAsync()
+        {
+            if (_database is null)
+                return;
+
+            try
+            {
+                var count = await _database.ExecuteScalarAsync<int>(
+                    "SELECT COUNT(*) FROM ArticulosGasto");
+                if (count > 0)
+                    return; // Ya migrado
+
+                var legacyCount = await _database.ExecuteScalarAsync<int>(
+                    "SELECT COUNT(*) FROM Gastos WHERE IsDeleted != 1");
+                if (legacyCount == 0)
+                    return; // No hay datos legacy
+
+                await _database.ExecuteAsync(
+                    @"INSERT INTO ArticulosGasto (GastoId, Descripcion, PrecioUnitario, Cantidad, Orden, CreatedAt, UpdatedAt, IsDeleted)
+                      SELECT Id, Descripcion, Monto, Cantidad, 1, CreatedAt, UpdatedAt, IsDeleted FROM Gastos WHERE IsDeleted != 1");
+
+                System.Diagnostics.Debug.WriteLine($"[MIGRATION] Migrados {legacyCount} registros de Gastos a ArticulosGasto");
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"[MIGRATION] Error migrando Gastos: {ex.Message}");
+            }
+        }
+
+        /// <summary>
+        /// Migra datos legacy de Encargos a ArticulosEncargo si aún no se ha ejecutado.
+        /// </summary>
+        private async Task MigrateLegacyEncargosAsync()
+        {
+            if (_database is null)
+                return;
+
+            try
+            {
+                var count = await _database.ExecuteScalarAsync<int>(
+                    "SELECT COUNT(*) FROM ArticulosEncargo");
+                if (count > 0)
+                    return; // Ya migrado
+
+                var legacyCount = await _database.ExecuteScalarAsync<int>(
+                    "SELECT COUNT(*) FROM Encargo WHERE IsDeleted != 1");
+                if (legacyCount == 0)
+                    return; // No hay datos legacy
+
+                await _database.ExecuteAsync(
+                    @"INSERT INTO ArticulosEncargo (EncargoId, Descripcion, PrecioUnitario, Cantidad, Orden, CreatedAt, UpdatedAt, IsDeleted)
+                      SELECT Id, Descripcion, Precio, Cantidad, 1, CreatedAt, UpdatedAt, IsDeleted FROM Encargo WHERE IsDeleted != 1");
+
+                System.Diagnostics.Debug.WriteLine($"[MIGRATION] Migrados {legacyCount} registros de Encargos a ArticulosEncargo");
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"[MIGRATION] Error migrando Encargos: {ex.Message}");
+            }
         }
 
         // ===== DISPOSABLE =====

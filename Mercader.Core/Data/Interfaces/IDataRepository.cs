@@ -39,6 +39,21 @@ namespace Mercader.Data.Interfaces
         Task DismissAutocompleteDescriptionAsync(string descripcion, string entityType);
         Task ReinstateAutocompleteDescriptionAsync(string descripcion, string entityType);
 
+        // ===== ARTÍCULOS DE VENTA =====
+        Task<List<ArticuloVenta>> GetArticulosVentaAsync(int ventaId);
+        Task<int> SaveArticuloVentaAsync(ArticuloVenta articulo);
+        Task<int> DeleteArticuloVentaAsync(ArticuloVenta articulo);
+
+        // ===== ARTÍCULOS DE GASTO =====
+        Task<List<ArticuloGasto>> GetArticulosGastoAsync(int gastoId);
+        Task<int> SaveArticuloGastoAsync(ArticuloGasto articulo);
+        Task<int> DeleteArticuloGastoAsync(ArticuloGasto articulo);
+
+        // ===== ARTÍCULOS DE ENCARGO =====
+        Task<List<ArticuloEncargo>> GetArticulosEncargoAsync(int encargoId);
+        Task<int> SaveArticuloEncargoAsync(ArticuloEncargo articulo);
+        Task<int> DeleteArticuloEncargoAsync(ArticuloEncargo articulo);
+
         // ===== MÉTODOS GENÉRICOS (AUDITORÍA) =====
         Task<List<T>> GetAllAsync<T>() where T : BaseEntity, new();
         Task<List<T>> GetDeletedAsync<T>() where T : BaseEntity, new();

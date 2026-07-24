@@ -184,7 +184,7 @@ namespace Mercader
                 diag.Add($"Periodo VM: {_viewModel.PeriodoSeleccionado}");
 
                 string nombreArchivo = $"Balance_{DateTime.Now:yyyyMMdd_HHmmss}.pdf";
-                var exportData = _viewModel.CrearExportDto();
+                var exportData = await _viewModel.CrearExportDtoAsync();
 
                 // Font: OpenSans para caracteres Unicode
                 byte[]? fontBytes = null;
@@ -332,7 +332,7 @@ namespace Mercader
                 await _viewModel.CargarDatosCommand.ExecuteAsync(null);
 
                 string nombreArchivo = $"Balance_Financiero_{DateTime.Now:yyyyMMdd_HHmmss}.xlsx";
-                var exportData = _viewModel.CrearExportDto();
+                var exportData = await _viewModel.CrearExportDtoAsync();
 
                 string tempDir = Path.Combine(FileSystem.Current.CacheDirectory, "Exportaciones");
                 Directory.CreateDirectory(tempDir);
