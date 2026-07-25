@@ -12,6 +12,8 @@
             </ResourceDictionary.MergedDictionaries>
             <converters:EstadoColorConverter x:Key="EstadoColorConverter"
                 xmlns:converters="clr-namespace:Mercader.Converters" />
+            <converters:InvertBoolConverter x:Key="InvertBool"
+                xmlns:converters="clr-namespace:Mercader.Converters" />
         </ResourceDictionary>
     </Application.Resources>
 </Application>

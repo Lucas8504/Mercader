@@ -89,6 +89,13 @@ namespace Mercader.ViewModels
             await ExecuteBusyAsync(async () =>
             {
                 var lista = await _repository.GetGastosAsync();
+
+                // Cargar artículos para cada gasto (multi-artículo)
+                foreach (var gasto in lista)
+                {
+                    gasto.Articulos = await _repository.GetArticulosGastoAsync(gasto.Id);
+                }
+
                 _todosLosGastos = lista;
                 AplicarFiltros();
             });

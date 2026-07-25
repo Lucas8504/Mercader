@@ -21,5 +21,14 @@ namespace Mercader.Domain.Entities
         public decimal Total => Monto * Cantidad;
         public string TotalFormateado => (Monto * Cantidad).ToString("N0");
         public string UnidadTexto => Cantidad == 1 ? " ud." : " uds.";
+
+        // ===== MULTI-ARTÍCULO (cargado en runtime, no persistido) =====
+        [Ignore] public List<ArticuloGasto> Articulos { get; set; } = new();
+        [Ignore] public bool TieneArticulos => Articulos.Count > 0;
+        [Ignore] public decimal TotalCalculado => TieneArticulos ? Articulos.Sum(a => a.Total) : Monto * Cantidad;
+        [Ignore] public string TotalCalculadoFormateado => TotalCalculado.ToString("N0");
+        [Ignore] public string DesgloseTexto => TieneArticulos
+            ? $"{Articulos.Count} artículos"
+            : $"{Monto:N2} x {Cantidad}{UnidadTexto}";
     }
 }

@@ -125,8 +125,9 @@
                                 <TapGestureRecognizer Tapped="OnItemTapped" />
                             </Frame.GestureRecognizers>
 
-                            <Grid RowSpacing="10">
+                            <Grid RowSpacing="6">
                                 <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto" />
                                     <RowDefinition Height="Auto" />
                                     <RowDefinition Height="Auto" />
                                     <RowDefinition Height="Auto" />
@@ -161,67 +162,85 @@
                                         TextColor="{AppThemeBinding Light={StaticResource TextPrimary}, Dark={StaticResource TextPrimaryDark}}" />
                                 </Grid>
 
-                                <!-- Fila 2: Total + Desglose -->
-                                <Grid Grid.Row="2" ColumnSpacing="20">
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="*" />
-                                        <ColumnDefinition Width="Auto" />
-                                    </Grid.ColumnDefinitions>
-
-                                    <Grid Grid.Column="0">
-                                        <Grid.RowDefinitions>
-                                            <RowDefinition Height="Auto" />
-                                            <RowDefinition Height="Auto" />
-                                        </Grid.RowDefinitions>
-                                        <Label
-                                            Grid.Row="0"
-                                            Text="TOTAL"
-                                            FontSize="10"
-                                            TextColor="{AppThemeBinding Light={StaticResource TextSecondary}, Dark={StaticResource TextSecondaryDark}}"
-                                            Margin="0,0,0,2" />
-                                        <Label
-                                            Grid.Row="1"
-                                            Text="{Binding TotalFormateado, StringFormat='${0}'}"
-                                            FontSize="22"
-                                            FontAttributes="Bold"
-                                            TextColor="#FF9800" />
-                                    </Grid>
-
-                                    <Grid Grid.Column="1" HorizontalOptions="End">
-                                        <Grid.RowDefinitions>
-                                            <RowDefinition Height="Auto" />
-                                            <RowDefinition Height="Auto" />
-                                        </Grid.RowDefinitions>
-                                        <Label
-                                            Grid.Row="0"
-                                            Text="DESGLOSE"
-                                            FontSize="10"
-                                            TextColor="{AppThemeBinding Light={StaticResource TextSecondary}, Dark={StaticResource TextSecondaryDark}}"
-                                            Margin="0,0,0,2" />
-                                        <HorizontalStackLayout Grid.Row="1" Spacing="0">
-                                            <Label
-                                                Text="{Binding Monto, StringFormat='${0:N2}'}"
-                                                FontSize="14"
-                                                TextColor="{AppThemeBinding Light={StaticResource TextPrimary}, Dark={StaticResource TextPrimaryDark}}" />
-                                            <Label
-                                                Text=" x "
-                                                FontSize="14"
-                                                TextColor="{AppThemeBinding Light={StaticResource TextPrimary}, Dark={StaticResource TextPrimaryDark}}" />
-                                            <Label
-                                                Text="{Binding Cantidad}"
-                                                FontSize="14"
-                                                TextColor="{AppThemeBinding Light={StaticResource TextPrimary}, Dark={StaticResource TextPrimaryDark}}" />
-                                            <Label
-                                                Text="{Binding UnidadTexto}"
-                                                FontSize="14"
-                                                TextColor="{AppThemeBinding Light={StaticResource TextPrimary}, Dark={StaticResource TextPrimaryDark}}" />
-                                        </HorizontalStackLayout>
-                                    </Grid>
+                                <!-- Fila 2: Total -->
+                                <Grid Grid.Row="2">
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="Auto" />
+                                        <RowDefinition Height="Auto" />
+                                    </Grid.RowDefinitions>
+                                    <Label
+                                        Grid.Row="0"
+                                        Text="TOTAL"
+                                        FontSize="10"
+                                        TextColor="{AppThemeBinding Light={StaticResource TextSecondary}, Dark={StaticResource TextSecondaryDark}}"
+                                        Margin="0,0,0,2" />
+                                    <Label
+                                        Grid.Row="1"
+                                        Text="{Binding TotalCalculadoFormateado, StringFormat='${0}'}"
+                                        FontSize="22"
+                                        FontAttributes="Bold"
+                                        TextColor="#FF9800" />
                                 </Grid>
 
-                                <!-- Fila 3: Acciones -->
+                                <!-- Fila 3: Desglose detallado (solo si tiene artículos) -->
+                                <CollectionView
+                                    Grid.Row="3"
+                                    ItemsSource="{Binding Articulos}"
+                                    SelectionMode="None"
+                                    Margin="0,4,0,0"
+                                    IsVisible="{Binding TieneArticulos}">
+                                    <CollectionView.ItemTemplate>
+                                        <DataTemplate>
+                                            <Grid Padding="0,4" ColumnSpacing="8">
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="*" />
+                                                    <ColumnDefinition Width="Auto" />
+                                                </Grid.ColumnDefinitions>
+                                                <Label
+                                                    Grid.Column="0"
+                                                    Text="{Binding Descripcion}"
+                                                    FontSize="13"
+                                                    TextColor="{AppThemeBinding Light={StaticResource TextSecondary}, Dark={StaticResource TextSecondaryDark}}"
+                                                    LineBreakMode="TailTruncation"
+                                                    VerticalOptions="Center" />
+                                                <Label
+                                                    Grid.Column="1"
+                                                    Text="{Binding TotalFormateado, StringFormat='${0}'}"
+                                                    FontSize="13"
+                                                    FontAttributes="Bold"
+                                                    TextColor="{AppThemeBinding Light={StaticResource TextPrimary}, Dark={StaticResource TextPrimaryDark}}"
+                                                    VerticalOptions="Center" />
+                                            </Grid>
+                                        </DataTemplate>
+                                    </CollectionView.ItemTemplate>
+                                </CollectionView>
+
+                                <!-- Fila 3: Desglose legacy (sin artículos) -->
                                 <HorizontalStackLayout
                                     Grid.Row="3"
+                                    IsVisible="{Binding TieneArticulos, Converter={StaticResource InvertBool}}"
+                                    Spacing="0">
+                                    <Label
+                                        Text="{Binding Monto, StringFormat='${0:N2}'}"
+                                        FontSize="14"
+                                        TextColor="{AppThemeBinding Light={StaticResource TextPrimary}, Dark={StaticResource TextPrimaryDark}}" />
+                                    <Label
+                                        Text=" x "
+                                        FontSize="14"
+                                        TextColor="{AppThemeBinding Light={StaticResource TextPrimary}, Dark={StaticResource TextPrimaryDark}}" />
+                                    <Label
+                                        Text="{Binding Cantidad}"
+                                        FontSize="14"
+                                        TextColor="{AppThemeBinding Light={StaticResource TextPrimary}, Dark={StaticResource TextPrimaryDark}}" />
+                                    <Label
+                                        Text="{Binding UnidadTexto}"
+                                        FontSize="14"
+                                        TextColor="{AppThemeBinding Light={StaticResource TextPrimary}, Dark={StaticResource TextPrimaryDark}}" />
+                                </HorizontalStackLayout>
+
+                                <!-- Fila 4: Acciones -->
+                                <HorizontalStackLayout
+                                    Grid.Row="4"
                                     HorizontalOptions="End"
                                     Spacing="16">
                                     <Label
