@@ -89,11 +89,21 @@ namespace Mercader.ViewModels
             await ExecuteBusyAsync(async () =>
             {
                 var lista = await _repository.GetGastosAsync();
+                System.Diagnostics.Debug.WriteLine($"[GASTOS] Cargados {lista.Count} gastos de la DB");
 
                 // Cargar artículos para cada gasto (multi-artículo)
                 foreach (var gasto in lista)
                 {
-                    gasto.Articulos = await _repository.GetArticulosGastoAsync(gasto.Id);
+                    try
+                    {
+                        gasto.Articulos = await _repository.GetArticulosGastoAsync(gasto.Id);
+                        System.Diagnostics.Debug.WriteLine($"[GASTOS] GastoId={gasto.Id} '{gasto.Descripcion}' → {gasto.Articulos.Count} artículos, TieneArticulos={gasto.TieneArticulos}");
+                    }
+                    catch (Exception ex)
+                    {
+                        System.Diagnostics.Debug.WriteLine($"[GASTOS] ERROR cargando artículos para GastoId={gasto.Id}: {ex.Message}");
+                        gasto.Articulos = new List<Domain.Entities.ArticuloGasto>();
+                    }
                 }
 
                 _todosLosGastos = lista;

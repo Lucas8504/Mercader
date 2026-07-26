@@ -14,6 +14,7 @@ namespace Mercader
         private readonly IDataRepository _repository;
         private readonly GastosViewModel _viewModel;
         private bool _isLoading = false;
+        private bool _appearing;
 
         public Gastos(IDataRepository repository, GastosViewModel viewModel)
         {
@@ -34,8 +35,16 @@ namespace Mercader
         protected override async void OnAppearing()
         {
             base.OnAppearing();
-            await _viewModel.CargarGastosCommand.ExecuteAsync(null);
-            GastosCollectionView.ItemsSource = _viewModel.Gastos;
+            if (_appearing) return;
+            _appearing = true;
+            try
+            {
+                await _viewModel.CargarGastosCommand.ExecuteAsync(null);
+            }
+            finally
+            {
+                _appearing = false;
+            }
         }
 
         private async Task CargarGastos()

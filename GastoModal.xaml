@@ -92,38 +92,6 @@
                 </CollectionView>
             </Frame>
 
-            <!--  Campo de Monto  -->
-            <Frame
-                Padding="10"
-                BackgroundColor="{AppThemeBinding Light={StaticResource CardAltBackground}, Dark={StaticResource CardAltBackgroundDark}}"
-                CornerRadius="8"
-                HasShadow="False">
-                <Entry
-                    x:Name="MontoGastoEntry"
-                    BackgroundColor="Transparent"
-                    Keyboard="Numeric"
-                    Placeholder="Monto"
-                    PlaceholderColor="{AppThemeBinding Light={StaticResource TextPlaceholder}, Dark={StaticResource TextPlaceholderDark}}"
-                    TextColor="{AppThemeBinding Light={StaticResource TextPrimary}, Dark={StaticResource TextPrimaryDark}}"
-                    Visual="Material" />
-            </Frame>
-
-            <!--  Campo de Cantidad  -->
-            <Frame
-                Padding="10"
-                BackgroundColor="{AppThemeBinding Light={StaticResource CardAltBackground}, Dark={StaticResource CardAltBackgroundDark}}"
-                CornerRadius="8"
-                HasShadow="False">
-                <Entry
-                    x:Name="CantidadG_Entry"
-                    BackgroundColor="Transparent"
-                    Keyboard="Numeric"
-                    Placeholder="Cantidad"
-                    PlaceholderColor="{AppThemeBinding Light={StaticResource TextPlaceholder}, Dark={StaticResource TextPlaceholderDark}}"
-                    TextColor="{AppThemeBinding Light={StaticResource TextPrimary}, Dark={StaticResource TextPrimaryDark}}"
-                    Visual="Material" />
-            </Frame>
-
             <!--  ===== MULTI-ARTÍCULO =====  -->
             <Label
                 FontAttributes="Bold"

@@ -50,20 +50,6 @@ public partial class GastoModal : ContentPage
             return;
         }
 
-        var montoResult = ValidationService.ParseDecimal(MontoGastoEntry.Text);
-        if (!montoResult.Success)
-        {
-            await DisplayAlert("Error", montoResult.Error ?? "Monto inválido", "OK");
-            return;
-        }
-
-        var cantidadResult = ValidationService.ParseDecimal(CantidadG_Entry.Text);
-        if (!cantidadResult.Success)
-        {
-            await DisplayAlert("Error", cantidadResult.Error ?? "Cantidad inválida", "OK");
-            return;
-        }
-
         // Validar artículos
         if (_articulos.Count == 0)
         {

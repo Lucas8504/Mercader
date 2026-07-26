@@ -587,21 +587,18 @@ namespace Mercader.Data
 
             try
             {
-                var count = await _database.ExecuteScalarAsync<int>(
-                    "SELECT COUNT(*) FROM ArticulosGasto");
-                if (count > 0)
-                    return; // Ya migrado
-
-                var legacyCount = await _database.ExecuteScalarAsync<int>(
-                    "SELECT COUNT(*) FROM Gastos WHERE IsDeleted != 1");
-                if (legacyCount == 0)
-                    return; // No hay datos legacy
-
-                await _database.ExecuteAsync(
+                // Migrar SOLO gastos que aún no tienen artículo asociado
+                var migrated = await _database.ExecuteAsync(
                     @"INSERT INTO ArticulosGasto (GastoId, Descripcion, PrecioUnitario, Cantidad, Orden, CreatedAt, UpdatedAt, IsDeleted)
-                      SELECT Id, Descripcion, Monto, Cantidad, 1, CreatedAt, UpdatedAt, IsDeleted FROM Gastos WHERE IsDeleted != 1");
+                      SELECT g.Id, g.Descripcion, g.Monto, g.Cantidad, 1, g.CreatedAt, g.UpdatedAt, g.IsDeleted
+                      FROM Gastos g
+                      WHERE g.IsDeleted != 1
+                        AND NOT EXISTS (SELECT 1 FROM ArticulosGasto a WHERE a.GastoId = g.Id)");
 
-                System.Diagnostics.Debug.WriteLine($"[MIGRATION] Migrados {legacyCount} registros de Gastos a ArticulosGasto");
+                if (migrated > 0)
+                    System.Diagnostics.Debug.WriteLine($"[MIGRATION] Migrados {migrated} gastos legacy a ArticulosGasto");
+                else
+                    System.Diagnostics.Debug.WriteLine($"[MIGRATION] No hay gastos legacy por migrar");
             }
             catch (Exception ex)
             {
