@@ -4,6 +4,7 @@
     xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
     xmlns:local="clr-namespace:Mercader"
+    xmlns:models="clr-namespace:Mercader.Models;assembly=Mercader.Core"
     Title="💸 Registro de Gastos"
     BackgroundColor="{AppThemeBinding Light={StaticResource DeepBackground}, Dark={StaticResource DeepBackgroundDark}}">
 
@@ -225,82 +226,34 @@
                                                 TextColor="{AppThemeBinding Light={StaticResource TextPrimary}, Dark={StaticResource TextPrimaryDark}}" />
                                         </HorizontalStackLayout>
 
-                                        <!-- Con artículos: descripción + desglose por artículo -->
+                                        <!-- Desglose dinámico ( légacy o multi-artículo) -->
                                         <VerticalStackLayout
                                             Grid.Row="1"
                                             Spacing="2"
-                                            IsVisible="{Binding TieneArticulos}"
                                             HorizontalOptions="End">
-                                            <!-- Artículo 1 -->
-                                            <Label
-                                                Text="{Binding DesgloseDesc1}"
-                                                FontSize="10"
-                                                TextColor="{AppThemeBinding Light={StaticResource TextSecondary}, Dark={StaticResource TextSecondaryDark}}"
-                                                HorizontalTextAlignment="End"
-                                                LineBreakMode="TailTruncation"
-                                                IsVisible="{Binding TieneArticulos}" />
-                                            <Label
-                                                Text="{Binding DesgloseLinea1}"
-                                                FontSize="13"
-                                                TextColor="{AppThemeBinding Light={StaticResource TextPrimary}, Dark={StaticResource TextPrimaryDark}}"
-                                                HorizontalTextAlignment="End"
-                                                IsVisible="{Binding TieneArticulos}" />
-                                            <!-- Artículo 2 -->
-                                            <Label
-                                                Text="{Binding DesgloseDesc2}"
-                                                FontSize="10"
-                                                TextColor="{AppThemeBinding Light={StaticResource TextSecondary}, Dark={StaticResource TextSecondaryDark}}"
-                                                HorizontalTextAlignment="End"
-                                                LineBreakMode="TailTruncation"
-                                                IsVisible="{Binding DesgloseDesc2, Converter={StaticResource StringNotEmpty}}" />
-                                            <Label
-                                                Text="{Binding DesgloseLinea2}"
-                                                FontSize="13"
-                                                TextColor="{AppThemeBinding Light={StaticResource TextPrimary}, Dark={StaticResource TextPrimaryDark}}"
-                                                HorizontalTextAlignment="End"
-                                                IsVisible="{Binding DesgloseLinea2, Converter={StaticResource StringNotEmpty}}" />
-                                            <!-- Artículo 3 -->
-                                            <Label
-                                                Text="{Binding DesgloseDesc3}"
-                                                FontSize="10"
-                                                TextColor="{AppThemeBinding Light={StaticResource TextSecondary}, Dark={StaticResource TextSecondaryDark}}"
-                                                HorizontalTextAlignment="End"
-                                                LineBreakMode="TailTruncation"
-                                                IsVisible="{Binding DesgloseDesc3, Converter={StaticResource StringNotEmpty}}" />
-                                            <Label
-                                                Text="{Binding DesgloseLinea3}"
-                                                FontSize="13"
-                                                TextColor="{AppThemeBinding Light={StaticResource TextPrimary}, Dark={StaticResource TextPrimaryDark}}"
-                                                HorizontalTextAlignment="End"
-                                                IsVisible="{Binding DesgloseLinea3, Converter={StaticResource StringNotEmpty}}" />
-                                            <!-- Artículo 4 -->
-                                            <Label
-                                                Text="{Binding DesgloseDesc4}"
-                                                FontSize="10"
-                                                TextColor="{AppThemeBinding Light={StaticResource TextSecondary}, Dark={StaticResource TextSecondaryDark}}"
-                                                HorizontalTextAlignment="End"
-                                                LineBreakMode="TailTruncation"
-                                                IsVisible="{Binding DesgloseDesc4, Converter={StaticResource StringNotEmpty}}" />
-                                            <Label
-                                                Text="{Binding DesgloseLinea4}"
-                                                FontSize="13"
-                                                TextColor="{AppThemeBinding Light={StaticResource TextPrimary}, Dark={StaticResource TextPrimaryDark}}"
-                                                HorizontalTextAlignment="End"
-                                                IsVisible="{Binding DesgloseLinea4, Converter={StaticResource StringNotEmpty}}" />
-                                            <!-- Artículo 5 -->
-                                            <Label
-                                                Text="{Binding DesgloseDesc5}"
-                                                FontSize="10"
-                                                TextColor="{AppThemeBinding Light={StaticResource TextSecondary}, Dark={StaticResource TextSecondaryDark}}"
-                                                HorizontalTextAlignment="End"
-                                                LineBreakMode="TailTruncation"
-                                                IsVisible="{Binding DesgloseDesc5, Converter={StaticResource StringNotEmpty}}" />
-                                            <Label
-                                                Text="{Binding DesgloseLinea5}"
-                                                FontSize="13"
-                                                TextColor="{AppThemeBinding Light={StaticResource TextPrimary}, Dark={StaticResource TextPrimaryDark}}"
-                                                HorizontalTextAlignment="End"
-                                                IsVisible="{Binding DesgloseLinea5, Converter={StaticResource StringNotEmpty}}" />
+                                            <BindableLayout.ItemsSource>
+                                                <Binding Path="DesgloseItems" />
+                                            </BindableLayout.ItemsSource>
+                                            <BindableLayout.ItemTemplate>
+                                                <DataTemplate x:DataType="models:DesgloseItem">
+                                                    <VerticalStackLayout Spacing="0" HorizontalOptions="End">
+                                                        <!-- Descripción del artículo (si existe) -->
+                                                        <Label
+                                                            Text="{Binding Descripcion}"
+                                                            FontSize="10"
+                                                            TextColor="{AppThemeBinding Light={StaticResource TextSecondary}, Dark={StaticResource TextSecondaryDark}}"
+                                                            HorizontalTextAlignment="End"
+                                                            LineBreakMode="TailTruncation"
+                                                            IsVisible="{Binding Descripcion, Converter={StaticResource StringNotEmpty}}" />
+                                                        <!-- Texto del desglose ($Precio x Cantidad) -->
+                                                        <Label
+                                                            Text="{Binding Texto}"
+                                                            FontSize="13"
+                                                            TextColor="{AppThemeBinding Light={StaticResource TextPrimary}, Dark={StaticResource TextPrimaryDark}}"
+                                                            HorizontalTextAlignment="End" />
+                                                    </VerticalStackLayout>
+                                                </DataTemplate>
+                                            </BindableLayout.ItemTemplate>
                                         </VerticalStackLayout>
                                     </Grid>
                                 </Grid>

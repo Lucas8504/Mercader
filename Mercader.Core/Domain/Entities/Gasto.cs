@@ -1,4 +1,5 @@
 using SQLite;
+using Mercader.Models;
 
 namespace Mercader.Domain.Entities
 {
@@ -28,38 +29,32 @@ namespace Mercader.Domain.Entities
         [Ignore] public decimal TotalCalculado => TieneArticulos ? Articulos.Sum(a => a.Total) : Monto * Cantidad;
         [Ignore] public string TotalCalculadoFormateado => TotalCalculado.ToString("N0");
 
-        // Descripciones de artículos
-        [Ignore] public string DesgloseDesc1 => TieneArticulos && Articulos.Count > 0
-            ? Articulos[0].Descripcion ?? string.Empty
-            : string.Empty;
-        [Ignore] public string DesgloseDesc2 => TieneArticulos && Articulos.Count > 1
-            ? Articulos[1].Descripcion ?? string.Empty
-            : string.Empty;
-        [Ignore] public string DesgloseDesc3 => TieneArticulos && Articulos.Count > 2
-            ? Articulos[2].Descripcion ?? string.Empty
-            : string.Empty;
-        [Ignore] public string DesgloseDesc4 => TieneArticulos && Articulos.Count > 3
-            ? Articulos[3].Descripcion ?? string.Empty
-            : string.Empty;
-        [Ignore] public string DesgloseDesc5 => TieneArticulos && Articulos.Count > 4
-            ? Articulos[4].Descripcion ?? string.Empty
-            : string.Empty;
+        /// <summary>
+        /// Desglose dinámico: un item por artículo con descripción y texto.
+        /// Si no tiene artículos, muestra el formato legacy.
+        /// </summary>
+        [Ignore] public List<DesgloseItem> DesgloseItems
+        {
+            get
+            {
+                if (!TieneArticulos)
+                {
+                    return
+                    [
+                        new DesgloseItem
+                        {
+                            Descripcion = string.Empty,
+                            Texto = $"{Monto:N2} x {Cantidad}{UnidadTexto}"
+                        }
+                    ];
+                }
 
-        // Líneas de desglose (Precio x Cantidad)
-        [Ignore] public string DesgloseLinea1 => TieneArticulos && Articulos.Count > 0
-            ? $"{Articulos[0].PrecioUnitario:N2} x {Articulos[0].Cantidad}{Articulos[0].UnidadTexto}"
-            : $"{Monto:N2} x {Cantidad}{UnidadTexto}";
-        [Ignore] public string DesgloseLinea2 => TieneArticulos && Articulos.Count > 1
-            ? $"{Articulos[1].PrecioUnitario:N2} x {Articulos[1].Cantidad}{Articulos[1].UnidadTexto}"
-            : string.Empty;
-        [Ignore] public string DesgloseLinea3 => TieneArticulos && Articulos.Count > 2
-            ? $"{Articulos[2].PrecioUnitario:N2} x {Articulos[2].Cantidad}{Articulos[2].UnidadTexto}"
-            : string.Empty;
-        [Ignore] public string DesgloseLinea4 => TieneArticulos && Articulos.Count > 3
-            ? $"{Articulos[3].PrecioUnitario:N2} x {Articulos[3].Cantidad}{Articulos[3].UnidadTexto}"
-            : string.Empty;
-        [Ignore] public string DesgloseLinea5 => TieneArticulos && Articulos.Count > 4
-            ? $"{Articulos[4].PrecioUnitario:N2} x {Articulos[4].Cantidad}{Articulos[4].UnidadTexto}"
-            : string.Empty;
+                return Articulos.Select(a => new DesgloseItem
+                {
+                    Descripcion = a.Descripcion ?? string.Empty,
+                    Texto = $"{a.PrecioUnitario:N2} x {a.Cantidad}{a.UnidadTexto}"
+                }).ToList();
+            }
+        }
     }
 }
