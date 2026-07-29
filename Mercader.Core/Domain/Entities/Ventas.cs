@@ -1,4 +1,5 @@
 using SQLite;
+using Mercader.Models;
 
 namespace Mercader.Domain.Entities
 {
@@ -21,5 +22,39 @@ namespace Mercader.Domain.Entities
         public decimal Total => Precio * Cantidad;
         public string TotalFormateado => (Precio * Cantidad).ToString("N0");
         public string UnidadTexto => Cantidad == 1 ? " ud." : " uds.";
+
+        // ===== MULTI-ARTÍCULO (cargado en runtime, no persistido) =====
+        [Ignore] public List<ArticuloVenta> Articulos { get; set; } = new();
+        [Ignore] public bool TieneArticulos => Articulos.Count > 0;
+        [Ignore] public decimal TotalCalculado => TieneArticulos ? Articulos.Sum(a => a.Total) : Precio * Cantidad;
+        [Ignore] public string TotalCalculadoFormateado => TotalCalculado.ToString("N0");
+
+        /// <summary>
+        /// Desglose dinámico: un item por artículo con descripción y texto.
+        /// Si no tiene artículos, muestra el formato legacy.
+        /// </summary>
+        [Ignore] public List<DesgloseItem> DesgloseItems
+        {
+            get
+            {
+                if (!TieneArticulos)
+                {
+                    return
+                    [
+                        new DesgloseItem
+                        {
+                            Descripcion = string.Empty,
+                            Texto = $"{Precio:N2} x {Cantidad}{UnidadTexto}"
+                        }
+                    ];
+                }
+
+                return Articulos.Select(a => new DesgloseItem
+                {
+                    Descripcion = a.Descripcion ?? string.Empty,
+                    Texto = $"{a.PrecioUnitario:N2} x {a.Cantidad}{a.UnidadTexto}"
+                }).ToList();
+            }
+        }
     }
 }

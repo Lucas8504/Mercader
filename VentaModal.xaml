@@ -140,77 +140,87 @@
                 <BindableLayout.ItemTemplate>
                     <DataTemplate x:DataType="domain:ArticuloVenta">
                         <Frame
-                            Padding="8"
+                            Padding="12"
                             BackgroundColor="{AppThemeBinding Light={StaticResource CardAltBackground}, Dark={StaticResource CardAltBackgroundDark}}"
                             CornerRadius="8"
                             HasShadow="False">
-                            <Grid
-                                ColumnDefinitions="*,32,32,32,40"
-                                RowDefinitions="Auto,Auto"
-                                ColumnSpacing="4"
-                                RowSpacing="6">
+                            <VerticalStackLayout Spacing="8">
                                 <!-- Descripción -->
-                                <Entry
-                                    Grid.Row="0"
-                                    Grid.Column="0"
-                                    Grid.ColumnSpan="5"
-                                    BackgroundColor="Transparent"
-                                    Placeholder="Descripción"
-                                    PlaceholderColor="{AppThemeBinding Light={StaticResource TextPlaceholder}, Dark={StaticResource TextPlaceholderDark}}"
-                                    Text="{Binding Descripcion, Mode=TwoWay}"
-                                    TextColor="{AppThemeBinding Light={StaticResource TextPrimary}, Dark={StaticResource TextPrimaryDark}}"
-                                    Visual="Material" />
-                                <!-- Precio Unitario -->
-                                <Entry
-                                    Grid.Row="1"
-                                    Grid.Column="0"
-                                    BackgroundColor="Transparent"
-                                    Keyboard="Numeric"
-                                    Placeholder="P/U"
-                                    PlaceholderColor="{AppThemeBinding Light={StaticResource TextPlaceholder}, Dark={StaticResource TextPlaceholderDark}}"
-                                    Text="{Binding PrecioUnitario, Mode=TwoWay}"
-                                    TextColor="{AppThemeBinding Light={StaticResource TextPrimary}, Dark={StaticResource TextPrimaryDark}}"
-                                    Visual="Material" />
-                                <!-- Cantidad -->
-                                <Entry
-                                    Grid.Row="1"
-                                    Grid.Column="1"
-                                    BackgroundColor="Transparent"
-                                    Keyboard="Numeric"
-                                    Placeholder="Cant."
-                                    PlaceholderColor="{AppThemeBinding Light={StaticResource TextPlaceholder}, Dark={StaticResource TextPlaceholderDark}}"
-                                    Text="{Binding Cantidad, Mode=TwoWay}"
-                                    TextColor="{AppThemeBinding Light={StaticResource TextPrimary}, Dark={StaticResource TextPrimaryDark}}"
-                                    Visual="Material" />
-                                <!-- Subir -->
-                                <Button
-                                    Grid.Row="1"
-                                    Grid.Column="2"
-                                    BackgroundColor="Transparent"
-                                    Clicked="OnSubirArticulo"
-                                    FontSize="12"
-                                    Padding="0"
-                                    Text="⬆" />
-                                <!-- Bajar -->
-                                <Button
-                                    Grid.Row="1"
-                                    Grid.Column="3"
-                                    BackgroundColor="Transparent"
-                                    Clicked="OnBajarArticulo"
-                                    FontSize="12"
-                                    Padding="0"
-                                    Text="⬇" />
-                                <!-- Eliminar -->
-                                <Button
-                                    Grid.Row="1"
-                                    Grid.Column="4"
-                                    BackgroundColor="#FF5252"
-                                    Clicked="OnEliminarArticulo"
-                                    FontSize="12"
-                                    Padding="0"
-                                    Text="✕"
-                                    TextColor="White" />
-                            </Grid>
+                                <VerticalStackLayout Spacing="4">
+                                    <Label
+                                        FontSize="11"
+                                        Text="Descripción"
+                                        TextColor="{AppThemeBinding Light={StaticResource TextSecondary}, Dark={StaticResource TextSecondaryDark}}" />
+                                    <Entry
+                                        BackgroundColor="Transparent"
+                                        Placeholder="Nombre del artículo"
+                                        PlaceholderColor="{AppThemeBinding Light={StaticResource TextPlaceholder}, Dark={StaticResource TextPlaceholderDark}}"
+                                        Text="{Binding Descripcion, Mode=TwoWay}"
+                                        TextColor="{AppThemeBinding Light={StaticResource TextPrimary}, Dark={StaticResource TextPrimaryDark}}"
+                                        Visual="Material" />
+                                </VerticalStackLayout>
+
+                                <!-- Precio y Cantidad en fila -->
+                                <Grid ColumnDefinitions="*,8,*" ColumnSpacing="0">
+                                    <!-- Precio Unitario -->
+                                    <VerticalStackLayout Grid.Column="0" Spacing="4">
+                                        <Label
+                                            FontSize="11"
+                                            Text="Precio Unitario"
+                                            TextColor="{AppThemeBinding Light={StaticResource TextSecondary}, Dark={StaticResource TextSecondaryDark}}" />
+                                        <Entry
+                                            BackgroundColor="Transparent"
+                                            Keyboard="Numeric"
+                                            Placeholder="0"
+                                            PlaceholderColor="{AppThemeBinding Light={StaticResource TextPlaceholder}, Dark={StaticResource TextPlaceholderDark}}"
+                                            Text="{Binding PrecioUnitario, Mode=TwoWay}"
+                                            TextColor="{AppThemeBinding Light={StaticResource TextPrimary}, Dark={StaticResource TextPrimaryDark}}"
+                                            Visual="Material" />
+                                    </VerticalStackLayout>
+
+                                    <!-- Cantidad -->
+                                    <VerticalStackLayout Grid.Column="2" Spacing="4">
+                                        <Label
+                                            FontSize="11"
+                                            Text="Cantidad"
+                                            TextColor="{AppThemeBinding Light={StaticResource TextSecondary}, Dark={StaticResource TextSecondaryDark}}" />
+                                        <Entry
+                                            BackgroundColor="Transparent"
+                                            Keyboard="Numeric"
+                                            Placeholder="1"
+                                            PlaceholderColor="{AppThemeBinding Light={StaticResource TextPlaceholder}, Dark={StaticResource TextPlaceholderDark}}"
+                                            Text="{Binding Cantidad, Mode=TwoWay}"
+                                            TextColor="{AppThemeBinding Light={StaticResource TextPrimary}, Dark={StaticResource TextPrimaryDark}}"
+                                            Visual="Material" />
+                                    </VerticalStackLayout>
+                                </Grid>
+
+                                <!-- Botones de acción -->
+                                <Grid ColumnDefinitions="*,Auto,Auto,Auto" ColumnSpacing="8">
+                                    <Button
+                                        Grid.Column="1"
+                                        BackgroundColor="Transparent"
+                                        Clicked="OnSubirArticulo"
+                                        FontSize="14"
+                                        Padding="4"
+                                        Text="⬆" />
+                                    <Button
+                                        Grid.Column="2"
+                                        BackgroundColor="Transparent"
+                                        Clicked="OnBajarArticulo"
+                                        FontSize="14"
+                                        Padding="4"
+                                        Text="⬇" />
+                                    <Button
+                                        Grid.Column="3"
+                                        BackgroundColor="#FF5252"
+                                        Clicked="OnEliminarArticulo"
+                                        FontSize="14"
+                                        Padding="4"
+                                        Text="✕"
+                                        TextColor="White" />
+                                </Grid>
+                            </VerticalStackLayout>
                         </Frame>
                     </DataTemplate>
                 </BindableLayout.ItemTemplate>

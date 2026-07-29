@@ -4,6 +4,7 @@
     xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
     xmlns:local="clr-namespace:Mercader"
+    xmlns:models="clr-namespace:Mercader.Models;assembly=Mercader.Core"
     Title="📊 Ventas"
     BackgroundColor="{AppThemeBinding Light={StaticResource DeepBackground}, Dark={StaticResource DeepBackgroundDark}}">
 
@@ -198,24 +199,36 @@
                                             FontSize="10"
                                             TextColor="{AppThemeBinding Light={StaticResource TextSecondary}, Dark={StaticResource TextSecondaryDark}}"
                                             Margin="0,0,0,2" />
-                                        <HorizontalStackLayout Grid.Row="1" Spacing="0">
-                                            <Label
-                                                Text="{Binding Precio, StringFormat='${0:N2}'}"
-                                                FontSize="14"
-                                                TextColor="{AppThemeBinding Light={StaticResource TextPrimary}, Dark={StaticResource TextPrimaryDark}}" />
-                                            <Label
-                                                Text=" x "
-                                                FontSize="14"
-                                                TextColor="{AppThemeBinding Light={StaticResource TextPrimary}, Dark={StaticResource TextPrimaryDark}}" />
-                                            <Label
-                                                Text="{Binding Cantidad}"
-                                                FontSize="14"
-                                                TextColor="{AppThemeBinding Light={StaticResource TextPrimary}, Dark={StaticResource TextPrimaryDark}}" />
-                                            <Label
-                                                Text="{Binding UnidadTexto}"
-                                                FontSize="14"
-                                                TextColor="{AppThemeBinding Light={StaticResource TextPrimary}, Dark={StaticResource TextPrimaryDark}}" />
-                                        </HorizontalStackLayout>
+
+                                        <!-- Desglose dinámico (legacy o multi-artículo) -->
+                                        <VerticalStackLayout
+                                            Grid.Row="1"
+                                            Spacing="2"
+                                            HorizontalOptions="End">
+                                            <BindableLayout.ItemsSource>
+                                                <Binding Path="DesgloseItems" />
+                                            </BindableLayout.ItemsSource>
+                                            <BindableLayout.ItemTemplate>
+                                                <DataTemplate x:DataType="models:DesgloseItem">
+                                                    <VerticalStackLayout Spacing="0" HorizontalOptions="End">
+                                                        <!-- Descripción del artículo (si existe) -->
+                                                        <Label
+                                                            Text="{Binding Descripcion}"
+                                                            FontSize="10"
+                                                            TextColor="{AppThemeBinding Light={StaticResource TextSecondary}, Dark={StaticResource TextSecondaryDark}}"
+                                                            HorizontalTextAlignment="End"
+                                                            LineBreakMode="TailTruncation"
+                                                            IsVisible="{Binding Descripcion, Converter={StaticResource StringNotEmpty}}" />
+                                                        <!-- Texto del desglose ($Precio x Cantidad) -->
+                                                        <Label
+                                                            Text="{Binding Texto}"
+                                                            FontSize="13"
+                                                            TextColor="{AppThemeBinding Light={StaticResource TextPrimary}, Dark={StaticResource TextPrimaryDark}}"
+                                                            HorizontalTextAlignment="End" />
+                                                    </VerticalStackLayout>
+                                                </DataTemplate>
+                                            </BindableLayout.ItemTemplate>
+                                        </VerticalStackLayout>
                                     </Grid>
                                 </Grid>
 
