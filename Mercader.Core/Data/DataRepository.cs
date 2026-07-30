@@ -613,21 +613,18 @@ namespace Mercader.Data
 
             try
             {
-                var count = await _database.ExecuteScalarAsync<int>(
-                    "SELECT COUNT(*) FROM ArticulosEncargo");
-                if (count > 0)
-                    return; // Ya migrado
-
-                var legacyCount = await _database.ExecuteScalarAsync<int>(
-                    "SELECT COUNT(*) FROM Encargo WHERE IsDeleted != 1");
-                if (legacyCount == 0)
-                    return; // No hay datos legacy
-
-                await _database.ExecuteAsync(
+                // Migrar SOLO encargos que aún no tienen artículo asociado
+                var migrated = await _database.ExecuteAsync(
                     @"INSERT INTO ArticulosEncargo (EncargoId, Descripcion, PrecioUnitario, Cantidad, Orden, CreatedAt, UpdatedAt, IsDeleted)
-                      SELECT Id, Descripcion, Precio, Cantidad, 1, CreatedAt, UpdatedAt, IsDeleted FROM Encargo WHERE IsDeleted != 1");
+                      SELECT e.Id, e.Descripcion, e.Precio, e.Cantidad, 1, e.CreatedAt, e.UpdatedAt, e.IsDeleted
+                      FROM Encargo e
+                      WHERE e.IsDeleted != 1
+                        AND NOT EXISTS (SELECT 1 FROM ArticulosEncargo a WHERE a.EncargoId = e.Id)");
 
-                System.Diagnostics.Debug.WriteLine($"[MIGRATION] Migrados {legacyCount} registros de Encargos a ArticulosEncargo");
+                if (migrated > 0)
+                    System.Diagnostics.Debug.WriteLine($"[MIGRATION] Migrados {migrated} encargos legacy a ArticulosEncargo");
+                else
+                    System.Diagnostics.Debug.WriteLine($"[MIGRATION] No hay encargos legacy por migrar");
             }
             catch (Exception ex)
             {

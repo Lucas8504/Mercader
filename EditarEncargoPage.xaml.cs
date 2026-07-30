@@ -1,3 +1,4 @@
+using System.Collections.ObjectModel;
 using Mercader.Domain.Entities;
 using Mercader.Data.Interfaces;
 
@@ -6,27 +7,32 @@ namespace Mercader;
 public partial class EditarEncargoPage : ContentPage
 {
     private readonly IDataRepository _repository;
-    private Encargo _encargo;
+    private readonly Encargo _encargo;
+    private readonly ObservableCollection<ArticuloEncargo> _articulos = new();
 
     public EditarEncargoPage(Encargo encargo, IDataRepository repository)
     {
+        _repository = repository ?? throw new ArgumentNullException(nameof(repository));
+        _encargo = encargo ?? throw new ArgumentNullException(nameof(encargo));
         InitializeComponent();
-        _encargo = encargo;
-        _repository = repository;
-        CargarDatos();
-        SuscribirEventos();
+        BindableLayout.SetItemsSource(ArticulosStack, _articulos);
     }
 
-    private void CargarDatos()
+    protected override async void OnAppearing()
     {
+        base.OnAppearing();
         NombreEntry.Text = _encargo.Nombre;
         ContactoEntry.Text = CleanPhoneNumber(_encargo.Contacto);
         DescripcionEntry.Text = _encargo.Descripcion;
         FechaEntregaPicker.SelectedDate = _encargo.FechaEntrega;
         FechaEntregaLabel.Text = _encargo.FechaEntrega.ToString("dd/MM/yyyy");
-        PrecioEntry.Text = _encargo.Precio.ToString("F2");
-        CantidadEntry.Text = _encargo.Cantidad.ToString();
-        CalcularTotal();
+
+        // Cargar artículos existentes
+        var articulos = await _repository.GetArticulosEncargoAsync(_encargo.Id);
+        foreach (var articulo in articulos)
+            _articulos.Add(articulo);
+
+        ActualizarTotal();
     }
 
     private DateTime _fechaOriginal;
@@ -40,17 +46,13 @@ public partial class EditarEncargoPage : ContentPage
     private void OnFechaEntregaPickerClosed(object? sender, EventArgs e)
     {
         if (FechaEntregaPicker.SelectedDate.HasValue)
-        {
             FechaEntregaLabel.Text = FechaEntregaPicker.SelectedDate.Value.ToString("dd/MM/yyyy");
-        }
     }
 
     private void OnFechaEntregaPickerOk(object? sender, EventArgs e)
     {
         if (FechaEntregaPicker.SelectedDate.HasValue)
-        {
             FechaEntregaLabel.Text = FechaEntregaPicker.SelectedDate.Value.ToString("dd/MM/yyyy");
-        }
         FechaEntregaPicker.IsOpen = false;
     }
 
@@ -58,41 +60,6 @@ public partial class EditarEncargoPage : ContentPage
     {
         FechaEntregaPicker.SelectedDate = _fechaOriginal;
         FechaEntregaPicker.IsOpen = false;
-    }
-
-    private void SuscribirEventos()
-    {
-        PrecioEntry.TextChanged += OnPrecioOCantidadChanged!;
-        CantidadEntry.TextChanged += OnPrecioOCantidadChanged!;
-    }
-
-    private void OnPrecioOCantidadChanged(object? sender, TextChangedEventArgs e)
-    {
-        CalcularTotal();
-    }
-
-    private void CalcularTotal()
-    {
-        try
-        {
-            decimal precio = 0;
-            decimal cantidad = 0;
-
-            if (decimal.TryParse(PrecioEntry.Text, out precio) &&
-                decimal.TryParse(CantidadEntry.Text, out cantidad))
-            {
-                var total = precio * cantidad;
-                LabelTotalCalculado.Text = $"${total:F2}";
-            }
-            else
-            {
-                LabelTotalCalculado.Text = "$0.00";
-            }
-        }
-        catch
-        {
-            LabelTotalCalculado.Text = "$0.00";
-        }
     }
 
     private async void OnGuardarClicked(object sender, EventArgs e)
@@ -105,51 +72,53 @@ public partial class EditarEncargoPage : ContentPage
 
         if (string.IsNullOrWhiteSpace(ContactoEntry.Text))
         {
-            await DisplayAlert("Error", "Por favor, ingrese un numero de telefono", "OK");
+            await DisplayAlert("Error", "Por favor, ingrese un número de teléfono", "OK");
             return;
         }
 
         if (!IsValidPhoneNumber(ContactoEntry.Text))
         {
-            await DisplayAlert("Error", "Por favor, ingrese un numero de telefono valido", "OK");
+            await DisplayAlert("Error", "Por favor, ingrese un número de teléfono válido", "OK");
             return;
         }
 
-        if (string.IsNullOrWhiteSpace(DescripcionEntry.Text))
+        if (_articulos.Count == 0)
         {
-            await DisplayAlert("Error", "La descripcion del producto es obligatoria", "OK");
+            await DisplayAlert("Error", "Debe agregar al menos un artículo", "OK");
             return;
         }
 
-        try
+        var articuloInvalido = _articulos.FirstOrDefault(a => string.IsNullOrWhiteSpace(a.Descripcion));
+        if (articuloInvalido is not null)
         {
-            if (!decimal.TryParse(PrecioEntry.Text, out decimal precio) || precio <= 0)
-            {
-                await DisplayAlert("Error", "El precio debe ser un numero valido mayor a 0", "OK");
-                return;
-            }
-
-            if (!decimal.TryParse(CantidadEntry.Text, out decimal cantidad) || cantidad <= 0)
-            {
-                await DisplayAlert("Error", "La cantidad debe ser un numero valido mayor a 0", "OK");
-                return;
-            }
-
-            _encargo.Nombre = NombreEntry.Text.Trim();
-            _encargo.Contacto = ContactoEntry.Text.Trim();
-            _encargo.Descripcion = DescripcionEntry.Text.Trim();
-            _encargo.FechaEntrega = FechaEntregaPicker.SelectedDate ?? _encargo.FechaEntrega;
-            _encargo.Precio = precio;
-            _encargo.Cantidad = cantidad;
-
-            await _repository.SaveEncargoAsync(_encargo);
-            await DisplayAlert("Exito", "Encargo actualizado correctamente", "OK");
-            await Navigation.PopAsync();
+            await DisplayAlert("Error", "Cada artículo debe tener una descripción", "OK");
+            return;
         }
-        catch (Exception ex)
+
+        // Actualizar encargo
+        _encargo.Nombre = NombreEntry.Text.Trim();
+        _encargo.Contacto = ContactoEntry.Text.Trim();
+        _encargo.Descripcion = DescripcionEntry.Text?.Trim();
+        _encargo.FechaEntrega = FechaEntregaPicker.SelectedDate ?? _encargo.FechaEntrega;
+        _encargo.Precio = _articulos.Sum(a => a.Total);
+        _encargo.Cantidad = 1;
+
+        await _repository.SaveEncargoAsync(_encargo);
+
+        // Eliminar artículos viejos y guardar los nuevos
+        var articulosViejos = await _repository.GetArticulosEncargoAsync(_encargo.Id);
+        foreach (var viejo in articulosViejos)
+            await _repository.DeleteArticuloEncargoAsync(viejo);
+
+        foreach (var articulo in _articulos)
         {
-            await DisplayAlert("Error", $"Error al guardar el encargo: {ex.Message}", "OK");
+            articulo.Id = 0; // Reset ID para que sea un insert
+            articulo.EncargoId = _encargo.Id;
+            await _repository.SaveArticuloEncargoAsync(articulo);
         }
+
+        await DisplayAlert("Éxito", "Encargo actualizado correctamente", "OK");
+        await Navigation.PopAsync();
     }
 
     private bool IsValidPhoneNumber(string phoneNumber)
@@ -180,13 +149,66 @@ public partial class EditarEncargoPage : ContentPage
     {
         bool confirm = await DisplayAlert(
             "Confirmar",
-            "Esta seguro de que deseas cancelar? Se perderan los cambios no guardados.",
-            "Si",
+            "¿Estás seguro de que deseas cancelar? Se perderán los cambios no guardados.",
+            "Sí",
             "No");
 
         if (confirm)
-        {
             await Navigation.PopAsync();
+    }
+
+    // ===== MULTI-ARTÍCULO =====
+
+    private void OnAgregarArticuloClicked(object sender, EventArgs e)
+    {
+        var articulo = new ArticuloEncargo { Orden = _articulos.Count + 1 };
+        _articulos.Add(articulo);
+        ActualizarTotal();
+    }
+
+    private void OnSubirArticulo(object sender, EventArgs e)
+    {
+        if (sender is Button btn && btn.BindingContext is ArticuloEncargo articulo)
+        {
+            var idx = _articulos.IndexOf(articulo);
+            if (idx <= 0) return;
+            _articulos.Move(idx, idx - 1);
+            ReordenarArticulos();
+            ActualizarTotal();
         }
+    }
+
+    private void OnBajarArticulo(object sender, EventArgs e)
+    {
+        if (sender is Button btn && btn.BindingContext is ArticuloEncargo articulo)
+        {
+            var idx = _articulos.IndexOf(articulo);
+            if (idx < 0 || idx >= _articulos.Count - 1) return;
+            _articulos.Move(idx, idx + 1);
+            ReordenarArticulos();
+            ActualizarTotal();
+        }
+    }
+
+    private void OnEliminarArticulo(object sender, EventArgs e)
+    {
+        if (sender is Button btn && btn.BindingContext is ArticuloEncargo articulo)
+        {
+            _articulos.Remove(articulo);
+            ReordenarArticulos();
+            ActualizarTotal();
+        }
+    }
+
+    private void ReordenarArticulos()
+    {
+        for (int i = 0; i < _articulos.Count; i++)
+            _articulos[i].Orden = i + 1;
+    }
+
+    private void ActualizarTotal()
+    {
+        var total = _articulos.Sum(a => a.Total);
+        TotalLabel.Text = $"${total:N0}";
     }
 }
