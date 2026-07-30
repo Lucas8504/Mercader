@@ -190,8 +190,8 @@
                                             TextColor="#FF9800" />
                                     </Grid>
 
-                                    <!-- Desglose a la derecha -->
-                                    <Grid Grid.Column="1" HorizontalOptions="End">
+                                    <!-- Desglose dinámico (legacy o multi-artículo) -->
+                                    <Grid Grid.Column="1" HorizontalOptions="Start">
                                         <Grid.RowDefinitions>
                                             <RowDefinition Height="Auto" />
                                             <RowDefinition Height="Auto" />
@@ -203,46 +203,22 @@
                                             TextColor="{AppThemeBinding Light={StaticResource TextSecondary}, Dark={StaticResource TextSecondaryDark}}"
                                             Margin="0,0,0,2" />
 
-                                        <!-- Sin artículos: formato legacy -->
-                                        <HorizontalStackLayout
-                                            Grid.Row="1"
-                                            Spacing="0"
-                                            IsVisible="{Binding TieneArticulos, Converter={StaticResource InvertBool}}">
-                                            <Label
-                                                Text="{Binding Monto, StringFormat='${0:N2}'}"
-                                                FontSize="14"
-                                                TextColor="{AppThemeBinding Light={StaticResource TextPrimary}, Dark={StaticResource TextPrimaryDark}}" />
-                                            <Label
-                                                Text=" x "
-                                                FontSize="14"
-                                                TextColor="{AppThemeBinding Light={StaticResource TextPrimary}, Dark={StaticResource TextPrimaryDark}}" />
-                                            <Label
-                                                Text="{Binding Cantidad}"
-                                                FontSize="14"
-                                                TextColor="{AppThemeBinding Light={StaticResource TextPrimary}, Dark={StaticResource TextPrimaryDark}}" />
-                                            <Label
-                                                Text="{Binding UnidadTexto}"
-                                                FontSize="14"
-                                                TextColor="{AppThemeBinding Light={StaticResource TextPrimary}, Dark={StaticResource TextPrimaryDark}}" />
-                                        </HorizontalStackLayout>
-
-                                        <!-- Desglose dinámico ( légacy o multi-artículo) -->
                                         <VerticalStackLayout
                                             Grid.Row="1"
                                             Spacing="2"
-                                            HorizontalOptions="End">
+                                            HorizontalOptions="Start">
                                             <BindableLayout.ItemsSource>
                                                 <Binding Path="DesgloseItems" />
                                             </BindableLayout.ItemsSource>
                                             <BindableLayout.ItemTemplate>
                                                 <DataTemplate x:DataType="models:DesgloseItem">
-                                                    <VerticalStackLayout Spacing="0" HorizontalOptions="End">
+                                                    <VerticalStackLayout Spacing="0" HorizontalOptions="Start">
                                                         <!-- Descripción del artículo (si existe) -->
                                                         <Label
                                                             Text="{Binding Descripcion}"
                                                             FontSize="10"
                                                             TextColor="{AppThemeBinding Light={StaticResource TextSecondary}, Dark={StaticResource TextSecondaryDark}}"
-                                                            HorizontalTextAlignment="End"
+                                                            HorizontalTextAlignment="Start"
                                                             LineBreakMode="TailTruncation"
                                                             IsVisible="{Binding Descripcion, Converter={StaticResource StringNotEmpty}}" />
                                                         <!-- Texto del desglose ($Precio x Cantidad) -->
@@ -250,7 +226,7 @@
                                                             Text="{Binding Texto}"
                                                             FontSize="13"
                                                             TextColor="{AppThemeBinding Light={StaticResource TextPrimary}, Dark={StaticResource TextPrimaryDark}}"
-                                                            HorizontalTextAlignment="End" />
+                                                            HorizontalTextAlignment="Start" />
                                                     </VerticalStackLayout>
                                                 </DataTemplate>
                                             </BindableLayout.ItemTemplate>

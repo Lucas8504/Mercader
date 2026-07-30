@@ -56,7 +56,7 @@ namespace Mercader.Domain.Entities
                         new DesgloseItem
                         {
                             Descripcion = string.Empty,
-                            Texto = $"{Precio:N2} x {Cantidad}{UnidadTexto}"
+                            Texto = $"{Precio:N2} x {Cantidad:N0}{UnidadTexto}"
                         }
                     ];
                 }
@@ -64,7 +64,7 @@ namespace Mercader.Domain.Entities
                 return Articulos.Select(a => new DesgloseItem
                 {
                     Descripcion = a.Descripcion ?? string.Empty,
-                    Texto = $"{a.PrecioUnitario:N2} x {a.Cantidad}{a.UnidadTexto}"
+                    Texto = $"{a.PrecioUnitario:N2} x {a.Cantidad:N0}{a.UnidadTexto}"
                 }).ToList();
             }
         }
