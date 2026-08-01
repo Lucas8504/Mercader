@@ -175,6 +175,39 @@ namespace Mercader.ViewModels
 
             await ExecuteBusyAsync(async () =>
             {
+                // Obtener artículos del encargo
+                var articulosEncargo = await _repository.GetArticulosEncargoAsync(encargo.Id);
+
+                // Crear venta a partir del encargo
+                var descripcionVenta = string.IsNullOrWhiteSpace(encargo.Descripcion)
+                    ? encargo.Nombre
+                    : $"{encargo.Descripcion} ({encargo.Nombre})";
+
+                var venta = new Ventas
+                {
+                    Descripcion = descripcionVenta,
+                    Precio = articulosEncargo.Sum(a => a.Total),
+                    Cantidad = 1,
+                    Fecha = DateTime.Now
+                };
+
+                await _repository.SaveVentasAsync(venta);
+
+                // Transferir artículos del encargo a la venta
+                foreach (var ae in articulosEncargo)
+                {
+                    var av = new ArticuloVenta
+                    {
+                        VentaId = venta.Id,
+                        Descripcion = ae.Descripcion,
+                        PrecioUnitario = ae.PrecioUnitario,
+                        Cantidad = ae.Cantidad,
+                        Orden = ae.Orden
+                    };
+                    await _repository.SaveArticuloVentaAsync(av);
+                }
+
+                // Marcar encargo como entregado
                 encargo.Estado = "ENTREGADO";
                 await _repository.SaveEncargoAsync(encargo);
                 AplicarFiltros();

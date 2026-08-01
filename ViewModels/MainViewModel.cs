@@ -184,7 +184,7 @@ namespace Mercader.ViewModels
                 .Where(g => g.Fecha.Year == hoy.Year && g.Fecha.Month == hoy.Month)
                 .Sum(g => g.Monto * g.Cantidad);
             var encargos = Encargos
-                .Where(e => e.Fecha.Year == hoy.Year && e.Fecha.Month == hoy.Month)
+                .Where(e => e.Fecha.Year == hoy.Year && e.Fecha.Month == hoy.Month && e.Estado != "ENTREGADO")
                 .Sum(e => e.Precio * e.Cantidad);
             var ganancias = ventas - gastos;
             var margen = ventas > 0 ? (ganancias / ventas) * 100 : 0;

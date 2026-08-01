@@ -23,7 +23,8 @@ namespace Mercader.Services.Calculators
 
         public decimal CalcularTotalEncargos(IEnumerable<Encargo> encargos, string periodo)
         {
-            var filtradas = FiltrarPorPeriodo(encargos, periodo);
+            var filtradas = FiltrarPorPeriodo(encargos, periodo)
+                .Where(e => e.Estado != "ENTREGADO");
             return filtradas.Sum(e => e.Precio * e.Cantidad);
         }
 
@@ -66,7 +67,8 @@ namespace Mercader.Services.Calculators
 
         public List<(string Periodo, decimal Total)> AgruparEncargosPorPeriodo(IEnumerable<Encargo> encargos, string periodo)
         {
-            return AgruparPorPeriodo(encargos, periodo, e => e.Fecha, e => e.Precio * e.Cantidad);
+            var encargosPendientes = encargos.Where(e => e.Estado != "ENTREGADO");
+            return AgruparPorPeriodo(encargosPendientes, periodo, e => e.Fecha, e => e.Precio * e.Cantidad);
         }
 
         private List<(string Periodo, decimal Total)> AgruparPorPeriodo<T>(
