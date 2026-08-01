@@ -188,7 +188,7 @@
                                             TextColor="#FF9800" />
                                     </Grid>
 
-                                    <Grid Grid.Column="1" HorizontalOptions="End">
+                                    <Grid Grid.Column="1" HorizontalOptions="Start">
                                         <Grid.RowDefinitions>
                                             <RowDefinition Height="Auto" />
                                             <RowDefinition Height="Auto" />
@@ -204,19 +204,19 @@
                                         <VerticalStackLayout
                                             Grid.Row="1"
                                             Spacing="2"
-                                            HorizontalOptions="End">
+                                            HorizontalOptions="Start">
                                             <BindableLayout.ItemsSource>
                                                 <Binding Path="DesgloseItems" />
                                             </BindableLayout.ItemsSource>
                                             <BindableLayout.ItemTemplate>
                                                 <DataTemplate x:DataType="models:DesgloseItem">
-                                                    <VerticalStackLayout Spacing="0" HorizontalOptions="End">
+                                                    <VerticalStackLayout Spacing="0" HorizontalOptions="Start">
                                                         <!-- Descripción del artículo (si existe) -->
                                                         <Label
                                                             Text="{Binding Descripcion}"
                                                             FontSize="10"
                                                             TextColor="{AppThemeBinding Light={StaticResource TextSecondary}, Dark={StaticResource TextSecondaryDark}}"
-                                                            HorizontalTextAlignment="End"
+                                                            HorizontalTextAlignment="Start"
                                                             LineBreakMode="TailTruncation"
                                                             IsVisible="{Binding Descripcion, Converter={StaticResource StringNotEmpty}}" />
                                                         <!-- Texto del desglose ($Precio x Cantidad) -->
@@ -224,7 +224,7 @@
                                                             Text="{Binding Texto}"
                                                             FontSize="13"
                                                             TextColor="{AppThemeBinding Light={StaticResource TextPrimary}, Dark={StaticResource TextPrimaryDark}}"
-                                                            HorizontalTextAlignment="End" />
+                                                            HorizontalTextAlignment="Start" />
                                                     </VerticalStackLayout>
                                                 </DataTemplate>
                                             </BindableLayout.ItemTemplate>

@@ -167,6 +167,11 @@ public partial class GastoModal : ContentPage
         TotalLabel.Text = $"${total:N0}";
     }
 
+    private void OnArticuloFieldChanged(object? sender, TextChangedEventArgs e)
+    {
+        ActualizarTotal();
+    }
+
     // ===== AUTOCOMPLETADO =====
 
     private void OnDescripcionGastoTextChanged(object sender, TextChangedEventArgs e)

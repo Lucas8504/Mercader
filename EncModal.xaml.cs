@@ -104,20 +104,6 @@ public partial class EncModal : ContentPage
             return;
         }
 
-        var precioResult = ValidationService.ParseDecimal(PrecioEntry.Text);
-        if (!precioResult.Success)
-        {
-            await DisplayAlert("Error", precioResult.Error ?? "Precio inválido", "OK");
-            return;
-        }
-
-        var cantidadResult = ValidationService.ParseDecimal(CantidadEntry.Text);
-        if (!cantidadResult.Success)
-        {
-            await DisplayAlert("Error", cantidadResult.Error ?? "Cantidad inválida", "OK");
-            return;
-        }
-
         // Validar artículos
         if (_articulos.Count == 0)
         {
@@ -277,6 +263,11 @@ public partial class EncModal : ContentPage
     {
         var total = _articulos.Sum(a => a.Total);
         TotalLabel.Text = $"${total:N0}";
+    }
+
+    private void OnArticuloFieldChanged(object? sender, TextChangedEventArgs e)
+    {
+        ActualizarTotal();
     }
 
     // ===== AUTOCOMPLETADO =====

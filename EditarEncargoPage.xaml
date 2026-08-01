@@ -224,7 +224,8 @@
                                             Keyboard="Numeric"
                                             Placeholder="0"
                                             PlaceholderColor="{AppThemeBinding Light={StaticResource TextPlaceholder}, Dark={StaticResource TextPlaceholderDark}}"
-                                            Text="{Binding PrecioUnitario, Mode=TwoWay}"
+                                            Text="{Binding PrecioUnitario, Mode=TwoWay, Converter={StaticResource DecimalToEmpty}}"
+                                            TextChanged="OnArticuloFieldChanged"
                                             TextColor="{AppThemeBinding Light={StaticResource TextPrimary}, Dark={StaticResource TextPrimaryDark}}"
                                             Visual="Material" />
                                     </VerticalStackLayout>
@@ -240,7 +241,8 @@
                                             Keyboard="Numeric"
                                             Placeholder="1"
                                             PlaceholderColor="{AppThemeBinding Light={StaticResource TextPlaceholder}, Dark={StaticResource TextPlaceholderDark}}"
-                                            Text="{Binding Cantidad, Mode=TwoWay}"
+                                            Text="{Binding Cantidad, Mode=TwoWay, Converter={StaticResource DecimalToEmpty}}"
+                                            TextChanged="OnArticuloFieldChanged"
                                             TextColor="{AppThemeBinding Light={StaticResource TextPrimary}, Dark={StaticResource TextPrimaryDark}}"
                                             Visual="Material" />
                                     </VerticalStackLayout>

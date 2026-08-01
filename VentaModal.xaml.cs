@@ -191,6 +191,11 @@ public partial class VentaModal : ContentPage
         TotalLabel.Text = $"${total:N0}";
     }
 
+    private void OnArticuloFieldChanged(object? sender, TextChangedEventArgs e)
+    {
+        ActualizarTotal();
+    }
+
     // ===== AUTOCOMPLETADO =====
 
     private void OnDescripcionTextChanged(object sender, TextChangedEventArgs e)

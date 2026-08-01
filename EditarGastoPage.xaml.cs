@@ -141,4 +141,9 @@ public partial class EditarGastoPage : ContentPage
         var total = _articulos.Sum(a => a.Total);
         TotalLabel.Text = $"${total:N0}";
     }
+
+    private void OnArticuloFieldChanged(object? sender, TextChangedEventArgs e)
+    {
+        ActualizarTotal();
+    }
 }
