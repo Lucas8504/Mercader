@@ -210,6 +210,59 @@ public partial class EncModal : ContentPage
         await Navigation.PopModalAsync();
     }
 
+    // ===== SELECTOR DE CONTACTOS =====
+
+    private async void OnContactosButtonClicked(object sender, EventArgs e)
+    {
+        try
+        {
+            // Verificar permisos de contactos
+            var status = await Permissions.CheckStatusAsync<Permissions.ContactsRead>();
+            
+            if (status != PermissionStatus.Granted)
+            {
+                status = await Permissions.RequestAsync<Permissions.ContactsRead>();
+                
+                if (status != PermissionStatus.Granted)
+                {
+                    await DisplayAlert("Permiso requerido", 
+                        "Para acceder a los contactos, necesitamos permiso. Puedes habilitarlo en Ajustes.", "OK");
+                    return;
+                }
+            }
+
+            // Abrir selector de contactos del dispositivo
+            var contact = await Microsoft.Maui.ApplicationModel.Communication.Contacts.PickContactAsync();
+            
+            if (contact != null)
+            {
+                // Usar el nombre completo del contacto
+                EncargoEntry.Text = contact.DisplayName;
+                
+                // Si el contacto tiene un teléfono, también llenarlo
+                var phone = contact.Phones?.FirstOrDefault();
+                if (phone != null && string.IsNullOrWhiteSpace(ContactoEntry.Text))
+                {
+                    ContactoEntry.Text = phone.PhoneNumber;
+                }
+            }
+        }
+        catch (FeatureNotSupportedException)
+        {
+            await DisplayAlert("Error", "Los contactos no son compatibles con este dispositivo.", "OK");
+        }
+        catch (PermissionException)
+        {
+            await DisplayAlert("Permiso denegado", 
+                "No se pudo acceder a los contactos. Habilitá el permiso en Ajustes.", "OK");
+        }
+        catch (Exception ex)
+        {
+            System.Diagnostics.Debug.WriteLine($"[CONTACTS] Error al seleccionar contacto: {ex.Message}");
+            await DisplayAlert("Error", "No se pudo acceder a los contactos.", "OK");
+        }
+    }
+
     // ===== MULTI-ARTÍCULO =====
 
     private void OnAgregarArticuloClicked(object sender, EventArgs e)

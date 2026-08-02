@@ -23,20 +23,32 @@
                 TextColor="{AppThemeBinding Light={StaticResource TextPrimary}, Dark={StaticResource TextPrimaryDark}}"
                 HorizontalOptions="Center" />
 
-            <!-- Campo de cliente con autocompletado -->
+            <!-- Campo de cliente con autocompletado y selector de contactos -->
             <Frame
                 BackgroundColor="{AppThemeBinding Light={StaticResource CardAltBackground}, Dark={StaticResource CardAltBackgroundDark}}"
                 CornerRadius="8"
                 Padding="10"
                 HasShadow="False">
-                <Entry
-                    x:Name="EncargoEntry"
-                    Placeholder="Nombre del cliente"
-                    PlaceholderColor="{AppThemeBinding Light={StaticResource TextPlaceholder}, Dark={StaticResource TextPlaceholderDark}}"
-                    TextColor="{AppThemeBinding Light={StaticResource TextPrimary}, Dark={StaticResource TextPrimaryDark}}"
-                    BackgroundColor="Transparent"
-                    Visual="Material"
-                    TextChanged="OnNombreEncargoTextChanged" />
+                <Grid ColumnDefinitions="*,Auto" VerticalOptions="Center">
+                    <Entry
+                        x:Name="EncargoEntry"
+                        Placeholder="Nombre del cliente"
+                        PlaceholderColor="{AppThemeBinding Light={StaticResource TextPlaceholder}, Dark={StaticResource TextPlaceholderDark}}"
+                        TextColor="{AppThemeBinding Light={StaticResource TextPrimary}, Dark={StaticResource TextPrimaryDark}}"
+                        BackgroundColor="Transparent"
+                        Visual="Material"
+                        TextChanged="OnNombreEncargoTextChanged"
+                        Grid.Column="0" />
+                    <Button
+                        x:Name="ContactosButton"
+                        Text="👤"
+                        BackgroundColor="Transparent"
+                        FontSize="18"
+                        Padding="8,0"
+                        Clicked="OnContactosButtonClicked"
+                        Grid.Column="1"
+                        VerticalOptions="Center" />
+                </Grid>
             </Frame>
 
             <!-- Lista de sugerencias para autocompletado de nombres -->
