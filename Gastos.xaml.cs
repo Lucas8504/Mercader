@@ -80,9 +80,6 @@ namespace Mercader
                         // Efecto visual de selección
                         await frame.ScaleTo(0.95, 100);
                         await frame.ScaleTo(1, 100);
-
-                        // Navegar a detalles
-                        await Navigation.PushAsync(new DetalleGasto(gasto, _repository));
                     }
                 }
             }

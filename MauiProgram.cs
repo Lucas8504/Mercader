@@ -68,7 +68,6 @@ namespace Mercader
             builder.Services.AddTransient<MainPage>();
             builder.Services.AddTransient<Gastos>();
             builder.Services.AddTransient<Encargos>();
-            builder.Services.AddTransient<DetalleEncargo>();
             builder.Services.AddTransient<EditarEncargoPage>();
             builder.Services.AddTransient<Venta>();
             builder.Services.AddTransient<Configuracion>();

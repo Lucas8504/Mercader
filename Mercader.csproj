@@ -115,15 +115,6 @@
 	</ItemGroup>
 
 	<ItemGroup>
-	  <MauiXaml Update="DetalleEncargo.xaml">
-	    <Generator>MSBuild:Compile</Generator>
-	  </MauiXaml>
-	  <MauiXaml Update="DetalleGasto.xaml">
-	    <Generator>MSBuild:Compile</Generator>
-	  </MauiXaml>
-	  <MauiXaml Update="DetalleVenta.xaml">
-	    <Generator>MSBuild:Compile</Generator>
-	  </MauiXaml>
 	  <MauiXaml Update="EditarEncargoPage.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>

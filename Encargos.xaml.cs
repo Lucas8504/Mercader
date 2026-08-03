@@ -307,7 +307,6 @@ namespace Mercader
                 {
                     await frame.ScaleTo(0.95, 100);
                     await frame.ScaleTo(1, 100);
-                    await Navigation.PushAsync(new DetalleEncargo(encargo, _repository));
                 }
             }
             catch (Exception ex)
@@ -367,7 +366,7 @@ namespace Mercader
         {
             try
             {
-                await Navigation.PushAsync(new DetalleEncargo(encargo, _repository));
+                // Detalle eliminado - los datos se muestran en las tarjetas
             }
             catch (Exception ex)
             {
