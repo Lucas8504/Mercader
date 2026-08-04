@@ -121,6 +121,7 @@
                                         Placeholder="Nombre del artículo"
                                         PlaceholderColor="{AppThemeBinding Light={StaticResource TextPlaceholder}, Dark={StaticResource TextPlaceholderDark}}"
                                         Text="{Binding Descripcion, Mode=TwoWay}"
+                                        TextChanged="OnArticuloFieldChanged"
                                         TextColor="{AppThemeBinding Light={StaticResource TextPrimary}, Dark={StaticResource TextPrimaryDark}}"
                                         Visual="Material" />
                                 </VerticalStackLayout>
@@ -202,6 +203,60 @@
                 FontSize="14"
                 Text="+ Agregar artículo"
                 TextColor="White" />
+
+            <!--  Lista de sugerencias para autocompletado de artículos  -->
+            <Frame
+                x:Name="ArticuloSuggestionsFrame"
+                Padding="0"
+                BackgroundColor="{AppThemeBinding Light={StaticResource CardAltBackground}, Dark={StaticResource CardAltBackgroundDark}}"
+                CornerRadius="8"
+                HasShadow="False"
+                IsVisible="False"
+                MaximumHeightRequest="200">
+                <CollectionView
+                    x:Name="ArticuloSuggestionsView"
+                    SelectionMode="Single"
+                    SelectionChanged="OnArticuloSuggestionSelected">
+                    <CollectionView.ItemTemplate>
+                        <DataTemplate x:DataType="x:String">
+                            <Grid
+                                Padding="12,10"
+                                ColumnSpacing="0"
+                                BackgroundColor="Transparent">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="Auto" />
+                                </Grid.ColumnDefinitions>
+
+                                <Grid.GestureRecognizers>
+                                    <TapGestureRecognizer Tapped="OnArticuloSuggestionTapped" />
+                                </Grid.GestureRecognizers>
+
+                                <Label
+                                    Grid.Column="0"
+                                    Text="{Binding .}"
+                                    TextColor="{AppThemeBinding Light={StaticResource TextPrimary}, Dark={StaticResource TextPrimaryDark}}"
+                                    FontSize="15"
+                                    VerticalOptions="Center" />
+
+                                <Label
+                                    Grid.Column="1"
+                                    Text="✕"
+                                    TextColor="#FF5252"
+                                    FontSize="14"
+                                    FontAttributes="Bold"
+                                    VerticalOptions="Center"
+                                    HorizontalOptions="End"
+                                    Padding="8,4">
+                                    <Label.GestureRecognizers>
+                                        <TapGestureRecognizer Tapped="OnArticuloDismissSuggestionTapped" />
+                                    </Label.GestureRecognizers>
+                                </Label>
+                            </Grid>
+                        </DataTemplate>
+                    </CollectionView.ItemTemplate>
+                </CollectionView>
+            </Frame>
 
             <!--  Total calculado  -->
             <Frame

@@ -36,6 +36,9 @@ namespace Mercader.Data.Interfaces
         Task<List<string>> GetDistinctGastosDescriptionsAsync();
         Task<List<string>> GetDistinctEncargosDescriptionsAsync();
         Task<List<string>> GetDistinctEncargosNombresAsync();
+        Task<List<string>> GetDistinctArticulosGastoDescriptionsAsync();
+        Task<List<string>> GetDistinctArticulosVentaDescriptionsAsync();
+        Task<List<string>> GetDistinctArticulosEncargoDescriptionsAsync();
         Task DismissAutocompleteDescriptionAsync(string descripcion, string entityType);
         Task ReinstateAutocompleteDescriptionAsync(string descripcion, string entityType);
 

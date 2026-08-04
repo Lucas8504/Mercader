@@ -9,6 +9,8 @@ public partial class EditarEncargoPage : ContentPage
     private readonly IDataRepository _repository;
     private readonly Encargo _encargo;
     private readonly ObservableCollection<ArticuloEncargo> _articulos = new();
+    private List<string> _todasLasDescripcionesArticulos = new();
+    private ArticuloEncargo? _currentArticulo;
 
     public EditarEncargoPage(Encargo encargo, IDataRepository repository)
     {
@@ -31,6 +33,16 @@ public partial class EditarEncargoPage : ContentPage
         var articulos = await _repository.GetArticulosEncargoAsync(_encargo.Id);
         foreach (var articulo in articulos)
             _articulos.Add(articulo);
+
+        // Cargar sugerencias de autocompletado
+        try
+        {
+            _todasLasDescripcionesArticulos = await _repository.GetDistinctArticulosEncargoDescriptionsAsync();
+        }
+        catch (Exception ex)
+        {
+            System.Diagnostics.Debug.WriteLine($"[AUTOCOMPLETE] Error al cargar sugerencias: {ex.Message}");
+        }
 
         ActualizarTotal();
     }
@@ -215,5 +227,79 @@ public partial class EditarEncargoPage : ContentPage
     private void OnArticuloFieldChanged(object? sender, TextChangedEventArgs e)
     {
         ActualizarTotal();
+        
+        // Autocompletado de artículos
+        if (sender is Entry entry && entry.BindingContext is ArticuloEncargo articulo)
+        {
+            _currentArticulo = articulo;
+            var texto = e.NewTextValue?.Trim() ?? "";
+            
+            if (texto.Length == 0 || _todasLasDescripcionesArticulos.Count == 0)
+            {
+                ArticuloSuggestionsFrame.IsVisible = false;
+                return;
+            }
+            
+            var filtradas = _todasLasDescripcionesArticulos
+                .Where(d => d.Contains(texto, StringComparison.OrdinalIgnoreCase))
+                .ToList();
+            
+            if (filtradas.Count > 0)
+            {
+                ArticuloSuggestionsView.ItemsSource = filtradas;
+                ArticuloSuggestionsFrame.IsVisible = true;
+            }
+            else
+            {
+                ArticuloSuggestionsFrame.IsVisible = false;
+            }
+        }
+    }
+
+    // ===== AUTOCOMPLETADO DE ARTÍCULOS =====
+
+    private void OnArticuloSuggestionSelected(object sender, SelectionChangedEventArgs e)
+    {
+        if (e.CurrentSelection.FirstOrDefault() is string descripcion && _currentArticulo is not null)
+        {
+            _currentArticulo.Descripcion = descripcion;
+            ArticuloSuggestionsFrame.IsVisible = false;
+            ActualizarTotal();
+        }
+    }
+
+    private void OnArticuloSuggestionTapped(object sender, TappedEventArgs e)
+    {
+        if (sender is Grid grid && grid.BindingContext is string descripcion && _currentArticulo is not null)
+        {
+            _currentArticulo.Descripcion = descripcion;
+            ArticuloSuggestionsFrame.IsVisible = false;
+            ActualizarTotal();
+        }
+    }
+
+    private async void OnArticuloDismissSuggestionTapped(object sender, TappedEventArgs e)
+    {
+        if (sender is Label label && label.BindingContext is string descripcion)
+        {
+            try
+            {
+                await _repository.DismissAutocompleteDescriptionAsync(descripcion, "ArticuloEncargo");
+                _todasLasDescripcionesArticulos.Remove(descripcion);
+
+                if (ArticuloSuggestionsFrame.IsVisible && ArticuloSuggestionsView.ItemsSource is List<string> filtradas)
+                {
+                    filtradas.Remove(descripcion);
+                    if (filtradas.Count == 0)
+                        ArticuloSuggestionsFrame.IsVisible = false;
+                    else
+                        ArticuloSuggestionsView.ItemsSource = filtradas.ToList();
+                }
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"[AUTOCOMPLETE] Error al descartar sugerencia de artículo: {ex.Message}");
+            }
+        }
     }
 }

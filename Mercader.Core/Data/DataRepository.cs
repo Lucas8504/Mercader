@@ -459,6 +459,66 @@ namespace Mercader.Data
                 .ToList();
         }
 
+        public async Task<List<string>> GetDistinctArticulosGastoDescriptionsAsync()
+        {
+            if (_database is null)
+                throw new InvalidOperationException("La base de datos no está inicializada.");
+
+            var descriptions = await _database.QueryAsync<ArticuloGasto>(
+                @"SELECT DISTINCT a.Descripcion
+                  FROM ArticulosGasto a
+                  LEFT JOIN DescripcionOculta d ON a.Descripcion = d.Descripcion AND d.EntityType = 'ArticuloGasto'
+                  WHERE a.Descripcion IS NOT NULL
+                    AND a.Descripcion != ''
+                    AND d.Id IS NULL
+                  ORDER BY a.Descripcion");
+
+            return descriptions
+                .Where(a => a.Descripcion is not null)
+                .Select(a => a.Descripcion!)
+                .ToList();
+        }
+
+        public async Task<List<string>> GetDistinctArticulosVentaDescriptionsAsync()
+        {
+            if (_database is null)
+                throw new InvalidOperationException("La base de datos no está inicializada.");
+
+            var descriptions = await _database.QueryAsync<ArticuloVenta>(
+                @"SELECT DISTINCT a.Descripcion
+                  FROM ArticulosVenta a
+                  LEFT JOIN DescripcionOculta d ON a.Descripcion = d.Descripcion AND d.EntityType = 'ArticuloVenta'
+                  WHERE a.Descripcion IS NOT NULL
+                    AND a.Descripcion != ''
+                    AND d.Id IS NULL
+                  ORDER BY a.Descripcion");
+
+            return descriptions
+                .Where(a => a.Descripcion is not null)
+                .Select(a => a.Descripcion!)
+                .ToList();
+        }
+
+        public async Task<List<string>> GetDistinctArticulosEncargoDescriptionsAsync()
+        {
+            if (_database is null)
+                throw new InvalidOperationException("La base de datos no está inicializada.");
+
+            var descriptions = await _database.QueryAsync<ArticuloEncargo>(
+                @"SELECT DISTINCT a.Descripcion
+                  FROM ArticulosEncargo a
+                  LEFT JOIN DescripcionOculta d ON a.Descripcion = d.Descripcion AND d.EntityType = 'ArticuloEncargo'
+                  WHERE a.Descripcion IS NOT NULL
+                    AND a.Descripcion != ''
+                    AND d.Id IS NULL
+                  ORDER BY a.Descripcion");
+
+            return descriptions
+                .Where(a => a.Descripcion is not null)
+                .Select(a => a.Descripcion!)
+                .ToList();
+        }
+
         public async Task DismissAutocompleteDescriptionAsync(string descripcion, string entityType)
         {
             if (_database is null)
