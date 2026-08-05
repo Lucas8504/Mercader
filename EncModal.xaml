@@ -460,22 +460,22 @@
                 <picker:SfDatePicker.SelectedTextStyle>
                     <picker:PickerTextStyle
                         TextColor="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDark}}" />
-                        </picker:SfDatePicker.SelectedTextStyle>
+                </picker:SfDatePicker.SelectedTextStyle>
 
-                        <picker:SfDatePicker.FooterView>
-                            <picker:PickerFooterView
-                                Height="50"
-                                Background="{AppThemeBinding Light={StaticResource CardBackground}, Dark={StaticResource CardBackgroundDark}}"
-                                DividerColor="{AppThemeBinding Light={StaticResource DividerColor}, Dark={StaticResource DividerColorDark}}"
-                                OkButtonText="OK"
-                                CancelButtonText="Cancelar">
-                                <picker:PickerFooterView.TextStyle>
-                                    <picker:PickerTextStyle
-                                        TextColor="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDark}}"
-                                        FontAttributes="Bold" />
-                                </picker:PickerFooterView.TextStyle>
-                            </picker:PickerFooterView>
-                        </picker:SfDatePicker.FooterView>
+                <picker:SfDatePicker.FooterView>
+                    <picker:PickerFooterView
+                        Height="50"
+                        Background="{AppThemeBinding Light={StaticResource CardBackground}, Dark={StaticResource CardBackgroundDark}}"
+                        DividerColor="{AppThemeBinding Light={StaticResource DividerColor}, Dark={StaticResource DividerColorDark}}"
+                        OkButtonText="OK"
+                        CancelButtonText="Cancelar">
+                        <picker:PickerFooterView.TextStyle>
+                            <picker:PickerTextStyle
+                                TextColor="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDark}}"
+                                FontAttributes="Bold" />
+                        </picker:PickerFooterView.TextStyle>
+                    </picker:PickerFooterView>
+                </picker:SfDatePicker.FooterView>
 
             </picker:SfDatePicker>
 

@@ -42,6 +42,15 @@ namespace Mercader
                     editText.BackgroundTintList = ColorStateList.ValueOf(Colors.Transparent.ToPlatform());
                 }
             });
+
+            // Eliminar underline de Picker en Android
+            Microsoft.Maui.Handlers.PickerHandler.Mapper.AppendToMapping("NoUnderline", (handler, picker) =>
+            {
+                if (handler.PlatformView is Android.Widget.EditText editText)
+                {
+                    editText.BackgroundTintList = ColorStateList.ValueOf(Colors.Transparent.ToPlatform());
+                }
+            });
 #endif
             
             // Data
