@@ -1,24 +1,49 @@
-using Syncfusion.Pdf;
-using Syncfusion.Pdf.Graphics;
-using Syncfusion.Pdf.Grid;
-using Syncfusion.Drawing;
+using PdfSharp.Pdf;
+using PdfSharp.Drawing;
+using PdfSharp.Fonts;
 using Mercader.Domain.Entities;
 using Mercader.Models;
 using Mercader.Services.Interfaces;
 
 namespace Mercader.Services;
 
+/// <summary>
+/// Font resolver that provides embedded font bytes to PDFsharp.
+/// Required because PDFsharp on Android/iOS cannot access system fonts.
+/// </summary>
+internal sealed class PdfSharpFontResolver : IFontResolver
+{
+    private readonly byte[] _fontBytes;
+    private readonly string _familyName;
+
+    public PdfSharpFontResolver(byte[] fontBytes, string familyName = "OpenSans")
+    {
+        _fontBytes = fontBytes;
+        _familyName = familyName;
+    }
+
+    public FontResolverInfo? ResolveTypeface(string familyName, bool isBold, bool isItalic)
+    {
+        return new FontResolverInfo(_familyName, isBold, isItalic);
+    }
+
+    public byte[]? GetFont(string faceName)
+    {
+        return _fontBytes;
+    }
+}
+
 public sealed class ExportPdfService : IExportPdfService
 {
-    // ── Professional color palette ──
-    private static readonly PdfColor BluePrimary  = new(41, 128, 185);
-    private static readonly PdfColor BlueDark     = new(31, 97, 141);
-    private static readonly PdfColor BlueLight    = new(52, 152, 219);
-    private static readonly PdfColor SectionBg    = new(245, 247, 250);
-    private static readonly PdfColor BorderLight  = new(230, 232, 235);
-    private static readonly PdfColor TextDark     = new(44, 62, 80);
-    private static readonly PdfColor TextMuted    = new(160, 165, 170);
-    private static readonly PdfColor GreenProfit  = new(39, 174, 96);
+    private static readonly XColor BluePrimary  = XColor.FromArgb(255, 41, 128, 185);
+    private static readonly XColor BlueDark     = XColor.FromArgb(255, 31, 97, 141);
+    private static readonly XColor BlueLight    = XColor.FromArgb(255, 52, 152, 219);
+    private static readonly XColor SectionBg    = XColor.FromArgb(255, 245, 247, 250);
+    private static readonly XColor BorderLight  = XColor.FromArgb(255, 230, 232, 235);
+    private static readonly XColor TextDark     = XColor.FromArgb(255, 44, 62, 80);
+    private static readonly XColor TextMuted    = XColor.FromArgb(255, 160, 165, 170);
+    private static readonly XColor GreenProfit  = XColor.FromArgb(255, 39, 174, 96);
+    private static readonly XColor MonthBg      = XColor.FromArgb(255, 240, 243, 248);
 
     private const float Margin       = 50f;
     private const float FooterHeight = 35f;
@@ -29,110 +54,56 @@ public sealed class ExportPdfService : IExportPdfService
         byte[]? fontBytes = null)
     {
         using var document = new PdfDocument();
-        var pages = new List<PdfPage>();
 
-        // Track every page (including auto-pagination from tables) for the footer
-        document.Pages.PageAdded += (_, args) => pages.Add(args.Page);
-
-        // ── Fonts ──
-        PdfFont titleFont, subtitleFont, sectionFont, headerFont, cellFont, smallFont;
-
+        // ── Font resolver ──
+        string fontFamily = "OpenSans";
         if (fontBytes != null)
         {
-            titleFont    = new PdfTrueTypeFont(new MemoryStream(fontBytes), 22);
-            subtitleFont = new PdfTrueTypeFont(new MemoryStream(fontBytes), 10);
-            sectionFont  = new PdfTrueTypeFont(new MemoryStream(fontBytes), 12, PdfFontStyle.Bold);
-            headerFont   = new PdfTrueTypeFont(new MemoryStream(fontBytes), 10, PdfFontStyle.Bold);
-            cellFont     = new PdfTrueTypeFont(new MemoryStream(fontBytes), 10);
-            smallFont    = new PdfTrueTypeFont(new MemoryStream(fontBytes), 8);
+            GlobalFontSettings.FontResolver = new PdfSharpFontResolver(fontBytes, fontFamily);
         }
         else
         {
-            titleFont    = new PdfStandardFont(PdfFontFamily.Helvetica, 22, PdfFontStyle.Bold);
-            subtitleFont = new PdfStandardFont(PdfFontFamily.Helvetica, 10, PdfFontStyle.Regular);
-            sectionFont  = new PdfStandardFont(PdfFontFamily.Helvetica, 12, PdfFontStyle.Bold);
-            headerFont   = new PdfStandardFont(PdfFontFamily.Helvetica, 10, PdfFontStyle.Bold);
-            cellFont     = new PdfStandardFont(PdfFontFamily.Helvetica, 10, PdfFontStyle.Regular);
-            smallFont    = new PdfStandardFont(PdfFontFamily.Helvetica, 8, PdfFontStyle.Regular);
+            fontFamily = "Arial";
         }
 
-        // ── First page ──
-        var page = document.Pages.Add();
-        var graphics = page.Graphics;
-        float pageWidth = page.GetClientSize().Width;
+        XFont titleFont    = new(fontFamily, 22, XFontStyleEx.Bold);
+        XFont subtitleFont = new(fontFamily, 10, XFontStyleEx.Regular);
+        XFont sectionFont  = new(fontFamily, 12, XFontStyleEx.Bold);
+        XFont headerFont   = new(fontFamily, 10, XFontStyleEx.Bold);
+        XFont cellFont     = new(fontFamily, 10, XFontStyleEx.Regular);
+        XFont smallFont    = new(fontFamily, 8,  XFontStyleEx.Regular);
+
+        string dateText = DateTime.Now.ToString("dd/MM/yyyy HH:mm");
+
+        // ── Page 1 ──
+        int pageNum = 1;
+        var page = document.AddPage();
+        var gfx = XGraphics.FromPdfPage(page);
+        float pageWidth  = (float)page.Width.Point;
         float usableWidth = pageWidth - Margin * 2;
         float y = 0;
 
-        // ════════════════════════════════════════════
-        //  HEADER BAND  (full‑width blue banner)
-        // ════════════════════════════════════════════
-        graphics.DrawRectangle(new PdfSolidBrush(BluePrimary),
-            new RectangleF(0, 0, pageWidth, 72));
-
-        graphics.DrawString("Balance Financiero", titleFont, PdfBrushes.White,
-            new PointF(Margin, 16));
+        // ── HEADER BAND ──
+        gfx.DrawRectangle(new XSolidBrush(BluePrimary), 0, 0, pageWidth, 72);
+        gfx.DrawString("Balance Financiero", titleFont, XBrushes.White,
+            new XPoint(Margin, 16));
 
         string periodText = string.IsNullOrWhiteSpace(data.Periodo)
-            ? $"Generado: {DateTime.Now:dd/MM/yyyy HH:mm}"
-            : $"Periodo: {data.Periodo}  |  Generado: {DateTime.Now:dd/MM/yyyy HH:mm}";
-        graphics.DrawString(periodText, subtitleFont, PdfBrushes.White,
-            new PointF(Margin, 46));
+            ? $"Generado: {dateText}"
+            : $"Periodo: {data.Periodo}  |  Generado: {dateText}";
+        gfx.DrawString(periodText, subtitleFont, PdfBrushesWhite(),
+            new XPoint(Margin, 46));
 
         y = 92;
 
-        // ════════════════════════════════════════════
-        //  SECTION — RESUMEN FINANCIERO
-        // ════════════════════════════════════════════
-        y = DrawSectionHeader(graphics, "Resumen Financiero", sectionFont,
+        // ── RESUMEN FINANCIERO ──
+        y = DrawSectionHeader(gfx, "Resumen Financiero", sectionFont,
             Margin, usableWidth, y);
 
-        // ── Financial table ──
-        var grid = new PdfGrid();
-        grid.Columns.Add(2);
+        y = DrawFinancialSummaryTable(gfx, data, headerFont, cellFont,
+            Margin, usableWidth, y);
 
-        //  Header row  — blue background, white text
-        var headerRow = grid.Headers.Add(1)[0];
-        headerRow.Style.BackgroundBrush = new PdfSolidBrush(BluePrimary);
-        headerRow.Style.TextBrush = PdfBrushes.White;
-        headerRow.Style.Font = headerFont;
-        headerRow.Cells[0].Value = "Métrica";
-        headerRow.Cells[1].Value = "Valor";
-        headerRow.Cells[0].StringFormat = new PdfStringFormat(
-            PdfTextAlignment.Left, PdfVerticalAlignment.Middle);
-        headerRow.Cells[1].StringFormat = new PdfStringFormat(
-            PdfTextAlignment.Right, PdfVerticalAlignment.Middle);
-
-        //  Data rows
-        AddDataRow(grid, "Total Ventas",   $"$ {data.TotalVentas:N2}", cellFont);
-        AddDataRow(grid, "Total Gastos",   $"$ {data.TotalGastos:N2}", cellFont);
-        AddDataRow(grid, "Total Encargos", $"$ {data.TotalEncargos:N2}", cellFont);
-
-        //  Ganancias — highlighted row (bold + green)
-        var ganRow = grid.Rows.Add();
-        ganRow.Cells[0].Value = "Ganancias";
-        ganRow.Cells[1].Value = $"$ {data.Ganancias:N2}";
-        ganRow.Cells[0].Style.Font = headerFont;
-        ganRow.Cells[1].Style.Font = headerFont;
-        ganRow.Cells[1].Style.TextBrush = new PdfSolidBrush(GreenProfit);
-        ganRow.Cells[0].StringFormat = new PdfStringFormat(
-            PdfTextAlignment.Left, PdfVerticalAlignment.Middle);
-        ganRow.Cells[1].StringFormat = new PdfStringFormat(
-            PdfTextAlignment.Right, PdfVerticalAlignment.Middle);
-
-        AddDataRow(grid, "Margen", $"{data.Margen:N2} %", cellFont);
-
-        //  Column widths & padding
-        grid.Columns[0].Width = usableWidth * 0.6f;
-        grid.Columns[1].Width = usableWidth * 0.4f;
-        grid.Style.CellPadding = new PdfPaddings(8, 8, 5, 5);
-        grid.Style.Font = cellFont;
-
-        var gridResult = grid.Draw(page, new PointF(Margin, y));
-        y = gridResult.Bounds.Bottom + 22;
-
-        // ════════════════════════════════════════════
-        //  CHARTS
-        // ════════════════════════════════════════════
+        // ── CHARTS ──
         if (charts != null)
         {
             foreach (var (imageBytes, chartTitle) in charts)
@@ -143,22 +114,26 @@ public sealed class ExportPdfService : IExportPdfService
                 try
                 {
                     float chartNeededHeight = 36 + 320 + 15;
-                    if (y + chartNeededHeight > page.GetClientSize().Height - FooterHeight)
+                    if (y + chartNeededHeight > (float)page.Height.Point - FooterHeight)
                     {
-                        page = document.Pages.Add();
-                        graphics = page.Graphics;
+                        DrawFooter(gfx, page, pageNum, smallFont, dateText);
+                        pageNum++;
+                        page = document.AddPage();
+                        gfx.Dispose();
+                        gfx = XGraphics.FromPdfPage(page);
+                        pageWidth = (float)page.Width.Point;
+                        usableWidth = pageWidth - Margin * 2;
                         y = Margin;
                     }
 
-                    // Section header for this chart
-                    y = DrawSectionHeader(graphics, chartTitle, sectionFont,
+                    y = DrawSectionHeader(gfx, chartTitle, sectionFont,
                         Margin, usableWidth, y);
 
                     using var imgStream = new MemoryStream(imageBytes);
-                    var chartImg = new PdfBitmap(imgStream);
+                    var chartImg = XImage.FromStream(imgStream);
 
-                    float imgWidth  = chartImg.Width;
-                    float imgHeight = chartImg.Height;
+                    float imgWidth  = (float)chartImg.PixelWidth * 72f / 96f;
+                    float imgHeight = (float)chartImg.PixelHeight * 72f / 96f;
 
                     if (imgWidth > usableWidth)
                     {
@@ -175,9 +150,7 @@ public sealed class ExportPdfService : IExportPdfService
                     }
 
                     float imgX = Margin + (usableWidth - imgWidth) / 2;
-                    graphics.DrawImage(chartImg,
-                        new PointF(imgX, y),
-                        new SizeF(imgWidth, imgHeight));
+                    gfx.DrawImage(chartImg, imgX, y, imgWidth, imgHeight);
 
                     y += imgHeight + 15;
                 }
@@ -188,10 +161,7 @@ public sealed class ExportPdfService : IExportPdfService
             }
         }
 
-        // ════════════════════════════════════════════
-        //  DETAIL SECTIONS — Ventas, Gastos y
-        //  Encargos del mes actual y anterior
-        // ════════════════════════════════════════════
+        // ── DETAIL SECTIONS ──
         var currentMonthStart = new DateTime(DateTime.Now.Year, DateTime.Now.Month, 1);
         var prevMonthStart = currentMonthStart.AddMonths(-1);
 
@@ -206,42 +176,51 @@ public sealed class ExportPdfService : IExportPdfService
             .Where(v => !v.IsDeleted && v.Fecha >= prevMonthStart && v.Fecha < currentMonthStart)
             .ToList();
 
-        // Section header always visible
-        if (y + 36 > page.GetClientSize().Height - FooterHeight)
+        if (y + 36 > (float)page.Height.Point - FooterHeight)
         {
-            page = document.Pages.Add();
-            graphics = page.Graphics;
+            DrawFooter(gfx, page, pageNum, smallFont, dateText);
+            pageNum++;
+            gfx.Dispose();
+            page = document.AddPage();
+            gfx = XGraphics.FromPdfPage(page);
+            pageWidth = (float)page.Width.Point;
+            usableWidth = pageWidth - Margin * 2;
             y = Margin;
         }
-        y = DrawSectionHeader(graphics, "Detalle de Ventas", sectionFont,
+        y = DrawSectionHeader(gfx, "Detalle de Ventas", sectionFont,
             Margin, usableWidth, y);
 
         if (vtasCurrent.Count > 0)
         {
             var (vtasRows, vtasTotal) = ExpandVentasConArticulos(vtasCurrent, data.ArticulosVenta);
-            y = RenderMonthTable(ref page, ref graphics, y,
+            y = RenderMonthTable(ref page, ref pageNum, ref gfx, ref pageWidth, ref usableWidth, y,
                 Capitalize(currentMonthStart.ToString("MMMM yyyy")),
                 vtasRows, vtasTotal,
                 detHeaders, detWidths, cellFont, headerFont,
-                Margin, usableWidth, document, FooterHeight);
+                Margin, document, FooterHeight, smallFont, dateText);
         }
         else
-            y = DrawNoActivityMessage(graphics, y, cellFont, Margin, usableWidth);
+            y = DrawNoActivityMessage(gfx, y, cellFont, Margin, usableWidth);
 
         if (vtasPrev.Count > 0)
         {
-            if (y + 20 > page.GetClientSize().Height - FooterHeight)
+            if (y + 20 > (float)page.Height.Point - FooterHeight)
             {
-                page = document.Pages.Add();
-                graphics = page.Graphics;
+                DrawFooter(gfx, page, pageNum, smallFont, dateText);
+                pageNum++;
+                gfx.Dispose();
+                page = document.AddPage();
+                gfx = XGraphics.FromPdfPage(page);
+                pageWidth = (float)page.Width.Point;
+                usableWidth = pageWidth - Margin * 2;
                 y = Margin;
             }
             var (vtasPrevRows, vtasPrevTotal) = ExpandVentasConArticulos(vtasPrev, data.ArticulosVenta);
-            y = RenderMonthTable(ref page, ref graphics, y,
+            y = RenderMonthTable(ref page, ref pageNum, ref gfx, ref pageWidth, ref usableWidth, y,
                 Capitalize(prevMonthStart.ToString("MMMM yyyy")),
                 vtasPrevRows, vtasPrevTotal,
                 detHeaders, detWidths, cellFont, headerFont,
-                Margin, usableWidth, document, FooterHeight);
+                Margin, document, FooterHeight, smallFont, dateText);
         }
 
         // — Gastos —
@@ -252,42 +231,51 @@ public sealed class ExportPdfService : IExportPdfService
             .Where(g => !g.IsDeleted && g.Fecha >= prevMonthStart && g.Fecha < currentMonthStart)
             .ToList();
 
-        // Section header always visible
-        if (y + 36 > page.GetClientSize().Height - FooterHeight)
+        if (y + 36 > (float)page.Height.Point - FooterHeight)
         {
-            page = document.Pages.Add();
-            graphics = page.Graphics;
+            DrawFooter(gfx, page, pageNum, smallFont, dateText);
+            pageNum++;
+            gfx.Dispose();
+            page = document.AddPage();
+            gfx = XGraphics.FromPdfPage(page);
+            pageWidth = (float)page.Width.Point;
+            usableWidth = pageWidth - Margin * 2;
             y = Margin;
         }
-        y = DrawSectionHeader(graphics, "Detalle de Gastos", sectionFont,
+        y = DrawSectionHeader(gfx, "Detalle de Gastos", sectionFont,
             Margin, usableWidth, y);
 
         if (gtosCurrent.Count > 0)
         {
             var (gtosRows, gtosTotal) = ExpandGastosConArticulos(gtosCurrent, data.ArticulosGasto);
-            y = RenderMonthTable(ref page, ref graphics, y,
+            y = RenderMonthTable(ref page, ref pageNum, ref gfx, ref pageWidth, ref usableWidth, y,
                 Capitalize(currentMonthStart.ToString("MMMM yyyy")),
                 gtosRows, gtosTotal,
                 detHeaders, detWidths, cellFont, headerFont,
-                Margin, usableWidth, document, FooterHeight);
+                Margin, document, FooterHeight, smallFont, dateText);
         }
         else
-            y = DrawNoActivityMessage(graphics, y, cellFont, Margin, usableWidth);
+            y = DrawNoActivityMessage(gfx, y, cellFont, Margin, usableWidth);
 
         if (gtosPrev.Count > 0)
         {
-            if (y + 20 > page.GetClientSize().Height - FooterHeight)
+            if (y + 20 > (float)page.Height.Point - FooterHeight)
             {
-                page = document.Pages.Add();
-                graphics = page.Graphics;
+                DrawFooter(gfx, page, pageNum, smallFont, dateText);
+                pageNum++;
+                gfx.Dispose();
+                page = document.AddPage();
+                gfx = XGraphics.FromPdfPage(page);
+                pageWidth = (float)page.Width.Point;
+                usableWidth = pageWidth - Margin * 2;
                 y = Margin;
             }
             var (gtosPrevRows, gtosPrevTotal) = ExpandGastosConArticulos(gtosPrev, data.ArticulosGasto);
-            y = RenderMonthTable(ref page, ref graphics, y,
+            y = RenderMonthTable(ref page, ref pageNum, ref gfx, ref pageWidth, ref usableWidth, y,
                 Capitalize(prevMonthStart.ToString("MMMM yyyy")),
                 gtosPrevRows, gtosPrevTotal,
                 detHeaders, detWidths, cellFont, headerFont,
-                Margin, usableWidth, document, FooterHeight);
+                Margin, document, FooterHeight, smallFont, dateText);
         }
 
         // — Encargos —
@@ -301,77 +289,57 @@ public sealed class ExportPdfService : IExportPdfService
             .Where(e => !e.IsDeleted && e.Fecha >= prevMonthStart && e.Fecha < currentMonthStart)
             .ToList();
 
-        // Section header always visible
-        if (y + 36 > page.GetClientSize().Height - FooterHeight)
+        if (y + 36 > (float)page.Height.Point - FooterHeight)
         {
-            page = document.Pages.Add();
-            graphics = page.Graphics;
+            DrawFooter(gfx, page, pageNum, smallFont, dateText);
+            pageNum++;
+            gfx.Dispose();
+            page = document.AddPage();
+            gfx = XGraphics.FromPdfPage(page);
+            pageWidth = (float)page.Width.Point;
+            usableWidth = pageWidth - Margin * 2;
             y = Margin;
         }
-        y = DrawSectionHeader(graphics, "Detalle de Encargos", sectionFont,
+        y = DrawSectionHeader(gfx, "Detalle de Encargos", sectionFont,
             Margin, usableWidth, y);
 
         if (encCurrent.Count > 0)
         {
             var (encRows, encTotal) = ExpandEncargosConArticulos(encCurrent, data.ArticulosEncargo);
-            y = RenderMonthTable(ref page, ref graphics, y,
+            y = RenderMonthTable(ref page, ref pageNum, ref gfx, ref pageWidth, ref usableWidth, y,
                 Capitalize(currentMonthStart.ToString("MMMM yyyy")),
                 encRows, encTotal,
                 encHeaders, encWidths, cellFont, headerFont,
-                Margin, usableWidth, document, FooterHeight);
+                Margin, document, FooterHeight, smallFont, dateText);
         }
         else
-            y = DrawNoActivityMessage(graphics, y, cellFont, Margin, usableWidth);
+            y = DrawNoActivityMessage(gfx, y, cellFont, Margin, usableWidth);
 
         if (encPrev.Count > 0)
         {
-            if (y + 20 > page.GetClientSize().Height - FooterHeight)
+            if (y + 20 > (float)page.Height.Point - FooterHeight)
             {
-                page = document.Pages.Add();
-                graphics = page.Graphics;
+                DrawFooter(gfx, page, pageNum, smallFont, dateText);
+                pageNum++;
+                gfx.Dispose();
+                page = document.AddPage();
+                gfx = XGraphics.FromPdfPage(page);
+                pageWidth = (float)page.Width.Point;
+                usableWidth = pageWidth - Margin * 2;
                 y = Margin;
             }
             var (encPrevRows, encPrevTotal) = ExpandEncargosConArticulos(encPrev, data.ArticulosEncargo);
-            y = RenderMonthTable(ref page, ref graphics, y,
+            y = RenderMonthTable(ref page, ref pageNum, ref gfx, ref pageWidth, ref usableWidth, y,
                 Capitalize(prevMonthStart.ToString("MMMM yyyy")),
                 encPrevRows, encPrevTotal,
                 encHeaders, encWidths, cellFont, headerFont,
-                Margin, usableWidth, document, FooterHeight);
+                Margin, document, FooterHeight, smallFont, dateText);
         }
 
-        // ════════════════════════════════════════════
-        //  FOOTER  (on every page — drawn after all
-        //  pages are created so «Page X of Y» is
-        //  accurate)
-        // ════════════════════════════════════════════
-        var footerBrush = new PdfSolidBrush(TextMuted);
-        var footerPen   = new PdfPen(BorderLight, 0.5f);
-        string dateText = DateTime.Now.ToString("dd/MM/yyyy HH:mm");
+        // ── FOOTER on last page ──
+        DrawFooter(gfx, page, pageNum, smallFont, dateText);
+        gfx.Dispose();
 
-        for (int i = 0; i < pages.Count; i++)
-        {
-            var p  = pages[i];
-            float pw = p.GetClientSize().Width;
-            float ph = p.GetClientSize().Height;
-            float fy = ph - FooterHeight;
-
-            // Thin separator line at the top of the footer area
-            p.Graphics.DrawLine(footerPen, 0, fy + 5, pw, fy + 5);
-
-            // Page X of Y  (left side)
-            p.Graphics.DrawString(
-                $"Página {i + 1} de {pages.Count}",
-                smallFont, footerBrush,
-                new PointF(0, fy + 12));
-
-            // Generation timestamp  (right side)
-            p.Graphics.DrawString(
-                dateText,
-                smallFont, footerBrush,
-                new PointF(pw - 90, fy + 12));
-        }
-
-        // ── Persist ──
         var stream = new MemoryStream();
         document.Save(stream);
         stream.Position = 0;
@@ -379,175 +347,240 @@ public sealed class ExportPdfService : IExportPdfService
     }
 
     // ══════════════════════════════════════════════════════
+    //  Footer — drawn BEFORE leaving each page
+    // ══════════════════════════════════════════════════════
+
+    private static void DrawFooter(XGraphics gfx, PdfPage page, int pageNum, XFont font, string dateText)
+    {
+        float pw = (float)page.Width.Point;
+        float ph = (float)page.Height.Point;
+        float fy = ph - FooterHeight;
+
+        var pen   = new XPen(BorderLight, 0.5);
+        var brush = new XSolidBrush(TextMuted);
+
+        gfx.DrawLine(pen, 0, fy + 5, pw, fy + 5);
+
+        gfx.DrawString(
+            $"Página {pageNum}",
+            font, brush,
+            new XPoint(0, fy + 12));
+
+        gfx.DrawString(
+            dateText,
+            font, brush,
+            new XPoint(pw - 90, fy + 12));
+    }
+
+    private static XBrush PdfBrushesWhite() => XBrushes.White;
+
+    // ══════════════════════════════════════════════════════
     //  Helpers
     // ══════════════════════════════════════════════════════
 
-    /// <summary>
-    /// Draws a section header: light‑gray background, left accent bar, title.
-    /// Returns the Y position right after the section header.
-    /// </summary>
     private static float DrawSectionHeader(
-        PdfGraphics graphics, string title, PdfFont font,
+        XGraphics gfx, string title, XFont font,
         float margin, float usableWidth, float y)
     {
-        // Light background
-        graphics.DrawRectangle(new PdfSolidBrush(SectionBg),
-            new RectangleF(margin, y, usableWidth, 30));
-
-        // Left accent bar  (thin blue rectangle)
-        graphics.DrawRectangle(new PdfSolidBrush(BluePrimary),
-            new RectangleF(margin, y, 4, 30));
-
-        // Title text
-        graphics.DrawString(title, font, new PdfSolidBrush(TextDark),
-            new PointF(margin + 14, y + 6));
-
-        return y + 36;   // header height + small gap
+        gfx.DrawRectangle(new XSolidBrush(SectionBg), margin, y, usableWidth, 30);
+        gfx.DrawRectangle(new XSolidBrush(BluePrimary), margin, y, 4, 30);
+        gfx.DrawString(title, font, new XSolidBrush(TextDark),
+            new XPoint(margin + 14, y + 6));
+        return y + 36;
     }
 
-    /// <summary>
-    /// Adds a two‑column data row to the grid.
-    /// </summary>
-    private static void AddDataRow(PdfGrid grid, string metrica, string valor, PdfFont font)
+    private static float DrawFinancialSummaryTable(
+        XGraphics gfx, BalanceExportDto data,
+        XFont headerFont, XFont cellFont,
+        float margin, float usableWidth, float y)
     {
-        var row = grid.Rows.Add();
-        row.Cells[0].Value = metrica;
-        row.Cells[1].Value = valor;
-        row.Cells[0].Style.Font = font;
-        row.Cells[1].Style.Font = font;
-        row.Cells[0].StringFormat = new PdfStringFormat(
-            PdfTextAlignment.Left, PdfVerticalAlignment.Middle);
-        row.Cells[1].StringFormat = new PdfStringFormat(
-            PdfTextAlignment.Right, PdfVerticalAlignment.Middle);
+        float col0Width = usableWidth * 0.6f;
+        float col1Width = usableWidth * 0.4f;
+        float rowHeight = 24;
+        float padX = 8;
+        float padY = 5;
+
+        string[][] rows =
+        [
+            ["Total Ventas",   $"$ {data.TotalVentas:N2}"],
+            ["Total Gastos",   $"$ {data.TotalGastos:N2}"],
+            ["Total Encargos", $"$ {data.TotalEncargos:N2}"],
+        ];
+
+        DrawTableRow(gfx, ["Métrica", "Valor"], margin, y,
+            [col0Width, col1Width], headerFont,
+            true, BluePrimary, XBrushes.White,
+            padX, padY, [XStringAlignment.Near, XStringAlignment.Far]);
+        y += rowHeight;
+
+        foreach (var row in rows)
+        {
+            DrawTableRow(gfx, row, margin, y,
+                [col0Width, col1Width], cellFont,
+                false, XColors.White, null,
+                padX, padY, [XStringAlignment.Near, XStringAlignment.Far]);
+            y += rowHeight;
+        }
+
+        DrawTableRow(gfx, ["Ganancias", $"$ {data.Ganancias:N2}"], margin, y,
+            [col0Width, col1Width], headerFont,
+            false, XColors.White, null,
+            padX, padY,
+            [XStringAlignment.Near, XStringAlignment.Far],
+            textBrushOverride: [null, new XSolidBrush(GreenProfit)]);
+        y += rowHeight;
+
+        DrawTableRow(gfx, ["Margen", $"{data.Margen:N2} %"], margin, y,
+            [col0Width, col1Width], cellFont,
+            false, XColors.White, null,
+            padX, padY, [XStringAlignment.Near, XStringAlignment.Far]);
+        y += rowHeight + 14;
+
+        return y;
     }
 
-    // ══════════════════════════════════════════════════════
-    //  Detail table helpers
-    // ══════════════════════════════════════════════════════
+    private static void DrawTableRow(
+        XGraphics gfx, string[] cells, float x, float y,
+        float[] widths, XFont font,
+        bool isHeader, XColor bgColor, XBrush? textBrush,
+        float padX, float padY,
+        XStringAlignment[] alignments,
+        XBrush?[]? textBrushOverride = null)
+    {
+        float cellX = x;
+        for (int i = 0; i < cells.Length; i++)
+        {
+            float w = widths[i];
 
-    /// <summary>
-    /// Draws a "no activity" placeholder message for an empty month.
-    /// </summary>
+            if (isHeader)
+                gfx.DrawRectangle(new XSolidBrush(bgColor), cellX, y, w, 24);
+            else
+                gfx.DrawRectangle(XBrushes.White, cellX, y, w, 24);
+
+            XBrush brush = textBrushOverride?[i] ?? textBrush ?? new XSolidBrush(TextDark);
+            var fmt = new XStringFormat();
+            fmt.Alignment = alignments[i];
+            fmt.LineAlignment = XLineAlignment.Center;
+            gfx.DrawString(cells[i], font, brush,
+                new XRect(cellX + padX, y + padY, w - padX * 2, 24 - padY * 2), fmt);
+
+            if (isHeader)
+                gfx.DrawLine(new XPen(XColors.White, 0.5), cellX + w, y, cellX + w, y + 24);
+
+            cellX += w;
+        }
+
+        if (isHeader)
+            gfx.DrawLine(new XPen(BorderLight, 0.5), x, y + 24, x + widths.Sum(), y + 24);
+    }
+
     private static float DrawNoActivityMessage(
-        PdfGraphics graphics, float y, PdfFont font,
+        XGraphics gfx, float y, XFont font,
         float margin, float usableWidth)
     {
-        graphics.DrawString("No se registró actividad en este mes a la fecha.",
-            font, new PdfSolidBrush(TextMuted),
-            new RectangleF(margin, y, usableWidth, 20),
-            new PdfStringFormat(PdfTextAlignment.Left, PdfVerticalAlignment.Middle));
+        var fmt = new XStringFormat();
+        fmt.Alignment = XStringAlignment.Near;
+        fmt.LineAlignment = XLineAlignment.Center;
+        gfx.DrawString("No se registró actividad en este mes a la fecha.",
+            font, new XSolidBrush(TextMuted),
+            new XRect(margin, y, usableWidth, 20), fmt);
         return y + 22;
     }
 
-    /// <summary>
-    /// Renders a month sub-header, a detail table, and a total row.
-    /// Returns the Y position after the table.
-    /// </summary>
     private static float RenderMonthTable(
-        ref PdfPage page, ref PdfGraphics graphics, float currentY,
+        ref PdfPage page, ref int pageNum, ref XGraphics gfx,
+        ref float pageWidth, ref float usableWidth, float currentY,
         string monthLabel,
         string[][] rows, decimal total,
         string[] headers, float[] widths,
-        PdfFont cellFont, PdfFont headerFont,
-        float margin, float usableWidth,
-        PdfDocument document, float footerHeight)
+        XFont cellFont, XFont headerFont,
+        float margin,
+        PdfDocument document, float footerHeight,
+        XFont smallFont, string dateText)
     {
         float y = currentY;
+        float rowHeight = 18;
+        float estimated = 22 + 22 + rows.Length * rowHeight + 22 + 8;
 
-        // Estimate height: sub-header(22) + header(22) + rows(18×N) + total(22) + gap(8)
-        float estimated = 22 + 22 + rows.Length * 18 + 22 + 8;
-        if (y + estimated > page.GetClientSize().Height - footerHeight)
+        if (y + estimated > (float)page.Height.Point - footerHeight)
         {
-            page = document.Pages.Add();
-            graphics = page.Graphics;
+            DrawFooter(gfx, page, pageNum, smallFont, dateText);
+            pageNum++;
+            gfx.Dispose();
+            page = document.AddPage();
+            gfx = XGraphics.FromPdfPage(page);
+            pageWidth = (float)page.Width.Point;
+            usableWidth = pageWidth - margin * 2;
             y = margin;
         }
 
         // Month sub-header
-        float shY = y;
-        graphics.DrawRectangle(new PdfSolidBrush(new PdfColor(240, 243, 248)),
-            new RectangleF(margin, shY, usableWidth, 22));
-        graphics.DrawString(monthLabel, headerFont, new PdfSolidBrush(TextDark),
-            new PointF(margin + 8, shY + 3));
-        y = shY + 26;
+        gfx.DrawRectangle(new XSolidBrush(MonthBg), margin, y, usableWidth, 22);
+        gfx.DrawString(monthLabel, headerFont, new XSolidBrush(TextDark),
+            new XPoint(margin + 8, y + 3));
+        y += 26;
 
-        // Build & draw the grid
-        var grid = BuildDetailGrid(headers, widths, rows, total, headerFont, cellFont, usableWidth);
-        var result = grid.Draw(page, new PointF(margin, y));
-        return result.Bounds.Bottom + 8;
+        // Draw detail grid
+        y = DrawDetailGrid(gfx, headers, widths, rows, total,
+            headerFont, cellFont, usableWidth, margin, y);
+
+        return y + 8;
     }
 
-    /// <summary>
-    /// Creates a PdfGrid with headers, data rows, and a bold total row.
-    /// </summary>
-    private static PdfGrid BuildDetailGrid(
-        string[] headers, float[] widths,
+    private static float DrawDetailGrid(
+        XGraphics gfx, string[] headers, float[] widths,
         string[][] rows, decimal total,
-        PdfFont headerFont, PdfFont cellFont,
-        float usableWidth)
+        XFont headerFont, XFont cellFont,
+        float usableWidth, float margin, float y)
     {
-        var grid = new PdfGrid();
         int colCount = headers.Length;
-        grid.Columns.Add(colCount);
-
-        // ── Header row ──
-        var h = grid.Headers.Add(1)[0];
-        h.Style.BackgroundBrush = new PdfSolidBrush(BluePrimary);
-        h.Style.TextBrush = PdfBrushes.White;
-        h.Style.Font = headerFont;
-
+        float totalWidthRatio = (float)widths.Sum();
+        float[] colWidths = new float[colCount];
         for (int i = 0; i < colCount; i++)
-        {
-            h.Cells[i].Value = headers[i];
-            bool isLast = i == colCount - 1;
-            h.Cells[i].StringFormat = new PdfStringFormat(
-                isLast ? PdfTextAlignment.Right : PdfTextAlignment.Left,
-                PdfVerticalAlignment.Middle);
-        }
+            colWidths[i] = usableWidth * widths[i] / totalWidthRatio;
 
-        // ── Data rows ──
+        float rowHeight = 18;
+        float padX = 5;
+        float padY = 3;
+
+        XStringAlignment[] headerAlignments = new XStringAlignment[colCount];
+        for (int i = 0; i < colCount; i++)
+            headerAlignments[i] = i == colCount - 1 ? XStringAlignment.Far : XStringAlignment.Near;
+
+        DrawTableRow(gfx, headers, margin, y, colWidths, headerFont,
+            true, BluePrimary, XBrushes.White, padX, padY, headerAlignments);
+        y += rowHeight;
+
+        XStringAlignment[] cellAlignments = new XStringAlignment[colCount];
+        for (int i = 0; i < colCount; i++)
+            cellAlignments[i] = i == colCount - 1 ? XStringAlignment.Far : XStringAlignment.Near;
+
         for (int r = 0; r < rows.Length; r++)
         {
-            var row = grid.Rows.Add();
-            for (int c = 0; c < colCount; c++)
-            {
-                row.Cells[c].Value = rows[r][c];
-                row.Cells[c].Style.Font = cellFont;
-                bool isLast = c == colCount - 1;
-                row.Cells[c].StringFormat = new PdfStringFormat(
-                    isLast ? PdfTextAlignment.Right : PdfTextAlignment.Left,
-                    PdfVerticalAlignment.Middle);
-            }
+            DrawTableRow(gfx, rows[r], margin, y, colWidths, cellFont,
+                false, XColors.White, null, padX, padY, cellAlignments);
+            y += rowHeight;
         }
 
-        // ── Total row ──
-        var t = grid.Rows.Add();
-        for (int c = 0; c < colCount; c++)
-        {
-            t.Cells[c].Style.Font = headerFont;
-            t.Cells[c].StringFormat = new PdfStringFormat(
-                c == 0 ? PdfTextAlignment.Left :
-                c == colCount - 1 ? PdfTextAlignment.Right :
-                PdfTextAlignment.Center,
-                PdfVerticalAlignment.Middle);
-        }
-        t.Cells[0].Value = "TOTAL";
-        t.Cells[colCount - 1].Value = $"$ {total:N2}";
+        string[] totalRow = new string[colCount];
+        totalRow[0] = "TOTAL";
+        for (int i = 1; i < colCount - 1; i++)
+            totalRow[i] = "";
+        totalRow[colCount - 1] = $"$ {total:N2}";
 
-        // ── Column widths ──
-        float totalWidthRatio = widths.Sum();
-        for (int i = 0; i < colCount; i++)
-            grid.Columns[i].Width = usableWidth * widths[i] / totalWidthRatio;
+        XStringAlignment[] totalAlignments = new XStringAlignment[colCount];
+        totalAlignments[0] = XStringAlignment.Near;
+        for (int i = 1; i < colCount - 1; i++)
+            totalAlignments[i] = XStringAlignment.Center;
+        totalAlignments[colCount - 1] = XStringAlignment.Far;
 
-        grid.Style.CellPadding = new PdfPaddings(5, 5, 3, 3);
-        grid.Style.Font = cellFont;
+        DrawTableRow(gfx, totalRow, margin, y, colWidths, headerFont,
+            false, XColors.White, null, padX, padY, totalAlignments);
+        y += rowHeight;
 
-        return grid;
+        return y;
     }
 
-    /// <summary>
-    /// Capitalizes the first letter of a string.
-    /// </summary>
     private static string Capitalize(string value)
     {
         if (string.IsNullOrEmpty(value)) return value;
@@ -558,11 +591,6 @@ public sealed class ExportPdfService : IExportPdfService
     //  Article-expansion helpers (multi-artículo)
     // ══════════════════════════════════════════════════════
 
-    /// <summary>
-    /// Expands Ventas entities into article-level rows.
-    /// When articles exist, each article becomes a row with the parent's date.
-    /// Falls back to the entity row for legacy data without articles.
-    /// </summary>
     private static (string[][] Rows, decimal Total) ExpandVentasConArticulos(
         List<Ventas> entities, IReadOnlyDictionary<int, List<ArticuloVenta>> articles)
     {
@@ -587,9 +615,6 @@ public sealed class ExportPdfService : IExportPdfService
         return (rows.ToArray(), total);
     }
 
-    /// <summary>
-    /// Expands Gasto entities into article-level rows.
-    /// </summary>
     private static (string[][] Rows, decimal Total) ExpandGastosConArticulos(
         List<Gasto> entities, IReadOnlyDictionary<int, List<ArticuloGasto>> articles)
     {
@@ -614,9 +639,6 @@ public sealed class ExportPdfService : IExportPdfService
         return (rows.ToArray(), total);
     }
 
-    /// <summary>
-    /// Expands Encargo entities into article-level rows (4 columns: Entrega, Cliente, Descripción, Total).
-    /// </summary>
     private static (string[][] Rows, decimal Total) ExpandEncargosConArticulos(
         List<Encargo> entities, IReadOnlyDictionary<int, List<ArticuloEncargo>> articles)
     {
