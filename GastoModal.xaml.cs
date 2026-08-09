@@ -116,15 +116,29 @@ public partial class GastoModal : ContentPage
 
     // ===== IMAGE HANDLING =====
 
-    private async void OnPickImageClicked(object sender, EventArgs e)
+    private void OnEmptySlotTapped(object sender, TappedEventArgs e)
     {
-        if (sender is Button btn && btn.BindingContext is ArticuloGasto articulo)
+        if (sender is Frame frame && frame.BindingContext is ArticuloGasto articulo)
         {
-            await PickImageAsync(articulo);
+            if (int.TryParse(frame.StyleId, out int slotIndex))
+            {
+                PickImageAsync(articulo, slotIndex);
+            }
         }
     }
 
-    private async Task PickImageAsync(ArticuloGasto articulo)
+    private async void OnClearSlotClicked(object sender, EventArgs e)
+    {
+        if (sender is Button btn && btn.BindingContext is ArticuloGasto articulo)
+        {
+            if (int.TryParse(btn.StyleId, out int slotIndex))
+            {
+                await ClearSlotAsync(articulo, slotIndex);
+            }
+        }
+    }
+
+    private async Task PickImageAsync(ArticuloGasto articulo, int slotIndex)
     {
         try
         {
@@ -139,7 +153,7 @@ public partial class GastoModal : ContentPage
                 var path = await _imageStorageService.CompressAndSaveAsync(stream);
                 if (path != null)
                 {
-                    articulo.ImagenPath = path;
+                    articulo.SetImageAtSlot(slotIndex, path);
                     _viewModel.RefreshArticulosBinding();
                 }
             }
@@ -150,16 +164,14 @@ public partial class GastoModal : ContentPage
         }
     }
 
-    private async void OnClearImageClicked(object sender, EventArgs e)
+    private async Task ClearSlotAsync(ArticuloGasto articulo, int slotIndex)
     {
-        if (sender is Button btn && btn.BindingContext is ArticuloGasto articulo)
+        var path = articulo.GetImagePath(slotIndex);
+        if (!string.IsNullOrWhiteSpace(path))
         {
-            if (!string.IsNullOrWhiteSpace(articulo.ImagenPath))
-            {
-                await _imageStorageService.DeleteFileAsync(articulo.ImagenPath);
-                articulo.ImagenPath = null;
-                _viewModel.RefreshArticulosBinding();
-            }
+            await _imageStorageService.DeleteFileAsync(path);
+            articulo.ClearSlot(slotIndex);
+            _viewModel.RefreshArticulosBinding();
         }
     }
 

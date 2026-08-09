@@ -80,6 +80,31 @@ namespace Mercader.Data
                 // Migración: Agregar columna ImagenPath a ArticulosEncargo
                 await AddColumnIfNotExistsAsync("ArticulosEncargo", "ImagenPath", "TEXT");
 
+                // Migración: Agregar columnas ImagenPath1-4 para 4 imágenes por artículo
+                await AddColumnIfNotExistsAsync("ArticulosVenta", "ImagenPath1", "TEXT");
+                await AddColumnIfNotExistsAsync("ArticulosVenta", "ImagenPath2", "TEXT");
+                await AddColumnIfNotExistsAsync("ArticulosVenta", "ImagenPath3", "TEXT");
+                await AddColumnIfNotExistsAsync("ArticulosVenta", "ImagenPath4", "TEXT");
+
+                await AddColumnIfNotExistsAsync("ArticulosGasto", "ImagenPath1", "TEXT");
+                await AddColumnIfNotExistsAsync("ArticulosGasto", "ImagenPath2", "TEXT");
+                await AddColumnIfNotExistsAsync("ArticulosGasto", "ImagenPath3", "TEXT");
+                await AddColumnIfNotExistsAsync("ArticulosGasto", "ImagenPath4", "TEXT");
+
+                await AddColumnIfNotExistsAsync("ArticulosEncargo", "ImagenPath1", "TEXT");
+                await AddColumnIfNotExistsAsync("ArticulosEncargo", "ImagenPath2", "TEXT");
+                await AddColumnIfNotExistsAsync("ArticulosEncargo", "ImagenPath3", "TEXT");
+                await AddColumnIfNotExistsAsync("ArticulosEncargo", "ImagenPath4", "TEXT");
+
+                // Copiar datos legacy de ImagenPath a ImagenPath1
+                try
+                {
+                    await _database.ExecuteAsync("UPDATE ArticulosVenta SET ImagenPath1 = ImagenPath WHERE ImagenPath IS NOT NULL AND ImagenPath1 IS NULL");
+                    await _database.ExecuteAsync("UPDATE ArticulosGasto SET ImagenPath1 = ImagenPath WHERE ImagenPath IS NOT NULL AND ImagenPath1 IS NULL");
+                    await _database.ExecuteAsync("UPDATE ArticulosEncargo SET ImagenPath1 = ImagenPath WHERE ImagenPath IS NOT NULL AND ImagenPath1 IS NULL");
+                }
+                catch { }
+
                 System.Diagnostics.Debug.WriteLine("[MIGRATION] Migraciones ejecutadas exitosamente");
             }
             catch (Exception ex)
