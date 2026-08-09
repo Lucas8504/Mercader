@@ -4,6 +4,7 @@
     xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
     xmlns:domain="clr-namespace:Mercader.Domain.Entities;assembly=Mercader.Core"
+    xmlns:vm="clr-namespace:Mercader.Core.ViewModels;assembly=Mercader.Core"
     Title="Nuevo Gasto"
     BackgroundColor="{AppThemeBinding Light={StaticResource PageBackground}, Dark={StaticResource PageBackgroundDark}}">
     <!--  Fondo oscuro para combinar con MainPage  -->
@@ -101,7 +102,8 @@
 
             <VerticalStackLayout
                 x:Name="ArticulosStack"
-                Spacing="8">
+                Spacing="8"
+                BindableLayout.ItemsSource="{Binding Articulos}">
                 <BindableLayout.ItemTemplate>
                     <DataTemplate x:DataType="domain:ArticuloGasto">
                         <Frame
@@ -125,6 +127,26 @@
                                         TextColor="{AppThemeBinding Light={StaticResource TextPrimary}, Dark={StaticResource TextPrimaryDark}}"
                                         Visual="Material" />
                                 </VerticalStackLayout>
+
+                                <!-- Image picker -->
+                                <Grid ColumnDefinitions="60,*" ColumnSpacing="8" Margin="0,5,0,0">
+                                    <Frame Grid.Column="0" WidthRequest="60" HeightRequest="60" 
+                                           Padding="0" IsClippedToBounds="True" CornerRadius="8"
+                                           IsVisible="{Binding HasImage}">
+                                        <Image Source="{Binding ImagenPath}" Aspect="AspectFill" />
+                                    </Frame>
+                                    <Frame Grid.Column="0" WidthRequest="60" HeightRequest="60" 
+                                           Padding="0" IsClippedToBounds="True" CornerRadius="8"
+                                           IsVisible="{Binding HasImage, Converter={StaticResource InvertBool}}"
+                                           BackgroundColor="#F0F0F0">
+                                        <Label Text="📷" FontSize="24" HorizontalOptions="Center" VerticalOptions="Center" />
+                                    </Frame>
+                                    <Button Grid.Column="1" Text="Agregar foto" 
+                                            Command="{Binding Source={RelativeSource AncestorType={x:Type Page}}, Path=BindingContext.PickImageCommand}"
+                                            CommandParameter="{Binding .}"
+                                            BackgroundColor="Transparent" TextColor="#487CE4"
+                                            FontSize="14" Padding="0" />
+                                </Grid>
 
                                 <!-- Precio y Cantidad en fila -->
                                 <Grid ColumnDefinitions="*,8,*" ColumnSpacing="0">
@@ -168,21 +190,24 @@
                                     <Button
                                         Grid.Column="1"
                                         BackgroundColor="Transparent"
-                                        Clicked="OnSubirArticulo"
+                                        Command="{Binding Source={RelativeSource AncestorType={x:Type Page}}, Path=BindingContext.SubirArticuloCommand}"
+                                        CommandParameter="{Binding .}"
                                         FontSize="14"
                                         Padding="4"
                                         Text="⬆" />
                                     <Button
                                         Grid.Column="2"
                                         BackgroundColor="Transparent"
-                                        Clicked="OnBajarArticulo"
+                                        Command="{Binding Source={RelativeSource AncestorType={x:Type Page}}, Path=BindingContext.BajarArticuloCommand}"
+                                        CommandParameter="{Binding .}"
                                         FontSize="14"
                                         Padding="4"
                                         Text="⬇" />
                                     <Button
                                         Grid.Column="3"
                                         BackgroundColor="#FF5252"
-                                        Clicked="OnEliminarArticulo"
+                                        Command="{Binding Source={RelativeSource AncestorType={x:Type Page}}, Path=BindingContext.EliminarArticuloCommand}"
+                                        CommandParameter="{Binding .}"
                                         FontSize="14"
                                         Padding="4"
                                         Text="✕"
@@ -198,7 +223,7 @@
             <Button
                 Padding="10"
                 BackgroundColor="{AppThemeBinding Light=#2196F3, Dark=#90CAF9}"
-                Clicked="OnAgregarArticuloClicked"
+                Command="{Binding AgregarArticuloCommand}"
                 CornerRadius="8"
                 FontSize="14"
                 Text="+ Agregar artículo"
@@ -277,7 +302,7 @@
                         Grid.Column="2"
                         FontAttributes="Bold"
                         FontSize="16"
-                        Text="$0"
+                        Text="{Binding Total, StringFormat='${0}'}"
                         TextColor="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDark}}"
                         VerticalOptions="Center" />
                 </Grid>

@@ -11,11 +11,17 @@ namespace Mercader.Tests;
 public class DataRepositoryTests : IAsyncLifetime
 {
     private IDataRepository _repository = null!;
+    private IArticleRepository<ArticuloVenta> _articuloVentaRepo = null!;
+    private IArticleRepository<ArticuloGasto> _articuloGastoRepo = null!;
+    private IArticleRepository<ArticuloEncargo> _articuloEncargoRepo = null!;
 
     public async Task InitializeAsync()
     {
         _repository = new DataRepository(":memory:");
         await _repository.InitializeDatabaseAsync();
+        _articuloVentaRepo = _repository.GetArticleRepository<ArticuloVenta>();
+        _articuloGastoRepo = _repository.GetArticleRepository<ArticuloGasto>();
+        _articuloEncargoRepo = _repository.GetArticleRepository<ArticuloEncargo>();
     }
 
     public Task DisposeAsync()
@@ -393,7 +399,7 @@ public class DataRepositoryTests : IAsyncLifetime
         await _repository.SaveVentasAsync(venta);
 
         var articulo = new ArticuloVenta { VentaId = venta.Id, Descripcion = "Art 1", PrecioUnitario = 50, Cantidad = 2, Orden = 1 };
-        var id = await _repository.SaveArticuloVentaAsync(articulo);
+        var id = await _articuloVentaRepo.SaveAsync(articulo);
 
         Assert.True(id > 0);
     }
@@ -404,10 +410,10 @@ public class DataRepositoryTests : IAsyncLifetime
         var venta = CreateSampleVenta();
         await _repository.SaveVentasAsync(venta);
 
-        await _repository.SaveArticuloVentaAsync(new ArticuloVenta { VentaId = venta.Id, Descripcion = "A1", PrecioUnitario = 10, Cantidad = 1, Orden = 1 });
-        await _repository.SaveArticuloVentaAsync(new ArticuloVenta { VentaId = venta.Id, Descripcion = "A2", PrecioUnitario = 20, Cantidad = 2, Orden = 2 });
+        await _articuloVentaRepo.SaveAsync(new ArticuloVenta { VentaId = venta.Id, Descripcion = "A1", PrecioUnitario = 10, Cantidad = 1, Orden = 1 });
+        await _articuloVentaRepo.SaveAsync(new ArticuloVenta { VentaId = venta.Id, Descripcion = "A2", PrecioUnitario = 20, Cantidad = 2, Orden = 2 });
 
-        var articulos = await _repository.GetArticulosVentaAsync(venta.Id);
+        var articulos = await _articuloVentaRepo.GetByParentIdAsync(venta.Id);
 
         Assert.Equal(2, articulos.Count);
         Assert.Contains(articulos, a => a.Descripcion == "A1" && a.Total == 10);
@@ -420,10 +426,10 @@ public class DataRepositoryTests : IAsyncLifetime
         var venta = CreateSampleVenta();
         await _repository.SaveVentasAsync(venta);
 
-        await _repository.SaveArticuloVentaAsync(new ArticuloVenta { VentaId = venta.Id, Descripcion = "B", PrecioUnitario = 10, Cantidad = 1, Orden = 2 });
-        await _repository.SaveArticuloVentaAsync(new ArticuloVenta { VentaId = venta.Id, Descripcion = "A", PrecioUnitario = 10, Cantidad = 1, Orden = 1 });
+        await _articuloVentaRepo.SaveAsync(new ArticuloVenta { VentaId = venta.Id, Descripcion = "B", PrecioUnitario = 10, Cantidad = 1, Orden = 2 });
+        await _articuloVentaRepo.SaveAsync(new ArticuloVenta { VentaId = venta.Id, Descripcion = "A", PrecioUnitario = 10, Cantidad = 1, Orden = 1 });
 
-        var articulos = await _repository.GetArticulosVentaAsync(venta.Id);
+        var articulos = await _articuloVentaRepo.GetByParentIdAsync(venta.Id);
 
         Assert.Equal(2, articulos.Count);
         Assert.Equal("A", articulos[0].Descripcion);
@@ -433,7 +439,7 @@ public class DataRepositoryTests : IAsyncLifetime
     [Fact]
     public async Task GetArticulosVenta_ReturnsEmptyForNonExistentParent()
     {
-        var articulos = await _repository.GetArticulosVentaAsync(999);
+        var articulos = await _articuloVentaRepo.GetByParentIdAsync(999);
         Assert.Empty(articulos);
     }
 
@@ -444,11 +450,11 @@ public class DataRepositoryTests : IAsyncLifetime
         await _repository.SaveVentasAsync(venta);
 
         var articulo = new ArticuloVenta { VentaId = venta.Id, Descripcion = "Del", PrecioUnitario = 10, Cantidad = 1, Orden = 1 };
-        await _repository.SaveArticuloVentaAsync(articulo);
+        await _articuloVentaRepo.SaveAsync(articulo);
 
-        await _repository.DeleteArticuloVentaAsync(articulo);
+        await _articuloVentaRepo.DeleteAsync(articulo);
 
-        var articulos = await _repository.GetArticulosVentaAsync(venta.Id);
+        var articulos = await _articuloVentaRepo.GetByParentIdAsync(venta.Id);
         Assert.Empty(articulos);
     }
 
@@ -459,7 +465,7 @@ public class DataRepositoryTests : IAsyncLifetime
         await _repository.SaveGastoAsync(gasto);
 
         var articulo = new ArticuloGasto { GastoId = gasto.Id, Descripcion = "Art G", PrecioUnitario = 30, Cantidad = 3, Orden = 1 };
-        var id = await _repository.SaveArticuloGastoAsync(articulo);
+        var id = await _articuloGastoRepo.SaveAsync(articulo);
 
         Assert.True(id > 0);
     }
@@ -470,9 +476,9 @@ public class DataRepositoryTests : IAsyncLifetime
         var gasto = CreateSampleGasto();
         await _repository.SaveGastoAsync(gasto);
 
-        await _repository.SaveArticuloGastoAsync(new ArticuloGasto { GastoId = gasto.Id, Descripcion = "G1", PrecioUnitario = 15, Cantidad = 2, Orden = 1 });
+        await _articuloGastoRepo.SaveAsync(new ArticuloGasto { GastoId = gasto.Id, Descripcion = "G1", PrecioUnitario = 15, Cantidad = 2, Orden = 1 });
 
-        var articulos = await _repository.GetArticulosGastoAsync(gasto.Id);
+        var articulos = await _articuloGastoRepo.GetByParentIdAsync(gasto.Id);
         Assert.Single(articulos);
         Assert.Equal(30, articulos[0].Total);
     }
@@ -484,7 +490,7 @@ public class DataRepositoryTests : IAsyncLifetime
         await _repository.SaveEncargoAsync(encargo);
 
         var articulo = new ArticuloEncargo { EncargoId = encargo.Id, Descripcion = "Art E", PrecioUnitario = 40, Cantidad = 1, Orden = 1 };
-        var id = await _repository.SaveArticuloEncargoAsync(articulo);
+        var id = await _articuloEncargoRepo.SaveAsync(articulo);
 
         Assert.True(id > 0);
     }
@@ -495,78 +501,15 @@ public class DataRepositoryTests : IAsyncLifetime
         var encargo = CreateSampleEncargo();
         await _repository.SaveEncargoAsync(encargo);
 
-        await _repository.SaveArticuloEncargoAsync(new ArticuloEncargo { EncargoId = encargo.Id, Descripcion = "E1", PrecioUnitario = 25, Cantidad = 4, Orden = 1 });
+        await _articuloEncargoRepo.SaveAsync(new ArticuloEncargo { EncargoId = encargo.Id, Descripcion = "E1", PrecioUnitario = 25, Cantidad = 4, Orden = 1 });
 
-        var articulos = await _repository.GetArticulosEncargoAsync(encargo.Id);
+        var articulos = await _articuloEncargoRepo.GetByParentIdAsync(encargo.Id);
         Assert.Single(articulos);
         Assert.Equal(100, articulos[0].Total);
     }
 
     // ======================================================================
-    // 6.2 Migration tests
-    // ======================================================================
-
-    [Fact]
-    public async Task MigrateLegacyVentas_CreatesSingleArticulo()
-    {
-        // Crear venta legacy (sin artículos)
-        var venta = CreateSampleVenta(descripcion: "Legacy", precio: 200);
-        await _repository.SaveVentasAsync(venta);
-
-        // Forzar segunda inicialización para migrar (ya se migró en InitializeAsync)
-        // En su lugar, verificamos que la migración inicial ya creó el artículo
-        var articulos = await _repository.GetArticulosVentaAsync(venta.Id);
-        Assert.Single(articulos);
-        var a = articulos[0];
-        Assert.Equal("Legacy", a.Descripcion);
-        Assert.Equal(200, a.PrecioUnitario);
-        Assert.Equal(2, a.Cantidad); // Cantidad de la venta legacy
-        Assert.Equal(1, a.Orden);
-    }
-
-    [Fact]
-    public async Task MigrateLegacyGastos_CreatesSingleArticulo()
-    {
-        var gasto = CreateSampleGasto(monto: 75);
-        await _repository.SaveGastoAsync(gasto);
-
-        var articulos = await _repository.GetArticulosGastoAsync(gasto.Id);
-        Assert.Single(articulos);
-        Assert.Equal("Gasto test", articulos[0].Descripcion);
-        Assert.Equal(75, articulos[0].PrecioUnitario);
-    }
-
-    [Fact]
-    public async Task MigrateLegacyEncargos_CreatesSingleArticulo()
-    {
-        var encargo = CreateSampleEncargo(nombre: "Migrate");
-        await _repository.SaveEncargoAsync(encargo);
-
-        var articulos = await _repository.GetArticulosEncargoAsync(encargo.Id);
-        Assert.Single(articulos);
-        Assert.Equal("Encargo test", articulos[0].Descripcion);
-        Assert.Equal(200, articulos[0].PrecioUnitario);
-    }
-
-    [Fact]
-    public async Task MigrateLegacy_Idempotent_DoesNotDuplicate()
-    {
-        var venta = CreateSampleVenta(descripcion: "Idempotent", precio: 100);
-        await _repository.SaveVentasAsync(venta);
-
-        // La migración ya se ejecutó en InitializeAsync
-        var articulos1 = await _repository.GetArticulosVentaAsync(venta.Id);
-        Assert.Single(articulos1);
-
-        // Forzar segunda inicialización (simula reinicio de app)
-        await _repository.InitializeDatabaseAsync();
-
-        var articulos2 = await _repository.GetArticulosVentaAsync(venta.Id);
-        Assert.Single(articulos2); // No debe duplicar
-    }
-
-    // ======================================================================
-    // 6.3 Delete-last-article tests
+    // 6.2 Delete-last-article tests
     // ======================================================================
 
     [Fact]
@@ -577,8 +520,8 @@ public class DataRepositoryTests : IAsyncLifetime
         await _repository.SaveVentasAsync(venta);
 
         var articulo = new ArticuloVenta { VentaId = venta.Id, Descripcion = "Unico", PrecioUnitario = 10, Cantidad = 1, Orden = 1 };
-        await _repository.SaveArticuloVentaAsync(articulo);
-        await _repository.DeleteArticuloVentaAsync(articulo);
+        await _articuloVentaRepo.SaveAsync(articulo);
+        await _articuloVentaRepo.DeleteAsync(articulo);
 
         // El padre debe seguir existiendo (la cascada es responsabilidad del VM/UI)
         var ventas = await _repository.GetVentasAsync();
@@ -593,8 +536,8 @@ public class DataRepositoryTests : IAsyncLifetime
         await _repository.SaveVentasAsync(venta);
 
         var articulo = new ArticuloVenta { VentaId = venta.Id, Descripcion = "Unico", PrecioUnitario = 10, Cantidad = 1, Orden = 1 };
-        await _repository.SaveArticuloVentaAsync(articulo);
-        await _repository.DeleteArticuloVentaAsync(articulo);
+        await _articuloVentaRepo.SaveAsync(articulo);
+        await _articuloVentaRepo.DeleteAsync(articulo);
 
         // Ahora borrar el padre manualmente
         await _repository.DeleteVentaAsync(venta);
@@ -616,11 +559,11 @@ public class DataRepositoryTests : IAsyncLifetime
 
         var art1 = new ArticuloEncargo { EncargoId = encargo.Id, Descripcion = "Prod A", PrecioUnitario = 100, Cantidad = 2, Orden = 1 };
         var art2 = new ArticuloEncargo { EncargoId = encargo.Id, Descripcion = "Prod B", PrecioUnitario = 50, Cantidad = 3, Orden = 2 };
-        await _repository.SaveArticuloEncargoAsync(art1);
-        await _repository.SaveArticuloEncargoAsync(art2);
+        await _articuloEncargoRepo.SaveAsync(art1);
+        await _articuloEncargoRepo.SaveAsync(art2);
 
         // Crear venta con total de los artículos del encargo
-        var articulosEncargo = await _repository.GetArticulosEncargoAsync(encargo.Id);
+        var articulosEncargo = await _articuloEncargoRepo.GetByParentIdAsync(encargo.Id);
         var totalEncargo = articulosEncargo.Sum(a => a.Total);
 
         var venta = new Ventas
@@ -635,7 +578,7 @@ public class DataRepositoryTests : IAsyncLifetime
         // Transferir artículos
         foreach (var ae in articulosEncargo)
         {
-            await _repository.SaveArticuloVentaAsync(new ArticuloVenta
+            await _articuloVentaRepo.SaveAsync(new ArticuloVenta
             {
                 VentaId = venta.Id,
                 Descripcion = ae.Descripcion,
@@ -646,7 +589,7 @@ public class DataRepositoryTests : IAsyncLifetime
         }
 
         // Verificar que la venta tiene los artículos transferidos
-        var articulosVenta = await _repository.GetArticulosVentaAsync(venta.Id);
+        var articulosVenta = await _articuloVentaRepo.GetByParentIdAsync(venta.Id);
         Assert.Equal(2, articulosVenta.Count);
         Assert.Contains(articulosVenta, a => a.Descripcion == "Prod A" && a.PrecioUnitario == 100 && a.Cantidad == 2);
         Assert.Contains(articulosVenta, a => a.Descripcion == "Prod B" && a.PrecioUnitario == 50 && a.Cantidad == 3);
@@ -659,17 +602,17 @@ public class DataRepositoryTests : IAsyncLifetime
         var encargo = CreateSampleEncargo(nombre: "Order");
         await _repository.SaveEncargoAsync(encargo);
 
-        await _repository.SaveArticuloEncargoAsync(new ArticuloEncargo { EncargoId = encargo.Id, Descripcion = "Z", PrecioUnitario = 10, Cantidad = 1, Orden = 2 });
-        await _repository.SaveArticuloEncargoAsync(new ArticuloEncargo { EncargoId = encargo.Id, Descripcion = "A", PrecioUnitario = 10, Cantidad = 1, Orden = 1 });
+        await _articuloEncargoRepo.SaveAsync(new ArticuloEncargo { EncargoId = encargo.Id, Descripcion = "Z", PrecioUnitario = 10, Cantidad = 1, Orden = 2 });
+        await _articuloEncargoRepo.SaveAsync(new ArticuloEncargo { EncargoId = encargo.Id, Descripcion = "A", PrecioUnitario = 10, Cantidad = 1, Orden = 1 });
 
-        var articulosEncargo = await _repository.GetArticulosEncargoAsync(encargo.Id);
+        var articulosEncargo = await _articuloEncargoRepo.GetByParentIdAsync(encargo.Id);
 
         var venta = new Ventas { Descripcion = "Venta order", Precio = articulosEncargo.Sum(a => a.Total), Cantidad = 1, Fecha = DateTime.Now };
         await _repository.SaveVentasAsync(venta);
 
         foreach (var ae in articulosEncargo)
         {
-            await _repository.SaveArticuloVentaAsync(new ArticuloVenta
+            await _articuloVentaRepo.SaveAsync(new ArticuloVenta
             {
                 VentaId = venta.Id,
                 Descripcion = ae.Descripcion,
@@ -679,7 +622,7 @@ public class DataRepositoryTests : IAsyncLifetime
             });
         }
 
-        var articulosVenta = await _repository.GetArticulosVentaAsync(venta.Id);
+        var articulosVenta = await _articuloVentaRepo.GetByParentIdAsync(venta.Id);
         Assert.Equal(2, articulosVenta.Count);
         Assert.Equal("A", articulosVenta[0].Descripcion); // Orden 1
         Assert.Equal("Z", articulosVenta[1].Descripcion); // Orden 2
@@ -691,16 +634,16 @@ public class DataRepositoryTests : IAsyncLifetime
         var encargo = CreateSampleEncargo(nombre: "Retain");
         await _repository.SaveEncargoAsync(encargo);
 
-        await _repository.SaveArticuloEncargoAsync(new ArticuloEncargo { EncargoId = encargo.Id, Descripcion = "Keep", PrecioUnitario = 10, Cantidad = 1, Orden = 1 });
+        await _articuloEncargoRepo.SaveAsync(new ArticuloEncargo { EncargoId = encargo.Id, Descripcion = "Keep", PrecioUnitario = 10, Cantidad = 1, Orden = 1 });
 
         // Transferir (simular conversión)
-        var articulosEncargo = await _repository.GetArticulosEncargoAsync(encargo.Id);
+        var articulosEncargo = await _articuloEncargoRepo.GetByParentIdAsync(encargo.Id);
         var venta = new Ventas { Descripcion = "Venta retain", Precio = articulosEncargo.Sum(a => a.Total), Cantidad = 1, Fecha = DateTime.Now };
         await _repository.SaveVentasAsync(venta);
 
         foreach (var ae in articulosEncargo)
         {
-            await _repository.SaveArticuloVentaAsync(new ArticuloVenta
+            await _articuloVentaRepo.SaveAsync(new ArticuloVenta
             {
                 VentaId = venta.Id,
                 Descripcion = ae.Descripcion,
@@ -711,7 +654,7 @@ public class DataRepositoryTests : IAsyncLifetime
         }
 
         // Los artículos originales del encargo aún existen (no se borraron)
-        var originales = await _repository.GetArticulosEncargoAsync(encargo.Id);
+        var originales = await _articuloEncargoRepo.GetByParentIdAsync(encargo.Id);
         Assert.Single(originales);
         Assert.Equal("Keep", originales[0].Descripcion);
     }

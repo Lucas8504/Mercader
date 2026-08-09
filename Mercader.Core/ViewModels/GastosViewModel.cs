@@ -92,11 +92,12 @@ namespace Mercader.ViewModels
                 System.Diagnostics.Debug.WriteLine($"[GASTOS] Cargados {lista.Count} gastos de la DB");
 
                 // Cargar artículos para cada gasto (multi-artículo)
+                var articuloRepo = _repository.GetArticleRepository<ArticuloGasto>();
                 foreach (var gasto in lista)
                 {
                     try
                     {
-                        gasto.Articulos = await _repository.GetArticulosGastoAsync(gasto.Id);
+                        gasto.Articulos = await articuloRepo.GetByParentIdAsync(gasto.Id);
                         System.Diagnostics.Debug.WriteLine($"[GASTOS] GastoId={gasto.Id} '{gasto.Descripcion}' → {gasto.Articulos.Count} artículos, TieneArticulos={gasto.TieneArticulos}");
                     }
                     catch (Exception ex)

@@ -92,11 +92,12 @@ namespace Mercader.ViewModels
                 System.Diagnostics.Debug.WriteLine($"[ENCARGOS] Cargados {lista.Count} encargos de la DB");
 
                 // Cargar artículos para cada encargo (multi-artículo)
+                var articuloRepo = _repository.GetArticleRepository<ArticuloEncargo>();
                 foreach (var encargo in lista)
                 {
                     try
                     {
-                        encargo.Articulos = await _repository.GetArticulosEncargoAsync(encargo.Id);
+                        encargo.Articulos = await articuloRepo.GetByParentIdAsync(encargo.Id);
                         System.Diagnostics.Debug.WriteLine($"[ENCARGOS] EncargoId={encargo.Id} '{encargo.Nombre}' → {encargo.Articulos.Count} artículos, TieneArticulos={encargo.TieneArticulos}");
                     }
                     catch (Exception ex)
@@ -132,7 +133,8 @@ namespace Mercader.ViewModels
             await ExecuteBusyAsync(async () =>
             {
                 // Obtener artículos del encargo
-                var articulosEncargo = await _repository.GetArticulosEncargoAsync(encargo.Id);
+                var articuloEncargoRepo = _repository.GetArticleRepository<ArticuloEncargo>();
+                var articulosEncargo = await articuloEncargoRepo.GetByParentIdAsync(encargo.Id);
 
                 var venta = new Ventas
                 {
@@ -145,6 +147,7 @@ namespace Mercader.ViewModels
                 await _repository.SaveVentasAsync(venta);
 
                 // Transferir artículos del encargo a la venta
+                var articuloVentaRepo = _repository.GetArticleRepository<ArticuloVenta>();
                 foreach (var ae in articulosEncargo)
                 {
                     var av = new ArticuloVenta
@@ -155,12 +158,12 @@ namespace Mercader.ViewModels
                         Cantidad = ae.Cantidad,
                         Orden = ae.Orden
                     };
-                    await _repository.SaveArticuloVentaAsync(av);
+                    await articuloVentaRepo.SaveAsync(av);
                 }
 
                 // Soft-delete artículos del encargo y el encargo
                 foreach (var ae in articulosEncargo)
-                    await _repository.DeleteArticuloEncargoAsync(ae);
+                    await articuloEncargoRepo.DeleteAsync(ae);
 
                 await _repository.DeleteEncargoAsync(encargo);
                 _todosLosEncargos.Remove(encargo);
@@ -176,7 +179,8 @@ namespace Mercader.ViewModels
             await ExecuteBusyAsync(async () =>
             {
                 // Obtener artículos del encargo
-                var articulosEncargo = await _repository.GetArticulosEncargoAsync(encargo.Id);
+                var articuloEncargoRepo = _repository.GetArticleRepository<ArticuloEncargo>();
+                var articulosEncargo = await articuloEncargoRepo.GetByParentIdAsync(encargo.Id);
 
                 // Crear venta a partir del encargo
                 var descripcionVenta = string.IsNullOrWhiteSpace(encargo.Descripcion)
@@ -194,6 +198,7 @@ namespace Mercader.ViewModels
                 await _repository.SaveVentasAsync(venta);
 
                 // Transferir artículos del encargo a la venta
+                var articuloVentaRepo = _repository.GetArticleRepository<ArticuloVenta>();
                 foreach (var ae in articulosEncargo)
                 {
                     var av = new ArticuloVenta
@@ -204,7 +209,7 @@ namespace Mercader.ViewModels
                         Cantidad = ae.Cantidad,
                         Orden = ae.Orden
                     };
-                    await _repository.SaveArticuloVentaAsync(av);
+                    await articuloVentaRepo.SaveAsync(av);
                 }
 
                 // Marcar encargo como entregado

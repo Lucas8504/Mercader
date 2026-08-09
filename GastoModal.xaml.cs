@@ -1,6 +1,8 @@
-using System.Collections.ObjectModel;
-using Mercader.Domain.Entities;
+using System.Windows.Input;
 using Mercader.Data.Interfaces;
+using Mercader.Domain.Entities;
+using Mercader.Services.Interfaces;
+using Mercader.Core.ViewModels;
 #if ANDROID
 using Mercader.Platforms.Android;
 #endif
@@ -10,37 +12,41 @@ namespace Mercader;
 public partial class GastoModal : ContentPage
 {
     private readonly IDataRepository _repository;
+    private readonly IImageStorageService _imageStorageService;
+    private readonly GastoModalViewModel _viewModel;
     private List<string> _todasLasDescripciones = new();
-    private List<string> _todasLasDescripcionesArticulos = new();
-    private readonly ObservableCollection<ArticuloGasto> _articulos = new();
-    private ArticuloGasto? _currentArticulo;
+
     public Gasto Gasto { get; private set; } = null!;
 
-    public GastoModal(IDataRepository repository)
+    public GastoModal(IDataRepository repository, IImageStorageService imageStorageService, GastoModalViewModel viewModel)
     {
         ArgumentNullException.ThrowIfNull(repository);
+        ArgumentNullException.ThrowIfNull(imageStorageService);
+        ArgumentNullException.ThrowIfNull(viewModel);
 
         InitializeComponent();
         _repository = repository;
-        BindableLayout.SetItemsSource(ArticulosStack, _articulos);
+        _imageStorageService = imageStorageService;
+        _viewModel = viewModel;
+        BindingContext = _viewModel;
     }
 
     protected override async void OnAppearing()
     {
         base.OnAppearing();
-        await CargarSugerenciasAsync();
+        await _viewModel.LoadArticuloSuggestionsAsync();
+        await LoadGastoDescriptionsAsync();
     }
 
-    private async Task CargarSugerenciasAsync()
+    private async Task LoadGastoDescriptionsAsync()
     {
         try
         {
             _todasLasDescripciones = await _repository.GetDistinctGastosDescriptionsAsync();
-            _todasLasDescripcionesArticulos = await _repository.GetDistinctArticulosGastoDescriptionsAsync();
         }
         catch (Exception ex)
         {
-            System.Diagnostics.Debug.WriteLine($"[AUTOCOMPLETE] Error al cargar sugerencias: {ex.Message}");
+            System.Diagnostics.Debug.WriteLine($"[AUTOCOMPLETE] Error al cargar sugerencias de gasto: {ex.Message}");
         }
     }
 
@@ -53,15 +59,13 @@ public partial class GastoModal : ContentPage
             return;
         }
 
-        // Validar artículos
-        if (_articulos.Count == 0)
+        if (!_viewModel.HasArticulos)
         {
             await DisplayAlert("Error", "Debe agregar al menos un artículo", "OK");
             return;
         }
 
-        var articuloInvalido = _articulos.FirstOrDefault(a => string.IsNullOrWhiteSpace(a.Descripcion));
-        if (articuloInvalido is not null)
+        if (!_viewModel.AllArticulosHaveDescription)
         {
             await DisplayAlert("Error", "Cada artículo debe tener una descripción", "OK");
             return;
@@ -73,7 +77,7 @@ public partial class GastoModal : ContentPage
             {
                 Descripcion = DescripcionGastoEntry.Text,
                 Cantidad = 1,
-                Monto = _articulos.Sum(a => a.Total),
+                Monto = _viewModel.Total,
                 Fecha = DateTime.Now
             };
         }
@@ -90,12 +94,7 @@ public partial class GastoModal : ContentPage
     {
         await _repository.SaveGastoAsync(Gasto);
 
-        // Guardar artículos
-        foreach (var articulo in _articulos)
-        {
-            articulo.GastoId = Gasto.Id;
-            await _repository.SaveArticuloGastoAsync(articulo);
-        }
+        await _viewModel.SaveArticulosAsync(Gasto.Id);
 
         // Rehabilitar descripción en autocompletado si estaba descartada
         if (!string.IsNullOrWhiteSpace(Gasto.Descripcion))
@@ -115,94 +114,56 @@ public partial class GastoModal : ContentPage
         await Navigation.PopModalAsync();
     }
 
-    // ===== MULTI-ARTÍCULO =====
+    // ===== IMAGE HANDLING =====
 
-    private void OnAgregarArticuloClicked(object sender, EventArgs e)
-    {
-        var articulo = new ArticuloGasto { Orden = _articulos.Count + 1 };
-        _articulos.Add(articulo);
-        ActualizarTotal();
-    }
-
-    private void OnSubirArticulo(object sender, EventArgs e)
+    private async void OnPickImageClicked(object sender, EventArgs e)
     {
         if (sender is Button btn && btn.BindingContext is ArticuloGasto articulo)
         {
-            var idx = _articulos.IndexOf(articulo);
-            if (idx <= 0) return;
-            _articulos.Move(idx, idx - 1);
-            ReordenarArticulos();
-            ActualizarTotal();
+            await PickImageAsync(articulo);
         }
     }
 
-    private void OnBajarArticulo(object sender, EventArgs e)
+    private async Task PickImageAsync(ArticuloGasto articulo)
     {
-        if (sender is Button btn && btn.BindingContext is ArticuloGasto articulo)
+        try
         {
-            var idx = _articulos.IndexOf(articulo);
-            if (idx < 0 || idx >= _articulos.Count - 1) return;
-            _articulos.Move(idx, idx + 1);
-            ReordenarArticulos();
-            ActualizarTotal();
-        }
-    }
-
-    private void OnEliminarArticulo(object sender, EventArgs e)
-    {
-        if (sender is Button btn && btn.BindingContext is ArticuloGasto articulo)
-        {
-            _articulos.Remove(articulo);
-            ReordenarArticulos();
-            ActualizarTotal();
-        }
-    }
-
-    private void ReordenarArticulos()
-    {
-        for (int i = 0; i < _articulos.Count; i++)
-            _articulos[i].Orden = i + 1;
-    }
-
-    private void ActualizarTotal()
-    {
-        var total = _articulos.Sum(a => a.Total);
-        TotalLabel.Text = $"${total:N0}";
-    }
-
-    private void OnArticuloFieldChanged(object? sender, TextChangedEventArgs e)
-    {
-        ActualizarTotal();
-        
-        // Autocompletado de artículos
-        if (sender is Entry entry && entry.BindingContext is ArticuloGasto articulo)
-        {
-            _currentArticulo = articulo;
-            var texto = e.NewTextValue?.Trim() ?? "";
-            
-            if (texto.Length == 0 || _todasLasDescripcionesArticulos.Count == 0)
+            var result = await MediaPicker.PickPhotoAsync(new MediaPickerOptions
             {
-                ArticuloSuggestionsFrame.IsVisible = false;
-                return;
+                Title = "Seleccionar imagen"
+            });
+
+            if (result != null)
+            {
+                using var stream = await result.OpenReadAsync();
+                var path = await _imageStorageService.CompressAndSaveAsync(stream);
+                if (path != null)
+                {
+                    articulo.ImagenPath = path;
+                    _viewModel.RefreshArticulosBinding();
+                }
             }
-            
-            var filtradas = _todasLasDescripcionesArticulos
-                .Where(d => d.Contains(texto, StringComparison.OrdinalIgnoreCase))
-                .ToList();
-            
-            if (filtradas.Count > 0)
+        }
+        catch (Exception)
+        {
+            // User cancelled or error - silently ignore
+        }
+    }
+
+    private async void OnClearImageClicked(object sender, EventArgs e)
+    {
+        if (sender is Button btn && btn.BindingContext is ArticuloGasto articulo)
+        {
+            if (!string.IsNullOrWhiteSpace(articulo.ImagenPath))
             {
-                ArticuloSuggestionsView.ItemsSource = filtradas;
-                ArticuloSuggestionsFrame.IsVisible = true;
-            }
-            else
-            {
-                ArticuloSuggestionsFrame.IsVisible = false;
+                await _imageStorageService.DeleteFileAsync(articulo.ImagenPath);
+                articulo.ImagenPath = null;
+                _viewModel.RefreshArticulosBinding();
             }
         }
     }
 
-    // ===== AUTOCOMPLETADO =====
+    // ===== AUTOCOMPLETADO PARA GASTO (descripción principal) =====
 
     private void OnDescripcionGastoTextChanged(object sender, TextChangedEventArgs e)
     {
@@ -274,23 +235,42 @@ public partial class GastoModal : ContentPage
 
     // ===== AUTOCOMPLETADO DE ARTÍCULOS =====
 
+    private void OnArticuloFieldChanged(object? sender, TextChangedEventArgs e)
+    {
+        if (sender is Entry entry)
+        {
+            var filtradas = _viewModel.GetFilteredArticuloSuggestions(e.NewTextValue?.Trim() ?? "", entry.BindingContext);
+
+            if (filtradas.Count > 0)
+            {
+                ArticuloSuggestionsView.ItemsSource = filtradas;
+                ArticuloSuggestionsFrame.IsVisible = true;
+            }
+            else
+            {
+                ArticuloSuggestionsFrame.IsVisible = false;
+            }
+
+            // Recalcular total cuando cambian precio o cantidad
+            _viewModel.RecalcularTotal();
+        }
+    }
+
     private void OnArticuloSuggestionSelected(object sender, SelectionChangedEventArgs e)
     {
-        if (e.CurrentSelection.FirstOrDefault() is string descripcion && _currentArticulo is not null)
+        if (e.CurrentSelection.FirstOrDefault() is string descripcion)
         {
-            _currentArticulo.Descripcion = descripcion;
+            _viewModel.ApplyArticuloSuggestion(descripcion);
             ArticuloSuggestionsFrame.IsVisible = false;
-            ActualizarTotal();
         }
     }
 
     private void OnArticuloSuggestionTapped(object sender, TappedEventArgs e)
     {
-        if (sender is Grid grid && grid.BindingContext is string descripcion && _currentArticulo is not null)
+        if (sender is Grid grid && grid.BindingContext is string descripcion)
         {
-            _currentArticulo.Descripcion = descripcion;
+            _viewModel.ApplyArticuloSuggestion(descripcion);
             ArticuloSuggestionsFrame.IsVisible = false;
-            ActualizarTotal();
         }
     }
 
@@ -298,24 +278,8 @@ public partial class GastoModal : ContentPage
     {
         if (sender is Label label && label.BindingContext is string descripcion)
         {
-            try
-            {
-                await _repository.DismissAutocompleteDescriptionAsync(descripcion, "ArticuloGasto");
-                _todasLasDescripcionesArticulos.Remove(descripcion);
-
-                if (ArticuloSuggestionsFrame.IsVisible && ArticuloSuggestionsView.ItemsSource is List<string> filtradas)
-                {
-                    filtradas.Remove(descripcion);
-                    if (filtradas.Count == 0)
-                        ArticuloSuggestionsFrame.IsVisible = false;
-                    else
-                        ArticuloSuggestionsView.ItemsSource = filtradas.ToList();
-                }
-            }
-            catch (Exception ex)
-            {
-                System.Diagnostics.Debug.WriteLine($"[AUTOCOMPLETE] Error al descartar sugerencia de artículo: {ex.Message}");
-            }
+            await _repository.DismissAutocompleteDescriptionAsync(descripcion, "ArticuloGasto");
+            ArticuloSuggestionsFrame.IsVisible = false;
         }
     }
 }

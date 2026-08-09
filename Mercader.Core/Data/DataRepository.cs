@@ -73,6 +73,13 @@ namespace Mercader.Data
                 await MigrateLegacyGastosAsync();
                 await MigrateLegacyEncargosAsync();
 
+                // Migración: Agregar columna ImagenPath a ArticulosVenta
+                await AddColumnIfNotExistsAsync("ArticulosVenta", "ImagenPath", "TEXT");
+                // Migración: Agregar columna ImagenPath a ArticulosGasto
+                await AddColumnIfNotExistsAsync("ArticulosGasto", "ImagenPath", "TEXT");
+                // Migración: Agregar columna ImagenPath a ArticulosEncargo
+                await AddColumnIfNotExistsAsync("ArticulosEncargo", "ImagenPath", "TEXT");
+
                 System.Diagnostics.Debug.WriteLine("[MIGRATION] Migraciones ejecutadas exitosamente");
             }
             catch (Exception ex)
@@ -242,135 +249,6 @@ namespace Mercader.Data
             System.Diagnostics.Debug.WriteLine($"[DEBUG] DeleteVentaAsync: UpdateAsync result={result}");
 
             return result;
-        }
-
-        // ===== ARTÍCULOS DE VENTA =====
-
-        public async Task<List<ArticuloVenta>> GetArticulosVentaAsync(int ventaId)
-        {
-            if (_database is null)
-                throw new InvalidOperationException("La base de datos no está inicializada.");
-
-            return await _database.Table<ArticuloVenta>()
-                .Where(a => a.VentaId == ventaId && a.IsDeleted != true)
-                .OrderBy(a => a.Orden)
-                .ToListAsync();
-        }
-
-        public async Task<int> SaveArticuloVentaAsync(ArticuloVenta articulo)
-        {
-            ArgumentNullException.ThrowIfNull(articulo);
-
-            if (_database is null)
-                throw new InvalidOperationException("La base de datos no está inicializada.");
-
-            // Set timestamps
-            if (articulo.Id == 0)
-                articulo.CreatedAt = DateTime.UtcNow;
-            else
-                articulo.UpdatedAt = DateTime.UtcNow;
-
-            return articulo.Id != 0
-                ? await _database.UpdateAsync(articulo)
-                : await _database.InsertAsync(articulo);
-        }
-
-        public async Task<int> DeleteArticuloVentaAsync(ArticuloVenta articulo)
-        {
-            ArgumentNullException.ThrowIfNull(articulo);
-
-            if (_database is null)
-                throw new InvalidOperationException("La base de datos no está inicializada.");
-
-            // Soft delete
-            articulo.SoftDelete();
-            return await _database.UpdateAsync(articulo);
-        }
-
-        // ===== ARTÍCULOS DE GASTO =====
-
-        public async Task<List<ArticuloGasto>> GetArticulosGastoAsync(int gastoId)
-        {
-            if (_database is null)
-                throw new InvalidOperationException("La base de datos no está inicializada.");
-
-            return await _database.Table<ArticuloGasto>()
-                .Where(a => a.GastoId == gastoId && a.IsDeleted != true)
-                .OrderBy(a => a.Orden)
-                .ToListAsync();
-        }
-
-        public async Task<int> SaveArticuloGastoAsync(ArticuloGasto articulo)
-        {
-            ArgumentNullException.ThrowIfNull(articulo);
-
-            if (_database is null)
-                throw new InvalidOperationException("La base de datos no está inicializada.");
-
-            // Set timestamps
-            if (articulo.Id == 0)
-                articulo.CreatedAt = DateTime.UtcNow;
-            else
-                articulo.UpdatedAt = DateTime.UtcNow;
-
-            return articulo.Id != 0
-                ? await _database.UpdateAsync(articulo)
-                : await _database.InsertAsync(articulo);
-        }
-
-        public async Task<int> DeleteArticuloGastoAsync(ArticuloGasto articulo)
-        {
-            ArgumentNullException.ThrowIfNull(articulo);
-
-            if (_database is null)
-                throw new InvalidOperationException("La base de datos no está inicializada.");
-
-            // Soft delete
-            articulo.SoftDelete();
-            return await _database.UpdateAsync(articulo);
-        }
-
-        // ===== ARTÍCULOS DE ENCARGO =====
-
-        public async Task<List<ArticuloEncargo>> GetArticulosEncargoAsync(int encargoId)
-        {
-            if (_database is null)
-                throw new InvalidOperationException("La base de datos no está inicializada.");
-
-            return await _database.Table<ArticuloEncargo>()
-                .Where(a => a.EncargoId == encargoId && a.IsDeleted != true)
-                .OrderBy(a => a.Orden)
-                .ToListAsync();
-        }
-
-        public async Task<int> SaveArticuloEncargoAsync(ArticuloEncargo articulo)
-        {
-            ArgumentNullException.ThrowIfNull(articulo);
-
-            if (_database is null)
-                throw new InvalidOperationException("La base de datos no está inicializada.");
-
-            // Set timestamps
-            if (articulo.Id == 0)
-                articulo.CreatedAt = DateTime.UtcNow;
-            else
-                articulo.UpdatedAt = DateTime.UtcNow;
-
-            return articulo.Id != 0
-                ? await _database.UpdateAsync(articulo)
-                : await _database.InsertAsync(articulo);
-        }
-
-        public async Task<int> DeleteArticuloEncargoAsync(ArticuloEncargo articulo)
-        {
-            ArgumentNullException.ThrowIfNull(articulo);
-
-            if (_database is null)
-                throw new InvalidOperationException("La base de datos no está inicializada.");
-
-            // Soft delete
-            articulo.SoftDelete();
-            return await _database.UpdateAsync(articulo);
         }
 
         // ===== AUTOCOMPLETADO =====
@@ -690,6 +568,23 @@ namespace Mercader.Data
             {
                 System.Diagnostics.Debug.WriteLine($"[MIGRATION] Error migrando Encargos: {ex.Message}");
             }
+        }
+
+        // ===== ARTÍCULOS (Generic Repository Factory) =====
+
+        public IArticleRepository<T> GetArticleRepository<T>() where T : ArticuloBase, new()
+        {
+            if (_database is null)
+                throw new InvalidOperationException("La base de datos no está inicializada.");
+
+            var fkColumn = typeof(T) switch
+            {
+                Type t when t == typeof(ArticuloVenta) => "VentaId",
+                Type t when t == typeof(ArticuloGasto) => "GastoId",
+                Type t when t == typeof(ArticuloEncargo) => "EncargoId",
+                _ => throw new NotSupportedException($"Entity type {typeof(T).Name} not supported")
+            };
+            return new ArticleRepository<T>(_database, fkColumn);
         }
 
         // ===== DISPOSABLE =====

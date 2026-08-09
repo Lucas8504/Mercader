@@ -1,50 +1,34 @@
-using System.Collections.ObjectModel;
-using Mercader.Domain.Entities;
+using System.Windows.Input;
 using Mercader.Data.Interfaces;
+using Mercader.Domain.Entities;
+using Mercader.Services.Interfaces;
+using Mercader.Core.ViewModels;
+using System.IO;
 
 namespace Mercader;
 
 public partial class EditarEncargoPage : ContentPage
 {
     private readonly IDataRepository _repository;
+    private readonly IImageStorageService _imageStorageService;
+    private readonly EditarEncargoViewModel _viewModel;
     private readonly Encargo _encargo;
-    private readonly ObservableCollection<ArticuloEncargo> _articulos = new();
-    private List<string> _todasLasDescripcionesArticulos = new();
-    private ArticuloEncargo? _currentArticulo;
 
-    public EditarEncargoPage(Encargo encargo, IDataRepository repository)
+    public EditarEncargoPage(Encargo encargo, IDataRepository repository, IImageStorageService imageStorageService, EditarEncargoViewModel viewModel)
     {
         _repository = repository ?? throw new ArgumentNullException(nameof(repository));
+        _imageStorageService = imageStorageService ?? throw new ArgumentNullException(nameof(imageStorageService));
+        _viewModel = viewModel ?? throw new ArgumentNullException(nameof(viewModel));
         _encargo = encargo ?? throw new ArgumentNullException(nameof(encargo));
+
         InitializeComponent();
-        BindableLayout.SetItemsSource(ArticulosStack, _articulos);
+        BindingContext = _viewModel;
     }
 
     protected override async void OnAppearing()
     {
         base.OnAppearing();
-        NombreEntry.Text = _encargo.Nombre;
-        ContactoEntry.Text = CleanPhoneNumber(_encargo.Contacto);
-        DescripcionEntry.Text = _encargo.Descripcion;
-        FechaEntregaPicker.SelectedDate = _encargo.FechaEntrega;
-        FechaEntregaLabel.Text = _encargo.FechaEntrega.ToString("dd/MM/yyyy");
-
-        // Cargar artículos existentes
-        var articulos = await _repository.GetArticulosEncargoAsync(_encargo.Id);
-        foreach (var articulo in articulos)
-            _articulos.Add(articulo);
-
-        // Cargar sugerencias de autocompletado
-        try
-        {
-            _todasLasDescripcionesArticulos = await _repository.GetDistinctArticulosEncargoDescriptionsAsync();
-        }
-        catch (Exception ex)
-        {
-            System.Diagnostics.Debug.WriteLine($"[AUTOCOMPLETE] Error al cargar sugerencias: {ex.Message}");
-        }
-
-        ActualizarTotal();
+        await _viewModel.LoadAsync(_encargo);
     }
 
     private DateTime _fechaOriginal;
@@ -76,57 +60,18 @@ public partial class EditarEncargoPage : ContentPage
 
     private async void OnGuardarClicked(object sender, EventArgs e)
     {
-        if (string.IsNullOrWhiteSpace(NombreEntry.Text))
+        var success = await _viewModel.SaveAsync(_encargo, _repository);
+        if (!success)
         {
-            await DisplayAlert("Error", "El nombre del cliente es obligatorio", "OK");
+            if (string.IsNullOrWhiteSpace(_viewModel.Nombre))
+                await DisplayAlert("Error", "El nombre del cliente es obligatorio", "OK");
+            else if (string.IsNullOrWhiteSpace(_viewModel.Contacto) || !IsValidPhoneNumber(_viewModel.Contacto))
+                await DisplayAlert("Error", "Por favor, ingrese un número de teléfono válido", "OK");
+            else if (!_viewModel.HasArticulos)
+                await DisplayAlert("Error", "Debe agregar al menos un artículo", "OK");
+            else
+                await DisplayAlert("Error", "Cada artículo debe tener una descripción", "OK");
             return;
-        }
-
-        if (string.IsNullOrWhiteSpace(ContactoEntry.Text))
-        {
-            await DisplayAlert("Error", "Por favor, ingrese un número de teléfono", "OK");
-            return;
-        }
-
-        if (!IsValidPhoneNumber(ContactoEntry.Text))
-        {
-            await DisplayAlert("Error", "Por favor, ingrese un número de teléfono válido", "OK");
-            return;
-        }
-
-        if (_articulos.Count == 0)
-        {
-            await DisplayAlert("Error", "Debe agregar al menos un artículo", "OK");
-            return;
-        }
-
-        var articuloInvalido = _articulos.FirstOrDefault(a => string.IsNullOrWhiteSpace(a.Descripcion));
-        if (articuloInvalido is not null)
-        {
-            await DisplayAlert("Error", "Cada artículo debe tener una descripción", "OK");
-            return;
-        }
-
-        // Actualizar encargo
-        _encargo.Nombre = NombreEntry.Text.Trim();
-        _encargo.Contacto = ContactoEntry.Text.Trim();
-        _encargo.Descripcion = DescripcionEntry.Text?.Trim();
-        _encargo.FechaEntrega = FechaEntregaPicker.SelectedDate ?? _encargo.FechaEntrega;
-        _encargo.Precio = _articulos.Sum(a => a.Total);
-        _encargo.Cantidad = 1;
-
-        await _repository.SaveEncargoAsync(_encargo);
-
-        // Eliminar artículos viejos y guardar los nuevos
-        var articulosViejos = await _repository.GetArticulosEncargoAsync(_encargo.Id);
-        foreach (var viejo in articulosViejos)
-            await _repository.DeleteArticuloEncargoAsync(viejo);
-
-        foreach (var articulo in _articulos)
-        {
-            articulo.Id = 0; // Reset ID para que sea un insert
-            articulo.EncargoId = _encargo.Id;
-            await _repository.SaveArticuloEncargoAsync(articulo);
         }
 
         await DisplayAlert("Éxito", "Encargo actualizado correctamente", "OK");
@@ -139,22 +84,14 @@ public partial class EditarEncargoPage : ContentPage
             return false;
 
         string cleanedNumber = phoneNumber.Replace(" ", "")
-                                        .Replace("-", "")
-                                        .Replace("(", "")
-                                        .Replace(")", "")
-                                        .Replace("+", "");
+                                            .Replace("-", "")
+                                            .Replace("(", "")
+                                            .Replace(")", "")
+                                            .Replace("+", "");
 
         return cleanedNumber.All(char.IsDigit) &&
                cleanedNumber.Length >= 7 &&
                cleanedNumber.Length <= 15;
-    }
-
-    private string CleanPhoneNumber(string phoneNumber)
-    {
-        if (string.IsNullOrWhiteSpace(phoneNumber))
-            return phoneNumber;
-
-        return new string(phoneNumber.Where(char.IsDigit).ToArray());
     }
 
     private async void OnCancelarClicked(object sender, EventArgs e)
@@ -169,81 +106,63 @@ public partial class EditarEncargoPage : ContentPage
             await Navigation.PopAsync();
     }
 
-    // ===== MULTI-ARTÍCULO =====
+    // ===== IMAGE HANDLING =====
 
-    private void OnAgregarArticuloClicked(object sender, EventArgs e)
-    {
-        var articulo = new ArticuloEncargo { Orden = _articulos.Count + 1 };
-        _articulos.Add(articulo);
-        ActualizarTotal();
-    }
-
-    private void OnSubirArticulo(object sender, EventArgs e)
+    private async void OnPickImageClicked(object sender, EventArgs e)
     {
         if (sender is Button btn && btn.BindingContext is ArticuloEncargo articulo)
         {
-            var idx = _articulos.IndexOf(articulo);
-            if (idx <= 0) return;
-            _articulos.Move(idx, idx - 1);
-            ReordenarArticulos();
-            ActualizarTotal();
+            await PickImageAsync(articulo);
         }
     }
 
-    private void OnBajarArticulo(object sender, EventArgs e)
+    private async Task PickImageAsync(ArticuloEncargo articulo)
+    {
+        try
+        {
+            var result = await MediaPicker.PickPhotoAsync(new MediaPickerOptions
+            {
+                Title = "Seleccionar imagen"
+            });
+
+            if (result != null)
+            {
+                using var stream = await result.OpenReadAsync();
+                var path = await _imageStorageService.CompressAndSaveAsync(stream);
+                if (path != null)
+                {
+                    articulo.ImagenPath = path;
+                    _viewModel.RefreshArticulosBinding();
+                }
+            }
+        }
+        catch (Exception)
+        {
+            // User cancelled or error - silently ignore
+        }
+    }
+
+    private async void OnClearImageClicked(object sender, EventArgs e)
     {
         if (sender is Button btn && btn.BindingContext is ArticuloEncargo articulo)
         {
-            var idx = _articulos.IndexOf(articulo);
-            if (idx < 0 || idx >= _articulos.Count - 1) return;
-            _articulos.Move(idx, idx + 1);
-            ReordenarArticulos();
-            ActualizarTotal();
+            if (!string.IsNullOrWhiteSpace(articulo.ImagenPath))
+            {
+                await _imageStorageService.DeleteFileAsync(articulo.ImagenPath);
+                articulo.ImagenPath = null;
+                _viewModel.RefreshArticulosBinding();
+            }
         }
     }
 
-    private void OnEliminarArticulo(object sender, EventArgs e)
-    {
-        if (sender is Button btn && btn.BindingContext is ArticuloEncargo articulo)
-        {
-            _articulos.Remove(articulo);
-            ReordenarArticulos();
-            ActualizarTotal();
-        }
-    }
-
-    private void ReordenarArticulos()
-    {
-        for (int i = 0; i < _articulos.Count; i++)
-            _articulos[i].Orden = i + 1;
-    }
-
-    private void ActualizarTotal()
-    {
-        var total = _articulos.Sum(a => a.Total);
-        TotalLabel.Text = $"${total:N0}";
-    }
+    // ===== AUTOCOMPLETADO DE ARTÍCULOS =====
 
     private void OnArticuloFieldChanged(object? sender, TextChangedEventArgs e)
     {
-        ActualizarTotal();
-        
-        // Autocompletado de artículos
-        if (sender is Entry entry && entry.BindingContext is ArticuloEncargo articulo)
+        if (sender is Entry entry)
         {
-            _currentArticulo = articulo;
-            var texto = e.NewTextValue?.Trim() ?? "";
-            
-            if (texto.Length == 0 || _todasLasDescripcionesArticulos.Count == 0)
-            {
-                ArticuloSuggestionsFrame.IsVisible = false;
-                return;
-            }
-            
-            var filtradas = _todasLasDescripcionesArticulos
-                .Where(d => d.Contains(texto, StringComparison.OrdinalIgnoreCase))
-                .ToList();
-            
+            var filtradas = _viewModel.GetFilteredArticuloSuggestions(e.NewTextValue?.Trim() ?? "", entry.BindingContext);
+
             if (filtradas.Count > 0)
             {
                 ArticuloSuggestionsView.ItemsSource = filtradas;
@@ -253,28 +172,27 @@ public partial class EditarEncargoPage : ContentPage
             {
                 ArticuloSuggestionsFrame.IsVisible = false;
             }
+
+            // Recalcular total cuando cambian precio o cantidad
+            _viewModel.RecalcularTotal();
         }
     }
 
-    // ===== AUTOCOMPLETADO DE ARTÍCULOS =====
-
     private void OnArticuloSuggestionSelected(object sender, SelectionChangedEventArgs e)
     {
-        if (e.CurrentSelection.FirstOrDefault() is string descripcion && _currentArticulo is not null)
+        if (e.CurrentSelection.FirstOrDefault() is string descripcion)
         {
-            _currentArticulo.Descripcion = descripcion;
+            _viewModel.ApplyArticuloSuggestion(descripcion);
             ArticuloSuggestionsFrame.IsVisible = false;
-            ActualizarTotal();
         }
     }
 
     private void OnArticuloSuggestionTapped(object sender, TappedEventArgs e)
     {
-        if (sender is Grid grid && grid.BindingContext is string descripcion && _currentArticulo is not null)
+        if (sender is Grid grid && grid.BindingContext is string descripcion)
         {
-            _currentArticulo.Descripcion = descripcion;
+            _viewModel.ApplyArticuloSuggestion(descripcion);
             ArticuloSuggestionsFrame.IsVisible = false;
-            ActualizarTotal();
         }
     }
 
@@ -282,24 +200,8 @@ public partial class EditarEncargoPage : ContentPage
     {
         if (sender is Label label && label.BindingContext is string descripcion)
         {
-            try
-            {
-                await _repository.DismissAutocompleteDescriptionAsync(descripcion, "ArticuloEncargo");
-                _todasLasDescripcionesArticulos.Remove(descripcion);
-
-                if (ArticuloSuggestionsFrame.IsVisible && ArticuloSuggestionsView.ItemsSource is List<string> filtradas)
-                {
-                    filtradas.Remove(descripcion);
-                    if (filtradas.Count == 0)
-                        ArticuloSuggestionsFrame.IsVisible = false;
-                    else
-                        ArticuloSuggestionsView.ItemsSource = filtradas.ToList();
-                }
-            }
-            catch (Exception ex)
-            {
-                System.Diagnostics.Debug.WriteLine($"[AUTOCOMPLETE] Error al descartar sugerencia de artículo: {ex.Message}");
-            }
+            await _repository.DismissAutocompleteDescriptionAsync(descripcion, "ArticuloEncargo");
+            ArticuloSuggestionsFrame.IsVisible = false;
         }
     }
 }

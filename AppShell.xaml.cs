@@ -1,4 +1,4 @@
-﻿namespace Mercader
+namespace Mercader
 {
     public partial class AppShell : Shell
     {

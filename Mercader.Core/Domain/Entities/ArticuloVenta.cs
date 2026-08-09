@@ -1,28 +1,11 @@
 using SQLite;
+using Mercader.Domain.Entities;
 
-namespace Mercader.Domain.Entities
+namespace Mercader.Domain.Entities;
+
+[Table("ArticulosVenta")]
+public class ArticuloVenta : ArticuloBase
 {
-    [Table("ArticulosVenta")]
-    public class ArticuloVenta : BaseEntity
-    {
-        [Column("VentaId")]
-        public int VentaId { get; set; }
-
-        [Column("Descripcion")]
-        public string? Descripcion { get; set; }
-
-        [Column("PrecioUnitario")]
-        public decimal PrecioUnitario { get; set; }
-
-        [Column("Cantidad")]
-        public decimal Cantidad { get; set; }
-
-        [Column("Orden")]
-        public int Orden { get; set; }
-
-        // Propiedades calculadas (para UI, no se mapean a SQLite)
-        public decimal Total => PrecioUnitario * Cantidad;
-        public string TotalFormateado => (PrecioUnitario * Cantidad).ToString("N0");
-        public string UnidadTexto => Cantidad == 1 ? " ud." : " uds.";
-    }
+    [Column("VentaId")]
+    public int VentaId { get; set; }
 }

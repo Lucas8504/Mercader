@@ -5,19 +5,25 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Mercader.Domain.Entities;
 using Mercader.ViewModels;
+using Mercader.Core.ViewModels;
 using Mercader.Data.Interfaces;
+using Mercader.Services.Interfaces;
 
 namespace Mercader
 {
     public partial class Venta : ContentPage
     {
         private readonly IDataRepository _repository;
+        private readonly IImageStorageService _imageStorageService;
+        private readonly IServiceProvider _services;
         private readonly VentasViewModel _viewModel;
         private bool _isLoading = false;
 
-        public Venta(IDataRepository repository, VentasViewModel viewModel)
+        public Venta(IDataRepository repository, IImageStorageService imageStorageService, IServiceProvider services, VentasViewModel viewModel)
         {
             _repository = repository ?? throw new ArgumentNullException(nameof(repository));
+            _imageStorageService = imageStorageService ?? throw new ArgumentNullException(nameof(imageStorageService));
+            _services = services ?? throw new ArgumentNullException(nameof(services));
             _viewModel = viewModel ?? throw new ArgumentNullException(nameof(viewModel));
             InitializeComponent();
             BindingContext = _viewModel;
@@ -226,7 +232,8 @@ namespace Mercader
         {
             try
             {
-                await Navigation.PushAsync(new EditarVentaPage(venta, _repository));
+                var editViewModel = _services.GetRequiredService<EditarVentaViewModel>();
+                await Navigation.PushAsync(new EditarVentaPage(venta, _repository, _imageStorageService, editViewModel));
             }
             catch (Exception ex)
             {

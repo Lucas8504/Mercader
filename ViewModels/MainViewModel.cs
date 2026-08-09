@@ -290,17 +290,21 @@ namespace Mercader.ViewModels
             var encargos = Encargos.ToList();
 
             // Cargar artículos para cada entidad
+            var articuloVentaRepo = _dataRepository.GetArticleRepository<ArticuloVenta>();
+            var articuloGastoRepo = _dataRepository.GetArticleRepository<ArticuloGasto>();
+            var articuloEncargoRepo = _dataRepository.GetArticleRepository<ArticuloEncargo>();
+
             var articulosVenta = new Dictionary<int, List<ArticuloVenta>>();
             foreach (var v in ventas)
-                articulosVenta[v.Id] = await _dataRepository.GetArticulosVentaAsync(v.Id);
+                articulosVenta[v.Id] = await articuloVentaRepo.GetByParentIdAsync(v.Id);
 
             var articulosGasto = new Dictionary<int, List<ArticuloGasto>>();
             foreach (var g in gastos)
-                articulosGasto[g.Id] = await _dataRepository.GetArticulosGastoAsync(g.Id);
+                articulosGasto[g.Id] = await articuloGastoRepo.GetByParentIdAsync(g.Id);
 
             var articulosEncargo = new Dictionary<int, List<ArticuloEncargo>>();
             foreach (var e in encargos)
-                articulosEncargo[e.Id] = await _dataRepository.GetArticulosEncargoAsync(e.Id);
+                articulosEncargo[e.Id] = await articuloEncargoRepo.GetByParentIdAsync(e.Id);
 
             return new BalanceExportDto
             {

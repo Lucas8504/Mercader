@@ -38,6 +38,7 @@
                         BackgroundColor="Transparent"
                         Placeholder="Ingrese el nombre del cliente"
                         PlaceholderColor="{AppThemeBinding Light={StaticResource TextPlaceholder}, Dark={StaticResource TextPlaceholderDark}}"
+                        Text="{Binding Nombre, Mode=TwoWay}"
                         TextColor="{AppThemeBinding Light={StaticResource TextPrimary}, Dark={StaticResource TextPrimaryDark}}"
                         Visual="Material" />
                 </VerticalStackLayout>
@@ -60,6 +61,7 @@
                         Keyboard="Telephone"
                         Placeholder="Ingrese el teléfono"
                         PlaceholderColor="{AppThemeBinding Light={StaticResource TextPlaceholder}, Dark={StaticResource TextPlaceholderDark}}"
+                        Text="{Binding Contacto, Mode=TwoWay}"
                         TextColor="{AppThemeBinding Light={StaticResource TextPrimary}, Dark={StaticResource TextPrimaryDark}}"
                         Visual="Material" />
                 </VerticalStackLayout>
@@ -81,6 +83,7 @@
                         BackgroundColor="Transparent"
                         Placeholder="Describe el producto o servicio"
                         PlaceholderColor="{AppThemeBinding Light={StaticResource TextPlaceholder}, Dark={StaticResource TextPlaceholderDark}}"
+                        Text="{Binding Descripcion, Mode=TwoWay}"
                         TextColor="{AppThemeBinding Light={StaticResource TextPrimary}, Dark={StaticResource TextPrimaryDark}}"
                         Visual="Material" />
                 </VerticalStackLayout>
@@ -102,6 +105,7 @@
                             x:Name="FechaEntregaLabel"
                             FontSize="14"
                             VerticalOptions="Center"
+                            Text="{Binding FechaEntrega, StringFormat='{0:dd/MM/yyyy}'}"
                             TextColor="{AppThemeBinding Light={StaticResource TextPrimary}, Dark={StaticResource TextPrimaryDark}}" />
                         <Grid.GestureRecognizers>
                             <TapGestureRecognizer Tapped="OnFechaEntregaTapped" />
@@ -212,6 +216,32 @@
                                         Visual="Material" />
                                 </VerticalStackLayout>
 
+                                <!-- Image display + picker -->
+                                <Grid ColumnDefinitions="60,*,30" ColumnSpacing="8" Margin="0,5,0,0">
+                                    <Frame Grid.Column="0" WidthRequest="60" HeightRequest="60" 
+                                           Padding="0" IsClippedToBounds="True" CornerRadius="8"
+                                           IsVisible="{Binding HasImage}">
+                                        <Image Source="{Binding ImagenPath}" Aspect="AspectFill" />
+                                    </Frame>
+                                    <Frame Grid.Column="0" WidthRequest="60" HeightRequest="60" 
+                                           Padding="0" IsClippedToBounds="True" CornerRadius="8"
+                                           IsVisible="{Binding HasImage, Converter={StaticResource InvertBool}}"
+                                           BackgroundColor="#F0F0F0">
+                                        <Label Text="📷" FontSize="24" HorizontalOptions="Center" VerticalOptions="Center" />
+                                    </Frame>
+                                    <Button Grid.Column="1" Text="Agregar foto" 
+                                            Command="{Binding Source={RelativeSource AncestorType={x:Type Page}}, Path=BindingContext.PickImageCommand}"
+                                            CommandParameter="{Binding .}"
+                                            BackgroundColor="Transparent" TextColor="#487CE4"
+                                            FontSize="14" Padding="0" />
+                                    <Button Grid.Column="2" Text="✕" 
+                                            Command="{Binding Source={RelativeSource AncestorType={x:Type Page}}, Path=BindingContext.ClearImageCommand}"
+                                            CommandParameter="{Binding .}"
+                                            BackgroundColor="Transparent" TextColor="Red"
+                                            FontSize="14" Padding="0"
+                                            IsVisible="{Binding HasImage}" />
+                                </Grid>
+
                                 <!-- Precio y Cantidad en fila -->
                                 <Grid ColumnDefinitions="*,8,*" ColumnSpacing="0">
                                     <!-- Precio Unitario -->
@@ -254,21 +284,24 @@
                                     <Button
                                         Grid.Column="1"
                                         BackgroundColor="Transparent"
-                                        Clicked="OnSubirArticulo"
+                                        Command="{Binding Source={RelativeSource AncestorType={x:Type Page}}, Path=BindingContext.SubirArticuloCommand}"
+                                        CommandParameter="{Binding .}"
                                         FontSize="14"
                                         Padding="4"
                                         Text="⬆" />
                                     <Button
                                         Grid.Column="2"
                                         BackgroundColor="Transparent"
-                                        Clicked="OnBajarArticulo"
+                                        Command="{Binding Source={RelativeSource AncestorType={x:Type Page}}, Path=BindingContext.BajarArticuloCommand}"
+                                        CommandParameter="{Binding .}"
                                         FontSize="14"
                                         Padding="4"
                                         Text="⬇" />
                                     <Button
                                         Grid.Column="3"
                                         BackgroundColor="#FF5252"
-                                        Clicked="OnEliminarArticulo"
+                                        Command="{Binding Source={RelativeSource AncestorType={x:Type Page}}, Path=BindingContext.EliminarArticuloCommand}"
+                                        CommandParameter="{Binding .}"
                                         FontSize="14"
                                         Padding="4"
                                         Text="✕"
@@ -284,7 +317,7 @@
             <Button
                 Padding="10"
                 BackgroundColor="{AppThemeBinding Light=#2196F3, Dark=#90CAF9}"
-                Clicked="OnAgregarArticuloClicked"
+                Command="{Binding AgregarArticuloCommand}"
                 CornerRadius="8"
                 FontSize="14"
                 Text="+ Agregar artículo"

@@ -1,9 +1,11 @@
 using CommunityToolkit.Maui;
 using Syncfusion.Maui.Toolkit.Hosting;
 using Mercader.ViewModels;
+using Mercader.Core.ViewModels;
 using Mercader.Services.Interfaces;
 using Mercader.Services;
 using Mercader.Data.Interfaces;
+using Mercader.Domain.Entities;
 using Mercader.Services.Calculators;
 using Mercader.Services.Charts;
 using Microcharts.Maui;
@@ -58,10 +60,37 @@ namespace Mercader
                 new Data.DataRepository(Path.Combine(FileSystem.AppDataDirectory, "MercaderDB.db3")));
             builder.Services.AddSingleton<IDataRepository>(sp => sp.GetRequiredService<Data.DataRepository>());
 
+            // Article Repositories (generic)
+            builder.Services.AddSingleton<IArticleRepository<ArticuloVenta>>(sp =>
+            {
+                var dataRepo = sp.GetRequiredService<IDataRepository>();
+                return ((Data.DataRepository)dataRepo).GetArticleRepository<ArticuloVenta>();
+            });
+            builder.Services.AddSingleton<IArticleRepository<ArticuloGasto>>(sp =>
+            {
+                var dataRepo = sp.GetRequiredService<IDataRepository>();
+                return ((Data.DataRepository)dataRepo).GetArticleRepository<ArticuloGasto>();
+            });
+            builder.Services.AddSingleton<IArticleRepository<ArticuloEncargo>>(sp =>
+            {
+                var dataRepo = sp.GetRequiredService<IDataRepository>();
+                return ((Data.DataRepository)dataRepo).GetArticleRepository<ArticuloEncargo>();
+            });
+
             // ViewModels
             builder.Services.AddTransient<VentasViewModel>();
             builder.Services.AddTransient<GastosViewModel>();
             builder.Services.AddTransient<EncargosViewModel>();
+
+            // Modal ViewModels
+            builder.Services.AddTransient<GastoModalViewModel>();
+            builder.Services.AddTransient<VentaModalViewModel>();
+            builder.Services.AddTransient<EncModalViewModel>();
+
+            // Edit Page ViewModels
+            builder.Services.AddTransient<EditarGastoViewModel>();
+            builder.Services.AddTransient<EditarVentaViewModel>();
+            builder.Services.AddTransient<EditarEncargoViewModel>();
 
             // Services
             builder.Services.AddSingleton<IChartService, ChartService>();
@@ -69,6 +98,7 @@ namespace Mercader
             builder.Services.AddSingleton<INotificationService, NotificationService>();
             builder.Services.AddSingleton<INavigationService, NavigationService>();
             builder.Services.AddSingleton<IExportPdfService, ExportPdfService>();
+            builder.Services.AddSingleton<IImageStorageService, ImageStorageService>();
 
             // Shell
             builder.Services.AddSingleton<AppShell>();
@@ -77,6 +107,8 @@ namespace Mercader
             builder.Services.AddTransient<MainPage>();
             builder.Services.AddTransient<Gastos>();
             builder.Services.AddTransient<Encargos>();
+            builder.Services.AddTransient<EditarGastoPage>();
+            builder.Services.AddTransient<EditarVentaPage>();
             builder.Services.AddTransient<EditarEncargoPage>();
             builder.Services.AddTransient<Venta>();
             builder.Services.AddTransient<Configuracion>();
