@@ -55,6 +55,59 @@ public partial class ImageGalleryModal : ContentPage
             return;
         }
 
+        var action = await DisplayActionSheet("Agregar imagen", "Cancelar", null, "Tomar foto", "Elegir de la galería");
+
+        if (action == "Tomar foto")
+        {
+            await TakePhotoAsync();
+        }
+        else if (action == "Elegir de la galería")
+        {
+            await PickFromGalleryAsync();
+        }
+    }
+
+    private async Task TakePhotoAsync()
+    {
+        try
+        {
+            var status = await Permissions.CheckStatusAsync<Permissions.Camera>();
+            if (status != PermissionStatus.Granted)
+            {
+                status = await Permissions.RequestAsync<Permissions.Camera>();
+            }
+
+            if (status != PermissionStatus.Granted)
+            {
+                await DisplayAlert("Permiso requerido", "Se necesita permiso de cámara para tomar fotos.", "OK");
+                return;
+            }
+
+            var result = await MediaPicker.CapturePhotoAsync(new MediaPickerOptions
+            {
+                Title = "Tomar foto"
+            });
+
+            if (result != null)
+            {
+                using var stream = await result.OpenReadAsync();
+                var path = await _imageStorageService.CompressAndSaveAsync(stream);
+                if (path != null)
+                {
+                    var slot = _articulo.GetFirstEmptySlot();
+                    _articulo.SetImageAtSlot(slot, path);
+                    LoadImages();
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            await DisplayAlert("Error", $"No se pudo tomar la foto: {ex.Message}", "OK");
+        }
+    }
+
+    private async Task PickFromGalleryAsync()
+    {
         try
         {
             var result = await MediaPicker.PickPhotoAsync(new MediaPickerOptions
@@ -74,9 +127,9 @@ public partial class ImageGalleryModal : ContentPage
                 }
             }
         }
-        catch (Exception)
+        catch (Exception ex)
         {
-            // User cancelled or error
+            await DisplayAlert("Error", $"No se pudo seleccionar la imagen: {ex.Message}", "OK");
         }
     }
 

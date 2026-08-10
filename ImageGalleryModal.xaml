@@ -38,11 +38,13 @@
                     <Image
                         x:Name="Image0"
                         Aspect="AspectFill"
+                        InputTransparent="True"
                         IsVisible="False" />
                     <!-- Placeholder when empty -->
                     <Frame
                         x:Name="Placeholder0"
                         BackgroundColor="#F0F0F0"
+                        InputTransparent="True"
                         Padding="0"
                         IsVisible="True">
                         <VerticalStackLayout HorizontalOptions="Center" VerticalOptions="Center" Spacing="4">
@@ -53,6 +55,7 @@
                     <!-- Delete button -->
                     <Button
                         x:Name="DeleteBtn0"
+                        StyleId="0"
                         Text="✕" FontSize="14"
                         BackgroundColor="#FF5252" TextColor="White"
                         HorizontalOptions="End" VerticalOptions="Start"
@@ -77,10 +80,12 @@
                     <Image
                         x:Name="Image1"
                         Aspect="AspectFill"
+                        InputTransparent="True"
                         IsVisible="False" />
                     <Frame
                         x:Name="Placeholder1"
                         BackgroundColor="#F0F0F0"
+                        InputTransparent="True"
                         Padding="0"
                         IsVisible="True">
                         <VerticalStackLayout HorizontalOptions="Center" VerticalOptions="Center" Spacing="4">
@@ -90,6 +95,7 @@
                     </Frame>
                     <Button
                         x:Name="DeleteBtn1"
+                        StyleId="1"
                         Text="✕" FontSize="14"
                         BackgroundColor="#FF5252" TextColor="White"
                         HorizontalOptions="End" VerticalOptions="Start"
@@ -113,10 +119,12 @@
                     <Image
                         x:Name="Image2"
                         Aspect="AspectFill"
+                        InputTransparent="True"
                         IsVisible="False" />
                     <Frame
                         x:Name="Placeholder2"
                         BackgroundColor="#F0F0F0"
+                        InputTransparent="True"
                         Padding="0"
                         IsVisible="True">
                         <VerticalStackLayout HorizontalOptions="Center" VerticalOptions="Center" Spacing="4">
@@ -126,6 +134,7 @@
                     </Frame>
                     <Button
                         x:Name="DeleteBtn2"
+                        StyleId="2"
                         Text="✕" FontSize="14"
                         BackgroundColor="#FF5252" TextColor="White"
                         HorizontalOptions="End" VerticalOptions="Start"
@@ -149,10 +158,12 @@
                     <Image
                         x:Name="Image3"
                         Aspect="AspectFill"
+                        InputTransparent="True"
                         IsVisible="False" />
                     <Frame
                         x:Name="Placeholder3"
                         BackgroundColor="#F0F0F0"
+                        InputTransparent="True"
                         Padding="0"
                         IsVisible="True">
                         <VerticalStackLayout HorizontalOptions="Center" VerticalOptions="Center" Spacing="4">
@@ -162,6 +173,7 @@
                     </Frame>
                     <Button
                         x:Name="DeleteBtn3"
+                        StyleId="3"
                         Text="✕" FontSize="14"
                         BackgroundColor="#FF5252" TextColor="White"
                         HorizontalOptions="End" VerticalOptions="Start"

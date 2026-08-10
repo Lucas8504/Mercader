@@ -136,32 +136,16 @@
                                         Text="Imágenes"
                                         TextColor="{AppThemeBinding Light={StaticResource TextSecondary}, Dark={StaticResource TextSecondaryDark}}"
                                         VerticalOptions="Center" />
-                                    <Frame
+                                    <Button
                                         Grid.Column="1"
                                         WidthRequest="36" HeightRequest="36"
-                                        Padding="0" CornerRadius="18"
-                                        BackgroundColor="{AppThemeBinding Light=#487CE4, Dark=#90CAF9}">
-                                        <Frame.GestureRecognizers>
-                                            <TapGestureRecognizer Tapped="OnOpenImageGalleryClicked" />
-                                        </Frame.GestureRecognizers>
-                                        <Grid>
-                                            <Label
-                                                Text="📷"
-                                                FontSize="16"
-                                                HorizontalOptions="Center"
-                                                VerticalOptions="Center" />
-                                            <Label
-                                                x:Name="ImageCountLabel"
-                                                Text="0"
-                                                FontSize="10"
-                                                TextColor="White"
-                                                BackgroundColor="#FF5252"
-                                                Padding="4"
-                                                HorizontalOptions="End"
-                                                VerticalOptions="Start"
-                                                IsVisible="False" />
-                                        </Grid>
-                                    </Frame>
+                                        Padding="0"
+                                        BackgroundColor="{AppThemeBinding Light=#487CE4, Dark=#90CAF9}"
+                                        CornerRadius="18"
+                                        FontSize="16"
+                                        Text="📷"
+                                        TextColor="White"
+                                        Clicked="OnOpenImageGalleryClicked" />
                                 </Grid>
 
                                 <!-- Precio y Cantidad en fila -->

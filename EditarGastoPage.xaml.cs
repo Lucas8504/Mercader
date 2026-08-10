@@ -63,14 +63,32 @@ public partial class EditarGastoPage : ContentPage
 
     // ===== IMAGE HANDLING =====
 
-    private async void OnOpenImageGalleryClicked(object sender, TappedEventArgs e)
+    private async void OnOpenImageGalleryClicked(object sender, EventArgs e)
     {
-        if (sender is Frame frame && frame.BindingContext is ArticuloGasto articulo)
+        // Get the article from the nearest ancestor Frame with article BindingContext
+        if (sender is Element element)
         {
-            var modal = new ImageGalleryModal(articulo, _imageStorageService);
-            await Navigation.PushModalAsync(modal);
-            _viewModel.RefreshArticulosBinding();
+            var articulo = FindArticleBindingContext(element);
+            if (articulo != null)
+            {
+                var modal = new ImageGalleryModal(articulo, _imageStorageService);
+                await Navigation.PushModalAsync(modal);
+                _viewModel.RefreshArticulosBinding();
+            }
         }
+    }
+
+    private ArticuloBase? FindArticleBindingContext(Element element)
+    {
+        // Walk up the visual tree to find an element with ArticuloGasto BindingContext
+        var current = element.Parent;
+        while (current != null)
+        {
+            if (current.BindingContext is ArticuloBase articulo)
+                return articulo;
+            current = current.Parent;
+        }
+        return null;
     }
 
     // ===== AUTOCOMPLETADO DE ARTÍCULOS =====

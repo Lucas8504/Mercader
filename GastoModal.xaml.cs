@@ -116,23 +116,32 @@ public partial class GastoModal : ContentPage
 
     // ===== IMAGE HANDLING =====
 
-    private async void OnOpenImageGalleryClicked(object sender, TappedEventArgs e)
+    private async void OnOpenImageGalleryClicked(object sender, EventArgs e)
     {
-        if (sender is Frame frame && frame.BindingContext is ArticuloGasto articulo)
+        // Get the article from the nearest ancestor with article BindingContext
+        if (sender is Element element)
         {
-            var modal = new ImageGalleryModal(articulo, _imageStorageService);
-            await Navigation.PushModalAsync(modal);
-            _viewModel.RefreshArticulosBinding();
-            UpdateImageCount(articulo);
+            var articulo = FindArticleBindingContext(element);
+            if (articulo != null)
+            {
+                var modal = new ImageGalleryModal(articulo, _imageStorageService);
+                await Navigation.PushModalAsync(modal);
+                _viewModel.RefreshArticulosBinding();
+            }
         }
     }
 
-    private void UpdateImageCount(ArticuloGasto articulo)
+    private ArticuloBase? FindArticleBindingContext(Element element)
     {
-        var count = articulo.ImageCount;
-        // Find the ImageCountLabel in the article card
-        // This is a bit tricky since it's inside a DataTemplate
-        // We'll rely on the modal to handle this
+        // Walk up the visual tree to find an element with article BindingContext
+        var current = element.Parent;
+        while (current != null)
+        {
+            if (current.BindingContext is ArticuloBase articulo)
+                return articulo;
+            current = current.Parent;
+        }
+        return null;
     }
 
     // ===== AUTOCOMPLETADO PARA GASTO (descripción principal) =====
