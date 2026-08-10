@@ -239,71 +239,30 @@
                                     TextColor="{AppThemeBinding Light={StaticResource TextPrimary}, Dark={StaticResource TextPrimaryDark}}"
                                     Visual="Material" />
 
-                                <!-- Image picker - 4 slot grid -->
-                                <Grid Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="5" ColumnDefinitions="65,65,65,65" ColumnSpacing="8" Margin="0,5,0,0">
-                                    <!-- Slot 0 -->
-                                    <Frame Grid.Column="0" WidthRequest="60" HeightRequest="60" Padding="0" IsClippedToBounds="True" CornerRadius="8">
+                                <!-- Image picker - small camera icon -->
+                                <Grid Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="5" ColumnDefinitions="*,Auto" ColumnSpacing="8" Margin="0,5,0,0">
+                                    <Label
+                                        Grid.Column="0"
+                                        FontSize="11"
+                                        Text="Imágenes"
+                                        TextColor="{AppThemeBinding Light={StaticResource TextSecondary}, Dark={StaticResource TextSecondaryDark}}"
+                                        VerticalOptions="Center" />
+                                    <Frame
+                                        Grid.Column="1"
+                                        WidthRequest="36" HeightRequest="36"
+                                        Padding="0" CornerRadius="18"
+                                        BackgroundColor="{AppThemeBinding Light=#487CE4, Dark=#90CAF9}">
+                                        <Frame.GestureRecognizers>
+                                            <TapGestureRecognizer Tapped="OnOpenImageGalleryClicked" />
+                                        </Frame.GestureRecognizers>
                                         <Grid>
-                                            <Image Source="{Binding ImagenPath1}" Aspect="AspectFill" IsVisible="{Binding HasImage}" />
-                                            <Frame x:Name="EmptySlot0" BackgroundColor="#F0F0F0" IsVisible="{Binding ImagenPath1, Converter={StaticResource InvertBool}}" Padding="0" StyleId="0">
-                                                <Label Text="📷" FontSize="24" HorizontalOptions="Center" VerticalOptions="Center" />
-                                                <Frame.GestureRecognizers>
-                                                    <TapGestureRecognizer Tapped="OnEmptySlotTapped" />
-                                                </Frame.GestureRecognizers>
-                                            </Frame>
+                                            <Label
+                                                Text="📷"
+                                                FontSize="16"
+                                                HorizontalOptions="Center"
+                                                VerticalOptions="Center" />
                                         </Grid>
                                     </Frame>
-                                    <Button Grid.Column="0" Text="✕" Clicked="OnClearSlotClicked" StyleId="0"
-                                            BackgroundColor="Transparent" TextColor="Red" FontSize="12"
-                                            HorizontalOptions="End" VerticalOptions="Start" Padding="0" IsVisible="{Binding ImagenPath1, Converter={StaticResource StringNotEmpty}}"/>
-                                    
-                                    <!-- Slot 1 -->
-                                    <Frame Grid.Column="1" WidthRequest="60" HeightRequest="60" Padding="0" IsClippedToBounds="True" CornerRadius="8">
-                                        <Grid>
-                                            <Image Source="{Binding ImagenPath2}" Aspect="AspectFill" IsVisible="{Binding HasImage}" />
-                                            <Frame x:Name="EmptySlot1" BackgroundColor="#F0F0F0" IsVisible="{Binding ImagenPath2, Converter={StaticResource InvertBool}}" Padding="0" StyleId="1">
-                                                <Label Text="📷" FontSize="24" HorizontalOptions="Center" VerticalOptions="Center" />
-                                                <Frame.GestureRecognizers>
-                                                    <TapGestureRecognizer Tapped="OnEmptySlotTapped" />
-                                                </Frame.GestureRecognizers>
-                                            </Frame>
-                                        </Grid>
-                                    </Frame>
-                                    <Button Grid.Column="1" Text="✕" Clicked="OnClearSlotClicked" StyleId="1"
-                                            BackgroundColor="Transparent" TextColor="Red" FontSize="12"
-                                            HorizontalOptions="End" VerticalOptions="Start" Padding="0" IsVisible="{Binding ImagenPath2, Converter={StaticResource StringNotEmpty}}"/>
-                                    
-                                    <!-- Slot 2 -->
-                                    <Frame Grid.Column="2" WidthRequest="60" HeightRequest="60" Padding="0" IsClippedToBounds="True" CornerRadius="8">
-                                        <Grid>
-                                            <Image Source="{Binding ImagenPath3}" Aspect="AspectFill" IsVisible="{Binding HasImage}" />
-                                            <Frame x:Name="EmptySlot2" BackgroundColor="#F0F0F0" IsVisible="{Binding ImagenPath3, Converter={StaticResource InvertBool}}" Padding="0" StyleId="2">
-                                                <Label Text="📷" FontSize="24" HorizontalOptions="Center" VerticalOptions="Center" />
-                                                <Frame.GestureRecognizers>
-                                                    <TapGestureRecognizer Tapped="OnEmptySlotTapped" />
-                                                </Frame.GestureRecognizers>
-                                            </Frame>
-                                        </Grid>
-                                    </Frame>
-                                    <Button Grid.Column="2" Text="✕" Clicked="OnClearSlotClicked" StyleId="2"
-                                            BackgroundColor="Transparent" TextColor="Red" FontSize="12"
-                                            HorizontalOptions="End" VerticalOptions="Start" Padding="0" IsVisible="{Binding ImagenPath3, Converter={StaticResource StringNotEmpty}}"/>
-                                    
-                                    <!-- Slot 3 -->
-                                    <Frame Grid.Column="3" WidthRequest="60" HeightRequest="60" Padding="0" IsClippedToBounds="True" CornerRadius="8">
-                                        <Grid>
-                                            <Image Source="{Binding ImagenPath4}" Aspect="AspectFill" IsVisible="{Binding HasImage}" />
-                                            <Frame x:Name="EmptySlot3" BackgroundColor="#F0F0F0" IsVisible="{Binding ImagenPath4, Converter={StaticResource InvertBool}}" Padding="0" StyleId="3">
-                                                <Label Text="📷" FontSize="24" HorizontalOptions="Center" VerticalOptions="Center" />
-                                                <Frame.GestureRecognizers>
-                                                    <TapGestureRecognizer Tapped="OnEmptySlotTapped" />
-                                                </Frame.GestureRecognizers>
-                                            </Frame>
-                                        </Grid>
-                                    </Frame>
-                                    <Button Grid.Column="3" Text="✕" Clicked="OnClearSlotClicked" StyleId="3"
-                                            BackgroundColor="Transparent" TextColor="Red" FontSize="12"
-                                            HorizontalOptions="End" VerticalOptions="Start" Padding="0" IsVisible="{Binding ImagenPath4, Converter={StaticResource StringNotEmpty}}"/>
                                 </Grid>
 
                                 <!-- Precio Unitario -->

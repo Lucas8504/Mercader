@@ -208,61 +208,12 @@ public partial class EncModal : ContentPage
 
     // ===== IMAGE HANDLING =====
 
-    private void OnEmptySlotTapped(object sender, TappedEventArgs e)
+    private async void OnOpenImageGalleryClicked(object sender, TappedEventArgs e)
     {
         if (sender is Frame frame && frame.BindingContext is ArticuloEncargo articulo)
         {
-            if (int.TryParse(frame.StyleId, out int slotIndex))
-            {
-                PickImageAsync(articulo, slotIndex);
-            }
-        }
-    }
-
-    private async void OnClearSlotClicked(object sender, EventArgs e)
-    {
-        if (sender is Button btn && btn.BindingContext is ArticuloEncargo articulo)
-        {
-            if (int.TryParse(btn.StyleId, out int slotIndex))
-            {
-                await ClearSlotAsync(articulo, slotIndex);
-            }
-        }
-    }
-
-    private async Task PickImageAsync(ArticuloEncargo articulo, int slotIndex)
-    {
-        try
-        {
-            var result = await MediaPicker.PickPhotoAsync(new MediaPickerOptions
-            {
-                Title = "Seleccionar imagen"
-            });
-
-            if (result != null)
-            {
-                using var stream = await result.OpenReadAsync();
-                var path = await _imageStorageService.CompressAndSaveAsync(stream);
-                if (path != null)
-                {
-                    articulo.SetImageAtSlot(slotIndex, path);
-                    _viewModel.RefreshArticulosBinding();
-                }
-            }
-        }
-        catch (Exception)
-        {
-            // User cancelled or error - silently ignore
-        }
-    }
-
-    private async Task ClearSlotAsync(ArticuloEncargo articulo, int slotIndex)
-    {
-        var path = articulo.GetImagePath(slotIndex);
-        if (!string.IsNullOrWhiteSpace(path))
-        {
-            await _imageStorageService.DeleteFileAsync(path);
-            articulo.ClearSlot(slotIndex);
+            var modal = new ImageGalleryModal(articulo, _imageStorageService);
+            await Navigation.PushModalAsync(modal);
             _viewModel.RefreshArticulosBinding();
         }
     }

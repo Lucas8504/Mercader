@@ -116,63 +116,23 @@ public partial class GastoModal : ContentPage
 
     // ===== IMAGE HANDLING =====
 
-    private void OnEmptySlotTapped(object sender, TappedEventArgs e)
+    private async void OnOpenImageGalleryClicked(object sender, TappedEventArgs e)
     {
         if (sender is Frame frame && frame.BindingContext is ArticuloGasto articulo)
         {
-            if (int.TryParse(frame.StyleId, out int slotIndex))
-            {
-                PickImageAsync(articulo, slotIndex);
-            }
-        }
-    }
-
-    private async void OnClearSlotClicked(object sender, EventArgs e)
-    {
-        if (sender is Button btn && btn.BindingContext is ArticuloGasto articulo)
-        {
-            if (int.TryParse(btn.StyleId, out int slotIndex))
-            {
-                await ClearSlotAsync(articulo, slotIndex);
-            }
-        }
-    }
-
-    private async Task PickImageAsync(ArticuloGasto articulo, int slotIndex)
-    {
-        try
-        {
-            var result = await MediaPicker.PickPhotoAsync(new MediaPickerOptions
-            {
-                Title = "Seleccionar imagen"
-            });
-
-            if (result != null)
-            {
-                using var stream = await result.OpenReadAsync();
-                var path = await _imageStorageService.CompressAndSaveAsync(stream);
-                if (path != null)
-                {
-                    articulo.SetImageAtSlot(slotIndex, path);
-                    _viewModel.RefreshArticulosBinding();
-                }
-            }
-        }
-        catch (Exception)
-        {
-            // User cancelled or error - silently ignore
-        }
-    }
-
-    private async Task ClearSlotAsync(ArticuloGasto articulo, int slotIndex)
-    {
-        var path = articulo.GetImagePath(slotIndex);
-        if (!string.IsNullOrWhiteSpace(path))
-        {
-            await _imageStorageService.DeleteFileAsync(path);
-            articulo.ClearSlot(slotIndex);
+            var modal = new ImageGalleryModal(articulo, _imageStorageService);
+            await Navigation.PushModalAsync(modal);
             _viewModel.RefreshArticulosBinding();
+            UpdateImageCount(articulo);
         }
+    }
+
+    private void UpdateImageCount(ArticuloGasto articulo)
+    {
+        var count = articulo.ImageCount;
+        // Find the ImageCountLabel in the article card
+        // This is a bit tricky since it's inside a DataTemplate
+        // We'll rely on the modal to handle this
     }
 
     // ===== AUTOCOMPLETADO PARA GASTO (descripción principal) =====

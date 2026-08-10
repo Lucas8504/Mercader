@@ -1,0 +1,203 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage
+    x:Class="Mercader.ImageGalleryModal"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    Title="Imágenes del artículo"
+    BackgroundColor="{AppThemeBinding Light={StaticResource PageBackground}, Dark={StaticResource PageBackgroundDark}}">
+
+    <Grid RowDefinitions="Auto,*,Auto" RowSpacing="12" Margin="20">
+
+        <!-- Header -->
+        <Label
+            Grid.Row="0"
+            FontAttributes="Bold"
+            FontSize="18"
+            HorizontalOptions="Center"
+            Text="Imágenes del artículo"
+            TextColor="{AppThemeBinding Light={StaticResource TextPrimary}, Dark={StaticResource TextPrimaryDark}}" />
+
+        <!-- Image slots grid -->
+        <Grid
+            Grid.Row="1"
+            ColumnDefinitions="*,*"
+            ColumnSpacing="12"
+            RowDefinitions="Auto,Auto"
+            RowSpacing="12"
+            HorizontalOptions="Center">
+
+            <!-- Slot 0 -->
+            <Frame
+                Grid.Row="0" Grid.Column="0"
+                WidthRequest="140" HeightRequest="140"
+                Padding="0" IsClippedToBounds="True"
+                CornerRadius="12" HasShadow="False"
+                BackgroundColor="{AppThemeBinding Light={StaticResource CardAltBackground}, Dark={StaticResource CardAltBackgroundDark}}">
+                <Grid>
+                    <!-- Image when exists -->
+                    <Image
+                        x:Name="Image0"
+                        Aspect="AspectFill"
+                        IsVisible="False" />
+                    <!-- Placeholder when empty -->
+                    <Frame
+                        x:Name="Placeholder0"
+                        BackgroundColor="#F0F0F0"
+                        Padding="0"
+                        IsVisible="True">
+                        <VerticalStackLayout HorizontalOptions="Center" VerticalOptions="Center" Spacing="4">
+                            <Label Text="📷" FontSize="36" HorizontalOptions="Center" />
+                            <Label Text="Vacío" FontSize="11" HorizontalOptions="Center" TextColor="#999" />
+                        </VerticalStackLayout>
+                    </Frame>
+                    <!-- Delete button -->
+                    <Button
+                        x:Name="DeleteBtn0"
+                        Text="✕" FontSize="14"
+                        BackgroundColor="#FF5252" TextColor="White"
+                        HorizontalOptions="End" VerticalOptions="Start"
+                        Padding="8" CornerRadius="10"
+                        IsVisible="False"
+                        Clicked="OnDeleteImageClicked" />
+                    <!-- Tap to add -->
+                    <Frame.GestureRecognizers>
+                        <TapGestureRecognizer Tapped="OnSlotTapped" />
+                    </Frame.GestureRecognizers>
+                </Grid>
+            </Frame>
+
+            <!-- Slot 1 -->
+            <Frame
+                Grid.Row="0" Grid.Column="1"
+                WidthRequest="140" HeightRequest="140"
+                Padding="0" IsClippedToBounds="True"
+                CornerRadius="12" HasShadow="False"
+                BackgroundColor="{AppThemeBinding Light={StaticResource CardAltBackground}, Dark={StaticResource CardAltBackgroundDark}}">
+                <Grid>
+                    <Image
+                        x:Name="Image1"
+                        Aspect="AspectFill"
+                        IsVisible="False" />
+                    <Frame
+                        x:Name="Placeholder1"
+                        BackgroundColor="#F0F0F0"
+                        Padding="0"
+                        IsVisible="True">
+                        <VerticalStackLayout HorizontalOptions="Center" VerticalOptions="Center" Spacing="4">
+                            <Label Text="📷" FontSize="36" HorizontalOptions="Center" />
+                            <Label Text="Vacío" FontSize="11" HorizontalOptions="Center" TextColor="#999" />
+                        </VerticalStackLayout>
+                    </Frame>
+                    <Button
+                        x:Name="DeleteBtn1"
+                        Text="✕" FontSize="14"
+                        BackgroundColor="#FF5252" TextColor="White"
+                        HorizontalOptions="End" VerticalOptions="Start"
+                        Padding="8" CornerRadius="10"
+                        IsVisible="False"
+                        Clicked="OnDeleteImageClicked" />
+                    <Frame.GestureRecognizers>
+                        <TapGestureRecognizer Tapped="OnSlotTapped" />
+                    </Frame.GestureRecognizers>
+                </Grid>
+            </Frame>
+
+            <!-- Slot 2 -->
+            <Frame
+                Grid.Row="1" Grid.Column="0"
+                WidthRequest="140" HeightRequest="140"
+                Padding="0" IsClippedToBounds="True"
+                CornerRadius="12" HasShadow="False"
+                BackgroundColor="{AppThemeBinding Light={StaticResource CardAltBackground}, Dark={StaticResource CardAltBackgroundDark}}">
+                <Grid>
+                    <Image
+                        x:Name="Image2"
+                        Aspect="AspectFill"
+                        IsVisible="False" />
+                    <Frame
+                        x:Name="Placeholder2"
+                        BackgroundColor="#F0F0F0"
+                        Padding="0"
+                        IsVisible="True">
+                        <VerticalStackLayout HorizontalOptions="Center" VerticalOptions="Center" Spacing="4">
+                            <Label Text="📷" FontSize="36" HorizontalOptions="Center" />
+                            <Label Text="Vacío" FontSize="11" HorizontalOptions="Center" TextColor="#999" />
+                        </VerticalStackLayout>
+                    </Frame>
+                    <Button
+                        x:Name="DeleteBtn2"
+                        Text="✕" FontSize="14"
+                        BackgroundColor="#FF5252" TextColor="White"
+                        HorizontalOptions="End" VerticalOptions="Start"
+                        Padding="8" CornerRadius="10"
+                        IsVisible="False"
+                        Clicked="OnDeleteImageClicked" />
+                    <Frame.GestureRecognizers>
+                        <TapGestureRecognizer Tapped="OnSlotTapped" />
+                    </Frame.GestureRecognizers>
+                </Grid>
+            </Frame>
+
+            <!-- Slot 3 -->
+            <Frame
+                Grid.Row="1" Grid.Column="1"
+                WidthRequest="140" HeightRequest="140"
+                Padding="0" IsClippedToBounds="True"
+                CornerRadius="12" HasShadow="False"
+                BackgroundColor="{AppThemeBinding Light={StaticResource CardAltBackground}, Dark={StaticResource CardAltBackgroundDark}}">
+                <Grid>
+                    <Image
+                        x:Name="Image3"
+                        Aspect="AspectFill"
+                        IsVisible="False" />
+                    <Frame
+                        x:Name="Placeholder3"
+                        BackgroundColor="#F0F0F0"
+                        Padding="0"
+                        IsVisible="True">
+                        <VerticalStackLayout HorizontalOptions="Center" VerticalOptions="Center" Spacing="4">
+                            <Label Text="📷" FontSize="36" HorizontalOptions="Center" />
+                            <Label Text="Vacío" FontSize="11" HorizontalOptions="Center" TextColor="#999" />
+                        </VerticalStackLayout>
+                    </Frame>
+                    <Button
+                        x:Name="DeleteBtn3"
+                        Text="✕" FontSize="14"
+                        BackgroundColor="#FF5252" TextColor="White"
+                        HorizontalOptions="End" VerticalOptions="Start"
+                        Padding="8" CornerRadius="10"
+                        IsVisible="False"
+                        Clicked="OnDeleteImageClicked" />
+                    <Frame.GestureRecognizers>
+                        <TapGestureRecognizer Tapped="OnSlotTapped" />
+                    </Frame.GestureRecognizers>
+                </Grid>
+            </Frame>
+        </Grid>
+
+        <!-- Bottom buttons -->
+        <Grid
+            Grid.Row="2"
+            ColumnDefinitions="*,*"
+            ColumnSpacing="12">
+            <Button
+                Grid.Column="0"
+                Padding="15"
+                BackgroundColor="{AppThemeBinding Light=#4CAF50, Dark=#A5D6A7}"
+                CornerRadius="8"
+                FontSize="14"
+                Text="Listo"
+                TextColor="White"
+                Clicked="OnDoneClicked" />
+            <Button
+                Grid.Column="1"
+                Padding="15"
+                BackgroundColor="{AppThemeBinding Light=#FF5722, Dark=#FFAB91}"
+                CornerRadius="8"
+                FontSize="14"
+                Text="Cancelar"
+                TextColor="White"
+                Clicked="OnCancelClicked" />
+        </Grid>
+    </Grid>
+</ContentPage>

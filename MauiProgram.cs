@@ -117,6 +117,7 @@ namespace Mercader
             builder.Services.AddTransient<VentaModal>();
             builder.Services.AddTransient<GastoModal>();
             builder.Services.AddTransient<EncModal>();
+            builder.Services.AddTransient<ImageGalleryModal>();
 
             // ViewModels
             builder.Services.AddTransient<MainViewModel>();
