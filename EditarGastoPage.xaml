@@ -56,24 +56,22 @@
                             CornerRadius="8"
                             HasShadow="False">
                             <VerticalStackLayout Spacing="8">
-                                <!-- Descripción -->
-                                <VerticalStackLayout Spacing="4">
-                                    <Label
-                                        FontSize="11"
-                                        Text="Descripción"
-                                        TextColor="{AppThemeBinding Light={StaticResource TextSecondary}, Dark={StaticResource TextSecondaryDark}}" />
-                                    <Entry
-                                        BackgroundColor="Transparent"
-                                        Placeholder="Nombre del artículo"
-                                        PlaceholderColor="{AppThemeBinding Light={StaticResource TextPlaceholder}, Dark={StaticResource TextPlaceholderDark}}"
-                                        Text="{Binding Descripcion, Mode=TwoWay}"
-                                        TextChanged="OnArticuloFieldChanged"
-                                        TextColor="{AppThemeBinding Light={StaticResource TextPrimary}, Dark={StaticResource TextPrimaryDark}}"
-                                        Visual="Material" />
-                                </VerticalStackLayout>
-
-                                <!-- Image picker - small camera icon -->
-                                <Grid ColumnDefinitions="*,Auto" ColumnSpacing="8" Margin="0,5,0,0">
+                                <!-- Descripción + cámara en la misma fila -->
+                                <Grid ColumnDefinitions="*,Auto" ColumnSpacing="8">
+                                    <VerticalStackLayout Grid.Column="0" Spacing="4">
+                                        <Label
+                                            FontSize="11"
+                                            Text="Descripción"
+                                            TextColor="{AppThemeBinding Light={StaticResource TextSecondary}, Dark={StaticResource TextSecondaryDark}}" />
+                                        <Entry
+                                            BackgroundColor="Transparent"
+                                            Placeholder="Nombre del artículo"
+                                            PlaceholderColor="{AppThemeBinding Light={StaticResource TextPlaceholder}, Dark={StaticResource TextPlaceholderDark}}"
+                                            Text="{Binding Descripcion, Mode=TwoWay}"
+                                            TextChanged="OnArticuloFieldChanged"
+                                            TextColor="{AppThemeBinding Light={StaticResource TextPrimary}, Dark={StaticResource TextPrimaryDark}}"
+                                            Visual="Material" />
+                                    </VerticalStackLayout>
                                     <Button
                                         Grid.Column="1"
                                         WidthRequest="36" HeightRequest="36"
@@ -83,11 +81,12 @@
                                         FontSize="16"
                                         Text="📷"
                                         TextColor="White"
+                                        VerticalOptions="End"
                                         Clicked="OnOpenImageGalleryClicked" />
                                 </Grid>
 
-                                <!-- Precio y Cantidad en fila -->
-                                <Grid ColumnDefinitions="*,8,*" ColumnSpacing="0">
+                                <!-- Precio, Cantidad y Eliminar en fila -->
+                                <Grid ColumnDefinitions="*,*,Auto" ColumnSpacing="8">
                                     <!-- Precio Unitario -->
                                     <VerticalStackLayout Grid.Column="0" Spacing="4">
                                         <Label
@@ -106,7 +105,7 @@
                                     </VerticalStackLayout>
 
                                     <!-- Cantidad -->
-                                    <VerticalStackLayout Grid.Column="2" Spacing="4">
+                                    <VerticalStackLayout Grid.Column="1" Spacing="4">
                                         <Label
                                             FontSize="11"
                                             Text="Cantidad"
@@ -121,10 +120,22 @@
                                             TextColor="{AppThemeBinding Light={StaticResource TextPrimary}, Dark={StaticResource TextPrimaryDark}}"
                                             Visual="Material" />
                                     </VerticalStackLayout>
+
+                                    <!-- Eliminar -->
+                                    <Button
+                                        Grid.Column="2"
+                                        VerticalOptions="End"
+                                        BackgroundColor="#FF5252"
+                                        Command="{Binding Source={RelativeSource AncestorType={x:Type Page}}, Path=BindingContext.EliminarArticuloCommand}"
+                                        CommandParameter="{Binding .}"
+                                        FontSize="14"
+                                        Padding="4"
+                                        Text="✕"
+                                        TextColor="White" />
                                 </Grid>
 
                                 <!-- Botones de acción -->
-                                <Grid ColumnDefinitions="*,Auto,Auto,Auto" ColumnSpacing="8">
+                                <Grid ColumnDefinitions="*,Auto,Auto" ColumnSpacing="8">
                                     <Button
                                         Grid.Column="1"
                                         BackgroundColor="Transparent"
@@ -141,15 +152,6 @@
                                         FontSize="14"
                                         Padding="4"
                                         Text="⬇" />
-                                    <Button
-                                        Grid.Column="3"
-                                        BackgroundColor="#FF5252"
-                                        Command="{Binding Source={RelativeSource AncestorType={x:Type Page}}, Path=BindingContext.EliminarArticuloCommand}"
-                                        CommandParameter="{Binding .}"
-                                        FontSize="14"
-                                        Padding="4"
-                                        Text="✕"
-                                        TextColor="White" />
                                 </Grid>
                             </VerticalStackLayout>
                         </Frame>
