@@ -46,7 +46,8 @@
 
             <VerticalStackLayout
                 x:Name="ArticulosStack"
-                Spacing="8">
+                Spacing="8"
+                BindableLayout.ItemsSource="{Binding Articulos}">
                 <BindableLayout.ItemTemplate>
                     <DataTemplate x:DataType="domain:ArticuloGasto">
                         <Frame
