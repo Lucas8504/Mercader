@@ -278,26 +278,6 @@
                                         Text="✕"
                                         TextColor="White" />
                                 </Grid>
-
-                                <!-- Botones de acción -->
-                                <Grid ColumnDefinitions="*,Auto,Auto" ColumnSpacing="8">
-                                    <Button
-                                        Grid.Column="1"
-                                        BackgroundColor="Transparent"
-                                        Command="{Binding Source={RelativeSource AncestorType={x:Type Page}}, Path=BindingContext.SubirArticuloCommand}"
-                                        CommandParameter="{Binding .}"
-                                        FontSize="14"
-                                        Padding="4"
-                                        Text="⬆" />
-                                    <Button
-                                        Grid.Column="2"
-                                        BackgroundColor="Transparent"
-                                        Command="{Binding Source={RelativeSource AncestorType={x:Type Page}}, Path=BindingContext.BajarArticuloCommand}"
-                                        CommandParameter="{Binding .}"
-                                        FontSize="14"
-                                        Padding="4"
-                                        Text="⬇" />
-                                </Grid>
                             </VerticalStackLayout>
                         </Frame>
                     </DataTemplate>
