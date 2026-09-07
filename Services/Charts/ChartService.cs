@@ -111,15 +111,18 @@ namespace Mercader.Services.Charts
         if (ventas == null || ventas.Count == 0 || gastos == null)
             return new LineChart { Entries = new List<ChartEntry>() };
 
-        var datosCompletos = ventas.Select(v =>
+        // Ambos listas se generan por AgruparPorPeriodo con el mismo
+        // parámetro, por lo que tienen los mismos períodos en el mismo
+        // orden. Matching por índice (en vez de por string Periodo) para
+        // evitar colisiones: el formato de meses (ej. "ene") se repite
+        // para varios años, lo que rompería un Dictionary/ToLookup.
+        var datosCompletos = new List<(string Periodo, decimal Total)>();
+        int count = Math.Min(ventas.Count, gastos.Count);
+        for (int i = 0; i < count; i++)
         {
-            var gastoCorrespondiente = gastos.FirstOrDefault(g => g.Periodo == v.Periodo);
-
-            decimal gasto = gastoCorrespondiente.Total;
-            decimal ganancia = v.Total - gasto;
-
-            return (Periodo: v.Periodo, Total: ganancia);
-        }).ToList();
+            decimal ganancia = ventas[i].Total - gastos[i].Total;
+            datosCompletos.Add((ventas[i].Periodo, ganancia));
+        }
 
         if (datosCompletos.Count == 0)
             return new LineChart { Entries = new List<ChartEntry>() };

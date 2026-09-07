@@ -60,20 +60,6 @@ public partial class VentaModal : ContentPage
             return;
         }
 
-        var precioResult = ValidationService.ParseDecimal(PrecioEntry.Text);
-        if (!precioResult.Success)
-        {
-            await DisplayAlert("Error", precioResult.Error ?? "Precio inválido", "OK");
-            return;
-        }
-
-        var cantidadResult = ValidationService.ParseDecimal(CantidadEntry.Text);
-        if (!cantidadResult.Success)
-        {
-            await DisplayAlert("Error", cantidadResult.Error ?? "Cantidad inválida", "OK");
-            return;
-        }
-
         if (!_viewModel.HasArticulos)
         {
             await DisplayAlert("Error", "Debe agregar al menos un artículo", "OK");
