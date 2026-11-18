@@ -3,7 +3,6 @@ using Mercader.Services.Interfaces;
 using Mercader.ViewModels;
 using Microcharts;
 using SkiaSharp;
-using Maui.Localization;
 
 namespace Mercader
 {
@@ -13,7 +12,29 @@ namespace Mercader
         private readonly IExportPdfService _pdfService;
         private readonly IBalanceCalculatorService _balanceCalculator;
         private readonly IChartService _chartService;
-        private readonly LocalizationManager _localizationManager;
+
+        // ==========================================
+        // LOCALIZATION SETUP (TODO: instalar Maui.Localization)
+        // ==========================================
+        // Pasos necesarios:
+        // 1. dotnet add package Maui.Localization (o verificar que está en el proyecto)
+        // 2. Agregar en App.xaml.cs:
+        //    using Maui.Localization;
+        //    builder.UseMauiLocalizer(options => options.SetDefaultCulture(CultureInfo.GetCultureInfo("es")));
+        // 3. Crear archivos de recursos:
+        //    - Resources.resx (español - por defecto)
+        //    - Resources_en.resx (inglés - ya creado)
+        //    - Resources_pt_BR.resx (portugués)
+        //    - Resources_zh_TW.resx (chino)
+        //    - Resources_ru.resx (ruso)
+        // 4. Registrar recursos en el constructor:
+        //    var localizationManager = new LocalizationManager(this);
+        //    localizationManager.RegisterResource("Total", "Total", Resources.resx);
+        //    localizationManager.RegisterResource("Total", "Total", Resources_en.resx);
+        //    ... repite para cada idioma ...
+        // 5. Binding en XAML:
+        //    <Label Text="{ResX.Id('Total')}" />
+        // ==========================================
 
         public MainPage(
             MainViewModel vm,
@@ -27,34 +48,6 @@ namespace Mercader
             _balanceCalculator = balanceCalculator;
             _chartService = chartService;
             BindingContext = _viewModel;
-            
-            // Localización por idioma (en-US como piloto)
-            _localizationManager = new LocalizationManager(this);
-            
-            // Registrar recursos por idioma
-            _localizationManager.RegisterResource("Total", "Total", Resources_en.resx);
-            _localizationManager.RegisterResource("Período", "Period", Resources_en.resx);
-            _localizationManager.RegisterResource("Ventas", "Sales", Resources_en.resx);
-            _localizationManager.RegisterResource("Gastos", "Expenses", Resources_en.resx);
-            _localizationManager.RegisterResource("Ganancias", "Profit", Resources_en.resx);
-            _localizationManager.RegisterResource("Margen", "Margin", Resources_en.resx);
-            _localizationManager.RegisterResource("Resumen", "Summary", Resources_en.resx);
-            _localizationManager.RegisterResource("Encargos", "Encargos", Resources_en.resx);
-            _localizationManager.RegisterResource("Articulos", "Articles", Resources_en.resx);
-            _localizationManager.RegisterResource("Agregar", "Add", Resources_en.resx);
-            _localizationManager.RegisterResource("Cancelar", "Cancel", Resources_en.resx);
-            _localizationManager.RegisterResource("Error", "Error", Resources_en.resx);
-            _localizationManager.RegisterResource("Descripcion", "Description", Resources_en.resx);
-            _localizationManager.RegisterResource("Precio", "Price", Resources_en.resx);
-            _localizationManager.RegisterResource("Cantidad", "Quantity", Resources_en.resx);
-            _localizationManager.RegisterResource("Imagen", "Image", Resources_en.resx);
-            _localizationManager.RegisterResource("Camera", "Camera", Resources_en.resx);
-            _localizationManager.RegisterResource("+ Agregar artículo", "Add Article", Resources_en.resx);
-            _localizationManager.RegisterResource("Agregar Venta", "Add Sale", Resources_en.resx);
-            _localizationManager.RegisterResource("Gasto", "Expense", Resources_en.resx);
-            _localizationManager.RegisterResource("Venta", "Sale", Resources_en.resx);
-            _localizationManager.RegisterResource("Articulo", "Article", Resources_en.resx);
-            _localizationManager.RegisterResource("Imágenes", "Images", Resources_en.resx);
         }
         
         protected override async void OnAppearing()
