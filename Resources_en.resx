@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <data name="Total" xml:space="preserve">
+    <value>Total</value>
+  </data>
+  <data name="Período" xml:space="preserve">
+    <value>Period</value>
+  </data>
+  <data name="Ventas" xml:space="preserve">
+    <value>Sales</value>
+  </data>
+  <data name="Gastos" xml:space="preserve">
+    <value>Expenses</value>
+  </data>
+  <data name="Ganancias" xml:space="preserve">
+    <value>Profit</value>
+  </data>
+  <data name="Margin" xml:space="preserve">
+    <value>Margin</value>
+  </data>
+  <data name="Resumen" xml:space="preserve">
+    <value>Summary</value>
+  </data>
+  <data name="Encargos" xml:space="preserve">
+    <value>Encargos</value>
+  </data>
+  <data name="Articulos" xml:space="preserve">
+    <value>Articles</value>
+  </data>
+  <data name="Agregar" xml:space="preserve">
+    <value>Add</value>
+  </data>
+  <data name="Cancelar" xml:space="preserve">
+    <value>Cancel</value>
+  </data>
+  <data name="Error" xml:space="preserve">
+    <value>Error</value>
+  </data>
+  <data name="Descripcion" xml:space="preserve">
+    <value>Description</value>
+  </data>
+  <data name="Precio" xml:space="preserve">
+    <value>Price</value>
+  </data>
+  <data name="Cantidad" xml:space="preserve">
+    <value>Quantity</value>
+  </data>
+  <data name="Imagen" xml:space="preserve">
+    <value>Image</value>
+  </data>
+  <data name="Camera" xml:space="preserve">
+    <value>Camera</value>
+  </data>
+  <data name="+ Agregar artículo" xml:space="preserve">
+    <value>Add Article</value>
+  </data>
+  <data name="Agregar Venta" xml:space="preserve">
+    <value>Add Sale</value>
+  </data>
+  <data name="Gasto" xml:space="preserve">
+    <value>Expense</value>
+  </data>
+  <data name="Venta" xml:space="preserve">
+    <value>Sale</value>
+  </data>
+  <data name="Articulo" xml:space="preserve">
+    <value>Article</value>
+  </data>
+  <data name="Imágenes" xml:space="preserve">
+    <value>Images</value>
+  </data>
+</root>
