@@ -71,8 +71,7 @@ namespace Mercader
             }
             catch (Exception ex)
             {
-
                 System.Diagnostics.Debug.WriteLine($"[ERROR] MainPage.OnAppearing: {ex}");
             }
         }
-        }
+    }
