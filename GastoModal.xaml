@@ -5,7 +5,8 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
     xmlns:domain="clr-namespace:Mercader.Domain.Entities;assembly=Mercader.Core"
     xmlns:vm="clr-namespace:Mercader.Core.ViewModels;assembly=Mercader.Core"
-    Title="Nuevo Gasto"
+    xmlns:loc="clr-namespace:Mercader.Services.Localization"
+    Title="{loc:Translate NuevoGasto}"
     BackgroundColor="{AppThemeBinding Light={StaticResource PageBackground}, Dark={StaticResource PageBackgroundDark}}">
     <!--  Fondo oscuro para combinar con MainPage  -->
 
@@ -20,7 +21,7 @@
                 FontAttributes="Bold"
                 FontSize="20"
                 HorizontalOptions="Center"
-                Text="Nuevo Gasto"
+                Text="{loc:Translate NuevoGasto}"
                 TextColor="{AppThemeBinding Light={StaticResource TextPrimary}, Dark={StaticResource TextPrimaryDark}}" />
 
             <!--  Campo de Descripción con autocompletado  -->
@@ -32,7 +33,7 @@
                 <Entry
                     x:Name="DescripcionGastoEntry"
                     BackgroundColor="Transparent"
-                    Placeholder="Descripción del gasto"
+                        Placeholder="{loc:Translate DescripcionGasto}"
                     PlaceholderColor="{AppThemeBinding Light={StaticResource TextPlaceholder}, Dark={StaticResource TextPlaceholderDark}}"
                     TextColor="{AppThemeBinding Light={StaticResource TextPrimary}, Dark={StaticResource TextPrimaryDark}}"
                     Visual="Material"
@@ -97,7 +98,7 @@
             <Label
                 FontAttributes="Bold"
                 FontSize="16"
-                Text="Artículos"
+                Text="{loc:Translate Articulos}"
                 TextColor="{AppThemeBinding Light={StaticResource TextPrimary}, Dark={StaticResource TextPrimaryDark}}" />
 
             <VerticalStackLayout
@@ -117,11 +118,11 @@
                                     <VerticalStackLayout Grid.Column="0" Spacing="4">
                                         <Label
                                             FontSize="11"
-                                            Text="Descripción"
+                                            Text="{loc:Translate Descripcion}"
                                             TextColor="{AppThemeBinding Light={StaticResource TextSecondary}, Dark={StaticResource TextSecondaryDark}}" />
                                         <Entry
                                             BackgroundColor="Transparent"
-                                            Placeholder="Nombre del artículo"
+                                            Placeholder="{loc:Translate NombreArticulo}"
                                             PlaceholderColor="{AppThemeBinding Light={StaticResource TextPlaceholder}, Dark={StaticResource TextPlaceholderDark}}"
                                             Text="{Binding Descripcion, Mode=TwoWay}"
                                             TextChanged="OnArticuloFieldChanged"
@@ -147,7 +148,7 @@
                                     <VerticalStackLayout Grid.Column="0" Spacing="4">
                                         <Label
                                             FontSize="11"
-                                            Text="Precio Unitario"
+                                            Text="{loc:Translate PrecioUnitario}"
                                             TextColor="{AppThemeBinding Light={StaticResource TextSecondary}, Dark={StaticResource TextSecondaryDark}}" />
                                         <Entry
                                             BackgroundColor="Transparent"
@@ -164,7 +165,7 @@
                                     <VerticalStackLayout Grid.Column="2" Spacing="4">
                                         <Label
                                             FontSize="11"
-                                            Text="Cantidad"
+                                            Text="{loc:Translate Cantidad}"
                                             TextColor="{AppThemeBinding Light={StaticResource TextSecondary}, Dark={StaticResource TextSecondaryDark}}" />
                                         <Entry
                                             BackgroundColor="Transparent"
@@ -219,7 +220,7 @@
                 Command="{Binding AgregarArticuloCommand}"
                 CornerRadius="8"
                 FontSize="14"
-                Text="+ Agregar artículo"
+                Text="{loc:Translate AgregarArticulo}"
                 TextColor="White" />
 
             <!--  Lista de sugerencias para autocompletado de artículos  -->
@@ -287,7 +288,7 @@
                         Grid.Column="0"
                         FontAttributes="Bold"
                         FontSize="16"
-                        Text="Total:"
+                        Text="{loc:Translate TotalLabel}"
                         TextColor="{AppThemeBinding Light={StaticResource TextPrimary}, Dark={StaticResource TextPrimaryDark}}"
                         VerticalOptions="Center" />
                     <Label
@@ -308,7 +309,7 @@
                 Clicked="OnAgregarGastoClicked"
                 CornerRadius="8"
                 FontSize="16"
-                Text="Agregar Gasto"
+                Text="{loc:Translate AgregarGasto}"
                 TextColor="White" />
 
             <!--  Botón Cancelar  -->
@@ -318,7 +319,7 @@
                 Clicked="Cancelar"
                 CornerRadius="8"
                 FontSize="16"
-                Text="Cancelar"
+                Text="{loc:Translate Cancelar}"
                 TextColor="White" />
         </VerticalStackLayout>
     </ScrollView>

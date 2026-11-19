@@ -1,4 +1,5 @@
 using CommunityToolkit.Maui.Storage;
+using Mercader.Core.Services.Localization;
 using Mercader.Services.Interfaces;
 using Mercader.ViewModels;
 using Microcharts;
@@ -62,7 +63,7 @@ namespace Mercader
             }
             catch (Exception ex)
             {
-                await DisplayAlert("Error", $"No se pudo abrir el formulario: {ex.Message}", "OK");
+                await DisplayAlert(Loc.Get("Error"), Loc.Format("NoSePudoAbrirFormulario", ex.Message), "OK");
             }
         }
 
@@ -74,7 +75,7 @@ namespace Mercader
             }
             catch (Exception ex)
             {
-                await DisplayAlert("Error", $"No se pudo agregar la venta: {ex.Message}", "OK");
+                await DisplayAlert(Loc.Get("Error"), Loc.Format("NoSePudoAgregarVenta", ex.Message), "OK");
             }
         }
 
@@ -86,7 +87,7 @@ namespace Mercader
             }
             catch (Exception ex)
             {
-                await DisplayAlert("Error", $"No se pudo abrir el modal: {ex.Message}", "OK");
+                await DisplayAlert(Loc.Get("Error"), Loc.Format("NoSePudoAbrirModal", ex.Message), "OK");
             }
         }
 
@@ -302,20 +303,20 @@ namespace Mercader
                     await File.WriteAllTextAsync(diagPath, string.Join(Environment.NewLine, diag));
 
                     if (saverResult.IsSuccessful)
-                        await DisplayAlert("PDF exportado",
-                            $"Balance guardado correctamente.\n\nDiagnóstico: {diagPath}", "OK");
+                        await DisplayAlert(Loc.Get("PdfExportado"),
+                            $"{Loc.Get("BalanceGuardado")}\n\n{Loc.Format("Diagnostico", diagPath)}", "OK");
                     else
-                        await DisplayAlert("PDF", $"El PDF se generó pero no se pudo guardar.\n\nLog: {diagPath}", "OK");
+                        await DisplayAlert("PDF", Loc.Format("PdfNoGuardado", diagPath), "OK");
                 }
                 catch
                 {
                     if (saverResult.IsSuccessful)
-                        await DisplayAlert("PDF exportado", "Balance guardado correctamente.", "OK");
+                        await DisplayAlert(Loc.Get("PdfExportado"), Loc.Get("BalanceGuardado"), "OK");
                 }
             }
             catch (Exception ex)
             {
-                await DisplayAlert("Error", $"No se pudo exportar el PDF:\n{ex.Message}", "OK");
+                await DisplayAlert(Loc.Get("Error"), Loc.Format("NoSePudoExportarPdf", ex.Message), "OK");
                 System.Diagnostics.Debug.WriteLine($"[PDF] Error: {ex}");
             }
             finally
@@ -349,7 +350,7 @@ namespace Mercader
                 }
                 else
                 {
-                    throw new PlatformNotSupportedException("La exportación solo es compatible con iOS 14.0+ y MacCatalyst 14.0+.");
+                    throw new PlatformNotSupportedException(Loc.Get("ExportSoloIos"));
                 }
 #else
                 var saverResult = await FileSaver.Default.SaveAsync(nombreArchivo, fileStream, CancellationToken.None);
@@ -358,11 +359,11 @@ namespace Mercader
             }
             catch (Exception ex)
             {
-                var mensajeError = $"No se pudo generar el reporte:\n\n{ex.Message}";
+                var mensajeError = Loc.Format("NoSePudoGenerarReporte", ex.Message);
 #if DEBUG
                 mensajeError += $"\n\n📋 {ex.GetType().Name}: {ex.StackTrace?.Split('\n').FirstOrDefault()}";
 #endif
-                await DisplayAlert("Error en exportacion", mensajeError, "Entendido");
+                await DisplayAlert(Loc.Get("ErrorEnExportacion"), mensajeError, Loc.Get("Entendido"));
                 System.Diagnostics.Debug.WriteLine($"[ExportError] {ex}");
             }
             finally
@@ -378,7 +379,7 @@ namespace Mercader
             {
                 var rutaGuardado = saverResult.FilePath;
                 File.Delete(rutaTemp);
-                rutaFinal = $"📁 {rutaGuardado ?? "Ubicación elegida"}";
+                rutaFinal = $"📁 {rutaGuardado ?? Loc.Get("UbicacionElegida")}";
             }
             else
             {
@@ -393,11 +394,11 @@ namespace Mercader
 #endif
             }
 
-            var mensaje = $"📊 ¡Reporte generado!\n\n" +
+            var mensaje = Loc.Get("ReporteGenerado") +
                           $"📁 {nombreArchivo}\n" +
                           $"📍 {rutaFinal}";
 
-            await DisplayAlert("✅ Exportación Completada", mensaje, "OK");
+            await DisplayAlert(Loc.Get("ExportacionCompletada"), mensaje, "OK");
         }
 
 #if ANDROID
@@ -515,19 +516,19 @@ namespace Mercader
                     await Launcher.OpenAsync(new OpenFileRequest
                     {
                         File = new ReadOnlyFile(rutaArchivo),
-                        Title = "Balance Financiero"
+                        Title = Loc.Get("BalanceFinanciero")
                     });
                     return;
                 }
 
                 // Caso 3: no encontramos el archivo
                 await DisplayAlert("Info",
-                    "El archivo se guardó en Descargas/Mercader/. Abrí tu gestor de archivos para verlo.",
+                    Loc.Get("ArchivoEnDescargas"),
                     "OK");
 #else
                 if (!File.Exists(rutaArchivo))
                 {
-                    await DisplayAlert("Error", "No se encontró el archivo.", "OK");
+                    await DisplayAlert(Loc.Get("Error"), Loc.Get("ArchivoNoEncontrado"), "OK");
                     return;
                 }
 
@@ -540,7 +541,7 @@ namespace Mercader
             }
             catch (Exception ex)
             {
-                await DisplayAlert("Error", $"No se pudo abrir: {ex.Message}", "OK");
+                await DisplayAlert(Loc.Get("Error"), Loc.Format("NoSePudoAbrir", ex.Message), "OK");
             }
         }
 

@@ -1,6 +1,8 @@
 using Microsoft.Maui.Controls;
 using Microsoft.Maui.Storage;
+using Mercader.Core.Services.Localization;
 using Mercader.Services.Interfaces;
+using Mercader.Services.Localization;
 using System;
 using System.IO;
 using System.Text;
@@ -12,6 +14,7 @@ public partial class Configuracion : ContentPage
 {
     private readonly INotificationService _notificationService;
     private readonly IDataRepository _repository;
+    private bool _ignorandoEventoIdioma;
 
     public Configuracion(INotificationService notificationService, IDataRepository repository)
     {
@@ -34,6 +37,21 @@ public partial class Configuracion : ContentPage
             }
         }
 
+        // Picker de idioma: items = nombre nativo, valor = código
+        _ignorandoEventoIdioma = true;
+        var nombres = new List<string>();
+        var indiceActual = 0;
+        for (int i = 0; i < Localizacion.Idiomas.Length; i++)
+        {
+            var (code, nombre) = Localizacion.Idiomas[i];
+            nombres.Add(nombre);
+            if (string.Equals(code, Loc.CurrentLanguage, StringComparison.OrdinalIgnoreCase))
+                indiceActual = i;
+        }
+        IdiomaPicker.ItemsSource = nombres;
+        IdiomaPicker.SelectedIndex = indiceActual;
+        _ignorandoEventoIdioma = false;
+
         var notifEntregas = Preferences.Get("notifEntregas", false);
         NotificacionEntregasSwitch.IsToggled = notifEntregas;
         TiempoRecordatorioGrid.IsVisible = notifEntregas;
@@ -52,6 +70,37 @@ public partial class Configuracion : ContentPage
         // Cargar tema guardado y resaltar el seleccionado
         var tema = Preferences.Get("tema", "system");
         ResaltarTema(tema);
+    }
+
+    /// <summary>
+    /// Cambia el idioma de la app. Se recrea el Shell para que todo el XAML
+    /// se vuelva a parsear con las nuevas traducciones.
+    /// </summary>
+    private void OnIdiomaChanged(object sender, EventArgs e)
+    {
+        if (_ignorandoEventoIdioma)
+            return;
+
+        var indice = IdiomaPicker.SelectedIndex;
+        if (indice < 0 || indice >= Localizacion.Idiomas.Length)
+            return;
+
+        var code = Localizacion.Idiomas[indice].Code;
+        Preferences.Set("idioma", code);
+
+        var cambio = Loc.SetLanguage(code);
+        if (!cambio)
+            return;
+
+        // Recrear el Shell para re-parsear el XAML con el nuevo idioma
+        try
+        {
+            Application.Current.MainPage = new AppShell();
+        }
+        catch (Exception ex)
+        {
+            System.Diagnostics.Debug.WriteLine($"[IDIOMA] Error al recrear Shell: {ex.Message}");
+        }
     }
 
     private void OnNotificacionEntregasToggled(object sender, ToggledEventArgs e)
@@ -130,27 +179,27 @@ public partial class Configuracion : ContentPage
     {
         try
         {
-            var accion = await DisplayActionSheet("📤 Exportar Datos",
-                "Cancelar", null, "Ventas", "Gastos", "Encargos");
+            var accion = await DisplayActionSheet(Loc.Get("ExportarDatos"),
+                Loc.Get("Cancelar"), null, Loc.Get("Ventas"), Loc.Get("Gastos"), Loc.Get("Encargos"));
 
-            if (accion == null || accion == "Cancelar") return;
+            if (accion == null || accion == Loc.Get("Cancelar")) return;
 
             string contenido = "";
             string nombreArchivo = "";
 
-            if (accion == "Ventas")
+            if (accion == Loc.Get("Ventas"))
             {
                 var ventas = await _repository.GetVentasAsync();
                 contenido = GenerarCsvVentas(ventas);
                 nombreArchivo = $"ventas_{DateTime.Now:yyyyMMdd}.csv";
             }
-            else if (accion == "Gastos")
+            else if (accion == Loc.Get("Gastos"))
             {
                 var gastos = await _repository.GetGastosAsync();
                 contenido = GenerarCsvGastos(gastos);
                 nombreArchivo = $"gastos_{DateTime.Now:yyyyMMdd}.csv";
             }
-            else if (accion == "Encargos")
+            else if (accion == Loc.Get("Encargos"))
             {
                 var encargos = await _repository.GetEncargosAsync();
                 contenido = GenerarCsvEncargos(encargos);
@@ -161,12 +210,12 @@ public partial class Configuracion : ContentPage
             var ruta = Path.Combine(FileSystem.CacheDirectory, nombreArchivo);
             await File.WriteAllTextAsync(ruta, contenido);
 
-            await DisplayAlert("✅ Éxito",
-                $"Datos exportados a:\n{nombreArchivo}", "OK");
+            await DisplayAlert(Loc.Get("Exito"),
+                Loc.Format("DatosExportados", nombreArchivo), "OK");
         }
         catch (Exception ex)
         {
-            await DisplayAlert("❌ Error", $"Error al exportar: {ex.Message}", "OK");
+            await DisplayAlert(Loc.Get("Error"), Loc.Format("ErrorExportar", ex.Message), "OK");
         }
     }
 
@@ -211,21 +260,21 @@ public partial class Configuracion : ContentPage
 
     private async void OnImportarClicked(object sender, EventArgs e)
     {
-        await DisplayAlert("📥 Importar",
-            "Para importar datos:\n\n1. Copiá el archivo CSV a la carpeta de la app\n2. Los datos se agregarán a los existentes\n\nFormatos soportados: CSV con headers", "OK");
+        await DisplayAlert(Loc.Get("ImportarDatos"),
+            Loc.Get("ImportarInstrucciones"), "OK");
     }
 
     private async void OnLimpiarDatosClicked(object sender, EventArgs e)
     {
-        var confirmar = await DisplayAlert("🗑️ Limpiar Datos",
-            "¿Estás seguro de que querés eliminar TODOS los datos?\n\nEsta acción no se puede deshacer.",
-            "Sí, eliminar", "Cancelar");
+        var confirmar = await DisplayAlert(Loc.Get("LimpiarDatosTitulo"),
+            Loc.Get("ConfirmarLimpiar"),
+            Loc.Get("SiEliminar"), Loc.Get("Cancelar"));
 
         if (confirmar)
         {
-            var confirmar2 = await DisplayAlert("⚠️ Confirmar",
-                "Esto eliminará:\n- Todas las ventas\n- Todos los gastos\n- Todos los encargos\n\n¿Continuar?",
-                "Sí, eliminar todo", "Cancelar");
+            var confirmar2 = await DisplayAlert(Loc.Get("LimpiarDatosTitulo"),
+                Loc.Get("ConfirmarLimpiar2"),
+                Loc.Get("SiEliminarTodo"), Loc.Get("Cancelar"));
 
             if (confirmar2)
             {
@@ -250,12 +299,12 @@ public partial class Configuracion : ContentPage
                         await _repository.DeleteEncargoAsync(en);
                     }
 
-                    await DisplayAlert("✅ Éxito",
-                        $"Datos eliminados:\n- {ventas.Count} ventas\n- {gastos.Count} gastos\n- {encargos.Count} encargos", "OK");
+                    await DisplayAlert(Loc.Get("Exito"),
+                        Loc.Format("DatosEliminados", ventas.Count, gastos.Count, encargos.Count), "OK");
                 }
                 catch (Exception ex)
                 {
-                    await DisplayAlert("❌ Error", $"Error al limpiar: {ex.Message}", "OK");
+                    await DisplayAlert(Loc.Get("Error"), Loc.Format("ErrorLimpiar", ex.Message), "OK");
                 }
             }
         }

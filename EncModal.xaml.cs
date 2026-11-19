@@ -1,4 +1,5 @@
 using System.Windows.Input;
+using Mercader.Core.Services.Localization;
 using Mercader.Data.Interfaces;
 using Mercader.Domain.Entities;
 using Mercader.Services.Interfaces;
@@ -91,38 +92,38 @@ public partial class EncModal : ContentPage
         var nombreValidation = ValidationService.ValidateRequired(EncargoEntry.Text, "un nombre");
         if (!nombreValidation.IsValid)
         {
-            await DisplayAlert("Error", nombreValidation.ErrorMessage, "OK");
+            await DisplayAlert(Loc.Get("Error"), Loc.Get("IngreseNombre"), "OK");
             return;
         }
 
         if (string.IsNullOrWhiteSpace(ContactoEntry.Text))
         {
-            await DisplayAlert("Error", "Por favor, ingrese un número de teléfono", "OK");
+            await DisplayAlert(Loc.Get("Error"), Loc.Get("IngreseTelefono"), "OK");
             return;
         }
 
         if (!IsValidPhoneNumber(ContactoEntry.Text))
         {
-            await DisplayAlert("Error", "Por favor, ingrese un número de teléfono válido", "OK");
+            await DisplayAlert(Loc.Get("Error"), Loc.Get("TelefonoInvalido"), "OK");
             return;
         }
 
         var descValidation = ValidationService.ValidateRequired(DescripcionEntry.Text, "una descripción");
         if (!descValidation.IsValid)
         {
-            await DisplayAlert("Error", descValidation.ErrorMessage, "OK");
+            await DisplayAlert(Loc.Get("Error"), Loc.Get("IngreseDescripcion"), "OK");
             return;
         }
 
         if (!_viewModel.HasArticulos)
         {
-            await DisplayAlert("Error", "Debe agregar al menos un artículo", "OK");
+            await DisplayAlert(Loc.Get("Error"), Loc.Get("SinArticulos"), "OK");
             return;
         }
 
         if (!_viewModel.AllArticulosHaveDescription)
         {
-            await DisplayAlert("Error", "Cada artículo debe tener una descripción", "OK");
+            await DisplayAlert(Loc.Get("Error"), Loc.Get("SinDescripcion"), "OK");
             return;
         }
 
@@ -141,7 +142,7 @@ public partial class EncModal : ContentPage
         }
         catch (Exception ex)
         {
-            await DisplayAlert("Error", $"Error al crear encargo: {ex.Message}", "OK");
+            await DisplayAlert(Loc.Get("Error"), Loc.Format("ErrorCrearEncargo", ex.Message), "OK");
             return;
         }
 
@@ -251,8 +252,8 @@ public partial class EncModal : ContentPage
 
                 if (status != PermissionStatus.Granted)
                 {
-                    await DisplayAlert("Permiso requerido",
-                        "Para acceder a los contactos, necesitamos permiso. Puedes habilitarlo en Ajustes.", "OK");
+                    await DisplayAlert(Loc.Get("PermisoRequerido"),
+                        Loc.Get("PermisoContactos"), "OK");
                     return;
                 }
             }
@@ -275,17 +276,17 @@ public partial class EncModal : ContentPage
         }
         catch (FeatureNotSupportedException)
         {
-            await DisplayAlert("Error", "Los contactos no son compatibles con este dispositivo.", "OK");
+            await DisplayAlert(Loc.Get("Error"), Loc.Get("ContactosIncompatibles"), "OK");
         }
         catch (PermissionException)
         {
-            await DisplayAlert("Permiso denegado",
-                    "No se pudo acceder a los contactos. Habilitá el permiso en Ajustes.", "OK");
+            await DisplayAlert(Loc.Get("PermisoDenegado"),
+                    Loc.Get("PermisoContactosDenegado"), "OK");
         }
         catch (Exception ex)
         {
             System.Diagnostics.Debug.WriteLine($"[CONTACTS] Error al seleccionar contacto: {ex.Message}");
-            await DisplayAlert("Error", "No se pudo acceder a los contactos.", "OK");
+            await DisplayAlert(Loc.Get("Error"), Loc.Get("NoSePudoAccederContactos"), "OK");
         }
     }
 

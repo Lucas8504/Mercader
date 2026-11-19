@@ -4,8 +4,9 @@
     xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
     xmlns:local="clr-namespace:Mercader"
+    xmlns:loc="clr-namespace:Mercader.Services.Localization"
     xmlns:microcharts="clr-namespace:Microcharts.Maui;assembly=Microcharts.Maui"
-    Title="🏠 Inicio"
+    Title="{loc:Translate NavInicio}"
     BackgroundColor="{AppThemeBinding Light={StaticResource PageBackground}, Dark={StaticResource PageBackgroundDark}}">
 
     <ScrollView>
@@ -23,7 +24,7 @@
                     FontSize="13"
                     HeightRequest="44"
                     LineBreakMode="NoWrap"
-                    Text="➕ Venta"
+                    Text="{loc:Translate Venta}"
                     TextColor="White"
                     WidthRequest="96">
                     <Button.Background>
@@ -44,7 +45,7 @@
                     FontSize="13"
                     HeightRequest="44"
                     LineBreakMode="NoWrap"
-                    Text="➕ Gasto"
+                    Text="{loc:Translate Gasto}"
                     TextColor="White"
                     WidthRequest="96">
                     <Button.Background>
@@ -65,7 +66,7 @@
                     FontSize="13"
                     HeightRequest="44"
                     LineBreakMode="NoWrap"
-                    Text="➕ Encargo"
+                    Text="{loc:Translate Encargo}"
                     TextColor="White"
                     WidthRequest="96">
                     <Button.Background>
@@ -108,7 +109,7 @@
 
                     <!-- Ventas -->
                     <Grid Grid.Row="2" ColumnDefinitions="Auto, *, Auto">
-                        <Label Grid.Column="0" Text="💵 Ventas" FontSize="14" VerticalOptions="Center"
+                        <Label Grid.Column="0" Text="💵 {loc:Translate Ventas}" FontSize="14" VerticalOptions="Center"
                                TextColor="{AppThemeBinding Light={StaticResource TextSecondary}, Dark={StaticResource TextSecondaryDark}}" />
                         <Label Grid.Column="2" Text="{Binding MesVentas}" FontAttributes="Bold" FontSize="15"
                                TextColor="#2e9449" HorizontalOptions="End" VerticalOptions="Center" />
@@ -116,7 +117,7 @@
 
                     <!-- Gastos -->
                     <Grid Grid.Row="3" ColumnDefinitions="Auto, *, Auto">
-                        <Label Grid.Column="0" Text="💸 Gastos" FontSize="14" VerticalOptions="Center"
+                        <Label Grid.Column="0" Text="💸 {loc:Translate Gastos}" FontSize="14" VerticalOptions="Center"
                                TextColor="{AppThemeBinding Light={StaticResource TextSecondary}, Dark={StaticResource TextSecondaryDark}}" />
                         <Label Grid.Column="2" Text="{Binding MesGastos}" FontAttributes="Bold" FontSize="15"
                                TextColor="#6e0a24" HorizontalOptions="End" VerticalOptions="Center" />
@@ -124,7 +125,7 @@
 
                     <!-- Encargos -->
                     <Grid Grid.Row="4" ColumnDefinitions="Auto, *, Auto">
-                        <Label Grid.Column="0" Text="📦 Encargos" FontSize="14" VerticalOptions="Center"
+                        <Label Grid.Column="0" Text="📦 {loc:Translate Encargos}" FontSize="14" VerticalOptions="Center"
                                TextColor="{AppThemeBinding Light={StaticResource TextSecondary}, Dark={StaticResource TextSecondaryDark}}" />
                         <Label Grid.Column="2" Text="{Binding MesEncargos}" FontAttributes="Bold" FontSize="15"
                                TextColor="#ff6b35" HorizontalOptions="End" VerticalOptions="Center" />
@@ -139,7 +140,7 @@
 
                     <!-- Ganancia + Margen -->
                     <Grid Grid.Row="6" ColumnDefinitions="*, Auto" ColumnSpacing="12">
-                        <Label Grid.Column="0" Text="💰 Ganancia" FontSize="14" VerticalOptions="Center"
+                        <Label Grid.Column="0" Text="💰 {loc:Translate Ganancias}" FontSize="14" VerticalOptions="Center"
                                TextColor="{AppThemeBinding Light={StaticResource TextSecondary}, Dark={StaticResource TextSecondaryDark}}" />
                         <HorizontalStackLayout Grid.Column="1" Spacing="8">
                             <Label Text="{Binding MesGanancias}" FontAttributes="Bold" FontSize="16"
@@ -161,7 +162,7 @@
             <!--  Selector de Período  -->
             <VerticalStackLayout Spacing="4">
                 <Label
-                    Text="📊 Selector de Período "
+                    Text="📊 {loc:Translate SelectorPeriodo} "
                     FontAttributes="Bold"
                     FontSize="14"
                     TextColor="{AppThemeBinding Light={StaticResource TextSecondary}, Dark={StaticResource TextSecondaryDark}}" />
@@ -172,7 +173,7 @@
                     HasShadow="True">
                     <Picker
                         ItemsSource="{Binding Periodos}"
-                        Title="Seleccionar período de análisis"
+                        Title="{loc:Translate SeleccionarPeriodo}"
                         SelectedItem="{Binding PeriodoSeleccionado, Mode=Default}"
                         TextColor="{AppThemeBinding Light={StaticResource TextPrimary}, Dark={StaticResource TextPrimaryDark}}"
                         TitleColor="{AppThemeBinding Light={StaticResource TextSecondary}, Dark={StaticResource TextSecondaryDark}}"
@@ -194,13 +195,13 @@
                     <Grid Grid.Row="0" ColumnDefinitions="*, Auto">
 
                         <VerticalStackLayout Grid.Column="0" VerticalOptions="Center" Spacing="2">
-                            <Label Text="💸 ANÁLISIS DE GASTOS"
+                            <Label Text="💸 {loc:Translate AnalisisGastos}"
                                    FontAttributes="Bold" FontSize="16" TextColor="#6e0a24" />
 
                         </VerticalStackLayout>
 
                         <VerticalStackLayout Grid.Column="1" VerticalOptions="Center" HorizontalOptions="End" Spacing="0">
-                            <Label Text="TOTAL PERÍODO" FontSize="10" TextColor="{AppThemeBinding Light={StaticResource TextSecondary}, Dark={StaticResource TextSecondaryDark}}" HorizontalOptions="End" />
+                            <Label Text="{loc:Translate TotalPeriodo}" FontSize="10" TextColor="{AppThemeBinding Light={StaticResource TextSecondary}, Dark={StaticResource TextSecondaryDark}}" HorizontalOptions="End" />
                             <Label Text="{Binding TotalGastos}"
                                    FontAttributes="Bold" FontSize="18" TextColor="#6e0a24" HorizontalOptions="End" />
                         </VerticalStackLayout>
@@ -235,7 +236,7 @@
                             <Label
                                 FontAttributes="Bold"
                                 FontSize="16"
-                                Text="📦 ANÁLISIS DE ENCARGOS"
+                                Text="📦 {loc:Translate AnalisisEncargos}"
                                 TextColor="#ff6b35" />
 
                         </VerticalStackLayout>
@@ -244,7 +245,7 @@
 
                         <VerticalStackLayout Grid.Column="1" VerticalOptions="Center" HorizontalOptions="End" Spacing="0">
                             <Label
-                                Text="TOTAL PERÍODO"
+                                Text="{loc:Translate TotalPeriodo}"
                                 FontSize="10"
                                 TextColor="{AppThemeBinding Light={StaticResource TextSecondary}, Dark={StaticResource TextSecondaryDark}}"
                                 HorizontalOptions="End"/>
@@ -287,7 +288,7 @@
                                 FontAttributes="Bold"
                                 FontSize="16"
                                 HorizontalOptions="Start"
-                                Text="💵​ ANÁLISIS DE VENTAS"
+                                Text="💵​ {loc:Translate AnalisisVentas}"
                                 TextColor="#2e9449" />
 
                         </VerticalStackLayout>
@@ -296,7 +297,7 @@
 
                         <VerticalStackLayout Grid.Column="1" VerticalOptions="Center" HorizontalOptions="End" Spacing="0">
                             <Label
-                                Text="TOTAL PERÍODO"
+                                Text="{loc:Translate TotalPeriodo}"
                                 FontSize="10"
                                 TextColor="{AppThemeBinding Light={StaticResource TextSecondary}, Dark={StaticResource TextSecondaryDark}}"
                                 HorizontalOptions="End" />
@@ -341,7 +342,7 @@
                         <!-- Título -->
                         <VerticalStackLayout Grid.Column="0" Spacing="4">
                             <Label
-                                Text="💰 ANÁLISIS DE GANANCIAS"
+                                Text="💰 {loc:Translate AnalisisGanancias}"
                                 VerticalTextAlignment="End"
                                 FontAttributes="Bold"
                                 FontSize="15"
@@ -355,7 +356,7 @@
 
                             <VerticalStackLayout Spacing="1">
                                 <Label
-                                    Text="TOTAL PERÍODO"
+                                    Text="{loc:Translate TotalPeriodo}"
                                     FontSize="9"
                                     TextColor="{AppThemeBinding Light={StaticResource TextSecondary}, Dark={StaticResource TextSecondaryDark}}"
                                     HorizontalTextAlignment="End" />
@@ -369,7 +370,7 @@
 
                             <VerticalStackLayout Spacing="1">
                                 <Label
-                                    Text="MARGEN DE GANANCIAS"
+                                    Text="{loc:Translate MargenGanancias}"
                                     FontSize="9"
                                     TextColor="{AppThemeBinding Light={StaticResource TextSecondary}, Dark={StaticResource TextSecondaryDark}}"
                                     HorizontalTextAlignment="End" />
@@ -410,7 +411,7 @@
                 HorizontalOptions="Fill" />
 
             <!--  Exportar  -->
-            <Label Text="Exportar" FontSize="13" FontAttributes="Bold"
+            <Label Text="{loc:Translate Exportar}" FontSize="13" FontAttributes="Bold"
                    TextColor="{AppThemeBinding Light={StaticResource TextSecondary}, Dark={StaticResource TextSecondaryDark}}" />
 
             <Grid ColumnDefinitions="*, 10, *">

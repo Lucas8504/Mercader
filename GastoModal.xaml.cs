@@ -1,4 +1,5 @@
 using System.Windows.Input;
+using Mercader.Core.Services.Localization;
 using Mercader.Data.Interfaces;
 using Mercader.Domain.Entities;
 using Mercader.Services.Interfaces;
@@ -55,19 +56,19 @@ public partial class GastoModal : ContentPage
         var descValidation = ValidationService.ValidateRequired(DescripcionGastoEntry.Text, "una descripción");
         if (!descValidation.IsValid)
         {
-            await DisplayAlert("Error", descValidation.ErrorMessage, "OK");
+            await DisplayAlert(Loc.Get("Error"), Loc.Get("IngreseDescripcion"), "OK");
             return;
         }
 
         if (!_viewModel.HasArticulos)
         {
-            await DisplayAlert("Error", "Debe agregar al menos un artículo", "OK");
+            await DisplayAlert(Loc.Get("Error"), Loc.Get("SinArticulos"), "OK");
             return;
         }
 
         if (!_viewModel.AllArticulosHaveDescription)
         {
-            await DisplayAlert("Error", "Cada artículo debe tener una descripción", "OK");
+            await DisplayAlert(Loc.Get("Error"), Loc.Get("SinDescripcion"), "OK");
             return;
         }
 
@@ -83,7 +84,7 @@ public partial class GastoModal : ContentPage
         }
         catch (Exception ex)
         {
-            await DisplayAlert("Error", $"Error al crear gasto: {ex.Message}", "OK");
+            await DisplayAlert(Loc.Get("Error"), Loc.Format("ErrorCrearGasto", ex.Message), "OK");
             return;
         }
 

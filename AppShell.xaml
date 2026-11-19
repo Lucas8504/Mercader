@@ -4,6 +4,7 @@
     xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
     xmlns:local="clr-namespace:Mercader"
+    xmlns:loc="clr-namespace:Mercader.Services.Localization"
     Title="Mercader"
     BackgroundColor="{AppThemeBinding Light={DynamicResource PageBackground}, Dark={DynamicResource PageBackgroundDark}}"
     FlyoutBackgroundColor="{AppThemeBinding Light={DynamicResource PageBackground}, Dark={DynamicResource PageBackgroundDark}}"
@@ -34,14 +35,14 @@
                 Grid.Row="0"
                 FontSize="14"
                 HorizontalOptions="Center"
-                Text="Versión 1.0"
+                    Text="{loc:Translate VersionApp}"
                 TextColor="{AppThemeBinding Light={DynamicResource TextSecondary}, Dark={DynamicResource TextSecondaryDark}}"
                 VerticalOptions="Center" />
             <Label
                 Grid.Row="1"
                 FontSize="14"
                 HorizontalOptions="Center"
-                Text="por  Luks.dev y FPDS Vasos :)"
+                    Text="{loc:Translate Por}"
                 TextColor="{AppThemeBinding Light={DynamicResource TextSecondary}, Dark={DynamicResource TextSecondaryDark}}"
                 VerticalOptions="Center" />
         </Grid>
@@ -82,12 +83,12 @@
         </DataTemplate>
     </Shell.ItemTemplate>
 
-    <FlyoutItem Title="Inicio" Icon="🏠" FlyoutDisplayOptions="AsSingleItem">
+    <FlyoutItem Title="{loc:Translate NavInicio}" Icon="🏠" FlyoutDisplayOptions="AsSingleItem">
         <ShellContent Title="Home" ContentTemplate="{DataTemplate local:MainPage}" />
     </FlyoutItem>
-    <ShellContent Title="Gastos" Icon="💸" ContentTemplate="{DataTemplate local:Gastos}" />
-    <ShellContent Title="Encargos" Icon="📦" ContentTemplate="{DataTemplate local:Encargos}" />
-    <ShellContent Title="Ventas" Icon="💵​" ContentTemplate="{DataTemplate local:Venta}" />
-    <ShellContent Title="Configuración" Icon="⚙️" ContentTemplate="{DataTemplate local:Configuracion}" />
+    <ShellContent Title="{loc:Translate NavGastos}" Icon="💸" ContentTemplate="{DataTemplate local:Gastos}" />
+    <ShellContent Title="{loc:Translate NavEncargos}" Icon="📦" ContentTemplate="{DataTemplate local:Encargos}" />
+    <ShellContent Title="{loc:Translate NavVentas}" Icon="💵​" ContentTemplate="{DataTemplate local:Venta}" />
+    <ShellContent Title="{loc:Translate NavConfiguracion}" Icon="⚙️" ContentTemplate="{DataTemplate local:Configuracion}" />
 
 </Shell>

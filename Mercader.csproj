@@ -93,6 +93,11 @@
 	</ItemGroup>
 
 	<ItemGroup>
+		<!-- Catálogos de localización por idioma (es, en, pt-BR, zh-TW, ru) -->
+		<EmbeddedResource Include="Locales\*.json" />
+	</ItemGroup>
+
+	<ItemGroup>
 		<PackageReference Include="CommunityToolkit.Maui" Version="9.1.1" />
 		<PackageReference Include="CommunityToolkit.Mvvm" Version="8.2.2" />
 		<PackageReference Include="Microcharts.Maui" Version="1.0.0" />

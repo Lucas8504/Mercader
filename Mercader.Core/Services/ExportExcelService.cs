@@ -5,6 +5,7 @@ using NPOI.XDDF.UserModel;
 using NPOI.XDDF.UserModel.Chart;
 using NPOI.OpenXmlFormats.Dml;
 using Mercader.Domain.Entities;
+using Mercader.Core.Services.Localization;
 using Mercader.Models;
 using HA = NPOI.SS.UserModel.HorizontalAlignment;
 using VA = NPOI.SS.UserModel.VerticalAlignment;
@@ -797,7 +798,7 @@ namespace Mercader
 
                 return new DatoMensual
                 {
-                    Mes = mes.ToString("MMM yyyy", new System.Globalization.CultureInfo("es-ES")),
+                    Mes = mes.ToString("MMM yyyy", Loc.Culture),
                     Ventas = totalVentas,
                     Gastos = totalGastos,
                     Ganancia = ganancia

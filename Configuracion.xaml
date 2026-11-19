@@ -3,6 +3,7 @@
     x:Class="Mercader.Configuracion"
     xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:loc="clr-namespace:Mercader.Services.Localization"
     Title="⚙️ Configuración"
     BackgroundColor="{AppThemeBinding Light={StaticResource PageBackground}, Dark={StaticResource PageBackgroundDark}}">
 
@@ -11,7 +12,7 @@
 
             <!-- Sección: General -->
             <Label
-                Text="General"
+                Text="{loc:Translate General}"
                 FontSize="18"
                 FontAttributes="Bold"
                 TextColor="{AppThemeBinding Light={StaticResource TextPrimary}, Dark={StaticResource TextPrimaryDark}}" />
@@ -21,8 +22,8 @@
                     <!-- Moneda -->
                     <Grid ColumnDefinitions="*, Auto">
                         <VerticalStackLayout Grid.Column="0">
-                            <Label Text="Moneda" FontSize="16" TextColor="{AppThemeBinding Light={StaticResource TextPrimary}, Dark={StaticResource TextPrimaryDark}}" />
-                            <Label Text="Símbolo de moneda para los precios" FontSize="12" TextColor="{AppThemeBinding Light={StaticResource TextSecondary}, Dark={StaticResource TextSecondaryDark}}" />
+                            <Label Text="{loc:Translate Moneda}" FontSize="16" TextColor="{AppThemeBinding Light={StaticResource TextPrimary}, Dark={StaticResource TextPrimaryDark}}" />
+                            <Label Text="{loc:Translate MonedaDescripcion}" FontSize="12" TextColor="{AppThemeBinding Light={StaticResource TextSecondary}, Dark={StaticResource TextSecondaryDark}}" />
                         </VerticalStackLayout>
                         <Picker
                             x:Name="MonedaPicker"
@@ -43,10 +44,27 @@
 
                     <BoxView HeightRequest="0.5" Color="{AppThemeBinding Light={StaticResource DividerColor}, Dark={StaticResource DividerColorDark}}" Margin="0,4" />
 
+                    <!-- Idioma -->
+                    <Grid ColumnDefinitions="*, Auto">
+                        <VerticalStackLayout Grid.Column="0">
+                            <Label Text="{loc:Translate Idioma}" FontSize="16" TextColor="{AppThemeBinding Light={StaticResource TextPrimary}, Dark={StaticResource TextPrimaryDark}}" />
+                            <Label Text="{loc:Translate IdiomaDescripcion}" FontSize="12" TextColor="{AppThemeBinding Light={StaticResource TextSecondary}, Dark={StaticResource TextSecondaryDark}}" />
+                        </VerticalStackLayout>
+                        <Picker
+                            x:Name="IdiomaPicker"
+                            Grid.Column="1"
+                            WidthRequest="160"
+                            Title="{loc:Translate Idioma}"
+                            TextColor="{AppThemeBinding Light={StaticResource TextPrimary}, Dark={StaticResource TextPrimaryDark}}"
+                            SelectedIndexChanged="OnIdiomaChanged" />
+                    </Grid>
+
+                    <BoxView HeightRequest="0.5" Color="{AppThemeBinding Light={StaticResource DividerColor}, Dark={StaticResource DividerColorDark}}" Margin="0,4" />
+
                     <!-- Tema -->
                     <VerticalStackLayout Spacing="6">
-                        <Label Text="Tema" FontSize="16" TextColor="{AppThemeBinding Light={StaticResource TextPrimary}, Dark={StaticResource TextPrimaryDark}}" />
-                        <Label Text="Elegí cómo se ve la app" FontSize="12" TextColor="{AppThemeBinding Light={StaticResource TextSecondary}, Dark={StaticResource TextSecondaryDark}}" />
+                        <Label Text="{loc:Translate Tema}" FontSize="16" TextColor="{AppThemeBinding Light={StaticResource TextPrimary}, Dark={StaticResource TextPrimaryDark}}" />
+                        <Label Text="{loc:Translate TemaDescripcion}" FontSize="12" TextColor="{AppThemeBinding Light={StaticResource TextSecondary}, Dark={StaticResource TextSecondaryDark}}" />
 
                         <Grid ColumnDefinitions="*,6,*,6,*" x:Name="TemaSelector" Margin="0,4,0,0">
                             <!-- Sistema -->
@@ -58,7 +76,7 @@
                                 </Frame.GestureRecognizers>
                                 <VerticalStackLayout Spacing="2" HorizontalOptions="Center">
                                     <Label Text="📱" FontSize="16" HorizontalOptions="Center" />
-                                    <Label Text="Sistema" FontSize="11" HorizontalOptions="Center"
+                                    <Label Text="{loc:Translate Sistema}" FontSize="11" HorizontalOptions="Center"
                                            TextColor="{AppThemeBinding Light={StaticResource TextPrimary}, Dark={StaticResource TextPrimaryDark}}" />
                                 </VerticalStackLayout>
                             </Frame>
@@ -72,7 +90,7 @@
                                 </Frame.GestureRecognizers>
                                 <VerticalStackLayout Spacing="2" HorizontalOptions="Center">
                                     <Label Text="☀️" FontSize="16" HorizontalOptions="Center" />
-                                    <Label Text="Claro" FontSize="11" HorizontalOptions="Center"
+                                    <Label Text="{loc:Translate Claro}" FontSize="11" HorizontalOptions="Center"
                                            TextColor="{AppThemeBinding Light={StaticResource TextPrimary}, Dark={StaticResource TextPrimaryDark}}" />
                                 </VerticalStackLayout>
                             </Frame>
@@ -86,7 +104,7 @@
                                 </Frame.GestureRecognizers>
                                 <VerticalStackLayout Spacing="2" HorizontalOptions="Center">
                                     <Label Text="🌙" FontSize="16" HorizontalOptions="Center" />
-                                    <Label Text="Oscuro" FontSize="11" HorizontalOptions="Center"
+                                    <Label Text="{loc:Translate Oscuro}" FontSize="11" HorizontalOptions="Center"
                                            TextColor="{AppThemeBinding Light={StaticResource TextPrimary}, Dark={StaticResource TextPrimaryDark}}" />
                                 </VerticalStackLayout>
                             </Frame>
@@ -97,7 +115,7 @@
 
             <!-- Sección: Notificaciones -->
             <Label
-                Text="Notificaciones"
+                Text="{loc:Translate Notificaciones}"
                 FontSize="18"
                 FontAttributes="Bold"
                 TextColor="{AppThemeBinding Light={StaticResource TextPrimary}, Dark={StaticResource TextPrimaryDark}}" />
@@ -107,8 +125,8 @@
                     <!-- Recordatorio de entregas -->
                     <Grid ColumnDefinitions="*, Auto">
                         <VerticalStackLayout Grid.Column="0">
-                            <Label Text="Recordatorio de entregas" FontSize="16" TextColor="{AppThemeBinding Light={StaticResource TextPrimary}, Dark={StaticResource TextPrimaryDark}}" />
-                            <Label Text="Notificar encargos pendientes" FontSize="12" TextColor="{AppThemeBinding Light={StaticResource TextSecondary}, Dark={StaticResource TextSecondaryDark}}" />
+                            <Label Text="{loc:Translate RecordatorioEntregas}" FontSize="16" TextColor="{AppThemeBinding Light={StaticResource TextPrimary}, Dark={StaticResource TextPrimaryDark}}" />
+                            <Label Text="{loc:Translate RecordatorioEntregasDescripcion}" FontSize="12" TextColor="{AppThemeBinding Light={StaticResource TextSecondary}, Dark={StaticResource TextSecondaryDark}}" />
                         </VerticalStackLayout>
                         <Switch x:Name="NotificacionEntregasSwitch" Grid.Column="1" Toggled="OnNotificacionEntregasToggled" />
                     </Grid>
@@ -116,7 +134,7 @@
                     <!-- Tiempo de recordatorio -->
                     <Grid ColumnDefinitions="*, Auto" x:Name="TiempoRecordatorioGrid" IsVisible="False">
                         <VerticalStackLayout Grid.Column="0">
-                            <Label Text="Recordar antes" FontSize="14" TextColor="{AppThemeBinding Light={StaticResource TextSecondary}, Dark={StaticResource TextSecondaryDark}}" />
+                            <Label Text="{loc:Translate RecordarAntes}" FontSize="14" TextColor="{AppThemeBinding Light={StaticResource TextSecondary}, Dark={StaticResource TextSecondaryDark}}" />
                         </VerticalStackLayout>
                         <Picker
                             x:Name="TiempoRecordatorioPicker"
@@ -143,7 +161,7 @@
 
             <!-- Sección: Datos -->
             <Label
-                Text="Datos"
+                Text="{loc:Translate Datos}"
                 FontSize="18"
                 FontAttributes="Bold"
                 TextColor="{AppThemeBinding Light={StaticResource TextPrimary}, Dark={StaticResource TextPrimaryDark}}" />
@@ -152,7 +170,7 @@
                 <VerticalStackLayout Spacing="10">
                     <!-- Importar datos -->
                     <Button
-                        Text="📥 Importar Datos"
+                        Text="{loc:Translate ImportarDatos}"
                         BackgroundColor="#5E5CE6"
                         TextColor="White"
                         Clicked="OnImportarClicked" />
@@ -161,7 +179,7 @@
 
                     <!-- Limpiar datos -->
                     <Button
-                        Text="🗑️ Limpiar Todos los Datos"
+                        Text="{loc:Translate LimpiarDatos}"
                         BackgroundColor="#FF453A"
                         TextColor="White"
                         Clicked="OnLimpiarDatosClicked" />
@@ -170,16 +188,16 @@
 
             <!-- Sección: Acerca de -->
             <Label
-                Text="Acerca de"
+                Text="{loc:Translate AcercaDe}"
                 FontSize="18"
                 FontAttributes="Bold"
                 TextColor="{AppThemeBinding Light={StaticResource TextPrimary}, Dark={StaticResource TextPrimaryDark}}" />
 
             <Frame Padding="15" BackgroundColor="{AppThemeBinding Light={StaticResource CardBackground}, Dark={StaticResource CardBackgroundDark}}">
                 <VerticalStackLayout Spacing="5">
-                    <Label Text="Mercader" FontSize="16" FontAttributes="Bold" TextColor="{AppThemeBinding Light={StaticResource TextPrimary}, Dark={StaticResource TextPrimaryDark}}" />
-                    <Label Text="Versión 1.0.0" FontSize="14" TextColor="{AppThemeBinding Light={StaticResource TextSecondary}, Dark={StaticResource TextSecondaryDark}}" />
-                    <Label Text="Gestión de ventas, gastos y encargos" FontSize="12" TextColor="{AppThemeBinding Light={StaticResource TextSecondary}, Dark={StaticResource TextSecondaryDark}}" />
+                    <Label Text="{loc:Translate AppTitle}" FontSize="16" FontAttributes="Bold" TextColor="{AppThemeBinding Light={StaticResource TextPrimary}, Dark={StaticResource TextPrimaryDark}}" />
+                    <Label Text="{loc:Translate Version}" FontSize="14" TextColor="{AppThemeBinding Light={StaticResource TextSecondary}, Dark={StaticResource TextSecondaryDark}}" />
+                    <Label Text="{loc:Translate AppDescripcion}" FontSize="12" TextColor="{AppThemeBinding Light={StaticResource TextSecondary}, Dark={StaticResource TextSecondaryDark}}" />
                 </VerticalStackLayout>
             </Frame>
 

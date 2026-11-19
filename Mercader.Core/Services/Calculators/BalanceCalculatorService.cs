@@ -1,5 +1,6 @@
 using System.Globalization;
 using Mercader.Domain.Entities;
+using Mercader.Core.Services.Localization;
 using Mercader.Services.Interfaces;
 
 namespace Mercader.Services.Calculators
@@ -166,7 +167,7 @@ namespace Mercader.Services.Calculators
                 var total = datos
                     .Where(x => getFecha(x).Year == mes.Year && getFecha(x).Month == mes.Month)
                     .Sum(getMonto);
-                return (mes.ToString("MMM", new CultureInfo("es-ES")), total);
+                return (mes.ToString("MMM", Loc.Culture), total);
             }).ToList();
         }
 

@@ -3,6 +3,7 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Mercader.Models;
 using Mercader.Domain.Entities;
+using Mercader.Core.Services.Localization;
 using Mercader.Services.Interfaces;
 using Mercader.Data.Interfaces;
 using Microcharts;
@@ -42,7 +43,7 @@ namespace Mercader.ViewModels
 
         // ===== Resumen del mes actual =====
         [ObservableProperty]
-        private string _mesLabel = DateTime.Now.ToString("MMMM yyyy", new CultureInfo("es-ES"));
+        private string _mesLabel = DateTime.Now.ToString("MMMM yyyy", Loc.Culture);
 
         [ObservableProperty]
         private string _mesVentas = "$0";
@@ -83,10 +84,16 @@ namespace Mercader.ViewModels
         private decimal _rawMargen;
 
         // ===== Selector de período =====
-        public List<string> Periodos { get; } = new() { "Días", "Semanas", "Meses", "Años" };
+        public List<string> Periodos { get; } = new()
+        {
+            Loc.Get("Dias"),
+            Loc.Get("Semanas"),
+            Loc.Get("Meses"),
+            Loc.Get("Anios")
+        };
 
         [ObservableProperty]
-        private string _periodoSeleccionado = "Meses";
+        private string _periodoSeleccionado = Loc.Get("Meses");
 
         private readonly INavigationService _navigationService;
 
@@ -175,7 +182,7 @@ namespace Mercader.ViewModels
         private void CalcularResumenMensual()
         {
             var hoy = DateTime.Now;
-            MesLabel = hoy.ToString("MMMM yyyy", new CultureInfo("es-ES"));
+            MesLabel = hoy.ToString("MMMM yyyy", Loc.Culture);
 
             var ventas = Ventas
                 .Where(v => v.Fecha.Year == hoy.Year && v.Fecha.Month == hoy.Month)

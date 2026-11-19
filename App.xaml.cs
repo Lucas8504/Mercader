@@ -1,5 +1,6 @@
 using System.Diagnostics;
 using Mercader.Services.Interfaces;
+using Mercader.Services.Localization;
 
 namespace Mercader
 {
@@ -13,6 +14,9 @@ namespace Mercader
 
             // Aplicar tema guardado
             AplicarTema();
+
+            // Cargar catálogos de idioma y aplicar el idioma guardado
+            Localizacion.Inicializar();
 
             MainPage = shell;
         }
