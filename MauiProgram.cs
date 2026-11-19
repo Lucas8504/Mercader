@@ -100,8 +100,9 @@ namespace Mercader
             builder.Services.AddSingleton<IExportPdfService, ExportPdfService>();
             builder.Services.AddSingleton<IImageStorageService, ImageStorageService>();
 
-            // Shell
-            builder.Services.AddSingleton<AppShell>();
+            // Shell: se instancia manualmente en App.xaml.cs, DESPUÉS de
+            // Localizacion.Inicializar(), para que el XAML del Shell encuentre los catálogos
+            // cargados al parsear sus markup extensions de traducción.
 
             // Pages
             builder.Services.AddTransient<MainPage>();

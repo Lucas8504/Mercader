@@ -6,7 +6,7 @@ namespace Mercader
 {
     public partial class App : Application
     {
-        public App(AppShell shell, IDataRepository repo)
+        public App(IDataRepository repo)
         {
             InitializeComponent();
 
@@ -15,10 +15,13 @@ namespace Mercader
             // Aplicar tema guardado
             AplicarTema();
 
-            // Cargar catálogos de idioma y aplicar el idioma guardado
+            // Cargar catálogos de idioma y aplicar el idioma guardado ANTES de construir
+            // el Shell. El XAML del Shell se parsea en su constructor y las markup extensions
+            // `{loc:Translate ...}` se resuelven en ese momento: si el catálogo todavía no está
+            // cargado, Loc.Get devuelve la clave cruda ("NavInicio") en lugar de la traducción.
             Localizacion.Inicializar();
 
-            MainPage = shell;
+            MainPage = new AppShell();
         }
 
         public static void AplicarTema()

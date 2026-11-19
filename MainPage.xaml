@@ -109,7 +109,7 @@
 
                     <!-- Ventas -->
                     <Grid Grid.Row="2" ColumnDefinitions="Auto, *, Auto">
-                        <Label Grid.Column="0" Text="💵 {loc:Translate Ventas}" FontSize="14" VerticalOptions="Center"
+                        <Label Grid.Column="0" Text="{loc:Translate ResumenVentas}" FontSize="14" VerticalOptions="Center"
                                TextColor="{AppThemeBinding Light={StaticResource TextSecondary}, Dark={StaticResource TextSecondaryDark}}" />
                         <Label Grid.Column="2" Text="{Binding MesVentas}" FontAttributes="Bold" FontSize="15"
                                TextColor="#2e9449" HorizontalOptions="End" VerticalOptions="Center" />
@@ -117,7 +117,7 @@
 
                     <!-- Gastos -->
                     <Grid Grid.Row="3" ColumnDefinitions="Auto, *, Auto">
-                        <Label Grid.Column="0" Text="💸 {loc:Translate Gastos}" FontSize="14" VerticalOptions="Center"
+                        <Label Grid.Column="0" Text="{loc:Translate ResumenGastos}" FontSize="14" VerticalOptions="Center"
                                TextColor="{AppThemeBinding Light={StaticResource TextSecondary}, Dark={StaticResource TextSecondaryDark}}" />
                         <Label Grid.Column="2" Text="{Binding MesGastos}" FontAttributes="Bold" FontSize="15"
                                TextColor="#6e0a24" HorizontalOptions="End" VerticalOptions="Center" />
@@ -125,7 +125,7 @@
 
                     <!-- Encargos -->
                     <Grid Grid.Row="4" ColumnDefinitions="Auto, *, Auto">
-                        <Label Grid.Column="0" Text="📦 {loc:Translate Encargos}" FontSize="14" VerticalOptions="Center"
+                        <Label Grid.Column="0" Text="{loc:Translate ResumenEncargos}" FontSize="14" VerticalOptions="Center"
                                TextColor="{AppThemeBinding Light={StaticResource TextSecondary}, Dark={StaticResource TextSecondaryDark}}" />
                         <Label Grid.Column="2" Text="{Binding MesEncargos}" FontAttributes="Bold" FontSize="15"
                                TextColor="#ff6b35" HorizontalOptions="End" VerticalOptions="Center" />
@@ -140,7 +140,7 @@
 
                     <!-- Ganancia + Margen -->
                     <Grid Grid.Row="6" ColumnDefinitions="*, Auto" ColumnSpacing="12">
-                        <Label Grid.Column="0" Text="💰 {loc:Translate Ganancias}" FontSize="14" VerticalOptions="Center"
+                        <Label Grid.Column="0" Text="{loc:Translate ResumenGanancias}" FontSize="14" VerticalOptions="Center"
                                TextColor="{AppThemeBinding Light={StaticResource TextSecondary}, Dark={StaticResource TextSecondaryDark}}" />
                         <HorizontalStackLayout Grid.Column="1" Spacing="8">
                             <Label Text="{Binding MesGanancias}" FontAttributes="Bold" FontSize="16"
@@ -162,7 +162,7 @@
             <!--  Selector de Período  -->
             <VerticalStackLayout Spacing="4">
                 <Label
-                    Text="📊 {loc:Translate SelectorPeriodo} "
+                    Text="{loc:Translate SelectorPeriodo}"
                     FontAttributes="Bold"
                     FontSize="14"
                     TextColor="{AppThemeBinding Light={StaticResource TextSecondary}, Dark={StaticResource TextSecondaryDark}}" />
@@ -195,7 +195,7 @@
                     <Grid Grid.Row="0" ColumnDefinitions="*, Auto">
 
                         <VerticalStackLayout Grid.Column="0" VerticalOptions="Center" Spacing="2">
-                            <Label Text="💸 {loc:Translate AnalisisGastos}"
+                            <Label Text="{loc:Translate AnalisisGastos}"
                                    FontAttributes="Bold" FontSize="16" TextColor="#6e0a24" />
 
                         </VerticalStackLayout>
@@ -236,7 +236,7 @@
                             <Label
                                 FontAttributes="Bold"
                                 FontSize="16"
-                                Text="📦 {loc:Translate AnalisisEncargos}"
+                                Text="{loc:Translate AnalisisEncargos}"
                                 TextColor="#ff6b35" />
 
                         </VerticalStackLayout>
@@ -288,7 +288,7 @@
                                 FontAttributes="Bold"
                                 FontSize="16"
                                 HorizontalOptions="Start"
-                                Text="💵​ {loc:Translate AnalisisVentas}"
+                                Text="{loc:Translate AnalisisVentas}"
                                 TextColor="#2e9449" />
 
                         </VerticalStackLayout>
@@ -342,7 +342,7 @@
                         <!-- Título -->
                         <VerticalStackLayout Grid.Column="0" Spacing="4">
                             <Label
-                                Text="💰 {loc:Translate AnalisisGanancias}"
+                                Text="{loc:Translate AnalisisGanancias}"
                                 VerticalTextAlignment="End"
                                 FontAttributes="Bold"
                                 FontSize="15"
