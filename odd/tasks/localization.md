@@ -5,6 +5,9 @@
 **Estrategia de entrega**: trabajo inline en slices commiteables (~400 líneas por slice)
 **Runner de tests**: `dotnet test Mercader.Tests/Mercader.Tests.csproj` (121 tests)
 **Build de la app**: `dotnet build Mercader.csproj` (NO solo Mercader.Core — ese es solo la librería)
+**Mirror Engram**: ⏳ pendiente. El servidor MCP de Engram resuelve el proyecto desde el cwd de la
+sesión (`C:\Users\Lucas`, sin repo) y rechaza el write con `invalid_project` aunque se pase
+`project: "mercader"`. Este archivo commiteado es la fuente de verdad hasta que se resuelva.
 
 ## Specs
 
