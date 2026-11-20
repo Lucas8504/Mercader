@@ -3,7 +3,8 @@
     x:Class="Mercader.ImageGalleryModal"
     xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-    Title="Imágenes del artículo"
+    xmlns:loc="clr-namespace:Mercader.Services.Localization"
+    Title="{loc:Translate ImagenesArticulo}"
     BackgroundColor="{AppThemeBinding Light={StaticResource PageBackground}, Dark={StaticResource PageBackgroundDark}}">
 
     <Grid RowDefinitions="Auto,*,Auto" RowSpacing="12" Margin="20">
@@ -14,7 +15,7 @@
             FontAttributes="Bold"
             FontSize="18"
             HorizontalOptions="Center"
-            Text="Imágenes del artículo"
+            Text="{loc:Translate ImagenesArticulo}"
             TextColor="{AppThemeBinding Light={StaticResource TextPrimary}, Dark={StaticResource TextPrimaryDark}}" />
 
         <!-- Image slots grid -->
@@ -49,7 +50,7 @@
                         IsVisible="True">
                         <VerticalStackLayout HorizontalOptions="Center" VerticalOptions="Center" Spacing="4">
                             <Label Text="📷" FontSize="36" HorizontalOptions="Center" />
-                            <Label Text="Vacío" FontSize="11" HorizontalOptions="Center" TextColor="#999" />
+                            <Label Text="{loc:Translate Vacio}" FontSize="11" HorizontalOptions="Center" TextColor="#999" />
                         </VerticalStackLayout>
                     </Frame>
                     <!-- Delete button -->
@@ -90,7 +91,7 @@
                         IsVisible="True">
                         <VerticalStackLayout HorizontalOptions="Center" VerticalOptions="Center" Spacing="4">
                             <Label Text="📷" FontSize="36" HorizontalOptions="Center" />
-                            <Label Text="Vacío" FontSize="11" HorizontalOptions="Center" TextColor="#999" />
+                            <Label Text="{loc:Translate Vacio}" FontSize="11" HorizontalOptions="Center" TextColor="#999" />
                         </VerticalStackLayout>
                     </Frame>
                     <Button
@@ -129,7 +130,7 @@
                         IsVisible="True">
                         <VerticalStackLayout HorizontalOptions="Center" VerticalOptions="Center" Spacing="4">
                             <Label Text="📷" FontSize="36" HorizontalOptions="Center" />
-                            <Label Text="Vacío" FontSize="11" HorizontalOptions="Center" TextColor="#999" />
+                            <Label Text="{loc:Translate Vacio}" FontSize="11" HorizontalOptions="Center" TextColor="#999" />
                         </VerticalStackLayout>
                     </Frame>
                     <Button
@@ -168,7 +169,7 @@
                         IsVisible="True">
                         <VerticalStackLayout HorizontalOptions="Center" VerticalOptions="Center" Spacing="4">
                             <Label Text="📷" FontSize="36" HorizontalOptions="Center" />
-                            <Label Text="Vacío" FontSize="11" HorizontalOptions="Center" TextColor="#999" />
+                            <Label Text="{loc:Translate Vacio}" FontSize="11" HorizontalOptions="Center" TextColor="#999" />
                         </VerticalStackLayout>
                     </Frame>
                     <Button
@@ -198,7 +199,7 @@
                 BackgroundColor="{AppThemeBinding Light=#4CAF50, Dark=#A5D6A7}"
                 CornerRadius="8"
                 FontSize="14"
-                Text="Listo"
+                Text="{loc:Translate Listo}"
                 TextColor="White"
                 Clicked="OnDoneClicked" />
             <Button
@@ -207,7 +208,7 @@
                 BackgroundColor="{AppThemeBinding Light=#FF5722, Dark=#FFAB91}"
                 CornerRadius="8"
                 FontSize="14"
-                Text="Cancelar"
+                Text="{loc:Translate Cancelar}"
                 TextColor="White"
                 Clicked="OnCancelClicked" />
         </Grid>

@@ -5,7 +5,8 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
     xmlns:local="clr-namespace:Mercader"
     xmlns:models="clr-namespace:Mercader.Models;assembly=Mercader.Core"
-    Title="📊 Ventas"
+    xmlns:loc="clr-namespace:Mercader.Services.Localization"
+    Title="{loc:Translate TituloVentas}"
     BackgroundColor="{AppThemeBinding Light={StaticResource DeepBackground}, Dark={StaticResource DeepBackgroundDark}}">
 
     <Grid RowSpacing="0">
@@ -19,7 +20,7 @@
         <SearchBar
             Grid.Row="0"
             x:Name="BarraBusqueda"
-            Placeholder="Buscar por producto..."
+            Placeholder="{loc:Translate BuscarVenta}"
             PlaceholderColor="{AppThemeBinding Light={StaticResource TextPlaceholder}, Dark={StaticResource TextPlaceholderDark}}"
             TextColor="{AppThemeBinding Light={StaticResource TextPrimary}, Dark={StaticResource TextPrimaryDark}}"
             BackgroundColor="{AppThemeBinding Light={StaticResource InputBackground}, Dark={StaticResource InputBackgroundDark}}"
@@ -46,7 +47,7 @@
                     <TapGestureRecognizer Tapped="OnFiltroTapped" CommandParameter="TODOS" />
                 </Frame.GestureRecognizers>
                 <Label
-                    Text="TODOS"
+                    Text="{loc:Translate FiltroTodos}"
                     FontSize="12"
                     FontAttributes="Bold"
                     TextColor="White"
@@ -64,7 +65,7 @@
                     <TapGestureRecognizer Tapped="OnFiltroTapped" CommandParameter="HOY" />
                 </Frame.GestureRecognizers>
                 <Label
-                    Text="HOY"
+                    Text="{loc:Translate FiltroHoy}"
                     FontSize="12"
                     FontAttributes="Bold"
                     TextColor="{AppThemeBinding Light={StaticResource TextSecondary}, Dark={StaticResource TextSecondaryDark}}"
@@ -82,7 +83,7 @@
                     <TapGestureRecognizer Tapped="OnFiltroTapped" CommandParameter="ESTE MES" />
                 </Frame.GestureRecognizers>
                 <Label
-                    Text="ESTE MES"
+                    Text="{loc:Translate FiltroEsteMes}"
                     FontSize="12"
                     FontAttributes="Bold"
                     TextColor="{AppThemeBinding Light={StaticResource TextSecondary}, Dark={StaticResource TextSecondaryDark}}"
@@ -106,11 +107,11 @@
                                 <SwipeItem
                                     BackgroundColor="#4CAF50"
                                     Invoked="OnEditSwipeItemInvoked"
-                                    Text="✏️ Editar" />
+                                    Text="{loc:Translate EditarConIcono}" />
                                 <SwipeItem
                                     BackgroundColor="#F44336"
                                     Invoked="OnDeleteSwipeItemInvoked"
-                                    Text="🗑️ Eliminar" />
+                                    Text="{loc:Translate EliminarConIcono}" />
                             </SwipeItems>
                         </SwipeView.RightItems>
 
@@ -151,7 +152,7 @@
                                     </Grid.RowDefinitions>
                                     <Label
                                         Grid.Row="0"
-                                        Text="📅 FECHA DE VENTA"
+                                        Text="{loc:Translate FechaVenta}"
                                         FontSize="10"
                                         TextColor="{AppThemeBinding Light={StaticResource TextSecondary}, Dark={StaticResource TextSecondaryDark}}"
                                         Margin="0,0,0,2" />
@@ -176,7 +177,7 @@
                                         </Grid.RowDefinitions>
                                         <Label
                                             Grid.Row="0"
-                                            Text="TOTAL"
+                                            Text="{loc:Translate TotalMayusculas}"
                                             FontSize="10"
                                             TextColor="{AppThemeBinding Light={StaticResource TextSecondary}, Dark={StaticResource TextSecondaryDark}}"
                                             Margin="0,0,0,2" />
@@ -195,7 +196,7 @@
                                         </Grid.RowDefinitions>
                                         <Label
                                             Grid.Row="0"
-                                            Text="DESGLOSE"
+                                            Text="{loc:Translate Desglose}"
                                             FontSize="10"
                                             TextColor="{AppThemeBinding Light={StaticResource TextSecondary}, Dark={StaticResource TextSecondaryDark}}"
                                             Margin="0,0,0,2" />
@@ -276,13 +277,13 @@
                     <Label
                         FontAttributes="Bold"
                         FontSize="18"
-                        Text="No hay ventas registradas"
+                        Text="{loc:Translate SinVentas}"
                         TextColor="{AppThemeBinding Light={StaticResource TextPrimary}, Dark={StaticResource TextPrimaryDark}}"
                         HorizontalTextAlignment="Center" />
 
                     <Label
                         FontSize="14"
-                        Text="Las ventas aparecerán aquí cuando se registren"
+                        Text="{loc:Translate SinVentasDescripcion}"
                         TextColor="{AppThemeBinding Light={StaticResource TextSecondary}, Dark={StaticResource TextSecondaryDark}}"
                         HorizontalTextAlignment="Center" />
                 </StackLayout>

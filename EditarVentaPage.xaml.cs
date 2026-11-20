@@ -3,6 +3,7 @@ using Mercader.Data.Interfaces;
 using Mercader.Domain.Entities;
 using Mercader.Services.Interfaces;
 using Mercader.Core.ViewModels;
+using Mercader.Core.Services.Localization;
 using System.IO;
 
 namespace Mercader;
@@ -37,25 +38,25 @@ public partial class EditarVentaPage : ContentPage
         if (!success)
         {
             if (string.IsNullOrWhiteSpace(_viewModel.Descripcion))
-                await DisplayAlert("Error", "La descripción es requerida", "OK");
+                await DisplayAlert(Loc.Get("Error"), Loc.Get("DescripcionRequerida"), "OK");
             else if (!_viewModel.HasArticulos)
-                await DisplayAlert("Error", "Debe agregar al menos un artículo", "OK");
+                await DisplayAlert(Loc.Get("Error"), Loc.Get("SinArticulos"), "OK");
             else
-                await DisplayAlert("Error", "Cada artículo debe tener una descripción", "OK");
+                await DisplayAlert(Loc.Get("Error"), Loc.Get("SinDescripcion"), "OK");
             return;
         }
 
-        await DisplayAlert("Éxito", "Venta actualizada correctamente", "OK");
+        await DisplayAlert(Loc.Get("Exito"), Loc.Get("VentaActualizada"), "OK");
         await Navigation.PopAsync();
     }
 
     private async void OnCancelarClicked(object sender, EventArgs e)
     {
         bool confirm = await DisplayAlert(
-            "Confirmar",
-            "¿Estás seguro de que deseas cancelar? Se perderán los cambios no guardados.",
-            "Sí",
-            "No");
+            Loc.Get("Confirmar"),
+            Loc.Get("ConfirmarCancelacion"),
+            Loc.Get("Si"),
+            Loc.Get("No"));
 
         if (confirm)
             await Navigation.PopAsync();

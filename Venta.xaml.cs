@@ -8,6 +8,7 @@ using Mercader.ViewModels;
 using Mercader.Core.ViewModels;
 using Mercader.Data.Interfaces;
 using Mercader.Services.Interfaces;
+using Mercader.Core.Services.Localization;
 
 namespace Mercader
 {
@@ -32,7 +33,7 @@ namespace Mercader
 
         private void ConfigurarPagina()
         {
-            Title = "📊 Ventas";
+            Title = Loc.Get("TituloVentas");
             this.Opacity = 0;
             this.FadeTo(1, 300);
         }
@@ -89,8 +90,8 @@ namespace Mercader
             }
             catch (Exception ex)
             {
-                await MostrarError("Error de navegación",
-                    $"No se pudo abrir los detalles de la venta: {ex.Message}");
+                await MostrarError(Loc.Get("ErrorNavegacion"),
+                    Loc.Format("NoSePudoAbrirDetallesVenta", ex.Message));
             }
         }
 
@@ -113,7 +114,7 @@ namespace Mercader
             }
             catch (Exception ex)
             {
-                await MostrarError("Error de edición", ex.Message);
+                await MostrarError(Loc.Get("ErrorEdicion"), ex.Message);
             }
         }
 
@@ -136,7 +137,7 @@ namespace Mercader
             }
             catch (Exception ex)
             {
-                await MostrarError("Error de eliminación", ex.Message);
+                await MostrarError(Loc.Get("ErrorEliminacion"), ex.Message);
             }
         }
 
@@ -202,7 +203,7 @@ namespace Mercader
             }
             catch (Exception ex)
             {
-                await MostrarError("Error de edición", ex.Message);
+                await MostrarError(Loc.Get("ErrorEdicion"), ex.Message);
             }
         }
 
@@ -217,7 +218,7 @@ namespace Mercader
             }
             catch (Exception ex)
             {
-                await MostrarError("Error de eliminación", ex.Message);
+                await MostrarError(Loc.Get("ErrorEliminacion"), ex.Message);
             }
         }
 
@@ -237,8 +238,8 @@ namespace Mercader
             }
             catch (Exception ex)
             {
-                await MostrarError("Error al editar",
-                    $"No se pudo abrir la página de edición: {ex.Message}");
+                await MostrarError(Loc.Get("ErrorAlEditar"),
+                    Loc.Format("NoSePudoAbrirPaginaEdicion", ex.Message));
             }
         }
 
@@ -250,15 +251,15 @@ namespace Mercader
             try
             {
                 // Confirmación mejorada con más información
-                string mensaje = $"¿Estás seguro de eliminar esta venta?\n\n" +
-                               $"📋 Producto: {venta.Descripcion}\n" +
-                               $"💰 Precio: ${venta.Precio:F2}\n" +
-                               $"📦 Cantidad: {venta.Cantidad}\n" +
-                               $"📅 Fecha: {venta.Fecha:dd/MM/yyyy}\n\n" +
-                               "Esta accion no se puede deshacer.";
+                string mensaje = Loc.Format("ConfirmarEliminarVenta",
+                                   venta.Descripcion,
+                                   Loc.FormatCurrency(venta.Precio),
+                                   venta.Cantidad,
+                                   Loc.FormatDate(venta.Fecha)) +
+                               $"\n\n{Loc.Get("AccionNoSePuedeDeshacer")}";
 
-                bool confirmar = await DisplayAlert("Eliminar Venta",
-                    mensaje, "Si, eliminar", "Cancelar");
+                bool confirmar = await DisplayAlert(Loc.Get("EliminarVenta"),
+                    mensaje, Loc.Get("SiEliminar"), Loc.Get("Cancelar"));
 
                 if (confirmar)
                 {
@@ -271,16 +272,16 @@ namespace Mercader
                     await _viewModel.EliminarVentaCommand.ExecuteAsync(venta);
 
                     // Mostrar mensaje de éxito
-                    await DisplayAlert("Exito",
-                        "La venta se elimino correctamente", "OK");
+                    await DisplayAlert(Loc.Get("Exito"),
+                        Loc.Get("VentaEliminada"), "OK");
 
                     // No es necesario recargar manualmente: el ViewModel ya actualiza la lista
                 }
             }
             catch (Exception ex)
             {
-                await MostrarError("Error al eliminar",
-                    $"No se pudo eliminar la venta: {ex.Message}");
+                await MostrarError(Loc.Get("ErrorAlEliminar"),
+                    Loc.Format("NoSePudoEliminarVenta", ex.Message));
             }
             finally
             {

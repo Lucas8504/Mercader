@@ -9,7 +9,10 @@ namespace Mercader.Tests;
 ///
 /// Nota: <c>Loc</c> es estático y muta la cultura del hilo, por eso la clase
 /// restaura <see cref="CultureInfo.CurrentCulture"/> al terminar cada test.
+/// Comparte la colección "Localization" con <c>BalanceCalculatorPeriodoTests</c>
+/// para que las dos clases que mutan el estado estático no se ejecuten en paralelo.
 /// </summary>
+[Collection("Localization")]
 public class LocTests : IDisposable
 {
     private const string Es = "es";

@@ -5,7 +5,8 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
     xmlns:local="clr-namespace:Mercader"
     xmlns:models="clr-namespace:Mercader.Models;assembly=Mercader.Core"
-    Title="📋 Gestión de Encargos"
+    xmlns:loc="clr-namespace:Mercader.Services.Localization"
+    Title="{loc:Translate TituloEncargos}"
     BackgroundColor="{AppThemeBinding Light={StaticResource DeepBackground}, Dark={StaticResource DeepBackgroundDark}}">
 
     <Grid RowSpacing="0">
@@ -19,7 +20,7 @@
         <SearchBar
             Grid.Row="0"
             x:Name="BarraBusqueda"
-            Placeholder="Buscar por cliente o producto..."
+            Placeholder="{loc:Translate BuscarEncargo}"
             PlaceholderColor="{AppThemeBinding Light={StaticResource TextPlaceholder}, Dark={StaticResource TextPlaceholderDark}}"
             TextColor="{AppThemeBinding Light={StaticResource TextPrimary}, Dark={StaticResource TextPrimaryDark}}"
             BackgroundColor="{AppThemeBinding Light={StaticResource InputBackground}, Dark={StaticResource InputBackgroundDark}}"
@@ -46,7 +47,7 @@
                     <TapGestureRecognizer Tapped="OnFiltroTapped" CommandParameter="TODOS" />
                 </Frame.GestureRecognizers>
                 <Label
-                    Text="TODOS"
+                    Text="{loc:Translate FiltroTodos}"
                     FontSize="12"
                     FontAttributes="Bold"
                     TextColor="White"
@@ -64,7 +65,7 @@
                     <TapGestureRecognizer Tapped="OnFiltroTapped" CommandParameter="PENDIENTES" />
                 </Frame.GestureRecognizers>
                 <Label
-                    Text="PENDIENTES"
+                    Text="{loc:Translate FiltroPendientes}"
                     FontSize="12"
                     FontAttributes="Bold"
                     TextColor="{AppThemeBinding Light={StaticResource TextSecondary}, Dark={StaticResource TextSecondaryDark}}"
@@ -82,7 +83,7 @@
                     <TapGestureRecognizer Tapped="OnFiltroTapped" CommandParameter="ENTREGADOS" />
                 </Frame.GestureRecognizers>
                 <Label
-                    Text="ENTREGADOS"
+                    Text="{loc:Translate FiltroEntregados}"
                     FontSize="12"
                     FontAttributes="Bold"
                     TextColor="{AppThemeBinding Light={StaticResource TextSecondary}, Dark={StaticResource TextSecondaryDark}}"
@@ -131,7 +132,7 @@
                                     </Grid.RowDefinitions>
                                     <Label
                                         Grid.Row="0"
-                                        Text="CLIENTE"
+                                        Text="{loc:Translate Cliente}"
                                         FontSize="10"
                                         TextColor="{AppThemeBinding Light={StaticResource TextSecondary}, Dark={StaticResource TextSecondaryDark}}"
                                         Margin="0,0,0,2" />
@@ -185,7 +186,7 @@
                                 </Grid.RowDefinitions>
                                 <Label
                                     Grid.Row="0"
-                                    Text="DESCRIPCIÓN DEL PRODUCTO"
+                                        Text="{loc:Translate DescripcionProducto}"
                                     FontSize="10"
                                     TextColor="{AppThemeBinding Light={StaticResource TextSecondary}, Dark={StaticResource TextSecondaryDark}}"
                                     Margin="0,0,0,2" />
@@ -211,7 +212,7 @@
                                     </Grid.RowDefinitions>
                                     <Label
                                         Grid.Row="0"
-                                        Text="📅 FECHA DEL ENCARGO"
+                                        Text="{loc:Translate FechaEncargo}"
                                         FontSize="10"
                                         TextColor="{AppThemeBinding Light={StaticResource TextSecondary}, Dark={StaticResource TextSecondaryDark}}"
                                         Margin="0,0,0,2" />
@@ -229,7 +230,7 @@
                                     </Grid.RowDefinitions>
                                     <Label
                                         Grid.Row="0"
-                                        Text="🚚 FECHA ENTREGA"
+                                        Text="{loc:Translate FechaEntregaEncargo}"
                                         FontSize="10"
                                         TextColor="{AppThemeBinding Light={StaticResource TextSecondary}, Dark={StaticResource TextSecondaryDark}}"
                                         Margin="0,0,0,2" />
@@ -255,7 +256,7 @@
                                     </Grid.RowDefinitions>
                                     <Label
                                         Grid.Row="0"
-                                        Text="TOTAL ESTIMADO"
+                                            Text="{loc:Translate TotalEstimado}"
                                         FontSize="10"
                                         TextColor="{AppThemeBinding Light={StaticResource TextSecondary}, Dark={StaticResource TextSecondaryDark}}"
                                         Margin="0,0,0,2" />
@@ -274,7 +275,7 @@
                                         </Grid.RowDefinitions>
                                         <Label
                                             Grid.Row="0"
-                                            Text="DESGLOSE"
+                                            Text="{loc:Translate Desglose}"
                                             FontSize="10"
                                             TextColor="{AppThemeBinding Light={StaticResource TextSecondary}, Dark={StaticResource TextSecondaryDark}}"
                                             Margin="0,0,0,2" />
@@ -366,13 +367,13 @@
                     <Label
                         FontAttributes="Bold"
                         FontSize="18"
-                        Text="No hay encargos registrados"
+                        Text="{loc:Translate SinEncargos}"
                         TextColor="{AppThemeBinding Light={StaticResource TextPrimary}, Dark={StaticResource TextPrimaryDark}}"
                         HorizontalTextAlignment="Center" />
 
                     <Label
                         FontSize="14"
-                        Text="Los encargos aparecerán aquí cuando se registren"
+                        Text="{loc:Translate SinEncargosDescripcion}"
                         TextColor="{AppThemeBinding Light={StaticResource TextSecondary}, Dark={StaticResource TextSecondaryDark}}"
                         HorizontalTextAlignment="Center" />
                 </StackLayout>

@@ -3,6 +3,7 @@ using Mercader.Data.Interfaces;
 using Mercader.Domain.Entities;
 using Mercader.Services.Interfaces;
 using Mercader.Core.ViewModels;
+using Mercader.Core.Services.Localization;
 using System.IO;
 
 namespace Mercader;
@@ -42,13 +43,13 @@ public partial class EditarEncargoPage : ContentPage
     private void OnFechaEntregaPickerClosed(object? sender, EventArgs e)
     {
         if (FechaEntregaPicker.SelectedDate.HasValue)
-            FechaEntregaLabel.Text = FechaEntregaPicker.SelectedDate.Value.ToString("dd/MM/yyyy");
+            FechaEntregaLabel.Text = Loc.FormatDate(FechaEntregaPicker.SelectedDate.Value);
     }
 
     private void OnFechaEntregaPickerOk(object? sender, EventArgs e)
     {
         if (FechaEntregaPicker.SelectedDate.HasValue)
-            FechaEntregaLabel.Text = FechaEntregaPicker.SelectedDate.Value.ToString("dd/MM/yyyy");
+            FechaEntregaLabel.Text = Loc.FormatDate(FechaEntregaPicker.SelectedDate.Value);
         FechaEntregaPicker.IsOpen = false;
     }
 
@@ -64,17 +65,17 @@ public partial class EditarEncargoPage : ContentPage
         if (!success)
         {
             if (string.IsNullOrWhiteSpace(_viewModel.Nombre))
-                await DisplayAlert("Error", "El nombre del cliente es obligatorio", "OK");
+                await DisplayAlert(Loc.Get("Error"), Loc.Get("NombreClienteRequerido"), "OK");
             else if (string.IsNullOrWhiteSpace(_viewModel.Contacto) || !IsValidPhoneNumber(_viewModel.Contacto))
-                await DisplayAlert("Error", "Por favor, ingrese un número de teléfono válido", "OK");
+                await DisplayAlert(Loc.Get("Error"), Loc.Get("TelefonoInvalido"), "OK");
             else if (!_viewModel.HasArticulos)
-                await DisplayAlert("Error", "Debe agregar al menos un artículo", "OK");
+                await DisplayAlert(Loc.Get("Error"), Loc.Get("SinArticulos"), "OK");
             else
-                await DisplayAlert("Error", "Cada artículo debe tener una descripción", "OK");
+                await DisplayAlert(Loc.Get("Error"), Loc.Get("SinDescripcion"), "OK");
             return;
         }
 
-        await DisplayAlert("Éxito", "Encargo actualizado correctamente", "OK");
+        await DisplayAlert(Loc.Get("Exito"), Loc.Get("EncargoActualizado"), "OK");
         await Navigation.PopAsync();
     }
 
@@ -97,10 +98,10 @@ public partial class EditarEncargoPage : ContentPage
     private async void OnCancelarClicked(object sender, EventArgs e)
     {
         bool confirm = await DisplayAlert(
-            "Confirmar",
-            "¿Estás seguro de que deseas cancelar? Se perderán los cambios no guardados.",
-            "Sí",
-            "No");
+            Loc.Get("Confirmar"),
+            Loc.Get("ConfirmarCancelacion"),
+            Loc.Get("Si"),
+            Loc.Get("No"));
 
         if (confirm)
             await Navigation.PopAsync();

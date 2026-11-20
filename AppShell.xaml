@@ -84,7 +84,7 @@
     </Shell.ItemTemplate>
 
     <FlyoutItem Title="{loc:Translate NavInicio}" Icon="🏠" FlyoutDisplayOptions="AsSingleItem">
-        <ShellContent Title="Home" ContentTemplate="{DataTemplate local:MainPage}" />
+        <ShellContent Title="{loc:Translate NavInicio}" ContentTemplate="{DataTemplate local:MainPage}" />
     </FlyoutItem>
     <ShellContent Title="{loc:Translate NavGastos}" Icon="💸" ContentTemplate="{DataTemplate local:Gastos}" />
     <ShellContent Title="{loc:Translate NavEncargos}" Icon="📦" ContentTemplate="{DataTemplate local:Encargos}" />

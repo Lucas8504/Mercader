@@ -8,6 +8,7 @@ using Mercader.ViewModels;
 using Mercader.Core.ViewModels;
 using Mercader.Data.Interfaces;
 using Mercader.Services.Interfaces;
+using Mercader.Core.Services.Localization;
 
 namespace Mercader
 {
@@ -32,7 +33,7 @@ namespace Mercader
 
         private void ConfigurarPagina()
         {
-            Title = "📋 Encargos";
+            Title = Loc.Get("TituloEncargos");
             this.Opacity = 0;
             this.FadeTo(1, 300);
         }
@@ -113,28 +114,28 @@ namespace Mercader
                 {
                     if (encargo.Estado == "ENTREGADO")
                     {
-                        await DisplayAlert("ℹ️ Ya entregado", "Este encargo ya fue marcado como entregado.", "OK");
+                        await DisplayAlert(Loc.Get("YaEntregado"), Loc.Get("EncargoYaEntregado"), "OK");
                         return;
                     }
 
                     bool confirmar = await DisplayAlert(
-                        "✅ Marcar como entregado",
-                        $"¿Marcar el encargo de {encargo.Nombre} como ENTREGADO?",
-                        "Sí, entregar",
-                        "Cancelar");
+                        Loc.Get("MarcarEntregado"),
+                        Loc.Format("ConfirmarMarcarEntregado", encargo.Nombre),
+                        Loc.Get("SiEntregar"),
+                        Loc.Get("Cancelar"));
 
                     if (confirmar)
                     {
                         _isLoading = true;
                         await _viewModel.MarcarEntregadoCommand.ExecuteAsync(encargo);
                         EncargosCollectionView.ItemsSource = _viewModel.Encargos;
-                        await DisplayAlert("✅ Entregado", "El encargo fue marcado como entregado.", "OK");
+                        await DisplayAlert(Loc.Get("Entregado"), Loc.Get("EncargoMarcadoEntregado"), "OK");
                     }
                 }
             }
             catch (Exception ex)
             {
-                await MostrarError("Error al entregar", ex.Message);
+                await MostrarError(Loc.Get("ErrorAlEntregar"), ex.Message);
             }
             finally
             {
@@ -153,7 +154,7 @@ namespace Mercader
             }
             catch (Exception ex)
             {
-                await MostrarError("Error de edición", ex.Message);
+                await MostrarError(Loc.Get("ErrorEdicion"), ex.Message);
             }
         }
 
@@ -168,7 +169,7 @@ namespace Mercader
             }
             catch (Exception ex)
             {
-                await MostrarError("Error de eliminación", ex.Message);
+                await MostrarError(Loc.Get("ErrorEliminacion"), ex.Message);
             }
         }
 
@@ -186,19 +187,19 @@ namespace Mercader
                 {
                     if (string.IsNullOrWhiteSpace(encargo.Contacto))
                     {
-                        await DisplayAlert("⚠️ Sin número",
-                            "No hay número de contacto registrado para este encargo.", "OK");
+                        await DisplayAlert(Loc.Get("SinNumero"),
+                            Loc.Get("SinNumeroContacto"), "OK");
                         return;
                     }
 
-                    string nombreCliente = encargo.Nombre ?? "Cliente desconocido";
+                    string nombreCliente = encargo.Nombre ?? Loc.Get("ClienteDesconocido");
                     await MostrarOpcionesContacto(encargo.Contacto, nombreCliente);
                 }
             }
             catch (Exception ex)
             {
-                await MostrarError("Error de contacto",
-                    $"No se pudo abrir la aplicación de contacto: {ex.Message}");
+                await MostrarError(Loc.Get("ErrorContacto"),
+                    Loc.Format("NoSePudoAbrirAppContacto", ex.Message));
             }
         }
 
@@ -209,30 +210,24 @@ namespace Mercader
                 string telefonoLimpio = LimpiarNumeroTelefono(telefono);
 
                 string accion = await DisplayActionSheet(
-                    $"📞 Contactar a {nombreCliente}",
-                    "Cancelar",
+                    Loc.Format("ContactarCliente", nombreCliente),
+                    Loc.Get("Cancelar"),
                     null,
-                    "📞 Llamar",
-                    "💬 Enviar SMS",
-                    "📋 Copiar número"
+                    Loc.Get("Llamar"),
+                    Loc.Get("EnviarSMS"),
+                    Loc.Get("CopiarNumero")
                 );
 
-                switch (accion)
-                {
-                    case "📞 Llamar":
-                        await RealizarLlamada(telefonoLimpio);
-                        break;
-                    case "💬 Enviar SMS":
-                        await EnviarSMS(telefonoLimpio);
-                        break;
-                    case "📋 Copiar número":
-                        await CopiarNumero(telefonoLimpio);
-                        break;
-                }
+                if (accion == Loc.Get("Llamar"))
+                    await RealizarLlamada(telefonoLimpio);
+                else if (accion == Loc.Get("EnviarSMS"))
+                    await EnviarSMS(telefonoLimpio);
+                else if (accion == Loc.Get("CopiarNumero"))
+                    await CopiarNumero(telefonoLimpio);
             }
             catch (Exception ex)
             {
-                await MostrarError("Error de contacto", ex.Message);
+                await MostrarError(Loc.Get("ErrorContacto"), ex.Message);
             }
         }
 
@@ -244,11 +239,12 @@ namespace Mercader
             }
             catch (ArgumentNullException)
             {
-                await DisplayAlert("❌ Error", "Número de teléfono inválido", "OK");
+                await DisplayAlert(Loc.Get("Error"), Loc.Get("NumeroTelefonoInvalido"), "OK");
             }
             catch (Exception ex)
             {
-                await MostrarError("Error al llamar", $"No se pudo realizar la llamada: {ex.Message}");
+                await MostrarError(Loc.Get("ErrorAlLlamar"),
+                    Loc.Format("NoSePudoRealizarLlamada", ex.Message));
             }
         }
 
@@ -256,17 +252,17 @@ namespace Mercader
         {
             try
             {
-                var message = new SmsMessage("Hola! Te contacto por tu encargo.", telefono);
+                var message = new SmsMessage(Loc.Get("MensajeSmsEncargo"), telefono);
                 await Sms.ComposeAsync(message);
             }
             catch (FeatureNotSupportedException)
             {
-                await DisplayAlert("❌ No compatible",
-                    "El envío de SMS no está disponible en este dispositivo", "OK");
+                await DisplayAlert(Loc.Get("NoCompatible"),
+                    Loc.Get("SmsNoDisponible"), "OK");
             }
             catch (Exception ex)
             {
-                await MostrarError("Error al enviar SMS", ex.Message);
+                await MostrarError(Loc.Get("ErrorAlEnviarSms"), ex.Message);
             }
         }
 
@@ -275,12 +271,12 @@ namespace Mercader
             try
             {
                 await Clipboard.SetTextAsync(telefono);
-                await DisplayAlert("✅ Copiado",
-                    $"El número {telefono} se copió al portapapeles", "OK");
+                await DisplayAlert(Loc.Get("Copiado"),
+                    Loc.Format("NumeroCopiado", telefono), "OK");
             }
             catch (Exception ex)
             {
-                await MostrarError("Error al copiar", ex.Message);
+                await MostrarError(Loc.Get("ErrorAlCopiar"), ex.Message);
             }
         }
 
@@ -317,8 +313,8 @@ namespace Mercader
             }
             catch (Exception ex)
             {
-                await MostrarError("Error de navegación",
-                    $"No se pudo abrir los detalles del encargo: {ex.Message}");
+                await MostrarError(Loc.Get("ErrorNavegacion"),
+                    Loc.Format("NoSePudoAbrirDetallesEncargo", ex.Message));
             }
         }
 
@@ -331,8 +327,8 @@ namespace Mercader
             }
             catch (Exception ex)
             {
-                await MostrarError("Error al editar",
-                    $"No se pudo abrir la página de edición: {ex.Message}");
+                await MostrarError(Loc.Get("ErrorAlEditar"),
+                    Loc.Format("NoSePudoAbrirPaginaEdicion", ex.Message));
             }
         }
 
@@ -340,28 +336,30 @@ namespace Mercader
         {
             try
             {
-                string mensaje = $"¿Estás seguro de eliminar este encargo?\n\n" +
-                               $"👤 Cliente: {encargo.Nombre}\n" +
-                               $"📞 Teléfono: {encargo.Contacto}\n" +
-                               $"💰 Precio: ${encargo.Precio:F2}\n" +
-                               $"📦 Cantidad: {encargo.Cantidad}\n" +
-                               $"📅 Pedido: {encargo.Fecha:dd/MM/yyyy}\n" +
-                               $"🚚 Entrega: {encargo.FechaEntrega:dd/MM/yyyy}\n\n" +
-                               "Esta accion no se puede deshacer.";
+                string mensaje = Loc.Format("ConfirmarEliminarEncargo",
+                                   encargo.Nombre,
+                                   encargo.Contacto,
+                                   Loc.FormatCurrency(encargo.Precio),
+                                   encargo.Cantidad,
+                                   Loc.FormatDate(encargo.Fecha),
+                                   Loc.FormatDate(encargo.FechaEntrega)) +
+                               $"\n\n{Loc.Get("AccionNoSePuedeDeshacer")}";
 
-                bool confirmar = await DisplayAlert("Eliminar Encargo", mensaje, "Si, eliminar", "Cancelar");
+                bool confirmar = await DisplayAlert(Loc.Get("EliminarEncargo"), mensaje,
+                    Loc.Get("SiEliminar"), Loc.Get("Cancelar"));
 
                 if (confirmar)
                 {
                     _isLoading = true;
                     await _viewModel.EliminarEncargoCommand.ExecuteAsync(encargo);
-                    await DisplayAlert("Exito", "El encargo se elimino correctamente", "OK");
+                    await DisplayAlert(Loc.Get("Exito"), Loc.Get("EncargoEliminado"), "OK");
                     await CargarEncargos();
                 }
             }
             catch (Exception ex)
             {
-                await MostrarError("Error al eliminar", $"No se pudo eliminar el encargo: {ex.Message}");
+                await MostrarError(Loc.Get("ErrorAlEliminar"),
+                    Loc.Format("NoSePudoEliminarEncargo", ex.Message));
             }
             finally
             {
@@ -377,8 +375,8 @@ namespace Mercader
             }
             catch (Exception ex)
             {
-                await MostrarError("Error al mostrar detalles",
-                    $"No se pudo abrir la página de detalles: {ex.Message}");
+                await MostrarError(Loc.Get("ErrorAlMostrarDetalles"),
+                    Loc.Format("NoSePudoAbrirDetallesPagina", ex.Message));
             }
         }
 
@@ -386,28 +384,28 @@ namespace Mercader
         {
             try
             {
-                string mensaje = $"¿Confirmar la venta de este encargo?\n\n" +
-                               $"👤 Cliente: {encargo.Nombre}\n" +
-                               $"📋 Descripción: {encargo.Descripcion}\n" +
-                               $"💰 Precio: ${encargo.Precio:F2}\n" +
-                               $"📦 Cantidad: {encargo.Cantidad}\n\n" +
-                               $"El encargo se eliminará y se registrará como venta.";
+                string mensaje = Loc.Format("ConfirmarConcretarVenta",
+                                   encargo.Nombre,
+                                   encargo.Descripcion,
+                                   Loc.FormatCurrency(encargo.Precio),
+                                   encargo.Cantidad);
 
-                bool confirmar = await DisplayAlert("✅ Concretar Venta", mensaje, "Sí, concretar", "Cancelar");
+                bool confirmar = await DisplayAlert(Loc.Get("ConcretarVenta"), mensaje,
+                    Loc.Get("SiConcretar"), Loc.Get("Cancelar"));
 
                 if (confirmar)
                 {
                     _isLoading = true;
                     await _viewModel.ConvertirEnVentaCommand.ExecuteAsync(encargo);
-                    await DisplayAlert("✅ Venta Concretada",
-                        "La venta se registró correctamente y el encargo fue eliminado", "OK");
+                    await DisplayAlert(Loc.Get("VentaConcretada"),
+                        Loc.Get("VentaRegistrada"), "OK");
                     await CargarEncargos();
                 }
             }
             catch (Exception ex)
             {
-                await MostrarError("Error al concretar venta",
-                    $"No se pudo concretar la venta: {ex.Message}");
+                await MostrarError(Loc.Get("ErrorAlConcretarVenta"),
+                    Loc.Format("NoSePudoConcretarVenta", ex.Message));
             }
             finally
             {

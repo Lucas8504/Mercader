@@ -46,12 +46,12 @@ namespace Mercader.Services.Calculators
         {
             var hoy = DateTime.Now;
 
-            return periodo switch
+            return Periodos.Normalizar(periodo) switch
             {
-                "Días" => lista.Where(x => x.Fecha >= hoy.AddDays(-366)),
-                "Semanas" => lista.Where(x => x.Fecha >= hoy.AddDays(-910)),
-                "Meses" => lista.Where(x => x.Fecha >= hoy.AddMonths(-12)),
-                "Años" => lista.Where(x => x.Fecha >= hoy.AddYears(-10)),
+                Periodos.Dias => lista.Where(x => x.Fecha >= hoy.AddDays(-366)),
+                Periodos.Semanas => lista.Where(x => x.Fecha >= hoy.AddDays(-910)),
+                Periodos.Meses => lista.Where(x => x.Fecha >= hoy.AddMonths(-12)),
+                Periodos.Anios => lista.Where(x => x.Fecha >= hoy.AddYears(-10)),
                 _ => lista.Where(x => x.Fecha >= hoy.AddMonths(-12))
             };
         }
@@ -81,12 +81,12 @@ namespace Mercader.Services.Calculators
         {
             var datos = FiltrarPorPeriodo(lista, periodo).ToList();
 
-            return periodo switch
+            return Periodos.Normalizar(periodo) switch
             {
-                "Días" => GenerarDias(datos, getFecha, getMonto),
-                "Semanas" => GenerarSemanas(datos, getFecha, getMonto),
-                "Meses" => GenerarMeses(datos, getFecha, getMonto),
-                "Años" => GenerarAnios(datos, getFecha, getMonto),
+                Periodos.Dias => GenerarDias(datos, getFecha, getMonto),
+                Periodos.Semanas => GenerarSemanas(datos, getFecha, getMonto),
+                Periodos.Meses => GenerarMeses(datos, getFecha, getMonto),
+                Periodos.Anios => GenerarAnios(datos, getFecha, getMonto),
                 _ => GenerarMeses(datos, getFecha, getMonto)
             };
         }

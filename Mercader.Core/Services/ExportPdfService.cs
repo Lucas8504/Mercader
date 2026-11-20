@@ -4,6 +4,7 @@ using PdfSharp.Fonts;
 using Mercader.Domain.Entities;
 using Mercader.Models;
 using Mercader.Services.Interfaces;
+using Mercader.Core.Services.Localization;
 
 namespace Mercader.Services;
 
@@ -73,7 +74,7 @@ public sealed class ExportPdfService : IExportPdfService
         XFont cellFont     = new(fontFamily, 10, XFontStyleEx.Regular);
         XFont smallFont    = new(fontFamily, 8,  XFontStyleEx.Regular);
 
-        string dateText = DateTime.Now.ToString("dd/MM/yyyy HH:mm");
+        string dateText = DateTime.Now.ToString("g", Loc.Culture);
 
         // ── Page 1 ──
         int pageNum = 1;
@@ -85,19 +86,19 @@ public sealed class ExportPdfService : IExportPdfService
 
         // ── HEADER BAND ──
         gfx.DrawRectangle(new XSolidBrush(BluePrimary), 0, 0, pageWidth, 72);
-        gfx.DrawString("Balance Financiero", titleFont, XBrushes.White,
+        gfx.DrawString(Loc.Get("BalanceFinanciero"), titleFont, XBrushes.White,
             new XPoint(Margin, 16));
 
         string periodText = string.IsNullOrWhiteSpace(data.Periodo)
-            ? $"Generado: {dateText}"
-            : $"Periodo: {data.Periodo}  |  Generado: {dateText}";
+            ? Loc.Format("Generado", dateText)
+            : $"{Loc.Format("Periodo", data.Periodo)}  |  {Loc.Format("Generado", dateText)}";
         gfx.DrawString(periodText, subtitleFont, PdfBrushesWhite(),
             new XPoint(Margin, 46));
 
         y = 92;
 
         // ── RESUMEN FINANCIERO ──
-        y = DrawSectionHeader(gfx, "Resumen Financiero", sectionFont,
+        y = DrawSectionHeader(gfx, Loc.Get("ResumenFinanciero"), sectionFont,
             Margin, usableWidth, y);
 
         y = DrawFinancialSummaryTable(gfx, data, headerFont, cellFont,
@@ -165,7 +166,7 @@ public sealed class ExportPdfService : IExportPdfService
         var currentMonthStart = new DateTime(DateTime.Now.Year, DateTime.Now.Month, 1);
         var prevMonthStart = currentMonthStart.AddMonths(-1);
 
-        string[] detHeaders = ["Fecha", "Descripción", "Cant.", "Total"];
+        string[] detHeaders = [Loc.Get("EncabezadoFecha"), Loc.Get("EncabezadoDescripcion"), Loc.Get("CantidadAbrev"), Loc.Get("EncabezadoTotal")];
         float[] detWidths  = [0.12f, 0.44f, 0.13f, 0.31f];
 
         // — Ventas —
@@ -187,7 +188,7 @@ public sealed class ExportPdfService : IExportPdfService
             usableWidth = pageWidth - Margin * 2;
             y = Margin;
         }
-        y = DrawSectionHeader(gfx, "Detalle de Ventas", sectionFont,
+        y = DrawSectionHeader(gfx, Loc.Get("DetalleVentas"), sectionFont,
             Margin, usableWidth, y);
 
         if (vtasCurrent.Count > 0)
@@ -242,7 +243,7 @@ public sealed class ExportPdfService : IExportPdfService
             usableWidth = pageWidth - Margin * 2;
             y = Margin;
         }
-        y = DrawSectionHeader(gfx, "Detalle de Gastos", sectionFont,
+        y = DrawSectionHeader(gfx, Loc.Get("DetalleGastos"), sectionFont,
             Margin, usableWidth, y);
 
         if (gtosCurrent.Count > 0)
@@ -279,7 +280,7 @@ public sealed class ExportPdfService : IExportPdfService
         }
 
         // — Encargos —
-        string[] encHeaders = ["Entrega", "Cliente", "Descripción", "Total"];
+        string[] encHeaders = [Loc.Get("EncabezadoEntrega"), Loc.Get("EncabezadoCliente"), Loc.Get("EncabezadoDescripcion"), Loc.Get("EncabezadoTotal")];
         float[] encWidths   = [0.12f, 0.30f, 0.27f, 0.31f];
 
         var encCurrent = data.Encargos
@@ -300,7 +301,7 @@ public sealed class ExportPdfService : IExportPdfService
             usableWidth = pageWidth - Margin * 2;
             y = Margin;
         }
-        y = DrawSectionHeader(gfx, "Detalle de Encargos", sectionFont,
+        y = DrawSectionHeader(gfx, Loc.Get("DetalleEncargos"), sectionFont,
             Margin, usableWidth, y);
 
         if (encCurrent.Count > 0)
@@ -362,7 +363,7 @@ public sealed class ExportPdfService : IExportPdfService
         gfx.DrawLine(pen, 0, fy + 5, pw, fy + 5);
 
         gfx.DrawString(
-            $"Página {pageNum}",
+            Loc.Format("Pagina", pageNum),
             font, brush,
             new XPoint(0, fy + 12));
 
@@ -402,12 +403,12 @@ public sealed class ExportPdfService : IExportPdfService
 
         string[][] rows =
         [
-            ["Total Ventas",   $"$ {data.TotalVentas:N2}"],
-            ["Total Gastos",   $"$ {data.TotalGastos:N2}"],
-            ["Total Encargos", $"$ {data.TotalEncargos:N2}"],
+            [Loc.Get("TotalVentas"), Loc.FormatCurrency(data.TotalVentas)],
+            [Loc.Get("TotalGastos"), Loc.FormatCurrency(data.TotalGastos)],
+            [Loc.Get("TotalEncargos"), Loc.FormatCurrency(data.TotalEncargos)],
         ];
 
-        DrawTableRow(gfx, ["Métrica", "Valor"], margin, y,
+        DrawTableRow(gfx, [Loc.Get("EncabezadoMetrica"), Loc.Get("EncabezadoValor")], margin, y,
             [col0Width, col1Width], headerFont,
             true, BluePrimary, XBrushes.White,
             padX, padY, [XStringAlignment.Near, XStringAlignment.Far]);
@@ -422,7 +423,7 @@ public sealed class ExportPdfService : IExportPdfService
             y += rowHeight;
         }
 
-        DrawTableRow(gfx, ["Ganancias", $"$ {data.Ganancias:N2}"], margin, y,
+        DrawTableRow(gfx, [Loc.Get("Ganancias"), Loc.FormatCurrency(data.Ganancias)], margin, y,
             [col0Width, col1Width], headerFont,
             false, XColors.White, null,
             padX, padY,
@@ -430,7 +431,7 @@ public sealed class ExportPdfService : IExportPdfService
             textBrushOverride: [null, new XSolidBrush(GreenProfit)]);
         y += rowHeight;
 
-        DrawTableRow(gfx, ["Margen", $"{data.Margen:N2} %"], margin, y,
+        DrawTableRow(gfx, [Loc.Get("Margen"), $"{data.Margen:N2} %"], margin, y,
             [col0Width, col1Width], cellFont,
             false, XColors.White, null,
             padX, padY, [XStringAlignment.Near, XStringAlignment.Far]);
@@ -481,7 +482,7 @@ public sealed class ExportPdfService : IExportPdfService
         var fmt = new XStringFormat();
         fmt.Alignment = XStringAlignment.Near;
         fmt.LineAlignment = XLineAlignment.Center;
-        gfx.DrawString("No se registró actividad en este mes a la fecha.",
+        gfx.DrawString(Loc.Get("SinActividadMes"),
             font, new XSolidBrush(TextMuted),
             new XRect(margin, y, usableWidth, 20), fmt);
         return y + 22;
@@ -563,10 +564,10 @@ public sealed class ExportPdfService : IExportPdfService
         }
 
         string[] totalRow = new string[colCount];
-        totalRow[0] = "TOTAL";
+        totalRow[0] = Loc.Get("EncabezadoTotal");
         for (int i = 1; i < colCount - 1; i++)
             totalRow[i] = "";
-        totalRow[colCount - 1] = $"$ {total:N2}";
+        totalRow[colCount - 1] = Loc.FormatCurrency(total);
 
         XStringAlignment[] totalAlignments = new XStringAlignment[colCount];
         totalAlignments[0] = XStringAlignment.Near;
@@ -602,13 +603,13 @@ public sealed class ExportPdfService : IExportPdfService
             {
                 foreach (var a in arts.OrderBy(a => a.Orden))
                 {
-                    rows.Add(new[] { v.Fecha.ToString("dd/MM"), a.Descripcion ?? "", a.Cantidad.ToString("N0"), $"$ {a.Total:N2}" });
+                    rows.Add(new[] { Loc.FormatDate(v.Fecha), a.Descripcion ?? "", a.Cantidad.ToString("N0"), Loc.FormatCurrency(a.Total) });
                     total += a.Total;
                 }
             }
             else
             {
-                rows.Add(new[] { v.Fecha.ToString("dd/MM"), v.Descripcion ?? "", v.Cantidad.ToString("N0"), $"$ {v.Total:N2}" });
+                rows.Add(new[] { Loc.FormatDate(v.Fecha), v.Descripcion ?? "", v.Cantidad.ToString("N0"), Loc.FormatCurrency(v.Total) });
                 total += v.Total;
             }
         }
@@ -626,13 +627,13 @@ public sealed class ExportPdfService : IExportPdfService
             {
                 foreach (var a in arts.OrderBy(a => a.Orden))
                 {
-                    rows.Add(new[] { g.Fecha.ToString("dd/MM"), a.Descripcion ?? "", a.Cantidad.ToString("N0"), $"$ {a.Total:N2}" });
+                    rows.Add(new[] { Loc.FormatDate(g.Fecha), a.Descripcion ?? "", a.Cantidad.ToString("N0"), Loc.FormatCurrency(a.Total) });
                     total += a.Total;
                 }
             }
             else
             {
-                rows.Add(new[] { g.Fecha.ToString("dd/MM"), g.Descripcion ?? "", g.Cantidad.ToString("N0"), $"$ {g.Total:N2}" });
+                rows.Add(new[] { Loc.FormatDate(g.Fecha), g.Descripcion ?? "", g.Cantidad.ToString("N0"), Loc.FormatCurrency(g.Total) });
                 total += g.Total;
             }
         }
@@ -650,13 +651,13 @@ public sealed class ExportPdfService : IExportPdfService
             {
                 foreach (var a in arts.OrderBy(a => a.Orden))
                 {
-                    rows.Add(new[] { e.FechaEntrega.ToString("dd/MM"), e.Nombre ?? "", a.Descripcion ?? "", $"$ {a.Total:N2}" });
+                    rows.Add(new[] { Loc.FormatDate(e.FechaEntrega), e.Nombre ?? "", a.Descripcion ?? "", Loc.FormatCurrency(a.Total) });
                     total += a.Total;
                 }
             }
             else
             {
-                rows.Add(new[] { e.FechaEntrega.ToString("dd/MM"), e.Nombre ?? "", e.Descripcion ?? "", $"$ {e.Total:N2}" });
+                rows.Add(new[] { Loc.FormatDate(e.FechaEntrega), e.Nombre ?? "", e.Descripcion ?? "", Loc.FormatCurrency(e.Total) });
                 total += e.Total;
             }
         }
