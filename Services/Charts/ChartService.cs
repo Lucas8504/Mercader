@@ -1,8 +1,10 @@
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using Microcharts;
 using SkiaSharp;
+using Mercader.Core.Services.Localization;
 using Mercader.Services.Interfaces;
 
 namespace Mercader.Services.Charts
@@ -191,15 +193,25 @@ namespace Mercader.Services.Charts
     }
 
         private string FormatearValorEntero(decimal valor)
-    {
-        if (Math.Abs(valor) >= 1000000)
-            return $"${Math.Round(valor / 1000000, 1)}M";
-        else if (Math.Abs(valor) >= 1000)
-            return $"${Math.Round(valor / 1000, 1)}K";
-        else if (valor == 0)
-            return "$0";
-        else
-            return $"${Math.Round(valor)}";
-    }
+        {
+            var culture = Loc.Culture;
+            var simbolo = culture.NumberFormat.CurrencySymbol;
+
+            string numero = Math.Abs(valor) switch
+            {
+                >= 1000000 => Math.Round(valor / 1000000, 1).ToString("0.0", culture) + "M",
+                >= 1000 => Math.Round(valor / 1000, 1).ToString("0.0", culture) + "K",
+                _ => Math.Round(valor).ToString("N0", culture)
+            };
+
+            // El símbolo va antes o después del número según la cultura activa.
+            return culture.NumberFormat.CurrencyPositivePattern switch
+            {
+                0 => $"{simbolo}{numero}",
+                1 => $"{numero}{simbolo}",
+                2 => $"{simbolo} {numero}",
+                _ => $"{numero} {simbolo}"
+            };
+        }
 }
 }

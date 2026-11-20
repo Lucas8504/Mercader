@@ -49,6 +49,28 @@ namespace Mercader
 
         private static byte[] Rgb(byte r, byte g, byte b) => new[] { r, g, b };
 
+        private static string Traducir(string clave, string fallback)
+        {
+            var valor = Loc.Get(clave);
+            return string.Equals(valor, clave, StringComparison.Ordinal) ? fallback : valor;
+        }
+
+        private static string TraducirFormato(string clave, string fallback, params object[] args)
+        {
+            var plantilla = Traducir(clave, fallback);
+            try
+            {
+                return string.Format(Loc.Culture, plantilla, args);
+            }
+            catch (FormatException)
+            {
+                return plantilla;
+            }
+        }
+
+        private static string FormatoMoneda() =>
+            $"{Loc.Culture.NumberFormat.CurrencySymbol}#,##0.00";
+
         private static XSSFColor Color(byte r, byte g, byte b)
         {
 #pragma warning disable CS0618 // XSSFColor() deprecated pero funcional hasta POI 4.2; no tenemos IIndexedColorMap
@@ -111,7 +133,7 @@ namespace Mercader
             s.SetFont(f);
             ((XSSFCellStyle)s).SetFillForegroundColor(Color(255, 243, 205));
             s.FillPattern = FillPattern.SolidForeground;
-            s.DataFormat = wb.CreateDataFormat().GetFormat("$#,##0");
+            s.DataFormat = wb.CreateDataFormat().GetFormat(FormatoMoneda());
             s.BorderTop = BorderStyle.Thin; s.BorderBottom = BorderStyle.Thin;
             s.BorderLeft = BorderStyle.Thin; s.BorderRight = BorderStyle.Thin;
             return s;
@@ -142,7 +164,7 @@ namespace Mercader
         private static ICellStyle CrearEstiloMoneda(XSSFWorkbook wb)
         {
             var s = CrearEstiloDato(wb);
-            s.DataFormat = wb.CreateDataFormat().GetFormat("$#,##0");
+            s.DataFormat = wb.CreateDataFormat().GetFormat(FormatoMoneda());
             return s;
         }
 
@@ -178,7 +200,7 @@ namespace Mercader
 
         private static void CrearHojaResumen(XSSFWorkbook workbook, BalanceExportDto data)
         {
-            var ws = workbook.CreateSheet("Resumen Ejecutivo");
+            var ws = workbook.CreateSheet(Traducir("HojaResumenEjecutivo", "Resumen Ejecutivo"));
 
             ws.DefaultColumnWidth = 15;
             ws.SetColumnWidth(0, 28 * 256);
@@ -195,7 +217,7 @@ namespace Mercader
             var titleRow = ws.CreateRow(0);
             titleRow.HeightInPoints = 30;
             var titleCell = titleRow.CreateCell(0);
-            titleCell.SetCellValue("REPORTE FINANCIERO - BALANCE GENERAL");
+            titleCell.SetCellValue(Traducir("ReporteFinanciero", "REPORTE FINANCIERO - BALANCE GENERAL"));
             titleCell.CellStyle = stHeader;
             for (int c = 1; c < 4; c++)
                 titleRow.CreateCell(c).CellStyle = stHeader;
@@ -204,7 +226,10 @@ namespace Mercader
             // Fecha de generación
             var dateRow = ws.CreateRow(1);
             var dateCell = dateRow.CreateCell(0);
-            dateCell.SetCellValue($"Generado el: {DateTime.Now:dd/MM/yyyy HH:mm}");
+            dateCell.SetCellValue(TraducirFormato(
+                "GeneradoEl",
+                "Generado el: {0}",
+                DateTime.Now.ToString("g", Loc.Culture)));
             var dateStyle = workbook.CreateCellStyle();
             var dateFont = workbook.CreateFont();
             dateFont.FontName = "Calibri"; dateFont.FontHeightInPoints = 10; dateFont.IsItalic = true;
@@ -216,7 +241,13 @@ namespace Mercader
             int filaActual = 3;
 
             var headerRow = ws.CreateRow(filaActual);
-            string[] metricHeaders = { "METRICA CLAVE", "VALOR", "PARTICIPACION", "ESTADO" };
+            string[] metricHeaders =
+            {
+                Traducir("EncabezadoMetricaClave", "METRICA CLAVE"),
+                Traducir("EncabezadoValor", "VALOR"),
+                Traducir("EncabezadoParticipacion", "PARTICIPACION"),
+                Traducir("EncabezadoEstado", "ESTADO")
+            };
             for (int c = 0; c < 4; c++)
             {
                 var cell = headerRow.CreateCell(c);
@@ -233,10 +264,17 @@ namespace Mercader
 
             var datosMetricas = new (string Label, decimal Valor, string Participacion, string Estado)[]
             {
-                ("Ganancias Netas", ganancias, "", ganancias >= 0 ? "POSITIVO" : "NEGATIVO"),
-                ("Ventas Totales", ventas, $"{(totalOperaciones > 0 ? ventas / totalOperaciones * 100 : 0):F1}%", "INGRESOS"),
-                ("Gastos Totales", gastos, $"{(totalOperaciones > 0 ? Math.Abs(gastos) / totalOperaciones * 100 : 0):F1}%", "EGRESOS"),
-                ("Encargos Pendientes", encargos, $"{(totalOperaciones > 0 ? Math.Abs(encargos) / totalOperaciones * 100 : 0):F1}%", "PENDIENTE")
+                (Traducir("GananciasNetas", "Ganancias Netas"), ganancias, "",
+                    Traducir(ganancias >= 0 ? "Positivo" : "Negativo", ganancias >= 0 ? "POSITIVO" : "NEGATIVO")),
+                (Traducir("VentasTotales", "Ventas Totales"), ventas,
+                    $"{(totalOperaciones > 0 ? ventas / totalOperaciones * 100 : 0):F1}%",
+                    Traducir("Ingresos", "INGRESOS")),
+                (Traducir("GastosTotales", "Gastos Totales"), gastos,
+                    $"{(totalOperaciones > 0 ? Math.Abs(gastos) / totalOperaciones * 100 : 0):F1}%",
+                    Traducir("Egresos", "EGRESOS")),
+                (Traducir("EncargosPendientes", "Encargos Pendientes"), encargos,
+                    $"{(totalOperaciones > 0 ? Math.Abs(encargos) / totalOperaciones * 100 : 0):F1}%",
+                    Traducir("Pendiente", "PENDIENTE"))
             };
 
             var stGananciaPos = CrearEstiloGananciaPositiva(workbook);
@@ -293,13 +331,13 @@ namespace Mercader
             var totalGastosReal = data.Gastos.Sum(g => g.Monto * g.Cantidad);
             var totalEncargosReal = data.Encargos.Sum(e => e.Precio * e.Cantidad);
 
-            EscribirCelda(ws, filaGrafico, 5, "Concepto", stHeader);
-            EscribirCelda(ws, filaGrafico, 6, "Monto", stHeader);
-            EscribirCelda(ws, filaGrafico + 1, 5, "Ventas", stDato);
+            EscribirCelda(ws, filaGrafico, 5, Traducir("Concepto", "Concepto"), stHeader);
+            EscribirCelda(ws, filaGrafico, 6, Traducir("Monto", "Monto"), stHeader);
+            EscribirCelda(ws, filaGrafico + 1, 5, Traducir("Ventas", "Ventas"), stDato);
             EscribirCelda(ws, filaGrafico + 1, 6, (double)totalVentasReal, stMoneda);
-            EscribirCelda(ws, filaGrafico + 2, 5, "Gastos", stDato);
+            EscribirCelda(ws, filaGrafico + 2, 5, Traducir("Gastos", "Gastos"), stDato);
             EscribirCelda(ws, filaGrafico + 2, 6, (double)Math.Abs(totalGastosReal), stMoneda);
-            EscribirCelda(ws, filaGrafico + 3, 5, "Encargos", stDato);
+            EscribirCelda(ws, filaGrafico + 3, 5, Traducir("Encargos", "Encargos"), stDato);
             EscribirCelda(ws, filaGrafico + 3, 6, (double)Math.Abs(totalEncargosReal), stMoneda);
 
             // Gráfico PIE nativo (sin ejes — pie chart no los necesita)
@@ -314,7 +352,7 @@ namespace Mercader
             var pieData = chart.CreateData<string, double>(ChartTypes.PIE, null, null);
             pieData.SetVaryColors(true);
             var pieSeries = pieData.AddSeries(catDS, valDS);
-            pieSeries.SetTitle("Distribucion del Balance", null);
+            pieSeries.SetTitle(Traducir("DistribucionBalance", "Distribución del Balance"), null);
             chart.Plot(pieData);
         }
 
@@ -334,7 +372,7 @@ namespace Mercader
             // Título de sección
             var titleRow = ws.CreateRow(filaInicio);
             var titleCell = titleRow.CreateCell(0);
-            titleCell.SetCellValue("ANALISIS POR PERIODO (ULTIMOS 6 MESES)");
+            titleCell.SetCellValue(Traducir("AnalisisPeriodo", "ANALISIS POR PERIODO (ULTIMOS 6 MESES)"));
             titleCell.CellStyle = stSeccion;
             for (int c = 1; c < 4; c++)
                 titleRow.CreateCell(c).CellStyle = stSeccion;
@@ -346,7 +384,13 @@ namespace Mercader
 
             // Encabezados
             var headerRow = ws.CreateRow(filaInicio);
-            string[] headers = { "MES", "VENTAS", "GASTOS", "GANANCIA" };
+            string[] headers =
+            {
+                Traducir("EncabezadoMes", "MES"),
+                Traducir("Ventas", "VENTAS"),
+                Traducir("Gastos", "GASTOS"),
+                Traducir("Ganancias", "GANANCIA")
+            };
             for (int c = 0; c < 4; c++)
             {
                 var cell = headerRow.CreateCell(c);
@@ -406,7 +450,7 @@ namespace Mercader
             var totalGanancias = datosMensuales.Sum(d => d.Ganancia);
 
             var totalRow = ws.CreateRow(filaInicio);
-            EscribirCelda(totalRow, 0, "TOTALES", stTotal);
+            EscribirCelda(totalRow, 0, Traducir("Totales", "TOTALES"), stTotal);
             EscribirCelda(totalRow, 1, (double)totalVentas, stTotal);
             EscribirCelda(totalRow, 2, (double)totalGastos, stTotal);
             EscribirCelda(totalRow, 3, (double)totalGanancias, stTotal);
@@ -419,10 +463,19 @@ namespace Mercader
         private static void CrearHojaVentas(XSSFWorkbook workbook, List<Ventas> ventas,
             IReadOnlyDictionary<int, List<ArticuloVenta>>? articulos = null)
         {
-            var ws = workbook.CreateSheet("Ventas");
+            var ws = workbook.CreateSheet(Traducir("Ventas", "Ventas"));
             var rows = ExpandVentasParaExcel(ventas, articulos);
-            CrearTablaDetallada(workbook, ws, "REGISTRO DE VENTAS (desglose por artículo)",
-                new[] { "FECHA", "DESCRIPCION", "CANTIDAD", "PRECIO UNIT.", "TOTAL" },
+            CrearTablaDetallada(workbook, ws,
+                Traducir("RegistroVentas", "REGISTRO DE VENTAS (desglose por artículo)"),
+                new[]
+                {
+                    Traducir("EncabezadoFecha", "FECHA"),
+                    Traducir("EncabezadoDescripcion", "DESCRIPCION"),
+                    Traducir("Cantidad", "CANTIDAD"),
+                    Traducir("EncabezadoPrecioUnitario", "PRECIO UNIT."),
+                    Traducir("EncabezadoTotal", "TOTAL")
+                },
+                [false, false, false, true, true],
                 rows.Count,
                 (i) => rows[i],
                 CrearEstiloHeaderVerde(workbook));
@@ -431,10 +484,19 @@ namespace Mercader
         private static void CrearHojaGastos(XSSFWorkbook workbook, List<Gasto> gastos,
             IReadOnlyDictionary<int, List<ArticuloGasto>>? articulos = null)
         {
-            var ws = workbook.CreateSheet("Gastos");
+            var ws = workbook.CreateSheet(Traducir("Gastos", "Gastos"));
             var rows = ExpandGastosParaExcel(gastos, articulos);
-            CrearTablaDetallada(workbook, ws, "REGISTRO DE GASTOS (desglose por artículo)",
-                new[] { "FECHA", "DESCRIPCION", "CANTIDAD", "MONTO UNIT.", "TOTAL" },
+            CrearTablaDetallada(workbook, ws,
+                Traducir("RegistroGastos", "REGISTRO DE GASTOS (desglose por artículo)"),
+                new[]
+                {
+                    Traducir("EncabezadoFecha", "FECHA"),
+                    Traducir("EncabezadoDescripcion", "DESCRIPCION"),
+                    Traducir("Cantidad", "CANTIDAD"),
+                    Traducir("EncabezadoMontoUnitario", "MONTO UNIT."),
+                    Traducir("EncabezadoTotal", "TOTAL")
+                },
+                [false, false, false, true, true],
                 rows.Count,
                 (i) => rows[i],
                 CrearEstiloHeaderGris(workbook));
@@ -443,10 +505,21 @@ namespace Mercader
         private static void CrearHojaEncargos(XSSFWorkbook workbook, List<Encargo> encargos,
             IReadOnlyDictionary<int, List<ArticuloEncargo>>? articulos = null)
         {
-            var ws = workbook.CreateSheet("Encargos");
+            var ws = workbook.CreateSheet(Traducir("Encargos", "Encargos"));
             var rows = ExpandEncargosParaExcel(encargos, articulos);
-            CrearTablaDetallada(workbook, ws, "REGISTRO DE ENCARGOS (desglose por artículo)",
-                new[] { "FECHA", "NOMBRE", "DESCRIPCION", "CANTIDAD", "PRECIO UNIT.", "TOTAL", "FECHA ENTREGA" },
+            CrearTablaDetallada(workbook, ws,
+                Traducir("RegistroEncargos", "REGISTRO DE ENCARGOS (desglose por artículo)"),
+                new[]
+                {
+                    Traducir("EncabezadoFecha", "FECHA"),
+                    Traducir("EncabezadoNombre", "NOMBRE"),
+                    Traducir("EncabezadoDescripcion", "DESCRIPCION"),
+                    Traducir("Cantidad", "CANTIDAD"),
+                    Traducir("EncabezadoPrecioUnitario", "PRECIO UNIT."),
+                    Traducir("EncabezadoTotal", "TOTAL"),
+                    Traducir("EncabezadoFechaEntrega", "FECHA ENTREGA")
+                },
+                [false, false, false, false, true, true, false],
                 rows.Count,
                 (i) => rows[i],
                 CrearEstiloHeaderGris(workbook));
@@ -462,11 +535,11 @@ namespace Mercader
                 if (articulos is not null && articulos.TryGetValue(v.Id, out var arts) && arts.Count > 0)
                 {
                     foreach (var a in arts.OrderBy(a => a.Orden))
-                        rows.Add(new object[] { v.Fecha.ToString("dd/MM/yyyy"), a.Descripcion ?? "N/A", a.Cantidad, (double)a.PrecioUnitario, (double)a.Total });
+                        rows.Add(new object[] { Loc.FormatDate(v.Fecha), a.Descripcion ?? "N/A", a.Cantidad, (double)a.PrecioUnitario, (double)a.Total });
                 }
                 else
                 {
-                    rows.Add(new object[] { v.Fecha.ToString("dd/MM/yyyy"), v.Descripcion ?? "N/A", v.Cantidad, (double)v.Precio, (double)(v.Precio * v.Cantidad) });
+                    rows.Add(new object[] { Loc.FormatDate(v.Fecha), v.Descripcion ?? "N/A", v.Cantidad, (double)v.Precio, (double)(v.Precio * v.Cantidad) });
                 }
             }
             return rows;
@@ -482,11 +555,11 @@ namespace Mercader
                 if (articulos is not null && articulos.TryGetValue(g.Id, out var arts) && arts.Count > 0)
                 {
                     foreach (var a in arts.OrderBy(a => a.Orden))
-                        rows.Add(new object[] { g.Fecha.ToString("dd/MM/yyyy"), a.Descripcion ?? "N/A", a.Cantidad, (double)a.PrecioUnitario, (double)a.Total });
+                        rows.Add(new object[] { Loc.FormatDate(g.Fecha), a.Descripcion ?? "N/A", a.Cantidad, (double)a.PrecioUnitario, (double)a.Total });
                 }
                 else
                 {
-                    rows.Add(new object[] { g.Fecha.ToString("dd/MM/yyyy"), g.Descripcion ?? "N/A", g.Cantidad, (double)g.Monto, (double)(g.Monto * g.Cantidad) });
+                    rows.Add(new object[] { Loc.FormatDate(g.Fecha), g.Descripcion ?? "N/A", g.Cantidad, (double)g.Monto, (double)(g.Monto * g.Cantidad) });
                 }
             }
             return rows;
@@ -502,19 +575,19 @@ namespace Mercader
                 if (articulos is not null && articulos.TryGetValue(e.Id, out var arts) && arts.Count > 0)
                 {
                     foreach (var a in arts.OrderBy(a => a.Orden))
-                        rows.Add(new object[] { e.Fecha.ToString("dd/MM/yyyy"), e.Nombre ?? "N/A", a.Descripcion ?? "N/A", a.Cantidad, (double)a.PrecioUnitario, (double)a.Total, e.FechaEntrega.ToString("dd/MM/yyyy") });
+                        rows.Add(new object[] { Loc.FormatDate(e.Fecha), e.Nombre ?? "N/A", a.Descripcion ?? "N/A", a.Cantidad, (double)a.PrecioUnitario, (double)a.Total, Loc.FormatDate(e.FechaEntrega) });
                 }
                 else
                 {
-                    rows.Add(new object[] { e.Fecha.ToString("dd/MM/yyyy"), e.Nombre ?? "N/A", e.Descripcion ?? "N/A", e.Cantidad, (double)e.Precio, (double)(e.Precio * e.Cantidad), e.FechaEntrega.ToString("dd/MM/yyyy") });
+                    rows.Add(new object[] { Loc.FormatDate(e.Fecha), e.Nombre ?? "N/A", e.Descripcion ?? "N/A", e.Cantidad, (double)e.Precio, (double)(e.Precio * e.Cantidad), Loc.FormatDate(e.FechaEntrega) });
                 }
             }
             return rows;
         }
 
         private static void CrearTablaDetallada(XSSFWorkbook workbook, ISheet ws, string titulo,
-            string[] encabezados, int cantidadDatos, Func<int, object[]> obtenerDatos,
-            ICellStyle estiloHeaderColor)
+            string[] encabezados, bool[] columnasMoneda, int cantidadDatos,
+            Func<int, object[]> obtenerDatos, ICellStyle estiloHeaderColor)
         {
             var stHeaderGray = CrearEstiloHeaderGris(workbook);
             var stDato = CrearEstiloDato(workbook);
@@ -537,7 +610,10 @@ namespace Mercader
             // Info de registros (fila 2)
             var infoRow = ws.CreateRow(2);
             var infoCell = infoRow.CreateCell(0);
-            infoCell.SetCellValue($"Total de registros: {cantidadDatos}");
+            infoCell.SetCellValue(TraducirFormato(
+                "TotalRegistros",
+                "Total de registros: {0}",
+                cantidadDatos));
             var boldStyle = workbook.CreateCellStyle();
             var boldFont = workbook.CreateFont();
             boldFont.FontName = "Calibri"; boldFont.FontHeightInPoints = 11; boldFont.IsBold = true;
@@ -564,8 +640,8 @@ namespace Mercader
                     var cell = row.CreateCell(j);
                     SetCellValue(cell, datos[j]);
 
-                    // Moneda para PRECIO, MONTO, TOTAL
-                    bool isCurrency = encabezados[j].Contains("PRECIO") || encabezados[j].Contains("MONTO") || encabezados[j].Contains("TOTAL");
+                    // El tipo de columna es independiente del texto traducible del encabezado.
+                    bool isCurrency = columnasMoneda[j];
                     cell.CellStyle = isCurrency ? stMoneda : stDato;
                 }
 
@@ -592,7 +668,7 @@ namespace Mercader
 
         private static void CrearHojaGrafico(XSSFWorkbook workbook, BalanceExportDto data)
         {
-            var ws = workbook.CreateSheet("Grafico Financiero");
+            var ws = workbook.CreateSheet(Traducir("HojaGraficoFinanciero", "Grafico Financiero"));
 
             var stTitle = CrearEstiloHeaderAzul(workbook);
             var stHeader = CrearEstiloHeaderGris(workbook);
@@ -609,7 +685,7 @@ namespace Mercader
             var titleRow = ws.CreateRow(0);
             titleRow.HeightInPoints = 28;
             var titleCell = titleRow.CreateCell(0);
-            titleCell.SetCellValue("EVOLUCION FINANCIERA - ULTIMOS 6 MESES");
+            titleCell.SetCellValue(Traducir("EvolucionFinanciera", "EVOLUCION FINANCIERA - ULTIMOS 6 MESES"));
             titleCell.CellStyle = stTitle;
             for (int c = 1; c < 4; c++)
                 titleRow.CreateCell(c).CellStyle = stTitle;
@@ -619,7 +695,13 @@ namespace Mercader
 
             // Encabezados (fila 2)
             var headerRow = ws.CreateRow(2);
-            string[] headers = { "MES", "VENTAS", "GASTOS", "GANANCIAS" };
+            string[] headers =
+            {
+                Traducir("EncabezadoMes", "MES"),
+                Traducir("Ventas", "VENTAS"),
+                Traducir("Gastos", "GASTOS"),
+                Traducir("Ganancias", "GANANCIAS")
+            };
             for (int c = 0; c < 4; c++)
             {
                 var cell = headerRow.CreateCell(c);
@@ -661,9 +743,9 @@ namespace Mercader
             var chart = drawing.CreateChart(anchor);
             chart.GetOrAddLegend().Position = LegendPosition.Bottom;
             var bottomAxis = chart.CreateCategoryAxis(AxisPosition.Bottom);
-            bottomAxis.SetTitle("Mes");
+            bottomAxis.SetTitle(Traducir("EjeMes", "Mes"));
             var leftAxis = chart.CreateValueAxis(AxisPosition.Left);
-            leftAxis.SetTitle("Monto ($)");
+            leftAxis.SetTitle(Traducir("EjeMonto", "Monto ($)"));
 
             var mesRange = new CellRangeAddress(dataStartRow, dataEndRow, 0, 0);
             var ventasRange = new CellRangeAddress(dataStartRow, dataEndRow, 1, 1);
@@ -678,13 +760,13 @@ namespace Mercader
             var lineData = chart.CreateData<string, double>(ChartTypes.LINE, bottomAxis, leftAxis);
             // Colors are set per-series via SetLineSeriesColor below
             var ventasSeries = lineData.AddSeries(mesDS, ventasDS);
-            ventasSeries.SetTitle("Ventas", null);
+            ventasSeries.SetTitle(Traducir("Ventas", "Ventas"), null);
             SetLineSeriesColor(ventasSeries, 41, 128, 185); // Azul
             var gastosSeries = lineData.AddSeries(mesDS, gastosDS);
-            gastosSeries.SetTitle("Gastos", null);
+            gastosSeries.SetTitle(Traducir("Gastos", "Gastos"), null);
             SetLineSeriesColor(gastosSeries, 231, 76, 60);  // Rojo
             var gananciasSeries = lineData.AddSeries(mesDS, gananciasDS);
-            gananciasSeries.SetTitle("Ganancias", null);
+            gananciasSeries.SetTitle(Traducir("Ganancias", "Ganancias"), null);
             SetLineSeriesColor(gananciasSeries, 39, 174, 96); // Verde
             chart.Plot(lineData);
         }
@@ -730,7 +812,7 @@ namespace Mercader
             else if (value is int i) cell.SetCellValue(i);
             else if (value is double dbl) cell.SetCellValue(dbl);
             else if (value is decimal dec) cell.SetCellValue((double)dec);
-            else if (value is DateTime dt) cell.SetCellValue(dt.ToString("dd/MM/yyyy"));
+            else if (value is DateTime dt) cell.SetCellValue(Loc.FormatDate(dt));
             else cell.SetCellValue(value.ToString());
         }
 
