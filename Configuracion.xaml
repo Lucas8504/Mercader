@@ -4,7 +4,7 @@
     xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
     xmlns:loc="clr-namespace:Mercader.Services.Localization"
-    Title="⚙️ Configuración"
+    Title="{loc:Translate TituloConfiguracion}"
     BackgroundColor="{AppThemeBinding Light={StaticResource PageBackground}, Dark={StaticResource PageBackgroundDark}}">
 
     <ScrollView>
@@ -143,15 +143,6 @@
                             SelectedIndex="1"
                             TextColor="{AppThemeBinding Light={StaticResource TextPrimary}, Dark={StaticResource TextPrimaryDark}}"
                             SelectedIndexChanged="OnTiempoRecordatorioChanged">
-                            <Picker.ItemsSource>
-                                <x:Array Type="{x:Type x:String}">
-                                    <x:String>El día de entrega</x:String>
-                                    <x:String>1 hora antes</x:String>
-                                    <x:String>2 horas antes</x:String>
-                                    <x:String>1 día antes</x:String>
-                                    <x:String>2 días antes</x:String>
-                                </x:Array>
-                            </Picker.ItemsSource>
                         </Picker>
                     </Grid>
 

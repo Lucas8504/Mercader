@@ -1,5 +1,6 @@
 using Mercader.Domain.Entities;
 using Mercader.Services.Interfaces;
+using Mercader.Core.Services.Localization;
 
 namespace Mercader;
 
@@ -51,17 +52,22 @@ public partial class ImageGalleryModal : ContentPage
     {
         if (_articulo.GetFirstEmptySlot() == -1)
         {
-            await DisplayAlert("Imágenes", "Ya tenés 4 imágenes. Eliminá una para agregar otra.", "OK");
+            await DisplayAlert(Loc.Get("Imagenes"), Loc.Get("MaximoImagenes"), "OK");
             return;
         }
 
-        var action = await DisplayActionSheet("Agregar imagen", "Cancelar", null, "Tomar foto", "Elegir de la galería");
+        var action = await DisplayActionSheet(
+            Loc.Get("AgregarImagen"),
+            Loc.Get("Cancelar"),
+            null,
+            Loc.Get("TomarFoto"),
+            Loc.Get("ElegirGaleria"));
 
-        if (action == "Tomar foto")
+        if (action == Loc.Get("TomarFoto"))
         {
             await TakePhotoAsync();
         }
-        else if (action == "Elegir de la galería")
+        else if (action == Loc.Get("ElegirGaleria"))
         {
             await PickFromGalleryAsync();
         }
@@ -79,13 +85,13 @@ public partial class ImageGalleryModal : ContentPage
 
             if (status != PermissionStatus.Granted)
             {
-                await DisplayAlert("Permiso requerido", "Se necesita permiso de cámara para tomar fotos.", "OK");
+                await DisplayAlert(Loc.Get("PermisoRequerido"), Loc.Get("PermisoCamara"), "OK");
                 return;
             }
 
             var result = await MediaPicker.CapturePhotoAsync(new MediaPickerOptions
             {
-                Title = "Tomar foto"
+                Title = Loc.Get("TomarFoto")
             });
 
             if (result != null)
@@ -102,7 +108,7 @@ public partial class ImageGalleryModal : ContentPage
         }
         catch (Exception ex)
         {
-            await DisplayAlert("Error", $"No se pudo tomar la foto: {ex.Message}", "OK");
+            await DisplayAlert(Loc.Get("Error"), Loc.Format("ErrorTomarFoto", ex.Message), "OK");
         }
     }
 
@@ -112,7 +118,7 @@ public partial class ImageGalleryModal : ContentPage
         {
             var result = await MediaPicker.PickPhotoAsync(new MediaPickerOptions
             {
-                Title = "Seleccionar imagen"
+                Title = Loc.Get("SeleccionarImagen")
             });
 
             if (result != null)
@@ -129,7 +135,7 @@ public partial class ImageGalleryModal : ContentPage
         }
         catch (Exception ex)
         {
-            await DisplayAlert("Error", $"No se pudo seleccionar la imagen: {ex.Message}", "OK");
+            await DisplayAlert(Loc.Get("Error"), Loc.Format("ErrorSeleccionarImagen", ex.Message), "OK");
         }
     }
 
@@ -140,7 +146,11 @@ public partial class ImageGalleryModal : ContentPage
             var path = _articulo.GetImagePath(slot);
             if (!string.IsNullOrWhiteSpace(path))
             {
-                var confirm = await DisplayAlert("Eliminar imagen", "¿Seguro que querés eliminar esta imagen?", "Eliminar", "Cancelar");
+                var confirm = await DisplayAlert(
+                    Loc.Get("EliminarImagen"),
+                    Loc.Get("ConfirmarEliminarImagen"),
+                    Loc.Get("Eliminar"),
+                    Loc.Get("Cancelar"));
                 if (confirm)
                 {
                     await _imageStorageService.DeleteFileAsync(path);

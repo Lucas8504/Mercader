@@ -14,6 +14,7 @@ public partial class Configuracion : ContentPage
 {
     private readonly INotificationService _notificationService;
     private readonly IDataRepository _repository;
+    private readonly string[] _opcionesRecordatorio;
     private bool _ignorandoEventoIdioma;
 
     public Configuracion(INotificationService notificationService, IDataRepository repository)
@@ -21,6 +22,19 @@ public partial class Configuracion : ContentPage
         _notificationService = notificationService;
         _repository = repository;
         InitializeComponent();
+
+        // Las opciones del recordatorio son texto de UI: se traducen según el idioma
+        // activo. La lógica de notificaciones usa el índice, nunca el texto.
+        _opcionesRecordatorio = new[]
+        {
+            Loc.Get("RecordatorioDiaEntrega"),
+            Loc.Get("Recordatorio1HoraAntes"),
+            Loc.Get("Recordatorio2HorasAntes"),
+            Loc.Get("Recordatorio1DiaAntes"),
+            Loc.Get("Recordatorio2DiasAntes")
+        };
+        TiempoRecordatorioPicker.ItemsSource = _opcionesRecordatorio;
+
         CargarConfiguracion();
     }
 
@@ -57,7 +71,7 @@ public partial class Configuracion : ContentPage
         TiempoRecordatorioGrid.IsVisible = notifEntregas;
 
         var tiempo = Preferences.Get("tiempoRecordatorio", 1);
-        if (tiempo >= 0 && tiempo < TiempoRecordatorioPicker.Items.Count)
+        if (tiempo >= 0 && tiempo < _opcionesRecordatorio.Length)
         {
             TiempoRecordatorioPicker.SelectedIndex = tiempo;
         }
