@@ -4,8 +4,8 @@ using System.Globalization;
 using System.Linq;
 using Microcharts;
 using SkiaSharp;
-using Mercader.Core.Services.Localization;
 using Mercader.Services.Interfaces;
+using Microsoft.Maui.Storage;
 
 namespace Mercader.Services.Charts
 {
@@ -194,8 +194,9 @@ namespace Mercader.Services.Charts
 
         private string FormatearValorEntero(decimal valor)
         {
-            var culture = Loc.Culture;
-            var simbolo = culture.NumberFormat.CurrencySymbol;
+            // Usar la preferencia de moneda del usuario (no la locale)
+            var simbolo = Preferences.Get("moneda", "$");
+            var culture = CultureInfo.InvariantCulture; // Separador decimal siempre "."
 
             string numero = Math.Abs(valor) switch
             {
@@ -204,14 +205,8 @@ namespace Mercader.Services.Charts
                 _ => Math.Round(valor).ToString("N0", culture)
             };
 
-            // El símbolo va antes o después del número según la cultura activa.
-            return culture.NumberFormat.CurrencyPositivePattern switch
-            {
-                0 => $"{simbolo}{numero}",
-                1 => $"{numero}{simbolo}",
-                2 => $"{simbolo} {numero}",
-                _ => $"{numero} {simbolo}"
-            };
+            // Símbolo siempre antes (formato estándar: $5.7K, $1.2M)
+            return $"{simbolo}{numero}";
         }
 }
 }
