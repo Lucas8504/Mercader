@@ -8,6 +8,7 @@ using Mercader.Services.Interfaces;
 using Mercader.Data.Interfaces;
 using Microcharts;
 using System.Collections.ObjectModel;
+using Microsoft.Maui.Storage;
 
 namespace Mercader.ViewModels
 {
@@ -163,10 +164,10 @@ namespace Mercader.ViewModels
             _rawMargen = margen;
 
             // Actualizar UI con formato
-            TotalVentas = totalVentas.ToString("C");
-            TotalGastos = totalGastos.ToString("C");
-            TotalEncargos = totalEncargos.ToString("C");
-            Ganancias = ganancias.ToString("C");
+            TotalVentas = FormatearMoneda(totalVentas);
+            TotalGastos = FormatearMoneda(totalGastos);
+            TotalEncargos = FormatearMoneda(totalEncargos);
+            Ganancias = FormatearMoneda(ganancias);
             Margen = $"{margen:F1}%";
 
             // Generar gráficos
@@ -196,11 +197,27 @@ namespace Mercader.ViewModels
             var ganancias = ventas - gastos;
             var margen = ventas > 0 ? (ganancias / ventas) * 100 : 0;
 
-            MesVentas = ventas.ToString("C");
-            MesGastos = gastos.ToString("C");
-            MesEncargos = encargos.ToString("C");
-            MesGanancias = ganancias.ToString("C");
+            MesVentas = FormatearMoneda(ventas);
+            MesGastos = FormatearMoneda(gastos);
+            MesEncargos = FormatearMoneda(encargos);
+            MesGanancias = FormatearMoneda(ganancias);
             MesMargen = $"{margen:F1}%";
+        }
+
+        private string FormatearMoneda(decimal valor)
+        {
+            var simbolo = Preferences.Get("moneda", "$");
+            // Usar cultura invariante para el número (separador decimal siempre ".")
+            // Símbolo siempre antes: $5.7K, $1.2M, etc.
+            var culture = CultureInfo.InvariantCulture;
+            var abs = Math.Abs(valor);
+            string numero = abs switch
+            {
+                >= 1000000 => Math.Round(valor / 1000000, 1).ToString("0.0", CultureInfo.InvariantCulture) + "M",
+                >= 1000 => Math.Round(valor / 1000, 1).ToString("0.0", CultureInfo.InvariantCulture) + "K",
+                _ => Math.Round(valor).ToString("N0", CultureInfo.InvariantCulture)
+            };
+            return $"{simbolo}{numero}";
         }
 
         // ===== CRUD Commands =====
