@@ -153,43 +153,43 @@ namespace Mercader.Services.Charts
         return CrearLineChartBase(entries);
     }
 
-    private LineChart CrearLineChartBase(ChartEntry[] entries)
-    {
-        return new LineChart
+private LineChart CrearLineChartBase(ChartEntry[] entries)
         {
-            Entries = entries.ToList(),
-
-            // 🎯 Texto
-            LabelTextSize = 26,
-            ValueLabelTextSize = 32,
-            ValueLabelOption = ValueLabelOption.TopOfElement,
-
-            // 🎨 Estética — líneas curvas con área degradada
-            BackgroundColor = ChartBg,
-            LineSize = 4,
-            PointSize = 8,
-            IsAnimated = false,
-            AnimationProgress = 1,
-            LineMode = LineMode.Spline,
-            LineAreaAlpha = 28,
-            EnableYFadeOutGradient = true,
-
-            // 📐 Orientación
-            LabelOrientation = Orientation.Horizontal,
-            ValueLabelOrientation = Orientation.Horizontal,
-
-            // 📊 Ejes — grilla sutil
-            ShowYAxisLines = true,
-            YAxisLinesPaint = new SKPaint
+            return new LineChart
             {
-                Color = ChartGridLine,
-                StrokeWidth = 1,
-                IsAntialias = true
-            },
+                Entries = entries.ToList(),
 
-            // 📦 Margen generoso para que respire
-            Margin = 40,
-        };
+                // 🎯 Texto
+                LabelTextSize = 26,
+                ValueLabelTextSize = 32,
+                ValueLabelOption = ValueLabelOption.TopOfElement,
+
+                // 🎨 Estética — líneas curvas con área degradada
+                BackgroundColor = ChartBg,
+                LineSize = 4,
+                PointSize = 8,
+                IsAnimated = false,
+                AnimationProgress = 1,
+                LineMode = LineMode.Spline,
+                LineAreaAlpha = 28,
+                EnableYFadeOutGradient = true,
+
+                // 📐 Orientación
+                LabelOrientation = Orientation.Horizontal,
+                ValueLabelOrientation = Orientation.Horizontal,
+
+                // 📊 Ejes — grilla sutil
+                ShowYAxisLines = true,
+                YAxisLinesPaint = new SKPaint
+                {
+                    Color = ChartGridLine,
+                    StrokeWidth = 1,
+                    IsAntialias = true
+                },
+
+                // 📦 Margen generoso para que los labels del eje Y no se corten
+                Margin = 72,
+            };
     }
 
         private string FormatearValorEntero(decimal valor)
