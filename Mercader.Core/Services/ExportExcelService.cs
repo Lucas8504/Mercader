@@ -68,8 +68,13 @@ namespace Mercader
             }
         }
 
-        private static string FormatoMoneda() =>
-            $"{Loc.Culture.NumberFormat.CurrencySymbol}#,##0.00";
+        private static string FormatoMoneda()
+        {
+            // Símbolo elegido por el usuario (no el de la locale). Entre comillas
+            // porque símbolos de texto como "USD" colisionan con códigos de
+            // formato de Excel (la "D" se interpretaría como día).
+            return $"\"{Loc.SimboloMoneda}\"#,##0.00";
+        }
 
         private static XSSFColor Color(byte r, byte g, byte b)
         {

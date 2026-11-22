@@ -30,6 +30,7 @@
                             Grid.Column="1"
                             WidthRequest="100"
                             SelectedIndex="0"
+                            SelectedIndexChanged="OnMonedaChanged"
                             TextColor="{AppThemeBinding Light={StaticResource TextPrimary}, Dark={StaticResource TextPrimaryDark}}">
                             <Picker.ItemsSource>
                                 <x:Array Type="{x:Type x:String}">

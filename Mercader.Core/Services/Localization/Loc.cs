@@ -18,6 +18,19 @@ public static class Loc
 
     private static string _language = DefaultLanguage;
 
+    private static string _simboloMoneda = "$";
+
+    /// <summary>
+    /// Símbolo de moneda elegido por el usuario en Configuración ("$", "USD", "€", "R$").
+    /// Core no accede a Preferences (sin dependencias de plataforma): la app lo
+    /// sincroniza al iniciar y cuando el usuario cambia la moneda.
+    /// </summary>
+    public static string SimboloMoneda
+    {
+        get => _simboloMoneda;
+        set => _simboloMoneda = string.IsNullOrWhiteSpace(value) ? "$" : value.Trim();
+    }
+
     /// <summary>Cultura activa. Determina formato de fechas, meses y moneda.</summary>
     public static CultureInfo Culture { get; private set; } = new("es-ES");
 
@@ -114,8 +127,16 @@ public static class Loc
         }
     }
 
-    /// <summary>Moneda formateada según la cultura activa.</summary>
-    public static string FormatCurrency(decimal value) => value.ToString("C", Culture);
+    /// <summary>
+    /// Moneda con el símbolo elegido por el usuario (<see cref="SimboloMoneda"/>) y
+    /// separadores invariables: el formato no depende del idioma activo, igual que
+    /// en la Home y los gráficos.
+    /// </summary>
+    public static string FormatCurrency(decimal value)
+    {
+        var numero = Math.Abs(value).ToString("N2", CultureInfo.InvariantCulture);
+        return value < 0 ? $"-{_simboloMoneda}{numero}" : $"{_simboloMoneda}{numero}";
+    }
 
     /// <summary>Fecha formateada según la cultura activa.</summary>
     public static string FormatDate(DateTime date) => date.ToString("d", Culture);

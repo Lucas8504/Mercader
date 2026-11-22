@@ -43,11 +43,13 @@ public class LocTests : IDisposable
         Loc.RegisterCatalog(Ru, new Dictionary<string, string>());
 
         Loc.SetLanguage(Es);
+        Loc.SimboloMoneda = "$";
     }
 
     public void Dispose()
     {
         Loc.SetLanguage(Loc.DefaultLanguage);
+        Loc.SimboloMoneda = "$";
         CultureInfo.CurrentCulture = _previousCulture;
         CultureInfo.CurrentUICulture = _previousUiCulture;
     }
@@ -263,13 +265,32 @@ public class LocTests : IDisposable
     }
 
     [Fact]
-    public void FormatCurrency_FollowsActiveCulture()
+    public void FormatCurrency_UsesPreferredSymbol_WithInvariantNumbers()
     {
-        Loc.SetLanguage(En);
-        Assert.Contains("1,234.50", Loc.FormatCurrency(1234.5m));
-
         Loc.SetLanguage(Es);
-        Assert.Contains("1.234,50", Loc.FormatCurrency(1234.5m));
+        Loc.SimboloMoneda = "€";
+        Assert.Equal("€1,234.50", Loc.FormatCurrency(1234.5m));
+
+        // El idioma activo ya no cambia el formato de la moneda: solo manda
+        // el símbolo elegido por el usuario (igual que la Home y los gráficos).
+        Loc.SetLanguage(En);
+        Assert.Equal("€1,234.50", Loc.FormatCurrency(1234.5m));
+    }
+
+    [Fact]
+    public void FormatCurrency_EmptySymbol_FallsBackToDollar()
+    {
+        Loc.SimboloMoneda = "   ";
+
+        Assert.Equal("$1,234.50", Loc.FormatCurrency(1234.5m));
+    }
+
+    [Fact]
+    public void FormatCurrency_NegativeValue_PutsMinusBeforeSymbol()
+    {
+        Loc.SimboloMoneda = "USD";
+
+        Assert.Equal("-USD1,234.50", Loc.FormatCurrency(-1234.5m));
     }
 
     [Fact]

@@ -54,6 +54,8 @@ public static class Localizacion
 
     /// <summary>
     /// Carga los catálogos y aplica el idioma persistido (o español por defecto).
+    /// También sincroniza el símbolo de moneda elegido por el usuario: Core no
+    /// accede a Preferences, así que la app se la pasa a <see cref="Loc"/>.
     /// </summary>
     public static void Inicializar()
     {
@@ -61,5 +63,7 @@ public static class Localizacion
 
         var idioma = Preferences.Get("idioma", Loc.DefaultLanguage);
         Loc.SetLanguage(idioma);
+
+        Loc.SimboloMoneda = Preferences.Get("moneda", "$");
     }
 }

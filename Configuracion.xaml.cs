@@ -17,6 +17,11 @@ public partial class Configuracion : ContentPage
     private readonly string[] _opcionesRecordatorio;
     private bool _ignorandoEventoIdioma;
 
+    // El XAML declara SelectedIndex="0" y eso dispara SelectedIndexChanged durante
+    // InitializeComponent, ANTES de leer la preferencia guardada: sin este guard el
+    // handler pisaría la moneda elegida por el usuario con el primer item ("$").
+    private bool _ignorandoEventoMoneda = true;
+
     public Configuracion(INotificationService notificationService, IDataRepository repository)
     {
         _notificationService = notificationService;
@@ -36,6 +41,22 @@ public partial class Configuracion : ContentPage
         TiempoRecordatorioPicker.ItemsSource = _opcionesRecordatorio;
 
         CargarConfiguracion();
+
+        // La carga programática de la selección terminó: a partir de acá un cambio
+        // del picker ya es del usuario y se guarda.
+        _ignorandoEventoMoneda = false;
+    }
+
+    private void OnMonedaChanged(object sender, EventArgs e)
+    {
+        if (_ignorandoEventoMoneda)
+            return;
+
+        if (MonedaPicker.SelectedItem is not string moneda || string.IsNullOrWhiteSpace(moneda))
+            return;
+
+        Preferences.Set("moneda", moneda);
+        Loc.SimboloMoneda = moneda;
     }
 
     private async void CargarConfiguracion()
