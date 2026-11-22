@@ -165,12 +165,39 @@ reales que la suite existente no cubría:
   `Periodos.Normalizar`) del que dependen `MainViewModel` y las exportaciones. La corrección mantiene
   la compatibilidad hacia atrás (las etiquetas legacy en español siguen funcionando).
 
+### L11 — Corrección de montos en los gráficos (feedback del usuario)
+El usuario reportó dos defectos distintos y ambos se corrigieron con evidencia en el emulador:
+1. **Encabezado de los gráficos**: el total del período salía abreviado ("$25.7K") cuando hay
+   espacio de sobra. Se restauró el número completo ("$25,700.00"), que era el comportamiento
+   original (`totalVentas.ToString("C")`) antes de que esta feature lo abreviara.
+2. **Labels dentro del gráfico**: el pico mostraba "$20" en vez de "$20K".
+
+**Causa raíz del recorte (no era el margen):** Microcharts 1.0.0 recorta el texto del label a 3
+caracteres cuando su ancho supera el slot del punto (`DrawHelper.DrawLabel`:
+`text = text.Substring(0, Math.Min(3, text.Length))`). El `Margin` no participa de ese cálculo,
+por eso subirlo a 72 empeoraba el espacio útil sin tocar el problema.
+
+**Correcciones:**
+- `MainViewModel.FormatearMoneda`: sin abreviaturas K/M → `N2` invariante + símbolo de la
+  preferencia del usuario (`$25,700.00`, `-$500.00`). Afecta los 4 encabezados de gráfico y el
+  resumen mensual.
+- `ChartService.FormatearValorEntero`: `"0.0"` → `"0.#"` para quitar el `.0` redundante
+  ("$20K" en vez de "$20.0K"); el label queda corto y entra en el slot.
+- `Margin` del gráfico vuelve a 40 (valor original).
+- Los meses del eje X quedan abreviados ("jun", "jul", "ago."…): el intento de ponerlos completos
+  (`"MMMM"`) fue revertido porque el usuario no lo pidió.
+
+**Verificación en emulador** (`emulator-5556`, capturas de los 4 gráficos): encabezados
+"$25,700.00" / "$3,600.00" / "$225,300.00" / "$199,600.00" y labels "$20K" / "$5.7K" / "$3.6K" /
+"$60K" / "$73" / "$51" / "$40" / "$0" — ninguno recortado. 137/137 tests, build 0 errores.
+Commits: `ffa6fe0` (revert de meses) y `585a7fb` (montos).
+
 ## Pendiente
 - **Mirror Engram**: sigue bloqueado por `invalid_project` (el servidor MCP resuelve el proyecto
   desde el cwd de la sesión, `C:\Users\Lucas`, sin repo). Este archivo commiteado es la fuente de
   verdad. Reintentar cuando Engram resuelva el repo correcto.
 - **Error preexistente de PDFsharp**: `ExportPdfService` lanza "An XGraphics object already exists
   for this page". No es de esta feature (existe en la base) y no fue tocado.
-- La preferencia "moneda" de Configuración sigue sin aplicarse al formato de los montos (hoy mandan
-  la cultura y el símbolo de la locale). Es una inconsistencia preexistente de la app, fuera del
-  alcance de esta feature.
+- La preferencia "moneda" de Configuración ya se aplica en la Home (tarjetas, resumen mensual y
+  gráficos). Los exports a PDF/Excel siguen usando el símbolo de la locale (`Loc.FormatCurrency`):
+  decidir si también deben respetar la preferencia del usuario.
