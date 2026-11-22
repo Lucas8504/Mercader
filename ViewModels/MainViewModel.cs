@@ -206,18 +206,15 @@ namespace Mercader.ViewModels
 
         private string FormatearMoneda(decimal valor)
         {
+            // La preferencia de moneda del usuario (no la locale) + cultura invariante
+            // (separador decimal siempre "."). Número COMPLETO, sin abreviar: en los
+            // encabezados de los gráficos y en el resumen mensual hay espacio para
+            // mostrarlo entero (antes se veía "$25.7K" y queda "$25,700.00").
             var simbolo = Preferences.Get("moneda", "$");
-            // Usar cultura invariante para el número (separador decimal siempre ".")
-            // Símbolo siempre antes: $5.7K, $1.2M, etc.
             var culture = CultureInfo.InvariantCulture;
-            var abs = Math.Abs(valor);
-            string numero = abs switch
-            {
-                >= 1000000 => Math.Round(valor / 1000000, 1).ToString("0.0", CultureInfo.InvariantCulture) + "M",
-                >= 1000 => Math.Round(valor / 1000, 1).ToString("0.0", CultureInfo.InvariantCulture) + "K",
-                _ => Math.Round(valor).ToString("N0", CultureInfo.InvariantCulture)
-            };
-            return $"{simbolo}{numero}";
+            var numero = Math.Abs(valor).ToString("N2", culture);
+
+            return valor < 0 ? $"-{simbolo}{numero}" : $"{simbolo}{numero}";
         }
 
         // ===== CRUD Commands =====

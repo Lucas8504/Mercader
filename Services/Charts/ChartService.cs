@@ -187,8 +187,8 @@ private LineChart CrearLineChartBase(ChartEntry[] entries)
                     IsAntialias = true
                 },
 
-// 📦 Margen equilibrado para que labels eje Y no se corten y gráfico tenga ancho
-            Margin = 50,
+// 📦 Margen lateral del gráfico (40 = valor original)
+            Margin = 40,
             };
     }
 
@@ -200,8 +200,11 @@ private LineChart CrearLineChartBase(ChartEntry[] entries)
 
             string numero = Math.Abs(valor) switch
             {
-                >= 1000000 => Math.Round(valor / 1000000, 1).ToString("0.0", culture) + "M",
-                >= 1000 => Math.Round(valor / 1000, 1).ToString("0.0", culture) + "K",
+                // "0.#" y no "0.0": evita el ".0" redundante ("$20K" en vez de "$20.0K").
+                // Microcharts recorta el label a 3 caracteres si no entra en el slot del
+                // punto (DrawHelper.DrawLabel), así que cada carácter cuenta.
+                >= 1000000 => Math.Round(valor / 1000000, 1).ToString("0.#", culture) + "M",
+                >= 1000 => Math.Round(valor / 1000, 1).ToString("0.#", culture) + "K",
                 _ => Math.Round(valor).ToString("N0", culture)
             };
 
