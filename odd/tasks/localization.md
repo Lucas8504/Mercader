@@ -192,12 +192,21 @@ por eso subirlo a 72 empeoraba el espacio útil sin tocar el problema.
 "$60K" / "$73" / "$51" / "$40" / "$0" — ninguno recortado. 137/137 tests, build 0 errores.
 Commits: `ffa6fe0` (revert de meses) y `585a7fb` (montos).
 
+### L12 — Moneda unificada en exports (PDF/Excel)
+El picker de moneda en Configuración **no guardaba la elección** (handler faltante en XAML). Se agregó
+`OnMonedaChanged` con guard `_ignorandoEventoMoneda` (el XAML `SelectedIndex="0"` dispara el
+evento durante `InitializeComponent` y sin el guard pisaba la preferencia con el primer item "$").
+Al arrancar, `Localizacion.Inicializar` lee la preferencia y sincroniza `Loc.SimboloMoneda`.
+`Loc.FormatCurrency` ahora usa el símbolo del usuario con separadores invariables
+(`€1,234.50` con `en-US`), y `ExportExcelService.FormatoMoneda` lo usa entre comillas
+(`"USD"#,##0.00`) para evitar colisiones con códigos de formato de Excel.
+Tests test-first: 3 tests nuevos (`LocTests`): RED 136+3 → GREEN 139/139.
+Commit: `f66f496`.
+
 ## Pendiente
 - **Mirror Engram**: sigue bloqueado por `invalid_project` (el servidor MCP resuelve el proyecto
   desde el cwd de la sesión, `C:\Users\Lucas`, sin repo). Este archivo commiteado es la fuente de
   verdad. Reintentar cuando Engram resuelva el repo correcto.
 - **Error preexistente de PDFsharp**: `ExportPdfService` lanza "An XGraphics object already exists
   for this page". No es de esta feature (existe en la base) y no fue tocado.
-- La preferencia "moneda" de Configuración ya se aplica en la Home (tarjetas, resumen mensual y
-  gráficos). Los exports a PDF/Excel siguen usando el símbolo de la locale (`Loc.FormatCurrency`):
-  decidir si también deben respetar la preferencia del usuario.
+- La preferencia "moneda" de Configuración **ya se aplica en toda la app**: Home (tarjetas, resumen mensual, gráficos) **y exports PDF/Excel** — ahora usan el símbolo elegido en Configuración con separadores invariables.
