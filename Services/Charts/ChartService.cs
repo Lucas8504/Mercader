@@ -187,8 +187,8 @@ private LineChart CrearLineChartBase(ChartEntry[] entries)
                     IsAntialias = true
                 },
 
-                // 📦 Margen generoso para que los labels del eje Y no se corten
-                Margin = 72,
+// 📦 Margen equilibrado para que labels eje Y no se corten y gráfico tenga ancho
+            Margin = 50,
             };
     }
 

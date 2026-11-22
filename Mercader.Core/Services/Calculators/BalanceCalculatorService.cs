@@ -167,7 +167,7 @@ namespace Mercader.Services.Calculators
                 var total = datos
                     .Where(x => getFecha(x).Year == mes.Year && getFecha(x).Month == mes.Month)
                     .Sum(getMonto);
-                return (mes.ToString("MMM", Loc.Culture), total);
+                return (mes.ToString("MMMM", Loc.Culture), total);
             }).ToList();
         }
 
