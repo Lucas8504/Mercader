@@ -205,86 +205,132 @@ namespace Mercader
                 // Charts
                 var charts = new List<(byte[] ImageBytes, string Title)>();
 
-                // 2. 6-Month chart
+                // Helper: devuelve los últimos N períodos de ventas y gastos
+                (List<(string Periodo, decimal Total)> ventas, List<(string Periodo, decimal Total)> gastos) GetLatest(string periodoType, int count)
+                {
+                    var v = _balanceCalculator.AgruparVentasPorPeriodo(_viewModel.Ventas, periodoType)
+                        .TakeLast(count).ToList();
+                    var g = _balanceCalculator.AgruparGastosPorPeriodo(_viewModel.Gastos, periodoType)
+                        .TakeLast(count).ToList();
+                    return (v, g);
+                }
+
+                // 1. Ventas (6 Meses y 30 Días)
                 try
                 {
-                    diag.Add("Chart2: Agrupando ventas x Meses...");
-                    var ventasMensuales = _balanceCalculator.AgruparVentasPorPeriodo(_viewModel.Ventas, "Meses");
-                    diag.Add($"Chart2: ventasMensuales count={ventasMensuales.Count}, datos con Total>0: {ventasMensuales.Count(v => v.Total > 0)}");
-                    var ultimos6Ventas = ventasMensuales.TakeLast(6).ToList();
-                    diag.Add($"Chart2: ultimos6Ventas count={ultimos6Ventas.Count}, sum={ultimos6Ventas.Sum(v => v.Total)}");
-
-                    var gastosMensuales = _balanceCalculator.AgruparGastosPorPeriodo(_viewModel.Gastos, "Meses");
-                    diag.Add($"Chart2: gastosMensuales count={gastosMensuales.Count}, datos con Total>0: {gastosMensuales.Count(g => g.Total > 0)}");
-                    var ultimos6Gastos = gastosMensuales.TakeLast(6).ToList();
-                    diag.Add($"Chart2: ultimos6Gastos count={ultimos6Gastos.Count}, sum={ultimos6Gastos.Sum(g => g.Total)}");
-
-                    if (ultimos6Ventas.Count > 0)
+                    var (v6, g6) = GetLatest("Meses", 6);
+                    if (v6.Count > 0)
                     {
-                        diag.Add("Chart2: Creando chart...");
-                        var chart6M = _chartService.CrearGraficoGanancias(ultimos6Ventas, ultimos6Gastos);
-                        var bytes6M = RenderChartToPng(chart6M, 1400, 450);
-                        diag.Add($"Chart2: PNG={bytes6M?.Length ?? -1} bytes");
-                        if (bytes6M != null)
-                        {
-                            charts.Add((bytes6M, "Últimos 6 Meses"));
-                            diag.Add("Chart2: AGREGADO");
-                        }
-                        else
-                            diag.Add("Chart2: bytes6M es NULL");
+                        var chart = _chartService.CrearGraficoVentas(v6);
+                        var bytes = RenderChartToPng(chart, 1400, 450);
+                        if (bytes != null)
+                            charts.Add((bytes, $"{Loc.Get("TituloVentas")} — {Loc.Get("Ultimos6Meses")}"));
                     }
-                }
-                catch (Exception ex2)
-                {
-                    diag.Add($"Chart2 EXCEPTION: {ex2.GetType().Name}: {ex2.Message}");
-                }
-
-                // 3. 30-Day charts — partido en semanas para que los valores sean legibles
-                try
-                {
-                    diag.Add("Chart3: Agrupando ventas x Días...");
-                    var ventasDiarias = _balanceCalculator.AgruparVentasPorPeriodo(_viewModel.Ventas, "Días");
-                    diag.Add($"Chart3: ventasDiarias count={ventasDiarias.Count}, datos con Total>0: {ventasDiarias.Count(v => v.Total > 0)}");
-                    var ultimos30Ventas = ventasDiarias.TakeLast(30).ToList();
-                    diag.Add($"Chart3: ultimos30Ventas count={ultimos30Ventas.Count}, sum={ultimos30Ventas.Sum(v => v.Total)}");
-
-                    var gastosDiarias = _balanceCalculator.AgruparGastosPorPeriodo(_viewModel.Gastos, "Días");
-                    diag.Add($"Chart3: gastosDiarias count={gastosDiarias.Count}, datos con Total>0: {gastosDiarias.Count(g => g.Total > 0)}");
-                    var ultimos30Gastos = gastosDiarias.TakeLast(30).ToList();
-                    diag.Add($"Chart3: ultimos30Gastos count={ultimos30Gastos.Count}, sum={ultimos30Gastos.Sum(g => g.Total)}");
-
-                    if (ultimos30Ventas.Count > 0)
+                    var (v30, g30) = GetLatest("Días", 30);
+                    if (v30.Count > 0)
                     {
-                        int semana = 1;
-                        for (int i = 0; i < ultimos30Ventas.Count; i += 7)
+                        for (int i = 0; i < v30.Count; i += 7)
                         {
-                            var weekVentas = ultimos30Ventas.Skip(i).Take(7).ToList();
-                            var weekGastos = ultimos30Gastos.Skip(i).Take(7).ToList();
-                            if (weekVentas.Count == 0) continue;
-
-                            string periodoLabel = weekVentas.First().Periodo;
-                            if (weekVentas.Count > 1)
-                                periodoLabel = $"{weekVentas.First().Periodo} — {weekVentas.Last().Periodo}";
-
-                            var chartWeek = _chartService.CrearGraficoGanancias(weekVentas, weekGastos);
-                            var bytesWeek = RenderChartToPng(chartWeek, 1400, 450);
-                            diag.Add($"Chart3 Semana {semana}: PNG={bytesWeek?.Length ?? -1} bytes");
-                            if (bytesWeek != null)
-                            {
-                                charts.Add((bytesWeek, $"Últimos 30 Días — {periodoLabel}"));
-                                diag.Add($"Chart3 Semana {semana}: AGREGADO");
-                            }
-                            else
-                                diag.Add($"Chart3 Semana {semana}: bytesWeek es NULL");
-
-                            semana++;
+                            var weekV = v30.Skip(i).Take(7).ToList();
+                            if (weekV.Count == 0) continue;
+                            string label = weekV.First().Periodo;
+                            if (weekV.Count > 1) label = $"{weekV.First().Periodo} — {weekV.Last().Periodo}";
+                            var chart = _chartService.CrearGraficoVentas(weekV);
+                            var bytes = RenderChartToPng(chart, 1400, 450);
+                            if (bytes != null)
+                                charts.Add((bytes, $"{Loc.Get("TituloVentas")} — {Loc.Get("Ultimos30Dias")} — {label}"));
                         }
                     }
                 }
-                catch (Exception ex3)
+                catch (Exception ex) { diag.Add($"Ventas chart exception: {ex.Message}"); }
+
+                // 2. Gastos (6 Meses y 30 Días)
+                try
                 {
-                    diag.Add($"Chart3 EXCEPTION: {ex3.GetType().Name}: {ex3.Message}");
+                    var (v6, g6) = GetLatest("Meses", 6);
+                    if (g6.Count > 0)
+                    {
+                        var chart = _chartService.CrearGraficoGastos(g6);
+                        var bytes = RenderChartToPng(chart, 1400, 450);
+                        if (bytes != null)
+                            charts.Add((bytes, $"{Loc.Get("TituloGastos")} — {Loc.Get("Ultimos6Meses")}"));
+                    }
+                    var (v30, g30) = GetLatest("Días", 30);
+                    if (g30.Count > 0)
+                    {
+                        for (int i = 0; i < g30.Count; i += 7)
+                        {
+                            var weekG = g30.Skip(i).Take(7).ToList();
+                            if (weekG.Count == 0) continue;
+                            string label = weekG.First().Periodo;
+                            if (weekG.Count > 1) label = $"{weekG.First().Periodo} — {weekG.Last().Periodo}";
+                            var chart = _chartService.CrearGraficoGastos(weekG);
+                            var bytes = RenderChartToPng(chart, 1400, 450);
+                            if (bytes != null)
+                                charts.Add((bytes, $"{Loc.Get("TituloGastos")} — {Loc.Get("Ultimos30Dias")} — {label}"));
+                        }
+                    }
                 }
+                catch (Exception ex) { diag.Add($"Gastos chart exception: {ex.Message}"); }
+
+                // 3. Encargos (6 Meses y 30 Días)
+                try
+                {
+                    var encMeses = _balanceCalculator.AgruparEncargosPorPeriodo(_viewModel.Encargos, "Meses").TakeLast(6).ToList();
+                    if (encMeses.Count > 0)
+                    {
+                        var chart = _chartService.CrearGraficoEncargos(encMeses);
+                        var bytes = RenderChartToPng(chart, 1400, 450);
+                        if (bytes != null)
+                            charts.Add((bytes, $"{Loc.Get("TituloEncargos")} — {Loc.Get("Ultimos6Meses")}"));
+                    }
+                    var encDias = _balanceCalculator.AgruparEncargosPorPeriodo(_viewModel.Encargos, "Días").TakeLast(30).ToList();
+                    if (encDias.Count > 0)
+                    {
+                        for (int i = 0; i < encDias.Count; i += 7)
+                        {
+                            var weekE = encDias.Skip(i).Take(7).ToList();
+                            if (weekE.Count == 0) continue;
+                            string label = weekE.First().Periodo;
+                            if (weekE.Count > 1) label = $"{weekE.First().Periodo} — {weekE.Last().Periodo}";
+                            var chart = _chartService.CrearGraficoEncargos(weekE);
+                            var bytes = RenderChartToPng(chart, 1400, 450);
+                            if (bytes != null)
+                                charts.Add((bytes, $"{Loc.Get("TituloEncargos")} — {Loc.Get("Ultimos30Dias")} — {label}"));
+                        }
+                    }
+                }
+                catch (Exception ex) { diag.Add($"Encargos chart exception: {ex.Message}"); }
+
+                // 4. Ganancias (6 Meses y 30 Días)
+                try
+                {
+                    var (v6, g6) = GetLatest("Meses", 6);
+                    if (v6.Count > 0)
+                    {
+                        var chart = _chartService.CrearGraficoGanancias(v6, g6);
+                        var bytes = RenderChartToPng(chart, 1400, 450);
+                        if (bytes != null)
+                            charts.Add((bytes, $"{Loc.Get("TituloGanancias")} — {Loc.Get("Ultimos6Meses")}"));
+                    }
+                    var (v30, g30) = GetLatest("Días", 30);
+                    if (v30.Count > 0)
+                    {
+                        for (int i = 0; i < v30.Count; i += 7)
+                        {
+                            var weekV = v30.Skip(i).Take(7).ToList();
+                            var weekG = g30.Skip(i).Take(7).ToList();
+                            if (weekV.Count == 0) continue;
+                            string label = weekV.First().Periodo;
+                            if (weekV.Count > 1) label = $"{weekV.First().Periodo} — {weekV.Last().Periodo}";
+                            var chart = _chartService.CrearGraficoGanancias(weekV, weekG);
+                            var bytes = RenderChartToPng(chart, 1400, 450);
+                            if (bytes != null)
+                                charts.Add((bytes, $"{Loc.Get("TituloGanancias")} — {Loc.Get("Ultimos30Dias")} — {label}"));
+                        }
+                    }
+                }
+                catch (Exception ex) { diag.Add($"Ganancias chart exception: {ex.Message}"); }
 
                 diag.Add($"--- Total charts a pasar al PDF: {charts.Count} ---");
 

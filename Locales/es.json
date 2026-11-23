@@ -5,7 +5,6 @@
   "NavEncargos": "Encargos",
   "NavVentas": "Ventas",
   "NavConfiguracion": "Configuración",
-
   "TotalPeriodo": "TOTAL PERÍODO",
   "MargenGanancias": "MARGEN DE GANANCIAS",
   "AnalisisVentas": "💵 ANÁLISIS DE VENTAS",
@@ -32,7 +31,7 @@
   "CantidadAbrev": "Cant.",
   "IngreseDescripcion": "Por favor, ingrese una descripción",
   "IngreseNombre": "Por favor, ingrese un nombre",
-  "IngreseTelefono": "Por favor, ingrese un número de teléfono",
+  "IngreseTelefono": "Ingrese el teléfono",
   "TelefonoInvalido": "Por favor, ingrese un número de teléfono válido",
   "ErrorCrearVenta": "Error al crear venta: {0}",
   "ErrorCrearGasto": "Error al crear gasto: {0}",
@@ -74,7 +73,6 @@
   "ArchivoEnDescargas": "El archivo se guardó en Descargas/Mercader/. Abrí tu gestor de archivos para verlo.",
   "BalanceFinanciero": "Balance Financiero",
   "NoSePudoAbrir": "No se pudo abrir: {0}",
-
   "ResumenMes": "Resumen del mes",
   "Total": "Total",
   "Ventas": "Ventas",
@@ -82,7 +80,6 @@
   "Encargos": "Encargos",
   "Ganancias": "Ganancias",
   "Margen": "Margen",
-
   "Agregar": "Agregar",
   "AgregarVenta": "Agregar Venta",
   "AgregarGasto": "Agregar Gasto",
@@ -102,7 +99,6 @@
   "Eliminar": "Eliminar",
   "Guardar": "Guardar",
   "Error": "Error",
-
   "Descripcion": "Descripción",
   "PrecioUnitario": "Precio Unitario",
   "Cantidad": "Cantidad",
@@ -111,7 +107,6 @@
   "NombreArticulo": "Nombre del artículo",
   "SinDescripcion": "Cada artículo debe tener una descripción",
   "SinArticulos": "Debe agregar al menos un artículo",
-
   "General": "General",
   "Moneda": "Moneda",
   "MonedaDescripcion": "Símbolo de moneda para los precios",
@@ -132,14 +127,12 @@
   "AcercaDe": "Acerca de",
   "Version": "Versión 1.0.0",
   "AppDescripcion": "Gestión de ventas, gastos y encargos",
-
   "VersionApp": "Versión 1.0",
   "Por": "por  Luks.dev y FPDS Vasos :)",
-
   "TituloConfiguracion": "⚙️ Configuración",
-  "TituloGastos": "💸 Registro de Gastos",
+  "TituloGastos": "💸 Gastos",
   "TituloVentas": "💵 Ventas",
-  "TituloEncargos": "📦 Gestión de Encargos",
+  "TituloEncargos": "📦 Encargos",
   "BuscarGasto": "Buscar por descripción...",
   "BuscarVenta": "Buscar por producto...",
   "BuscarEncargo": "Buscar por cliente o producto...",
@@ -165,21 +158,18 @@
   "SinVentasDescripcion": "Las ventas aparecerán aquí cuando se registren",
   "SinEncargos": "No hay encargos registrados",
   "SinEncargosDescripcion": "Los encargos aparecerán aquí cuando se registren",
-
   "EditarGasto": "Editar Gasto",
   "EditarVenta": "Editar Venta",
   "EditarEncargo": "Editar Encargo",
   "DescripcionVenta": "Descripción de la venta",
   "IngreseNombreCliente": "Ingrese el nombre del cliente",
   "NumeroTelefono": "Número de teléfono",
-  "IngreseTelefono": "Ingrese el teléfono",
   "DescribirProducto": "Describe el producto o servicio",
   "GuardarCambios": "💾 Guardar Cambios",
   "CancelarConIcono": "❌ Cancelar",
   "Listo": "Listo",
   "Vacio": "Vacío",
   "ImagenesArticulo": "Imágenes del artículo",
-
   "ErrorNavegacion": "Error de navegación",
   "ErrorEdicion": "Error de edición",
   "ErrorEliminacion": "Error de eliminación",
@@ -202,7 +192,6 @@
   "NoSePudoEliminarGasto": "No se pudo eliminar el gasto: {0}",
   "NoSePudoEliminarVenta": "No se pudo eliminar la venta: {0}",
   "NoSePudoEliminarEncargo": "No se pudo eliminar el encargo: {0}",
-
   "YaEntregado": "ℹ️ Ya entregado",
   "EncargoYaEntregado": "Este encargo ya fue marcado como entregado.",
   "MarcarEntregado": "✅ Marcar como entregado",
@@ -239,7 +228,6 @@
   "NoSePudoConcretarVenta": "No se pudo concretar la venta: {0}",
   "ErrorAlMostrarDetalles": "Error al mostrar detalles",
   "NoSePudoAbrirDetallesPagina": "No se pudo abrir la página de detalles: {0}",
-
   "DescripcionRequerida": "La descripción es requerida",
   "NombreClienteRequerido": "El nombre del cliente es obligatorio",
   "GastoActualizado": "Gasto actualizado correctamente",
@@ -248,7 +236,6 @@
   "ConfirmarCancelacion": "¿Estás seguro de que deseas cancelar? Se perderán los cambios no guardados.",
   "Si": "Sí",
   "No": "No",
-
   "Imagenes": "Imágenes",
   "MaximoImagenes": "Ya tenés 4 imágenes. Eliminá una para agregar otra.",
   "AgregarImagen": "Agregar imagen",
@@ -260,7 +247,6 @@
   "ErrorSeleccionarImagen": "No se pudo seleccionar la imagen: {0}",
   "EliminarImagen": "Eliminar imagen",
   "ConfirmarEliminarImagen": "¿Seguro que querés eliminar esta imagen?",
-
   "ResumenFinanciero": "Resumen Financiero",
   "Generado": "Generado: {0}",
   "Periodo": "Periodo: {0}",
@@ -311,5 +297,8 @@
   "TotalRegistros": "Total de registros: {0}",
   "EvolucionFinanciera": "EVOLUCION FINANCIERA - ULTIMOS 6 MESES",
   "EjeMes": "Mes",
-  "EjeMonto": "Monto ($)"
+  "EjeMonto": "Monto ($)",
+  "Ultimos6Meses": "Últimos 6 Meses",
+  "Ultimos30Dias": "Últimos 30 Días",
+  "TituloGanancias": "💰 Ganancias"
 }

@@ -5,7 +5,6 @@
   "NavEncargos": "訂單",
   "NavVentas": "銷售",
   "NavConfiguracion": "設定",
-
   "TotalPeriodo": "期間總計",
   "MargenGanancias": "利潤率",
   "AnalisisVentas": "💵 銷售分析",
@@ -74,7 +73,6 @@
   "ArchivoEnDescargas": "檔案已儲存於 Downloads/Mercader/。請開啟檔案總管查看。",
   "BalanceFinanciero": "財務結餘",
   "NoSePudoAbrir": "無法開啟：{0}",
-
   "ResumenMes": "本月摘要",
   "Total": "總計",
   "Ventas": "銷售",
@@ -82,7 +80,6 @@
   "Encargos": "訂單",
   "Ganancias": "利潤",
   "Margen": "利潤率",
-
   "Agregar": "新增",
   "AgregarVenta": "新增銷售",
   "AgregarGasto": "新增支出",
@@ -102,7 +99,6 @@
   "Eliminar": "刪除",
   "Guardar": "儲存",
   "Error": "錯誤",
-
   "Descripcion": "描述",
   "PrecioUnitario": "單價",
   "Cantidad": "數量",
@@ -111,7 +107,6 @@
   "NombreArticulo": "項目名稱",
   "SinDescripcion": "每個項目都必須有描述",
   "SinArticulos": "您必須至少新增一個項目",
-
   "General": "一般",
   "Moneda": "貨幣",
   "MonedaDescripcion": "價格使用的貨幣符號",
@@ -132,14 +127,12 @@
   "AcercaDe": "關於",
   "Version": "版本 1.0.0",
   "AppDescripcion": "銷售、支出與訂單管理",
-
   "VersionApp": "版本 1.0",
   "Por": "由  Luks.dev 和 FPDS Vasos :) 開發",
-
   "TituloConfiguracion": "⚙️ 設定",
-  "TituloGastos": "💸 支出記錄",
-  "TituloVentas": "💵 銷售",
-  "TituloEncargos": "📦 訂單管理",
+  "TituloGastos": "💸 支出",
+  "TituloVentas": "💵 销售",
+  "TituloEncargos": "📦 订单",
   "BuscarGasto": "依描述搜尋...",
   "BuscarVenta": "依產品搜尋...",
   "BuscarEncargo": "依客戶或產品搜尋...",
@@ -165,21 +158,18 @@
   "SinVentasDescripcion": "登記銷售後會顯示在這裡。",
   "SinEncargos": "尚無訂單紀錄",
   "SinEncargosDescripcion": "登記訂單後會顯示在這裡。",
-
   "EditarGasto": "編輯支出",
   "EditarVenta": "編輯銷售",
   "EditarEncargo": "編輯訂單",
   "DescripcionVenta": "銷售描述",
   "IngreseNombreCliente": "請輸入客戶名稱",
   "NumeroTelefono": "電話號碼",
-  "IngreseTelefono": "請輸入電話號碼",
   "DescribirProducto": "請描述產品或服務",
   "GuardarCambios": "💾 儲存變更",
   "CancelarConIcono": "❌ 取消",
   "Listo": "完成",
   "Vacio": "空白",
   "ImagenesArticulo": "項目圖片",
-
   "ErrorNavegacion": "導覽錯誤",
   "ErrorEdicion": "編輯錯誤",
   "ErrorEliminacion": "刪除錯誤",
@@ -202,7 +192,6 @@
   "NoSePudoEliminarGasto": "無法刪除支出：{0}",
   "NoSePudoEliminarVenta": "無法刪除銷售：{0}",
   "NoSePudoEliminarEncargo": "無法刪除訂單：{0}",
-
   "YaEntregado": "ℹ️ 已交付",
   "EncargoYaEntregado": "此訂單已標記為交付。",
   "MarcarEntregado": "✅ 標記為已交付",
@@ -239,7 +228,6 @@
   "NoSePudoConcretarVenta": "無法確認銷售：{0}",
   "ErrorAlMostrarDetalles": "顯示詳細資料時發生錯誤",
   "NoSePudoAbrirDetallesPagina": "無法開啟詳細資料頁面：{0}",
-
   "DescripcionRequerida": "描述為必填項目",
   "NombreClienteRequerido": "客戶名稱為必填項目",
   "GastoActualizado": "支出已成功更新",
@@ -248,7 +236,6 @@
   "ConfirmarCancelacion": "確定要取消嗎？未儲存的變更將會遺失。",
   "Si": "是",
   "No": "否",
-
   "Imagenes": "圖片",
   "MaximoImagenes": "您已有 4 張圖片。請刪除一張以新增另一張。",
   "AgregarImagen": "新增圖片",
@@ -260,7 +247,6 @@
   "ErrorSeleccionarImagen": "無法選擇圖片：{0}",
   "EliminarImagen": "刪除圖片",
   "ConfirmarEliminarImagen": "確定要刪除這張圖片嗎？",
-
   "ResumenFinanciero": "財務摘要",
   "Generado": "產生時間：{0}",
   "Periodo": "期間：{0}",
@@ -311,5 +297,8 @@
   "TotalRegistros": "記錄總數：{0}",
   "EvolucionFinanciera": "財務變化 - 最近 6 個月",
   "EjeMes": "月份",
-  "EjeMonto": "金額 ($)"
+  "EjeMonto": "金額 ($)",
+  "Ultimos6Meses": "最近 6 個月",
+  "Ultimos30Dias": "最近 30 天",
+  "TituloGanancias": "💰 利润"
 }

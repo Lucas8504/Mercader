@@ -5,7 +5,6 @@
   "NavEncargos": "Заказы",
   "NavVentas": "Продажи",
   "NavConfiguracion": "Настройки",
-
   "TotalPeriodo": "ИТОГО ЗА ПЕРИОД",
   "MargenGanancias": "МАРЖА ПРИБЫЛИ",
   "AnalisisVentas": "💵 АНАЛИЗ ПРОДАЖ",
@@ -32,7 +31,7 @@
   "CantidadAbrev": "Кол-во",
   "IngreseDescripcion": "Пожалуйста, введите описание",
   "IngreseNombre": "Пожалуйста, введите имя",
-  "IngreseTelefono": "Пожалуйста, введите номер телефона",
+  "IngreseTelefono": "Введите номер телефона",
   "TelefonoInvalido": "Пожалуйста, введите действительный номер телефона",
   "ErrorCrearVenta": "Ошибка при создании продажи: {0}",
   "ErrorCrearGasto": "Ошибка при создании расхода: {0}",
@@ -74,7 +73,6 @@
   "ArchivoEnDescargas": "Файл сохранён в Downloads/Mercader/. Откройте файловый менеджер, чтобы посмотреть его.",
   "BalanceFinanciero": "Финансовый баланс",
   "NoSePudoAbrir": "Не удалось открыть: {0}",
-
   "ResumenMes": "Сводка за месяц",
   "Total": "Итого",
   "Ventas": "Продажи",
@@ -82,7 +80,6 @@
   "Encargos": "Заказы",
   "Ganancias": "Прибыль",
   "Margen": "Маржа",
-
   "Agregar": "Добавить",
   "AgregarVenta": "Добавить продажу",
   "AgregarGasto": "Добавить расход",
@@ -102,7 +99,6 @@
   "Eliminar": "Удалить",
   "Guardar": "Сохранить",
   "Error": "Ошибка",
-
   "Descripcion": "Описание",
   "PrecioUnitario": "Цена за единицу",
   "Cantidad": "Количество",
@@ -111,7 +107,6 @@
   "NombreArticulo": "Название товара",
   "SinDescripcion": "У каждого товара должно быть описание",
   "SinArticulos": "Необходимо добавить хотя бы один товар",
-
   "General": "Общее",
   "Moneda": "Валюта",
   "MonedaDescripcion": "Символ валюты для цен",
@@ -132,14 +127,12 @@
   "AcercaDe": "О приложении",
   "Version": "Версия 1.0.0",
   "AppDescripcion": "Управление продажами, расходами и заказами",
-
   "VersionApp": "Версия 1.0",
   "Por": "от  Luks.dev и FPDS Vasos :)",
-
   "TituloConfiguracion": "⚙️ Настройки",
-  "TituloGastos": "💸 Реестр расходов",
+  "TituloGastos": "💸 Расходы",
   "TituloVentas": "💵 Продажи",
-  "TituloEncargos": "📦 Управление заказами",
+  "TituloEncargos": "📦 Заказы",
   "BuscarGasto": "Поиск по описанию...",
   "BuscarVenta": "Поиск по товару...",
   "BuscarEncargo": "Поиск по клиенту или товару...",
@@ -165,21 +158,18 @@
   "SinVentasDescripcion": "Продажи появятся здесь после регистрации",
   "SinEncargos": "Заказы не зарегистрированы",
   "SinEncargosDescripcion": "Заказы появятся здесь после регистрации",
-
   "EditarGasto": "Изменить расход",
   "EditarVenta": "Изменить продажу",
   "EditarEncargo": "Изменить заказ",
   "DescripcionVenta": "Описание продажи",
   "IngreseNombreCliente": "Введите имя клиента",
   "NumeroTelefono": "Номер телефона",
-  "IngreseTelefono": "Введите номер телефона",
   "DescribirProducto": "Опишите товар или услугу",
   "GuardarCambios": "💾 Сохранить изменения",
   "CancelarConIcono": "❌ Отмена",
   "Listo": "Готово",
   "Vacio": "Пусто",
   "ImagenesArticulo": "Изображения товара",
-
   "ErrorNavegacion": "Ошибка навигации",
   "ErrorEdicion": "Ошибка редактирования",
   "ErrorEliminacion": "Ошибка удаления",
@@ -202,7 +192,6 @@
   "NoSePudoEliminarGasto": "Не удалось удалить расход: {0}",
   "NoSePudoEliminarVenta": "Не удалось удалить продажу: {0}",
   "NoSePudoEliminarEncargo": "Не удалось удалить заказ: {0}",
-
   "YaEntregado": "ℹ️ Уже доставлено",
   "EncargoYaEntregado": "Этот заказ уже отмечен как доставленный.",
   "MarcarEntregado": "✅ Отметить как доставленный",
@@ -239,7 +228,6 @@
   "NoSePudoConcretarVenta": "Не удалось подтвердить продажу: {0}",
   "ErrorAlMostrarDetalles": "Ошибка при отображении сведений",
   "NoSePudoAbrirDetallesPagina": "Не удалось открыть страницу сведений: {0}",
-
   "DescripcionRequerida": "Описание обязательно",
   "NombreClienteRequerido": "Имя клиента обязательно",
   "GastoActualizado": "Расход успешно обновлён",
@@ -248,7 +236,6 @@
   "ConfirmarCancelacion": "Вы уверены, что хотите отменить? Несохранённые изменения будут потеряны.",
   "Si": "Да",
   "No": "Нет",
-
   "Imagenes": "Изображения",
   "MaximoImagenes": "У вас уже есть 4 изображения. Удалите одно, чтобы добавить другое.",
   "AgregarImagen": "Добавить изображение",
@@ -260,7 +247,6 @@
   "ErrorSeleccionarImagen": "Не удалось выбрать изображение: {0}",
   "EliminarImagen": "Удалить изображение",
   "ConfirmarEliminarImagen": "Вы уверены, что хотите удалить это изображение?",
-
   "ResumenFinanciero": "Финансовая сводка",
   "Generado": "Создано: {0}",
   "Periodo": "Период: {0}",
@@ -311,5 +297,8 @@
   "TotalRegistros": "Всего записей: {0}",
   "EvolucionFinanciera": "ФИНАНСОВАЯ ДИНАМИКА - ПОСЛЕДНИЕ 6 МЕСЯЦЕВ",
   "EjeMes": "Месяц",
-  "EjeMonto": "Сумма ($)"
+  "EjeMonto": "Сумма ($)",
+  "Ultimos6Meses": "Последние 6 месяцев",
+  "Ultimos30Dias": "Последние 30 дней",
+  "TituloGanancias": "💰 Прибыли"
 }

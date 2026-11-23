@@ -5,7 +5,6 @@
   "NavEncargos": "Orders",
   "NavVentas": "Sales",
   "NavConfiguracion": "Settings",
-
   "TotalPeriodo": "TOTAL PERIOD",
   "MargenGanancias": "PROFIT MARGIN",
   "AnalisisVentas": "💵 SALES ANALYSIS",
@@ -32,7 +31,7 @@
   "CantidadAbrev": "Qty",
   "IngreseDescripcion": "Please enter a description",
   "IngreseNombre": "Please enter a name",
-  "IngreseTelefono": "Please enter a phone number",
+  "IngreseTelefono": "Enter the phone number",
   "TelefonoInvalido": "Please enter a valid phone number",
   "ErrorCrearVenta": "Error creating sale: {0}",
   "ErrorCrearGasto": "Error creating expense: {0}",
@@ -74,7 +73,6 @@
   "ArchivoEnDescargas": "The file was saved in Downloads/Mercader/. Open your file manager to view it.",
   "BalanceFinanciero": "Financial Balance",
   "NoSePudoAbrir": "Could not open: {0}",
-
   "ResumenMes": "Month summary",
   "Total": "Total",
   "Ventas": "Sales",
@@ -82,7 +80,6 @@
   "Encargos": "Orders",
   "Ganancias": "Profit",
   "Margen": "Margin",
-
   "Agregar": "Add",
   "AgregarVenta": "Add Sale",
   "AgregarGasto": "Add Expense",
@@ -102,7 +99,6 @@
   "Eliminar": "Delete",
   "Guardar": "Save",
   "Error": "Error",
-
   "Descripcion": "Description",
   "PrecioUnitario": "Unit Price",
   "Cantidad": "Quantity",
@@ -111,7 +107,6 @@
   "NombreArticulo": "Article name",
   "SinDescripcion": "Every article must have a description",
   "SinArticulos": "You must add at least one article",
-
   "General": "General",
   "Moneda": "Currency",
   "MonedaDescripcion": "Currency symbol for prices",
@@ -132,14 +127,12 @@
   "AcercaDe": "About",
   "Version": "Version 1.0.0",
   "AppDescripcion": "Sales, expenses and orders management",
-
   "VersionApp": "Version 1.0",
   "Por": "by  Luks.dev y FPDS Vasos :)",
-
   "TituloConfiguracion": "⚙️ Settings",
-  "TituloGastos": "💸 Expense Log",
+  "TituloGastos": "💸 Expenses",
   "TituloVentas": "💵 Sales",
-  "TituloEncargos": "📦 Order Management",
+  "TituloEncargos": "📦 Orders",
   "BuscarGasto": "Search by description...",
   "BuscarVenta": "Search by product...",
   "BuscarEncargo": "Search by client or product...",
@@ -165,21 +158,18 @@
   "SinVentasDescripcion": "Sales will appear here when they are recorded",
   "SinEncargos": "No orders recorded",
   "SinEncargosDescripcion": "Orders will appear here when they are recorded",
-
   "EditarGasto": "Edit Expense",
   "EditarVenta": "Edit Sale",
   "EditarEncargo": "Edit Order",
   "DescripcionVenta": "Sale description",
   "IngreseNombreCliente": "Enter the client's name",
   "NumeroTelefono": "Phone number",
-  "IngreseTelefono": "Enter the phone number",
   "DescribirProducto": "Describe the product or service",
   "GuardarCambios": "💾 Save Changes",
   "CancelarConIcono": "❌ Cancel",
   "Listo": "Done",
   "Vacio": "Empty",
   "ImagenesArticulo": "Article images",
-
   "ErrorNavegacion": "Navigation error",
   "ErrorEdicion": "Edit error",
   "ErrorEliminacion": "Delete error",
@@ -202,7 +192,6 @@
   "NoSePudoEliminarGasto": "Could not delete the expense: {0}",
   "NoSePudoEliminarVenta": "Could not delete the sale: {0}",
   "NoSePudoEliminarEncargo": "Could not delete the order: {0}",
-
   "YaEntregado": "ℹ️ Already delivered",
   "EncargoYaEntregado": "This order was already marked as delivered.",
   "MarcarEntregado": "✅ Mark as delivered",
@@ -239,7 +228,6 @@
   "NoSePudoConcretarVenta": "Could not confirm the sale: {0}",
   "ErrorAlMostrarDetalles": "Error while showing details",
   "NoSePudoAbrirDetallesPagina": "Could not open the details page: {0}",
-
   "DescripcionRequerida": "Description is required",
   "NombreClienteRequerido": "Client name is required",
   "GastoActualizado": "Expense updated successfully",
@@ -248,7 +236,6 @@
   "ConfirmarCancelacion": "Are you sure you want to cancel? Unsaved changes will be lost.",
   "Si": "Yes",
   "No": "No",
-
   "Imagenes": "Images",
   "MaximoImagenes": "You already have 4 images. Delete one to add another.",
   "AgregarImagen": "Add image",
@@ -260,7 +247,6 @@
   "ErrorSeleccionarImagen": "Could not select the image: {0}",
   "EliminarImagen": "Delete image",
   "ConfirmarEliminarImagen": "Are you sure you want to delete this image?",
-
   "ResumenFinanciero": "Financial Summary",
   "Generado": "Generated: {0}",
   "Periodo": "Period: {0}",
@@ -311,5 +297,8 @@
   "TotalRegistros": "Total records: {0}",
   "EvolucionFinanciera": "FINANCIAL EVOLUTION - LAST 6 MONTHS",
   "EjeMes": "Month",
-  "EjeMonto": "Amount ($)"
+  "EjeMonto": "Amount ($)",
+  "Ultimos6Meses": "Last 6 Months",
+  "Ultimos30Dias": "Last 30 Days",
+  "TituloGanancias": "💰 Profits"
 }
