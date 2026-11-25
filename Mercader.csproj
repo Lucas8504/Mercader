@@ -113,6 +113,7 @@
 		<PackageReference Include="SQLitePCLRaw.provider.e_sqlite3" Version="2.1.10" />
 		<PackageReference Include="Syncfusion.Maui.Toolkit" Version="1.0.6" />
 		<PackageReference Include="System.Text.Json" Version="8.0.5" />
+		<PackageReference Include="Xamarin.GooglePlayServices.Ads" Version="117.0.0" Condition="'$(TargetFramework)' == 'net8.0-android'" />
 	</ItemGroup>
 
 	<ItemGroup>
